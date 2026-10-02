@@ -1,0 +1,991 @@
+/* Componentes de la interfaz. Requiere tokens.css y base.css.
+   Todo usa controles nativos de HTML: sin librerías y accesibles por defecto. */
+
+/* ---------- Botones ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 2.25rem;
+  padding: 0 14px;
+  font: inherit;
+  font-size: var(--letra-sm);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: var(--radio-md);
+  border: 1px solid transparent;
+}
+.btn-primario { background: var(--primario); color: var(--primario-texto); }
+.btn-secundario { background: var(--fondo); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
+.btn-peligro { background: var(--peligro); color: var(--peligro-texto); }
+.btn-fantasma { background: transparent; color: var(--texto); }
+.btn-primario:hover { background: color-mix(in oklch, var(--primario), black 12%); }
+.btn-secundario:hover,
+.btn-fantasma:hover { background: var(--acento); color: var(--acento-texto); }
+.btn-peligro:hover { background: color-mix(in oklch, var(--peligro), black 12%); }
+.btn:disabled,
+.btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+.btn-sm { min-height: 1.75rem; padding: 0 10px; font-size: var(--letra-xs); border-radius: var(--radio-sm); }
+
+/* Botón solo con ícono: siempre con aria-label */
+.btn-icono { min-height: 2rem; width: 2rem; padding: 0; }
+
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.acciones-separadas { justify-content: space-between; }
+
+/* ---------- Acomodo ----------
+   .pila: hijos uno debajo del otro con aire entre ellos (formularios, tarjetas).
+   .fila: hijos en línea que bajan de renglón si no caben (insignias, botones).
+   .titulo-seccion: título de un bloque dentro de la página (formulario, tabla).
+   .separador: línea entre dos partes de un formulario (<hr class="separador">). */
+
+.pila { display: flex; flex-direction: column; gap: 16px; }
+.fila { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.titulo-seccion { margin: 0 0 12px; font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; line-height: 1.3; }
+.separador { margin: 4px 0; border: 0; border-top: 1px solid var(--borde); }
+
+/* ---------- Insignias (estados) ---------- */
+
+.insignia {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: var(--radio-md);
+  border: 1px solid transparent;
+}
+.insignia-exito { background: var(--exito); color: var(--exito-texto); }
+.insignia-aviso { background: var(--aviso); color: var(--aviso-texto); }
+.insignia-peligro { background: var(--peligro); color: var(--peligro-texto); }
+.insignia-info { background: var(--info); color: var(--info-texto); }
+.insignia-destacado { background: var(--destacado); color: var(--destacado-texto); }
+.insignia-secundaria { background: var(--secundario); color: var(--secundario-texto); }
+.insignia-borde { border-color: var(--borde); }
+
+/* ---------- Código de caso ----------
+   Formato TIPO-NNN (ej. SIS-001): sigla del tipo de prueba y consecutivo dentro del proyecto.
+   Lo genera el sistema y no cambia aunque luego se edite el tipo.
+   En monoespaciada para que los códigos se alineen y se lean carácter por carácter. */
+
+.codigo {
+  font-family: var(--fuente-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* ---------- Tooltip ----------
+   <button aria-label="Eliminar SIS-001" data-tooltip="Eliminar">…</button>
+   El texto del tooltip es solo visual: el nombre accesible va en aria-label o en el propio texto.
+   Aparece con el mouse y con el teclado, se puede pasar el mouse encima y se cierra con Escape
+   (WCAG 1.4.13). No funciona en <input> ni <img>: poner data-tooltip en un contenedor.
+   Opcional: data-tooltip-lado="abajo" y data-tooltip-alinear="inicio|fin" cerca de los bordes. */
+
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 60;
+  width: max-content;
+  max-width: 16rem;
+  padding: 4px 8px;
+  /* Borde transparente: puente entre el elemento y el globo para poder pasar el mouse encima */
+  border-bottom: 6px solid transparent;
+  background: var(--texto) padding-box;
+  color: var(--fondo);
+  border-radius: var(--radio-sm);
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s, visibility 0.12s;
+}
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0.3s;
+}
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+}
+[data-tooltip-lado="abajo"]::after {
+  bottom: auto;
+  top: 100%;
+  border-bottom: 0;
+  border-top: 6px solid transparent;
+}
+[data-tooltip-alinear="inicio"]::after { left: 0; translate: none; }
+[data-tooltip-alinear="fin"]::after { left: auto; right: 0; translate: none; }
+/* Escape los esconde hasta que el mouse o el foco se muevan (app.js) */
+[data-tooltips-ocultos] [data-tooltip]::after { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tooltip]::after { transition: none; }
+}
+
+/* ---------- Botón de tema: luna en claro, sol en oscuro ---------- */
+
+.tema-sol { display: none; }
+:root[data-tema="dark"] .tema-sol { display: block; }
+:root[data-tema="dark"] .tema-luna { display: none; }
+
+/* ---------- Encabezado de página ----------
+   <header class="encabezado"><div><h1>…</h1><p>…</p></div><div class="acciones">…</div></header> */
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 20px;
+}
+.encabezado h1 {
+  font-size: var(--letra-2xl);
+  margin: 0;
+}
+.encabezado p {
+  margin: 4px 0 0;
+  max-width: 60ch;
+  font-size: var(--letra-sm);
+  color: var(--tenue-texto);
+}
+
+/* Línea corta encima del h1, como el código y el estado de un caso */
+.encabezado .antetitulo { margin: 0 0 6px; }
+
+/* ---------- Detalle de un registro (caso, incidente) ----------
+   Contenido a la izquierda y datos cortos a la derecha (<aside class="tarjeta">).
+   En pantallas angostas y al imprimir queda en una columna.
+   <div class="vista-detalle"><div class="pila">…tarjetas…</div><aside class="tarjeta">…</aside></div> */
+
+.vista-detalle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+  align-items: start;
+  gap: 16px;
+}
+@media (max-width: 56rem) {
+  .vista-detalle { grid-template-columns: 1fr; }
+}
+
+/* ---------- Barra de filtros ----------
+   Formulario GET: los filtros quedan en la dirección y se pueden compartir o recargar. */
+
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+}
+.filtros .acciones { justify-content: flex-start; }
+
+/* ---------- Vista de detalle ----------
+   <dl class="detalle"><dt>Campo</dt><dd>Valor</dd>…</dl> */
+
+.detalle {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px 20px;
+  margin: 0;
+  font-size: var(--letra-sm);
+}
+.detalle dt { color: var(--tenue-texto); font-weight: 500; }
+.detalle dd { margin: 0; min-width: 0; }
+.detalle .multilinea { white-space: pre-line; }
+/* Variante apilada para columnas angostas: el nombre arriba y el valor abajo */
+.detalle-apilado { grid-template-columns: 1fr; gap: 2px; }
+.detalle-apilado dd { margin-bottom: 12px; }
+.detalle-apilado dd:last-child { margin-bottom: 0; }
+@media (max-width: 30rem) {
+  .detalle { grid-template-columns: 1fr; gap: 2px; }
+  .detalle dd { margin-bottom: 10px; }
+}
+
+/* ---------- Tarjeta ---------- */
+
+.tarjeta {
+  background: var(--tarjeta);
+  color: var(--tarjeta-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  padding: 16px;
+}
+
+/* ---------- Campos de formulario ----------
+   <div class="campo">
+     <label for="x">Nombre <span class="requerido">*</span></label>
+     <input class="control" id="x" required aria-describedby="x-ayuda x-error" aria-invalid="true">
+     <p class="campo-ayuda" id="x-ayuda">...</p>
+     <p class="campo-error" id="x-error">...</p>
+   </div> */
+
+.campos {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.campo > label,
+.grupo > legend {
+  font-size: var(--letra-sm);
+  font-weight: 500;
+}
+.requerido { color: var(--error); }
+.campo-ayuda {
+  margin: 0;
+  font-size: var(--letra-xs);
+  color: var(--tenue-texto);
+}
+.campo-error {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  color: var(--error);
+}
+.campo-error .icono { width: 14px; height: 14px; }
+
+.control {
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: var(--letra-sm);
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--entrada);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-xs);
+}
+.control::placeholder { color: var(--tenue-texto); }
+.control:focus-visible { outline: 2px solid var(--anillo); outline-offset: 1px; }
+.control[aria-invalid="true"] { border-color: var(--error); }
+.control[aria-invalid="true"]:focus-visible { outline-color: var(--error); }
+.control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
+textarea.control { min-height: 5rem; padding-block: 8px; }
+
+/* Select: flecha propia que sigue el color del texto (y el tema) */
+.select { position: relative; }
+.select .control { appearance: none; padding-right: 36px; cursor: pointer; }
+.select::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  translate: 0 -50%;
+  background: var(--tenue-texto);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* Archivo: botón nativo con estilo */
+.control[type="file"] { padding: 4px; cursor: pointer; }
+.control[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 4px 12px;
+  font: inherit;
+  font-weight: 500;
+  color: var(--secundario-texto);
+  background: var(--secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+}
+
+/* ---------- Grupos de radios y casillas ---------- */
+
+.grupo {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.grupo > legend { padding: 0; margin-bottom: 8px; }
+.opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--letra-sm);
+  cursor: pointer;
+}
+.opcion input { width: 16px; height: 16px; margin: 0; accent-color: var(--primario); }
+.grupo-fila { flex-direction: row; flex-wrap: wrap; gap: 8px 20px; }
+/* Grupo con error: el mensaje (.campo-error) va dentro del fieldset, enlazado con
+   aria-describedby, y cada opción lleva aria-invalid="true" para que el lector lo anuncie.
+   Las opciones no cambian de estilo: el mensaje en texto es la señal. */
+
+/* ---------- Estado OK / FAULT del caso (formulario 1) ----------
+   Radios reales ocultos a la vista; la etiqueta completa es el botón.
+   Llevan texto e ícono, no solo color (RNF-ACC-04). */
+
+.resultado {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: 12px;
+}
+.resultado > legend { font-size: var(--letra-sm); font-weight: 500; padding: 0; margin-bottom: 8px; }
+.resultado-opcion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 3.5rem;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--fondo);
+  border: 2px solid var(--entrada);
+  border-radius: var(--radio-lg);
+}
+.resultado-opcion input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.resultado-opcion:hover { background: var(--acento); }
+.resultado-opcion:has(input:focus-visible) { outline: 2px solid var(--anillo); outline-offset: 3px; }
+.resultado-pendiente:has(input:checked) { background: var(--aviso); color: var(--aviso-texto); border-color: var(--aviso); }
+.resultado-ok:has(input:checked) { background: var(--exito); color: var(--exito-texto); border-color: var(--exito); }
+.resultado-fault:has(input:checked) { background: var(--peligro); color: var(--peligro-texto); border-color: var(--peligro); }
+.resultado-opcion .icono { width: 20px; height: 20px; }
+/* Celular: las tres opciones una debajo de la otra, en vez de dos y una sola abajo */
+@media (max-width: 30rem) {
+  .resultado { grid-template-columns: 1fr; }
+}
+
+/* ---------- Tabla con acciones y paginación ---------- */
+
+.tabla-contenedor {
+  overflow-x: auto;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+}
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--letra-sm);
+}
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+.tabla th { color: var(--tenue-texto); font-weight: 500; background: var(--tenue); }
+.tabla tbody tr:hover { background: color-mix(in oklch, var(--acento), transparent 50%); }
+.tabla tbody tr:last-child :is(td, th) { border-bottom: 0; }
+.tabla .celda-acciones { width: 1%; text-align: right; }
+.tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: 4px; }
+.tabla .celda-larga { white-space: normal; min-width: 16rem; }
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: var(--letra-sm);
+  color: var(--tenue-texto);
+}
+.paginacion ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 4px;
+}
+.paginacion a,
+.paginacion span[aria-disabled] {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 8px;
+  color: var(--texto);
+  text-decoration: none;
+  border-radius: var(--radio-md);
+}
+.paginacion a:hover { background: var(--acento); }
+.paginacion a[aria-current="page"] { border: 1px solid var(--entrada); font-weight: 600; box-shadow: var(--sombra-xs); }
+.paginacion span[aria-disabled] { opacity: 0.4; }
+
+/* ---------- Diálogo de confirmación (<dialog> nativo) ----------
+   Se abre con showModal(): atrapa el foco y se cierra con Escape por sí solo. */
+
+.dialogo {
+  width: min(28rem, calc(100% - 32px));
+  padding: 20px;
+  background: var(--flotante);
+  color: var(--flotante-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-xl);
+}
+.dialogo::backdrop {
+  background: var(--velo);
+  backdrop-filter: var(--velo-desenfoque);
+}
+.dialogo h2 { font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; margin: 0 0 6px; }
+.dialogo p { margin: 0 0 20px; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.dialogo form { margin: 0; }
+
+/* ---------- Alertas (resultado de una acción) ----------
+   Borde fino, ícono opcional, título y/o descripción, acción opcional a la derecha.
+   Tres variantes: normal, .alerta-exito y .alerta-error. role="status" normal y éxito; role="alert" para errores.
+   <div class="alerta" role="status">
+     [ícono]  <p class="alerta-titulo">…</p>  <div class="alerta-descripcion">…</div>  [<div class="alerta-accion">…</div>]
+   </div> */
+
+.alerta {
+  display: grid;
+  grid-template-columns: [contenido] 1fr [accion] auto;
+  align-items: start;
+  row-gap: 2px;
+  padding: 10px 12px;
+  font-size: var(--letra-sm);
+  line-height: 1.4;
+  background: var(--tarjeta);
+  color: var(--tarjeta-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+}
+.alerta:has(> .icono) {
+  grid-template-columns: [icono] 16px [contenido] 1fr [accion] auto;
+}
+.alerta > .icono {
+  grid-column: icono;
+  grid-row: 1;
+  margin-top: 1px;
+}
+.alerta-titulo,
+.alerta-descripcion {
+  grid-column: contenido;
+  margin: 0;
+  min-width: 0;
+}
+.alerta:has(> .icono) :is(.alerta-titulo, .alerta-descripcion) {
+  margin-left: 10px;
+}
+.alerta-titulo { font-weight: 500; }
+.alerta-descripcion { color: var(--tenue-texto); }
+.alerta-descripcion p { margin: 0; }
+.alerta-descripcion ul { margin: 8px 0 0; padding-left: 18px; }
+.alerta-descripcion a { color: inherit; text-underline-offset: 3px; }
+.alerta code { font-family: var(--fuente-mono); font-size: var(--letra-xs); }
+.alerta-accion {
+  grid-column: accion;
+  grid-row: 1 / span 2;
+  margin-left: 12px;
+  align-self: start;
+}
+
+.alerta-error { color: var(--error); }
+.alerta-error .alerta-descripcion { color: color-mix(in oklch, var(--error), var(--tarjeta) 10%); }
+
+/* Éxito: confirma que los datos se guardaron. Va arriba de la página a la que se llega
+   después de guardar, con role="status" para que el lector de pantalla lo anuncie.
+   El color acompaña; lo que confirma es el texto ("Caso guardado."). */
+.alerta-exito {
+  background: color-mix(in oklch, var(--exito), var(--tarjeta) 88%);
+  border-color: color-mix(in oklch, var(--exito), var(--tarjeta) 45%);
+}
+.alerta-exito > .icono { color: var(--correcto); }
+
+/* ---------- Estado vacío ---------- */
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 40px 16px;
+  border: 1px dashed var(--entrada);
+  border-radius: var(--radio-xl);
+}
+.vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 4px;
+  border-radius: var(--radio-lg);
+  background: var(--secundario);
+  color: var(--tenue-texto);
+}
+.vacio-icono .icono { width: 24px; height: 24px; }
+/* En una página de error (403, 404) el título es el h1 de la página */
+.vacio :is(h1, h2, h3) { font-size: var(--letra-base); font-weight: 600; letter-spacing: 0; margin: 0; }
+.vacio p { margin: 0 0 8px; max-width: 36ch; font-size: var(--letra-sm); color: var(--tenue-texto); }
+
+/* ---------- Partes de la tarjeta (Card de shadcn) ----------
+   <section class="tarjeta">
+     <header class="tarjeta-encabezado">
+       <h2 class="tarjeta-titulo">…</h2> <p class="tarjeta-descripcion">…</p> [<div class="acciones">…</div>]
+     </header>
+     <div class="tarjeta-contenido">…</div>
+     <footer class="tarjeta-pie">…</footer>
+   </section> */
+
+.tarjeta-encabezado {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  margin-bottom: 16px;
+}
+.tarjeta-encabezado:last-child { margin-bottom: 0; }
+.tarjeta-encabezado > :not(.acciones) { grid-column: 1; }
+.tarjeta-encabezado > .acciones { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+.tarjeta-titulo { margin: 0; font-size: var(--letra-base); font-weight: 600; line-height: 1.3; letter-spacing: 0; }
+.tarjeta-descripcion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.tarjeta-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--borde);
+}
+
+/* ---------- Cifras del panel y de los reportes ----------
+   <div class="cifras">
+     <div class="tarjeta cifra">
+       <p class="cifra-etiqueta">Casos OK [ícono]</p> <p class="cifra-valor">32</p> <p class="cifra-nota">56 % del total</p>
+     </div>
+   </div> */
+
+.cifras {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+.cifra { display: flex; flex-direction: column; gap: 4px; }
+.cifra-etiqueta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--letra-sm);
+  font-weight: 500;
+  color: var(--tenue-texto);
+}
+.cifra-valor {
+  margin: 0;
+  font-size: var(--letra-2xl);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+
+/* ---------- Barra de progreso y medidor ----------
+   <progress> para el avance de una tarea (casos con resultado); <meter> para una medida (cobertura).
+   Siempre con el número escrito al lado: la barra sola no basta (RNF-ACC-04).
+   <div class="progreso-fila"><label for="p">Con resultado</label><span>18 de 24</span></div>
+   <progress class="progreso" id="p" max="24" value="18">18 de 24</progress>
+   <progress>: azul, o progreso-exito / -aviso / -peligro.
+   <meter low="70" high="90" optimum="100">: el color lo elige el navegador según el valor
+   (verde sobre high, amarillo entre low y high, rojo bajo low). */
+
+.progreso {
+  --progreso-color: var(--primario);
+  --progreso-pista: color-mix(in oklch, var(--progreso-color), transparent 80%);
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: var(--radio-total);
+  background: var(--progreso-pista);
+  overflow: hidden;
+}
+progress.progreso { appearance: none; }
+.progreso-exito { --progreso-color: var(--exito); }
+.progreso-aviso { --progreso-color: var(--aviso); }
+.progreso-peligro { --progreso-color: var(--peligro); }
+/* Cada pseudo-elemento en su propia regla: si un navegador no conoce uno, ignora la regla entera. */
+.progreso::-webkit-progress-bar { background: var(--progreso-pista); }
+.progreso::-webkit-progress-value { background: var(--progreso-color); border-radius: var(--radio-total); }
+.progreso::-moz-progress-bar { background: var(--progreso-color); border-radius: var(--radio-total); }
+meter.progreso { --progreso-pista: var(--secundario); }
+.progreso::-webkit-meter-bar { height: 8px; background: var(--progreso-pista); border: 0; border-radius: var(--radio-total); }
+.progreso::-webkit-meter-optimum-value { background: var(--exito); border-radius: var(--radio-total); }
+.progreso::-webkit-meter-suboptimum-value { background: var(--aviso); border-radius: var(--radio-total); }
+.progreso::-webkit-meter-even-less-good-value { background: var(--peligro); border-radius: var(--radio-total); }
+.progreso:-moz-meter-optimum::-moz-meter-bar { background: var(--exito); }
+.progreso:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--aviso); }
+.progreso:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--peligro); }
+.progreso::-moz-meter-bar { border-radius: var(--radio-total); }
+
+.progreso-fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: var(--letra-sm);
+}
+.progreso-fila > :first-child { font-weight: 500; }
+.progreso-fila > :last-child { color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+
+/* Barra dentro de una celda, con el porcentaje a la derecha */
+.progreso-celda { display: flex; align-items: center; gap: 10px; min-width: 9rem; }
+.progreso-celda output { min-width: 3.5em; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- Tabla editable (formularios 2 a 9) ----------
+   La misma .tabla con controles dentro de las celdas. Cada control lleva aria-label con su columna.
+   Filas que se agregan y quitan (app.js):
+   <tbody id="clases">…</tbody>
+   <template id="clases-fila"><tr>… <td class="celda-acciones"><button data-quitar-fila>…</button></td></tr></template>
+   <button type="button" data-agregar-fila="clases">Agregar fila</button>
+   Nombres con [] (name="campo[]") para que PHP reciba cada columna como arreglo. */
+
+.tabla-editable th { white-space: normal; }
+.tabla-editable td { padding: 6px 8px; vertical-align: top; white-space: normal; }
+.tabla-editable tbody th { vertical-align: top; padding-top: 14px; }
+.tabla-editable tbody tr:hover { background: none; }
+.tabla-editable :is(td, th) .control { min-width: 9rem; }
+.tabla-editable textarea.control { min-height: 2.25rem; padding-block: 6px; }
+.tabla-editable .celda-corta .control { min-width: 5rem; }
+.tabla-editable td.celda-acciones { vertical-align: top; padding-top: 8px; }
+.tabla-editable td:has(> input[type="checkbox"]) { vertical-align: middle; }
+.tabla-editable .control[type="number"] { font-variant-numeric: tabular-nums; }
+/* Totales alineados con el texto de los controles de arriba (celda 8px + borde 1px + control 12px) */
+.tabla-editable tfoot td { padding: 10px 8px 10px 21px; }
+
+.tabla .celda-centro { text-align: center; }
+.tabla .celda-numero { text-align: right; font-variant-numeric: tabular-nums; }
+.tabla input:is([type="checkbox"], [type="radio"]) {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  vertical-align: middle;
+  accent-color: var(--primario);
+}
+
+/* Encabezado de fila (<th scope="row">): texto normal, sin el fondo de la cabecera */
+.tabla tbody th { background: none; color: var(--texto); }
+/* Fila que separa grupos dentro de la misma tabla (condiciones / acciones) */
+.tabla tbody .fila-grupo th {
+  padding: 6px 12px;
+  background: var(--tenue);
+  color: var(--tenue-texto);
+  font-size: var(--letra-xs);
+  font-weight: 600;
+}
+/* Fila de totales */
+.tabla tfoot :is(th, td) {
+  background: var(--tenue);
+  color: var(--texto);
+  font-weight: 600;
+  border-top: 1px solid var(--borde);
+  border-bottom: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Valores cambiados (historial, RF-20) ----------
+   <del class="cambio">Alta</del> → <ins class="cambio">Media</ins>
+   Además del color, el anterior va tachado y cada uno en su propia columna. */
+
+del.cambio,
+ins.cambio {
+  padding: 1px 4px;
+  border-radius: var(--radio-sm);
+  color: var(--texto);
+}
+del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
+ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: none; }
+
+/* ---------- Lista de casillas con scroll (asignar miembros) ----------
+   <fieldset class="grupo"><legend>…</legend>
+     <div class="lista-opciones"><label class="opcion"><input type="checkbox"> Nombre <small>usuario</small></label>…</div>
+   </fieldset> */
+
+.lista-opciones {
+  display: flex;
+  flex-direction: column;
+  max-height: 15rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--entrada) transparent;
+  padding: 4px;
+  background: var(--fondo);
+  border: 1px solid var(--entrada);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-xs);
+}
+.lista-opciones .opcion { display: flex; padding: 6px 8px; border-radius: var(--radio-sm); }
+.lista-opciones .opcion:hover { background: var(--acento); color: var(--acento-texto); }
+.lista-opciones .opcion small { margin-left: auto; font-size: var(--letra-xs); color: var(--tenue-texto); }
+
+/* ---------- Lista de archivos (evidencias, RF-24) ----------
+   <ul class="archivos">
+     <li class="archivo">
+       <span class="archivo-icono">[ícono o <img alt="descripción">]</span>
+       <p class="archivo-nombre">…</p> <p class="archivo-detalle">PNG · 240 KB · 30/09/2026</p>
+       <div class="acciones">…</div>
+     </li>
+   </ul> */
+
+.archivos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+}
+.archivo {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--borde);
+}
+.archivo:last-child { border-bottom: 0; }
+.archivo-icono {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  border-radius: var(--radio-md);
+  background: var(--secundario);
+  color: var(--tenue-texto);
+}
+.archivo-icono img { width: 100%; height: 100%; object-fit: cover; }
+.archivo-nombre { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-sm); font-weight: 500; overflow-wrap: anywhere; }
+.archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+.archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: 4px; }
+
+/* ---------- Pantalla de acceso (login y registro) ----------
+   <main class="acceso">
+     <img class="acceso-logo" src="/Frame.svg" alt="Safeguard">
+     <section class="tarjeta">…formulario…</section>
+     <p class="acceso-pie">¿No tiene cuenta? <a href="/registro.php">Crear cuenta</a></p>
+   </main> */
+
+.acceso {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 20px;
+  padding: 24px 16px;
+  background: var(--tenue);
+}
+.acceso-logo { height: 32px; }
+/* El logo es negro: en tema oscuro se invierte para que se vea */
+:root[data-tema="dark"] .acceso-logo { filter: invert(1); }
+.acceso > .tarjeta { width: min(100%, 24rem); padding: 24px; box-shadow: var(--sombra-sm); }
+.acceso-pie { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); text-align: center; }
+
+.btn-bloque { width: 100%; }
+
+/* ---------- Impresión ----------
+   "Generar formulario" (RF-08 a RF-17) y los reportes (RF-23) se imprimen o se guardan
+   como PDF desde el navegador. <button data-imprimir> abre el diálogo de impresión (app.js).
+   .no-imprimir esconde algo al imprimir; .solo-impresion lo muestra solo en papel. */
+
+.solo-impresion { display: none; }
+
+/* ======================================================================
+   Celular y pantallas táctiles
+   ====================================================================== */
+
+/* Tabla como tarjetas: en pantallas angostas cada fila se apila y cada celda
+   muestra el nombre de su columna. Requiere data-columna="…" en cada <td>.
+   <table class="tabla tabla-tarjetas"> … <td data-columna="Estado">…</td> */
+@media (max-width: 40rem) {
+  .tabla-tarjetas thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .tabla-tarjetas,
+  .tabla-tarjetas tbody,
+  .tabla-tarjetas tr,
+  .tabla-tarjetas td {
+    display: block;
+  }
+  .tabla-tarjetas tr {
+    padding: 12px;
+    border-bottom: 1px solid var(--borde);
+  }
+  .tabla-tarjetas tbody tr:last-child { border-bottom: 0; }
+  .tabla-tarjetas td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 4px 0;
+    border: 0;
+    white-space: normal;
+    text-align: right;
+  }
+  .tabla-tarjetas td::before {
+    content: attr(data-columna);
+    flex-shrink: 0;
+    color: var(--tenue-texto);
+    font-weight: 500;
+    text-align: left;
+  }
+  .tabla-tarjetas .celda-larga { min-width: 0; }
+  .tabla-tarjetas .celda-acciones {
+    width: auto;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+  .tabla-tarjetas .celda-acciones::before { content: none; }
+
+  /* Filtros: búsqueda y botones a todo el ancho, los selects de dos en dos */
+  .filtros { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+  .filtros .campo-busqueda,
+  .filtros .acciones { grid-column: 1 / -1; }
+
+  /* Botones del encabezado alineados a la izquierda, debajo del título */
+  .encabezado > .acciones { justify-content: flex-start; }
+}
+
+/* Alertas con acción: en pantallas angostas la acción baja debajo del texto */
+@media (max-width: 30rem) {
+  .alerta-accion {
+    grid-column: contenido;
+    grid-row: auto;
+    margin: 8px 0 0;
+  }
+  .alerta:has(> .icono) .alerta-accion { margin-left: 10px; }
+}
+
+/* Pantallas táctiles: blancos más grandes para el dedo, y campos a 16px
+   para que el iPhone no haga zoom al tocar un campo. */
+@media (pointer: coarse) {
+  .btn { min-height: 2.5rem; }
+  .btn-icono { width: 2.5rem; min-height: 2.5rem; }
+  .btn-sm { min-height: 2.25rem; }
+  .paginacion a,
+  .paginacion span[aria-disabled] { min-width: 2.5rem; height: 2.5rem; }
+  .control { min-height: 2.5rem; font-size: 1rem; }
+  .opcion { min-height: 2rem; }
+}
+
+/* Filas editables como tarjetas: cada control debajo del nombre de su columna */
+@media (max-width: 40rem) {
+  .tabla-tarjetas tfoot { display: block; }
+  .tabla-tarjetas tbody th,
+  .tabla-tarjetas tfoot th {
+    display: block;
+    padding: 0 0 6px;
+    border: 0;
+    white-space: normal;
+  }
+  .tabla-tarjetas tfoot tr { background: var(--tenue); }
+  .tabla-tarjetas tfoot :is(th, td) { border: 0; }
+  .tabla-tarjetas.tabla-editable td:not(.celda-acciones) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 6px 0;
+    text-align: left;
+  }
+  .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
+}
+
+/* ======================================================================
+   Impresión: siempre en claro, sin navegación ni botones
+   ====================================================================== */
+
+@media print {
+  :root,
+  :root[data-tema] { color-scheme: light !important; }
+  body { background: #FFFFFF; }
+
+  .solo-impresion { display: block; }
+  .no-imprimir,
+  .btn,
+  .filtros,
+  .paginacion,
+  .tabla .celda-acciones,
+  .select::after { display: none !important; }
+  [data-tooltip]::after { display: none; }
+
+  .tarjeta,
+  .control,
+  .btn-secundario { box-shadow: none; }
+  .control::placeholder { color: transparent; }
+  .tabla-contenedor { overflow: visible; }
+  .vista-detalle { grid-template-columns: 1fr; }
+  /* En papel sobra ancho: los datos cortos vuelven a nombre y valor lado a lado */
+  .detalle-apilado { grid-template-columns: max-content 1fr; gap: 6px 20px; }
+  .detalle-apilado dd { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Sin esto el navegador quita los fondos y las insignias y barras quedan en blanco */
+  .insignia,
+  .progreso,
+  .tabla th,
+  .tabla tfoot td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Que no se corte una fila, un campo o una cifra entre dos hojas */
+  thead { display: table-header-group; }
+  tr,
+  .campo,
+  .cifra,
+  .alerta,
+  .archivo { break-inside: avoid; }
+  h1, h2, h3, .tarjeta-encabezado { break-after: avoid; }
+
+  @page { margin: 1.5cm; }
+}

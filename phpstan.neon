@@ -1,0 +1,10 @@
+parameters:
+    level: 6
+    paths:
+        - core
+        - models
+        - services
+        - controllers
+        - helpers
+    bootstrapFiles:
+        - tests/bootstrap.php
