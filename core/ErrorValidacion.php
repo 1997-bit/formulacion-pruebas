@@ -10,6 +10,6 @@ final class ErrorValidacion extends \RuntimeException
     /** @param array<string, string> $errores */
     public function __construct(public readonly array $errores)
     {
-        throw new \LogicException('Pendiente');
+        parent::__construct('Datos inválidos.');
     }
 }

@@ -7,4 +7,5 @@ namespace App\Core;
 // El usuario no puede hacer la operación. index.php responde 403.
 final class ErrorPermiso extends \RuntimeException
 {
+    protected $message = 'Sin permiso.';
 }
