@@ -13,6 +13,6 @@ final class Ruteador
         $rutas = require RAIZ . '/config/rutas.php';
         $camino = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-        return $rutas[strtoupper($metodo) . ' ' . $camino] ?? null;
+        return $rutas[$metodo . ' ' . $camino] ?? null;
     }
 }
