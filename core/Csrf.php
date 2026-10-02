@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Token contra CSRF para cada formulario POST.
+// Token contra CSRF para cada formulario POST. Uno por sesión.
 final class Csrf
 {
     public static function token(): string
     {
-        throw new \LogicException('Pendiente');
+        return $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
     }
 
     public static function valido(?string $token): bool
     {
-        throw new \LogicException('Pendiente');
+        return $token !== null && isset($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $token);
     }
 }
