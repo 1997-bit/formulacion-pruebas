@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Core;
+
+// El usuario no puede hacer la operación. index.php responde 403.
+final class ErrorPermiso extends \RuntimeException
+{
+}
