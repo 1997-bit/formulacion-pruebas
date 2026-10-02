@@ -24,7 +24,7 @@ final class Conexion
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_EMULATE_PREPARES => false,
             ]);
-            // Hora de Panama 
+            // Hora de Panama
             self::$pdo->exec("SET time_zone = '" . date('P') . "'");
         }
 
