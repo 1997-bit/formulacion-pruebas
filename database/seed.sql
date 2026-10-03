@@ -669,3 +669,24 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '"Impreso el" sale al final, debajo de los datos del caso.',
         '"Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
         2, 2, 0, 0, NULL, 2, '2026-10-03 21:12:00');
+
+-- RF-09: formulario 2 con las reglas del código. RF-01 de Biblioteca solo lo ven admin y Gloria.
+INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, clases_invalidas, valores_representativos, resultado_esperado) VALUES
+    (10, 1, 'Usuario', 'De 1 a 30 caracteres y no existe.', 'Vacío; más de 30 caracteres; ya existe.', 'prueba9, (vacío), 31 letras a, gloria',
+        'Crea prueba9. Rechaza los demás con "Es obligatorio.", "Máximo 30 caracteres." y "Ese usuario ya existe."'),
+    (10, 2, 'Contraseña', '8 caracteres o más.', 'Menos de 8 caracteres.', 'Abcdef12, Abcdef1',
+        'Acepta Abcdef12. Rechaza Abcdef1 con "Mínimo 8 caracteres."'),
+    (10, 3, 'Nombre', 'De 1 a 100 caracteres.', 'Vacío; más de 100 caracteres.', 'Prueba Nueve, (vacío), 101 letras a',
+        'Acepta Prueba Nueve. Rechaza los demás junto al campo.'),
+    (2, 1, 'Archivo de captura', 'png, jpg o jpeg que de verdad es imagen.', 'Sin archivo; otra extensión; texto con extensión png.', 'bien.png, (sin archivo), nota.php, texto.png',
+        'Acepta bien.png. Sin archivo: "Es obligatorio." nota.php y texto.png: "Solo PNG, JPG, JPEG."'),
+    (2, 2, 'Tamaño', 'Hasta 5 MB.', 'Más de 5 MB.', '5 242 880 bytes, 5 242 881 bytes',
+        'Acepta 5 MB exactos. Rechaza 5 MB y 1 byte con "Máximo 5 MB."'),
+    (2, 3, 'Enlace', 'URL que empieza con http:// o https://.', 'Texto que no es URL; otro esquema.', 'https://github.com, github, ftp://x.org',
+        'Acepta la URL https. Rechaza los demás con "Escriba un enlace que empiece con http:// o https://."'),
+    (1, 1, 'Usuario y contraseña', 'Usuario existente con su contraseña.', 'Usuario que no existe; contraseña incorrecta.', 'gloria / correcta, noexiste / Clave-mala1, gloria / Clave-mala1',
+        'Entra con la primera. Las otras dos muestran el mismo "Usuario o contraseña incorrectos."'),
+    (3, 1, 'Préstamos activos', 'De 0 a 2.', '3 o más.', '0, 2, 3',
+        'Presta con 0 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".'),
+    (3, 2, 'Multa', 'Sin multa pendiente.', 'Multa sin pagar.', 'RD$0, RD$50',
+        'Presta sin multa. Con RD$50 no presta y dice "Tiene una multa sin pagar".');
