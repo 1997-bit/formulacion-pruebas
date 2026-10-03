@@ -9,18 +9,24 @@ final class Paginacion
 {
     public const POR_PAGINA = 20;
 
-    public function __construct(public readonly int $total, public readonly int $pagina)
+    public readonly int $total;
+    public readonly int $pagina;
+
+    // Una página fuera de rango se lleva a la primera o a la última.
+    public function __construct(int $total, int $pagina)
     {
-        throw new \LogicException('Pendiente');
+        $this->total = max(0, $total);
+        $this->pagina = min(max(1, $pagina), $this->paginas());
     }
 
     public function offset(): int
     {
-        throw new \LogicException('Pendiente');
+        return ($this->pagina - 1) * self::POR_PAGINA;
     }
 
+    // Una lista vacía tiene una página.
     public function paginas(): int
     {
-        throw new \LogicException('Pendiente');
+        return max(1, (int) ceil($this->total / self::POR_PAGINA));
     }
 }

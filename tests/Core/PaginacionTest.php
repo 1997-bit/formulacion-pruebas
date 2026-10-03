@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Core;
+
+use App\Core\Paginacion;
+use PHPUnit\Framework\TestCase;
+
+final class PaginacionTest extends TestCase
+{
+    public function testCuentaPaginas(): void
+    {
+        $this->assertSame(1, (new Paginacion(0, 1))->paginas());
+        $this->assertSame(1, (new Paginacion(20, 1))->paginas());
+        $this->assertSame(2, (new Paginacion(21, 1))->paginas());
+        $this->assertSame(3, (new Paginacion(57, 1))->paginas());
+    }
+
+    public function testOffset(): void
+    {
+        $this->assertSame(0, (new Paginacion(57, 1))->offset());
+        $this->assertSame(20, (new Paginacion(57, 2))->offset());
+        $this->assertSame(40, (new Paginacion(57, 3))->offset());
+    }
+
+    public function testPaginaFueraDeRango(): void
+    {
+        $this->assertSame(1, (new Paginacion(57, 0))->pagina);
+        $this->assertSame(1, (new Paginacion(57, -4))->pagina);
+        $this->assertSame(3, (new Paginacion(57, 99))->pagina);
+        $this->assertSame(1, (new Paginacion(0, 5))->pagina);
+    }
+}
