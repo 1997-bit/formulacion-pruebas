@@ -11,13 +11,13 @@ use App\Helpers\Html;
  * @var array<string, string> $datos
  */
 
-$campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vista::capturar('partials/campo', [
+$campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vista::capturar('partials/campo', $extra + [
     'nombre' => $nombre,
     'etiqueta' => $etiqueta,
     'valor' => $datos[$nombre] ?? '',
     'error' => $errores[$nombre] ?? '',
     'requerido' => true,
-] + $extra);
+]);
 $opciones = '';
 foreach ($proyectos as $p) {
     $elegido = (string) $p['id'] === ($datos['proyecto_id'] ?? '') ? ' selected' : '';
