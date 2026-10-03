@@ -106,8 +106,9 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '1. Registrar un caso con la entrada y el resto de campos válidos.\n2. Abrir el caso guardado.\n3. Pulsar Editar y revisar los dos campos.',
         'El caso muestra Plataforma "Web · 0" y Precondiciones "0". Al editar, los dos campos tienen 0.',
         '2026-10-03', '2026-10-05',
-        0, NULL, NULL,
-        2, '2026-10-03 16:15:00', NULL, NULL),
+        2, 'El caso muestra Plataforma "Web" sin el 0 y no sale Precondiciones. Al editar, los dos campos están vacíos.',
+        'En la base, entorno y precondiciones quedaron NULL. Ver BUG-001.',
+        2, '2026-10-03 16:15:00', 2, '2026-10-03 20:10:00'),
     (8, 1, 6, 'SIS-004', 3, 8, 'Historial', 1,
         'Linux, Firefox, PHP 8.5, MariaDB',
         'Verificar que cualquier miembro del proyecto ve el historial de un caso, aunque no pueda editarlo.',
@@ -116,8 +117,9 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '1. Abrir SIS-001.\n2. Buscar la sección Historial.',
         'Sale la sección Historial con los cambios de SIS-001, y no sale el botón Editar.',
         '2026-10-03', '2026-10-05',
-        0, NULL, NULL,
-        2, '2026-10-03 16:20:00', NULL, NULL),
+        2, 'El detalle de SIS-001 no tiene la sección Historial. /casos/editar?id=1, donde está, responde 403 para pan.',
+        'El historial solo se ve al editar, así que quien no puede editar no lo ve. Ver BUG-002.',
+        2, '2026-10-03 16:20:00', 3, '2026-10-03 20:20:00'),
     (9, 1, 7, 'SIS-005', 3, 1, 'Casos', 1,
         'Linux, Firefox, PHP 8.5, MariaDB',
         'Verificar que los filtros de la lista de casos se combinan.',
@@ -607,8 +609,44 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'SIS-001 conserva su código. El caso nuevo sale como SYS-001.',
         '2026-10-05', '2026-10-09',
         0, NULL, NULL,
-        3, '2026-10-03 19:29:00', NULL, NULL);
+        3, '2026-10-03 19:29:00', NULL, NULL),
+    (58, 1, 13, 'SEG-013', 9, 4, 'Acceso', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que un cambio de rol se aplica a una sesión ya abierta.',
+        'Pan es admin y tiene la sesión abierta en un navegador. Admin en otro navegador.',
+        'Usuario: pan\nRol nuevo: tester\nURL: /admin/usuarios',
+        '1. Como admin, editar a pan y cambiar el rol a tester.\n2. Sin salir, en la sesión de pan abrir la URL.',
+        'La URL responde 403 y el menú de pan ya no tiene Usuarios ni Proyectos.',
+        '2026-10-03', '2026-10-05',
+        2, 'La URL responde 200 y pan sigue usando Usuarios y Proyectos hasta que sale.',
+        'El rol se guarda en la sesión al entrar y no se vuelve a leer. Ver BUG-003.',
+        2, '2026-10-03 20:30:00', 2, '2026-10-03 20:40:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
-    (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00');
+    (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00'),
+    (7, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'Línea de campos(): entorno y precondiciones con ?: null, que trata "0" como vacío.', 2, '2026-10-03 20:10:00'),
+    (8, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/casos/resultado.php', 'Vista del detalle: no incluye el historial.', 3, '2026-10-03 20:20:00'),
+    (58, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Sesion.php', 'Sesion::usuario() devuelve el rol guardado al entrar.', 2, '2026-10-03 20:40:00');
+
+-- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
+INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
+    severidad, prioridad, estado, es_stopper, asignado_id, creado_por, creado_en) VALUES
+    (1, 7, 'BUG-001', 'Un 0 en Entorno o Precondiciones se guarda vacío', 'Casos',
+        'CasoServicio::campos() usa ?: null y PHP trata "0" como falso. Pasa igual con Resultado obtenido y Observaciones al anotar.',
+        '1. Registrar un caso con Entorno 0 y Precondiciones 0.\n2. Abrir el caso.',
+        'El caso muestra Plataforma "Web · 0" y Precondiciones "0".',
+        'Plataforma "Web" y sin Precondiciones; en la base quedan NULL.',
+        2, 2, 0, 0, 2, 2, '2026-10-03 20:12:00'),
+    (1, 8, 'BUG-002', 'El historial no se ve sin permiso de editar', 'Historial',
+        'El historial solo sale en /casos/editar. Un miembro que no creó el caso recibe 403 ahí y no tiene otro lugar donde verlo.',
+        '1. Entrar como pan.\n2. Abrir SIS-001 y buscar Historial.',
+        'Sale la sección Historial en el detalle del caso.',
+        'No sale. /casos/editar?id=1 responde 403.',
+        2, 2, 0, 0, 3, 3, '2026-10-03 20:22:00'),
+    (1, 58, 'BUG-003', 'Quitar el rol admin no afecta la sesión abierta', 'Acceso',
+        'El rol se copia a la sesión al entrar y nunca se vuelve a leer de la base (RNF-02). Un usuario eliminado también sigue dentro hasta salir.',
+        '1. Pan entra con rol admin.\n2. Admin le cambia el rol a tester.\n3. Pan abre /admin/usuarios sin salir.',
+        'Responde 403.',
+        'Responde 200 y pan puede crear y borrar usuarios.',
+        4, 3, 0, 1, 2, 2, '2026-10-03 20:42:00');
