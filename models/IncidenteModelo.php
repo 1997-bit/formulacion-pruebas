@@ -5,9 +5,44 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Config\Conexion;
+use App\Core\Paginacion;
 
 final class IncidenteModelo
 {
+    // Tester: solo sus proyectos (RF-05).
+    private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = i.proyecto_id AND m.usuario_id = ?))';
+
+    public static function contar(int $usuarioId, bool $admin): int
+    {
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i WHERE ' . self::PERMITIDO);
+        $sql->execute([(int) $admin, $usuarioId]);
+
+        return (int) $sql->fetchColumn();
+    }
+
+    /**
+     * Abiertos primero; luego lo más grave.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function listar(int $usuarioId, bool $admin, int $offset): array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper,
+                    c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
+             FROM incidentes i
+             JOIN casos_prueba c ON c.id = i.caso_id
+             JOIN proyectos p ON p.id = i.proyecto_id
+             LEFT JOIN usuarios a ON a.id = i.asignado_id
+             WHERE ' . self::PERMITIDO . '
+             ORDER BY i.estado = 2, i.severidad DESC, p.nombre, i.codigo
+             LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
+        );
+        $sql->execute([(int) $admin, $usuarioId]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** @return list<array<string, mixed>> */
     public static function deCaso(int $casoId): array
     {

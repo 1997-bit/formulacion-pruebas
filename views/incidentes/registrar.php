@@ -70,7 +70,7 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
       <a class="btn btn-primario" href="/casos/registrar"><?= Icono::svg('plus') ?> Registrar caso</a>
     </div>
   <?php else: ?>
-    <form class="tarjeta pila" method="get" action="/formularios/incidentes">
+    <form class="tarjeta pila" method="get" action="/formularios/incidentes/registrar">
       <div class="campo">
         <label for="f-caso">Caso de prueba <span class="requerido" aria-hidden="true">*</span></label>
         <div class="select">
@@ -95,7 +95,7 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
 <?php else: ?>
   <div class="pila">
     <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
-    <form class="tarjeta pila" method="post" action="/formularios/incidentes">
+    <form class="tarjeta pila" method="post" action="/formularios/incidentes/registrar">
       <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
       <input type="hidden" name="caso_id" value="<?= (int) $caso['id'] ?>">
       <div class="campos">

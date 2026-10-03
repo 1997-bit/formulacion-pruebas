@@ -28,7 +28,7 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
     <h1><?= Html::e($caso['modulo']) ?></h1>
   </div>
   <div class="acciones">
-    <a class="btn btn-secundario" href="/formularios/incidentes?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
+    <a class="btn btn-secundario" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
       <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>

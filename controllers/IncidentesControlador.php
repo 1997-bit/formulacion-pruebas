@@ -20,11 +20,23 @@ final class IncidentesControlador
         'resultado_esperado', 'resultado_obtenido', 'estado', 'asignado_id', 'es_stopper',
     ];
 
+    public function listar(): void
+    {
+        [$incidentes, $paginacion] = IncidenteServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
+        Vista::pagina('incidentes/listar', [
+            'titulo' => 'Incidentes',
+            'incidentes' => $incidentes,
+            'paginacion' => $paginacion,
+            'flash' => Sesion::tomar('flash'),
+            'migas' => [['texto' => 'Incidentes'], ['texto' => 'Listar']],
+        ]);
+    }
+
     // Sin caso: primero se elige. Con caso: el formulario 10, con lo del caso ya puesto.
     public function registrar(): void
     {
         $usuario = Sesion::usuario();
-        $migas = [['texto' => 'Incidentes'], ['texto' => 'Registrar']];
+        $migas = [['texto' => 'Incidentes', 'ruta' => '/formularios/incidentes'], ['texto' => 'Registrar']];
         if (!isset($_GET['caso'])) {
             Vista::pagina('incidentes/registrar', [
                 'titulo' => 'Registrar incidente',
@@ -50,7 +62,7 @@ final class IncidentesControlador
                 'estado' => '0',
             ],
             'migas' => [
-                ['texto' => 'Incidentes'],
+                ['texto' => 'Incidentes', 'ruta' => '/formularios/incidentes'],
                 ['texto' => $caso['codigo'], 'ruta' => '/casos/resultado?id=' . $caso['id']],
                 ['texto' => 'Registrar'],
             ],
@@ -68,7 +80,7 @@ final class IncidentesControlador
         try {
             $codigo = IncidenteServicio::registrar($casoId, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
-            Respuesta::errores($e->errores, $datos, '/formularios/incidentes?caso=' . $casoId);
+            Respuesta::errores($e->errores, $datos, '/formularios/incidentes/registrar?caso=' . $casoId);
         }
         Respuesta::exito("Incidente {$codigo} registrado.", '/casos/resultado?id=' . $casoId);
     }
