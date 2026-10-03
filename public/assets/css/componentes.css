@@ -809,7 +809,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
    <main class="acceso">
      <img class="acceso-logo" src="/Frame.svg" alt="Safeguard">
      <section class="tarjeta">…formulario…</section>
-     <p class="acceso-pie">¿No tiene cuenta? <a href="/registro.php">Crear cuenta</a></p>
+     <p class="acceso-pie">¿No tiene cuenta? <a href="/registro">Crear cuenta</a></p>
    </main> */
 
 .acceso {

@@ -9,7 +9,7 @@ return [
     [
         'grupo' => 'Plataforma',
         'elementos' => [
-            ['texto' => 'Panel', 'icono' => 'layout-dashboard', 'ruta' => '/dashboard.php'],
+            ['texto' => 'Panel', 'icono' => 'layout-dashboard', 'ruta' => '/dashboard'],
             ['texto' => 'Casos de prueba', 'icono' => 'clipboard-list', 'hijos' => [
                 ['texto' => 'Listar', 'ruta' => '/casos/listar.php'],
                 ['texto' => 'Registrar', 'ruta' => '/casos/registrar.php'],
