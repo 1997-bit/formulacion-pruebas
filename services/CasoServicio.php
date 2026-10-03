@@ -14,7 +14,8 @@ use App\Models\EvidenciaModelo;
 final class CasoServicio
 {
     // RNF-03: tipos permitidos y tamaño máximo de la evidencia.
-    private const EXTENSIONES = ['png', 'jpg', 'jpeg', 'pdf', 'txt', 'log'];
+    // Extensión => tipo de evidencia (config/catalogos.php). El enlace es el tipo 4.
+    private const EXTENSIONES = ['png' => 1, 'jpg' => 1, 'jpeg' => 1, 'txt' => 2, 'log' => 2, 'pdf' => 3];
     private const MAX_BYTES = 5 * 1024 * 1024;
 
     /**
@@ -46,6 +47,8 @@ final class CasoServicio
             ->regla('subtecnica', $d['tecnica'] === '' || $d['subtecnica'] === '' || ((int) $d['subtecnica'] > 10 ? '2' : '1') === $d['tecnica'], 'No es de la técnica elegida.')
             ->requerido('modulo', $d['modulo'])
             ->regla('modulo', mb_strlen($d['modulo']) <= 100, 'Máximo 100 caracteres.')
+            ->requerido('plataforma', $d['plataforma'])
+            ->catalogo('plataforma', 'plataforma', $d['plataforma'])
             ->regla('entorno', mb_strlen($d['entorno']) <= 255, 'Máximo 255 caracteres.')
             ->requerido('objetivo', $d['objetivo'])
             ->requerido('entrada', $d['entrada'])
@@ -62,7 +65,7 @@ final class CasoServicio
             ->regla('evidencia', !$hayArchivo || !in_array($archivo['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true), 'Máximo 5 MB.')
             ->regla('evidencia', !$hayArchivo || $archivo['error'] !== UPLOAD_ERR_OK || $archivo['size'] <= self::MAX_BYTES, 'Máximo 5 MB.')
             ->regla('evidencia', !$hayArchivo || $archivo['error'] === UPLOAD_ERR_OK, 'No se pudo subir el archivo.')
-            ->regla('evidencia', !$hayArchivo || in_array($extension, self::EXTENSIONES, true), 'Solo PNG, JPG, PDF, TXT o LOG.')
+            ->regla('evidencia', !$hayArchivo || isset(self::EXTENSIONES[$extension]), 'Solo PNG, JPG, PDF, TXT o LOG.')
             ->regla('evidencia_enlace', $d['evidencia_enlace'] === '' || (filter_var($d['evidencia_enlace'], FILTER_VALIDATE_URL) && preg_match('#^https?://#i', $d['evidencia_enlace'])), 'Escriba un enlace que empiece con http:// o https://.')
             ->regla('evidencia_enlace', mb_strlen($d['evidencia_enlace']) <= 500, 'Máximo 500 caracteres.')
             ->requerido('evidencia_descripcion', $d['evidencia_descripcion'])
@@ -86,6 +89,7 @@ final class CasoServicio
                 'tipo_prueba' => (int) $d['tipo_prueba'],
                 'subtecnica' => (int) $d['subtecnica'],
                 'modulo' => $d['modulo'],
+                'plataforma' => (int) $d['plataforma'],
                 'entorno' => $d['entorno'] ?: null,
                 'objetivo' => $d['objetivo'],
                 'precondiciones' => $d['precondiciones'] ?: null,
@@ -105,10 +109,10 @@ final class CasoServicio
                 if (!move_uploaded_file($archivo['tmp_name'], $destino)) {
                     throw new \RuntimeException('No se pudo guardar la evidencia.');
                 }
-                EvidenciaModelo::crear($casoId, $guardado, mb_substr($archivo['name'], 0, 255), null, $d['evidencia_descripcion'], $usuario['id']);
+                EvidenciaModelo::crear($casoId, self::EXTENSIONES[$extension], $guardado, mb_substr($archivo['name'], 0, 255), null, $d['evidencia_descripcion'], $usuario['id']);
             }
             if ($d['evidencia_enlace'] !== '') {
-                EvidenciaModelo::crear($casoId, null, null, $d['evidencia_enlace'], $d['evidencia_descripcion'], $usuario['id']);
+                EvidenciaModelo::crear($casoId, 4, null, null, $d['evidencia_enlace'], $d['evidencia_descripcion'], $usuario['id']);
             }
             $pdo->commit();
         } catch (\Throwable $e) {

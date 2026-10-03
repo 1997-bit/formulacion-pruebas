@@ -8,12 +8,12 @@ use App\Config\Conexion;
 
 final class EvidenciaModelo
 {
-    public static function crear(int $casoId, ?string $archivo, ?string $nombreOriginal, ?string $enlace, string $descripcion, int $usuarioId): int
+    public static function crear(int $casoId, int $tipo, ?string $archivo, ?string $nombreOriginal, ?string $enlace, string $descripcion, int $usuarioId): int
     {
         $sql = Conexion::pdo()->prepare(
-            'INSERT INTO evidencias (caso_id, archivo, nombre_original, enlace, descripcion, subido_por) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO evidencias (caso_id, tipo, archivo, nombre_original, enlace, descripcion, subido_por) VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
-        $sql->execute([$casoId, $archivo, $nombreOriginal, $enlace, $descripcion, $usuarioId]);
+        $sql->execute([$casoId, $tipo, $archivo, $nombreOriginal, $enlace, $descripcion, $usuarioId]);
 
         return (int) Conexion::pdo()->lastInsertId();
     }
