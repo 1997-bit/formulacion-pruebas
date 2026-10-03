@@ -21,7 +21,8 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (4, 1, 'RF-04', 'Registrar caso con el formulario 1. Los campos opcionales pueden quedar vacíos.', 0),
     (5, 1, 'RF-06', 'Editar caso: admin edita cualquiera; tester solo los que creó.', 0),
     (6, 1, 'RF-20', 'Historial: cada cambio de un caso guarda campo, valor anterior, valor nuevo, usuario y fecha.', 0),
-    (7, 1, 'RF-22', 'Consultar resultados: la lista de casos filtra por proyecto, requerimiento y estado.', 0);
+    (7, 1, 'RF-22', 'Consultar resultados: la lista de casos filtra por proyecto, requerimiento y estado.', 0),
+    (8, 1, 'RF-05', 'Listar casos: admin ve todos; tester ve los de sus proyectos.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
@@ -156,7 +157,17 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'Sale "Ningún caso coincide con los filtros" con el formulario de filtros arriba. Limpiar filtros vuelve a /casos/listar con todos los casos.',
         '2026-10-03', '2026-10-07',
         0, NULL, NULL,
-        2, '2026-10-03 17:20:00', NULL, NULL);
+        2, '2026-10-03 17:20:00', NULL, NULL),
+    (14, 1, 8, 'SIS-009', 3, 1, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que admin ve los casos de todos los proyectos y un tester solo los de sus proyectos.',
+        'Pan solo es miembro de Formulación de pruebas. Admin no es miembro de ninguno.',
+        'Usuarios: admin, pan',
+        '1. Entrar como admin y abrir Casos de prueba.\n2. Entrar como pan y abrir Casos de prueba.',
+        'Admin ve casos de los dos proyectos, incluido INT-001 de Biblioteca escolar. Pan no ve ningún caso de Biblioteca escolar. En los dos, ordenados por proyecto y código.',
+        '2026-10-03', '2026-10-07',
+        0, NULL, NULL,
+        3, '2026-10-03 17:25:00', NULL, NULL);
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
