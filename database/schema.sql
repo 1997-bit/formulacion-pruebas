@@ -49,7 +49,7 @@ CREATE TABLE casos_prueba (
     requerimiento_id INT UNSIGNED NOT NULL,
     codigo VARCHAR(10) NOT NULL, -- sigla del tipo + consecutivo: SIS-001
     tipo_prueba TINYINT UNSIGNED NOT NULL, -- 1 UNI … 9 SEG
-    subtecnica TINYINT UNSIGNED NOT NULL, -- 1 a 3 caja negra, 4 a 8 caja blanca
+    subtecnica TINYINT UNSIGNED NOT NULL, -- 1 a 10 caja negra, 11 a 20 caja blanca
     modulo VARCHAR(100) NOT NULL,
     objetivo TEXT NOT NULL,
     precondiciones TEXT NULL,
