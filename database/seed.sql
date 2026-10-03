@@ -670,22 +670,57 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '"Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
         2, 2, 0, 0, NULL, 2, '2026-10-03 21:12:00');
 
--- RF-09: formulario 2 con las reglas del código. RF-01 de Biblioteca solo lo ven admin y Gloria.
+-- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
+-- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
 INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, clases_invalidas, valores_representativos, resultado_esperado, guardado_por, guardado_en) VALUES
+    -- RF-01 Iniciar sesión: AccesoServicio::entrar
+    (1, 1, 'Usuario', 'Existe; los espacios de los lados se quitan.', 'No existe; vacío.', 'gloria, '' gloria '', noexiste, (vacío)',
+        'Entra con gloria y con '' gloria ''. Con noexiste sale "Usuario o contraseña incorrectos." Vacío no se envía: el campo es obligatorio.', 2, '2026-10-03 21:40:00'),
+    (1, 2, 'Contraseña', 'La del usuario.', 'Otra contraseña; vacía.', 'gloria1234, Clave-mala1, (vacía)',
+        'Entra con gloria1234. Clave-mala1 da el mismo mensaje que un usuario que no existe. Vacía no se envía.', 2, '2026-10-03 21:40:00'),
+    -- RF-02 Crear cuenta: UsuarioServicio
     (10, 1, 'Usuario', 'De 1 a 30 caracteres y no existe.', 'Vacío; más de 30 caracteres; ya existe.', 'prueba9, (vacío), 31 letras a, gloria',
         'Crea prueba9. Rechaza los demás con "Es obligatorio.", "Máximo 30 caracteres." y "Ese usuario ya existe."', 3, '2026-10-03 21:30:00'),
     (10, 2, 'Contraseña', '8 caracteres o más.', 'Menos de 8 caracteres.', 'Abcdef12, Abcdef1',
         'Acepta Abcdef12. Rechaza Abcdef1 con "Mínimo 8 caracteres."', 3, '2026-10-03 21:30:00'),
-    (10, 3, 'Nombre', 'De 1 a 100 caracteres.', 'Vacío; más de 100 caracteres.', 'Prueba Nueve, (vacío), 101 letras a',
-        'Acepta Prueba Nueve. Rechaza los demás junto al campo.', 3, '2026-10-03 21:30:00'),
+    (10, 3, 'Nombre completo', 'De 1 a 100 caracteres.', 'Vacío; más de 100 caracteres.', 'Prueba Nueve, (vacío), 101 letras a',
+        'Acepta Prueba Nueve. Rechaza los demás con "Es obligatorio." y "Máximo 100 caracteres."', 3, '2026-10-03 21:30:00'),
+    -- RNF-03 Evidencias: Subida y CasoServicio::validarResultado
     (2, 1, 'Archivo de captura', 'png, jpg o jpeg que de verdad es imagen.', 'Sin archivo; otra extensión; texto con extensión png.', 'bien.png, (sin archivo), nota.php, texto.png',
         'Acepta bien.png. Sin archivo: "Es obligatorio." nota.php y texto.png: "Solo PNG, JPG, JPEG."', 3, '2026-10-03 21:35:00'),
-    (2, 2, 'Tamaño', 'Hasta 5 MB.', 'Más de 5 MB.', '5 242 880 bytes, 5 242 881 bytes',
+    (2, 2, 'Tamaño del archivo', 'Hasta 5 MB.', 'Más de 5 MB.', '5 242 880 bytes, 5 242 881 bytes',
         'Acepta 5 MB exactos. Rechaza 5 MB y 1 byte con "Máximo 5 MB."', 3, '2026-10-03 21:35:00'),
-    (2, 3, 'Enlace', 'URL que empieza con http:// o https://.', 'Texto que no es URL; otro esquema.', 'https://github.com, github, ftp://x.org',
-        'Acepta la URL https. Rechaza los demás con "Escriba un enlace que empiece con http:// o https://."', 3, '2026-10-03 21:35:00'),
-    (1, 1, 'Usuario y contraseña', 'Usuario existente con su contraseña.', 'Usuario que no existe; contraseña incorrecta.', 'gloria / correcta, noexiste / Clave-mala1, gloria / Clave-mala1',
-        'Entra con la primera. Las otras dos muestran el mismo "Usuario o contraseña incorrectos."', 2, '2026-10-03 21:40:00'),
+    (2, 3, 'Enlace', 'URL que empieza con http:// o https://, hasta 500 caracteres.', 'Texto que no es URL; otro esquema; más de 500 caracteres.', 'https://github.com, github, ftp://x.org, URL de 501',
+        'Acepta la URL https. Rechaza los demás con "Escriba un enlace que empiece con http:// o https://." o "Máximo 500 caracteres."', 3, '2026-10-03 21:35:00'),
+    (2, 4, 'Descripción de la evidencia', 'De 1 a 255 caracteres.', 'Vacía; más de 255 caracteres.', 'Captura del mensaje, (vacía), 256 letras a',
+        'Acepta la primera. Rechaza las demás junto al campo: es el texto alternativo (RNF-07).', 3, '2026-10-03 21:35:00'),
+    -- RF-04 Registrar caso: CasoServicio::validarCaso
+    (4, 1, 'Tipo de prueba', 'Clave del catálogo, de 1 a 9.', 'Vacío; fuera del catálogo.', '3, (vacío), 10, x',
+        'Acepta 3 (Sistema). Vacío: "Es obligatorio." 10 y x: "Valor no válido."', 2, '2026-10-03 21:50:00'),
+    (4, 2, 'Módulo', 'De 1 a 100 caracteres.', 'Vacío; más de 100 caracteres.', 'Acceso, (vacío), 101 letras a',
+        'Acepta Acceso. Rechaza los demás con "Es obligatorio." y "Máximo 100 caracteres."', 2, '2026-10-03 21:50:00'),
+    (4, 3, 'Entorno', 'Vacío o hasta 255 caracteres, incluido 0.', 'Más de 255 caracteres.', '(vacío), 0, Linux y Firefox, 256 letras a',
+        'Acepta vacío, 0 y Linux y Firefox; el 0 se guarda como 0 (ver BUG-001). Rechaza 256 con "Máximo 255 caracteres."', 2, '2026-10-03 21:50:00'),
+    (4, 4, 'Fecha de inicio', 'Fecha real AAAA-MM-DD.', 'Vacía; día que no existe; otro formato.', '2026-10-05, (vacía), 2026-02-29, 2026-2-28',
+        'Acepta 2026-10-05. Vacía: "Es obligatorio." Las otras: "Fecha inválida."', 2, '2026-10-03 21:50:00'),
+    (4, 5, 'Fecha final', 'Igual o después de la de inicio.', 'Antes de la de inicio; vacía.', 'Inicio 2026-10-05: 2026-10-05, 2026-10-09, 2026-10-04',
+        'Acepta el mismo día y después. 2026-10-04: "No puede ser anterior a la fecha de inicio."', 2, '2026-10-03 21:50:00'),
+    -- RF-24 Anotar resultado: CasoServicio::validarResultado
+    (9, 1, 'Estado', 'Pendiente, OK o FAULT (0, 1 o 2).', 'Vacío; fuera del catálogo.', '0, 1, 2, 3',
+        'Acepta 0, 1 y 2. Con 3: "Valor no válido."', 3, '2026-10-03 21:55:00'),
+    (9, 2, 'Resultado obtenido y observaciones', 'Con Pendiente, vacíos o llenos. Con OK o FAULT, llenos.', 'OK o FAULT con alguno vacío.', 'Pendiente vacío, OK lleno, OK vacío, FAULT vacío',
+        'Los dos primeros se guardan. OK y FAULT vacíos: "Es obligatorio con OK o FAULT."', 3, '2026-10-03 21:55:00'),
+    (9, 3, 'Evidencias', 'Con OK o FAULT, una nueva o una que ya tiene. Con Pendiente, ninguna.', 'OK o FAULT sin ninguna evidencia.', 'OK con enlace, FAULT con evidencia previa, OK sin nada',
+        'Los dos primeros se guardan. OK sin nada: "Con OK o FAULT hace falta al menos una."', 3, '2026-10-03 21:55:00'),
+    -- RF-22 Consultar resultados: filtros de /casos/listar
+    (7, 1, 'Filtro de estado', 'Vacío (Todos) o 0, 1, 2.', 'Fuera del catálogo; no numérico.', '(vacío), 2, 3, x',
+        'Vacío y 2 filtran. 3 y x no filtran: sale la lista completa sin error y Estado queda en Todos.', 2, '2026-10-03 22:00:00'),
+    (7, 2, 'Filtro de proyecto', 'Vacío o un proyecto del usuario.', 'Proyecto donde no es miembro; texto.', '(vacío), 1, 2 para pan, 1 OR 1=1',
+        'Vacío y 1 filtran. Con 2, pan ve "Ningún caso coincide con los filtros". 1 OR 1=1 no rompe la consulta.', 2, '2026-10-03 22:00:00'),
+    -- RNF-09 Desempeño: Paginacion
+    (14, 1, 'Página', 'De 1 a la última.', 'Menor que 1; mayor que la última; no numérica.', '1, 2, 0, 999, x',
+        '1 y 2 muestran su página. 0 y x muestran la primera; 999, la última. Nunca hay error.', 2, '2026-10-03 22:05:00'),
+    -- RF-01 de Biblioteca escolar: caso INT-001
     (3, 1, 'Préstamos activos', 'De 0 a 2.', '3 o más.', '0, 2, 3',
         'Presta con 0 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 21:45:00'),
     (3, 2, 'Multa', 'Sin multa pendiente.', 'Multa sin pagar.', 'RD$0, RD$50',
