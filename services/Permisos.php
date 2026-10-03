@@ -33,8 +33,17 @@ final class Permisos
     public static function exigirEditarCaso(array $usuario, array $caso): void
     {
         self::exigirMiembro($usuario, $caso['proyecto_id']);
-        if ($usuario['rol'] !== 1 && $caso['creado_por'] !== $usuario['id']) {
+        if (!self::puedeEditarCaso($usuario, $caso)) {
             throw new ErrorPermiso();
         }
+    }
+
+    /**
+     * @param array<string, mixed> $usuario
+     * @param array<string, mixed> $caso
+     */
+    public static function puedeEditarCaso(array $usuario, array $caso): bool
+    {
+        return $usuario['rol'] === 1 || $caso['creado_por'] === $usuario['id'];
     }
 }
