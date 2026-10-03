@@ -1,7 +1,6 @@
-/* Componentes de la interfaz. Requiere tokens.css y base.css.
-   Todo usa controles nativos de HTML: sin librerías y accesibles por defecto. */
+/* Componentes. Requiere tokens.css y base.css. */
 
-/* ---------- Botones ---------- */
+/* Botones */
 
 .btn {
   display: inline-flex;
@@ -32,24 +31,20 @@
 
 .btn-sm { min-height: 1.75rem; padding: 0 10px; font-size: var(--letra-xs); border-radius: var(--radio-sm); }
 
-/* Botón solo con ícono: siempre con aria-label */
+/* Solo ícono: siempre con aria-label */
 .btn-icono { min-height: 2rem; width: 2rem; padding: 0; }
 
 .acciones { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .acciones-separadas { justify-content: space-between; }
 
-/* ---------- Acomodo ----------
-   .pila: hijos uno debajo del otro con aire entre ellos (formularios, tarjetas).
-   .fila: hijos en línea que bajan de renglón si no caben (insignias, botones).
-   .titulo-seccion: título de un bloque dentro de la página (formulario, tabla).
-   .separador: línea entre dos partes de un formulario (<hr class="separador">). */
+/* Acomodo */
 
 .pila { display: flex; flex-direction: column; gap: 16px; }
 .fila { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .titulo-seccion { margin: 0 0 12px; font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; line-height: 1.3; }
 .separador { margin: 4px 0; border: 0; border-top: 1px solid var(--borde); }
 
-/* ---------- Insignias (estados) ---------- */
+/* Insignias */
 
 .insignia {
   display: inline-block;
@@ -68,10 +63,7 @@
 .insignia-secundaria { background: var(--secundario); color: var(--secundario-texto); }
 .insignia-borde { border-color: var(--borde); }
 
-/* ---------- Código de caso ----------
-   Formato TIPO-NNN (ej. SIS-001): sigla del tipo de prueba y consecutivo dentro del proyecto.
-   Lo genera el sistema y no cambia aunque luego se edite el tipo.
-   En monoespaciada para que los códigos se alineen y se lean carácter por carácter. */
+/* Código de caso (SIS-001), en monoespaciada */
 
 .codigo {
   font-family: var(--fuente-mono);
@@ -80,12 +72,7 @@
   white-space: nowrap;
 }
 
-/* ---------- Tooltip ----------
-   <button aria-label="Eliminar SIS-001" data-tooltip="Eliminar">…</button>
-   El texto del tooltip es solo visual: el nombre accesible va en aria-label o en el propio texto.
-   Aparece con el mouse y con el teclado, se puede pasar el mouse encima y se cierra con Escape
-   (WCAG 1.4.13). No funciona en <input> ni <img>: poner data-tooltip en un contenedor.
-   Opcional: data-tooltip-lado="abajo" y data-tooltip-alinear="inicio|fin" cerca de los bordes. */
+/* Tooltip: solo visual, el nombre va en aria-label. No sirve en <input> ni <img> (WCAG 1.4.13) */
 
 [data-tooltip] {
   position: relative;
@@ -100,7 +87,7 @@
   width: max-content;
   max-width: 16rem;
   padding: 4px 8px;
-  /* Borde transparente: puente entre el elemento y el globo para poder pasar el mouse encima */
+  /* Puente para pasar el mouse al globo */
   border-bottom: 6px solid transparent;
   background: var(--texto) padding-box;
   color: var(--fondo);
@@ -134,21 +121,20 @@
 }
 [data-tooltip-alinear="inicio"]::after { left: 0; translate: none; }
 [data-tooltip-alinear="fin"]::after { left: auto; right: 0; translate: none; }
-/* Escape los esconde hasta que el mouse o el foco se muevan (app.js) */
+/* Escape los esconde (app.js) */
 [data-tooltips-ocultos] [data-tooltip]::after { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   [data-tooltip]::after { transition: none; }
 }
 
-/* ---------- Botón de tema: luna en claro, sol en oscuro ---------- */
+/* Tema: luna en claro, sol en oscuro */
 
 .tema-sol { display: none; }
 :root[data-tema="dark"] .tema-sol { display: block; }
 :root[data-tema="dark"] .tema-luna { display: none; }
 
-/* ---------- Encabezado de página ----------
-   <header class="encabezado"><div><h1>…</h1><p>…</p></div><div class="acciones">…</div></header> */
+/* Encabezado de página */
 
 .encabezado {
   display: flex;
@@ -169,13 +155,10 @@
   color: var(--tenue-texto);
 }
 
-/* Línea corta encima del h1, como el código y el estado de un caso */
+/* Línea sobre el h1 */
 .encabezado .antetitulo { margin: 0 0 6px; }
 
-/* ---------- Detalle de un registro (caso, incidente) ----------
-   Contenido a la izquierda y datos cortos a la derecha (<aside class="tarjeta">).
-   En pantallas angostas y al imprimir queda en una columna.
-   <div class="vista-detalle"><div class="pila">…tarjetas…</div><aside class="tarjeta">…</aside></div> */
+/* Detalle: contenido y datos a la derecha; una columna en celular e impresión */
 
 .vista-detalle {
   display: grid;
@@ -187,8 +170,7 @@
   .vista-detalle { grid-template-columns: 1fr; }
 }
 
-/* ---------- Barra de filtros ----------
-   Formulario GET: los filtros quedan en la dirección y se pueden compartir o recargar. */
+/* Filtros: formulario GET, quedan en la URL */
 
 .filtros {
   display: grid;
@@ -203,8 +185,7 @@
 }
 .filtros .acciones { justify-content: flex-start; }
 
-/* ---------- Vista de detalle ----------
-   <dl class="detalle"><dt>Campo</dt><dd>Valor</dd>…</dl> */
+/* Lista de datos <dl> */
 
 .detalle {
   display: grid;
@@ -216,7 +197,7 @@
 .detalle dt { color: var(--tenue-texto); font-weight: 500; }
 .detalle dd { margin: 0; min-width: 0; }
 .detalle .multilinea { white-space: pre-line; }
-/* Variante apilada para columnas angostas: el nombre arriba y el valor abajo */
+/* Apilada: nombre arriba, valor abajo */
 .detalle-apilado { grid-template-columns: 1fr; gap: 2px; }
 .detalle-apilado dd { margin-bottom: 12px; }
 .detalle-apilado dd:last-child { margin-bottom: 0; }
@@ -225,7 +206,7 @@
   .detalle dd { margin-bottom: 10px; }
 }
 
-/* ---------- Tarjeta ---------- */
+/* Tarjeta */
 
 .tarjeta {
   background: var(--tarjeta);
@@ -235,13 +216,7 @@
   padding: 16px;
 }
 
-/* ---------- Campos de formulario ----------
-   <div class="campo">
-     <label for="x">Nombre <span class="requerido">*</span></label>
-     <input class="control" id="x" required aria-describedby="x-ayuda x-error" aria-invalid="true">
-     <p class="campo-ayuda" id="x-ayuda">...</p>
-     <p class="campo-error" id="x-error">...</p>
-   </div> */
+/* Campos: ayuda y error con aria-describedby */
 
 .campos {
   display: grid;
@@ -294,7 +269,7 @@
 .control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
 textarea.control { min-height: 5rem; padding-block: 8px; }
 
-/* Select: flecha propia que sigue el color del texto (y el tema) */
+/* Flecha propia con el color del texto */
 .select { position: relative; }
 .select .control { appearance: none; padding-right: 36px; cursor: pointer; }
 .select::after {
@@ -310,7 +285,6 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   pointer-events: none;
 }
 
-/* Archivo: botón nativo con estilo */
 .control[type="file"] { padding: 4px; cursor: pointer; }
 .control[type="file"]::file-selector-button {
   margin-right: 12px;
@@ -324,7 +298,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   cursor: pointer;
 }
 
-/* ---------- Grupos de radios y casillas ---------- */
+/* Radios y casillas */
 
 .grupo {
   margin: 0;
@@ -344,13 +318,9 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 }
 .opcion input { width: 16px; height: 16px; margin: 0; accent-color: var(--primario); }
 .grupo-fila { flex-direction: row; flex-wrap: wrap; gap: 8px 20px; }
-/* Grupo con error: el mensaje (.campo-error) va dentro del fieldset, enlazado con
-   aria-describedby, y cada opción lleva aria-invalid="true" para que el lector lo anuncie.
-   Las opciones no cambian de estilo: el mensaje en texto es la señal. */
+/* Con error: el mensaje va en el fieldset; las opciones no cambian */
 
-/* ---------- Estado OK / FAULT del caso (formulario 1) ----------
-   Radios reales ocultos a la vista; la etiqueta completa es el botón.
-   Llevan texto e ícono, no solo color (RNF-ACC-04). */
+/* Estado del caso: la etiqueta es el botón, con texto e ícono */
 
 .resultado {
   margin: 0;
@@ -387,12 +357,12 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .resultado-ok:has(input:checked) { background: var(--exito); color: var(--exito-texto); border-color: var(--exito); }
 .resultado-fault:has(input:checked) { background: var(--peligro); color: var(--peligro-texto); border-color: var(--peligro); }
 .resultado-opcion .icono { width: 20px; height: 20px; }
-/* Celular: las tres opciones una debajo de la otra, en vez de dos y una sola abajo */
+/* Celular: una debajo de otra */
 @media (max-width: 30rem) {
   .resultado { grid-template-columns: 1fr; }
 }
 
-/* ---------- Tabla con acciones y paginación ---------- */
+/* Tabla y paginación */
 
 .tabla-contenedor {
   overflow-x: auto;
@@ -451,8 +421,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .paginacion a[aria-current="page"] { border: 1px solid var(--entrada); font-weight: 600; box-shadow: var(--sombra-xs); }
 .paginacion span[aria-disabled] { opacity: 0.4; }
 
-/* ---------- Diálogo de confirmación (<dialog> nativo) ----------
-   Se abre con showModal(): atrapa el foco y se cierra con Escape por sí solo. */
+/* Diálogo nativo: showModal() atrapa el foco y cierra con Escape */
 
 .dialogo {
   width: min(28rem, calc(100% - 32px));
@@ -471,12 +440,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .dialogo p { margin: 0 0 20px; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .dialogo form { margin: 0; }
 
-/* ---------- Alertas (resultado de una acción) ----------
-   Borde fino, ícono opcional, título y/o descripción, acción opcional a la derecha.
-   Tres variantes: normal, .alerta-exito y .alerta-error. role="status" normal y éxito; role="alert" para errores.
-   <div class="alerta" role="status">
-     [ícono]  <p class="alerta-titulo">…</p>  <div class="alerta-descripcion">…</div>  [<div class="alerta-accion">…</div>]
-   </div> */
+/* Alertas: role="status"; role="alert" para errores */
 
 .alerta {
   display: grid;
@@ -524,16 +488,14 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .alerta-error { color: var(--error); }
 .alerta-error .alerta-descripcion { color: color-mix(in oklch, var(--error), var(--tarjeta) 10%); }
 
-/* Éxito: confirma que los datos se guardaron. Va arriba de la página a la que se llega
-   después de guardar, con role="status" para que el lector de pantalla lo anuncie.
-   El color acompaña; lo que confirma es el texto ("Caso guardado."). */
+/* Éxito: lo que confirma es el texto, no el color */
 .alerta-exito {
   background: color-mix(in oklch, var(--exito), var(--tarjeta) 88%);
   border-color: color-mix(in oklch, var(--exito), var(--tarjeta) 45%);
 }
 .alerta-exito > .icono { color: var(--correcto); }
 
-/* ---------- Estado vacío ---------- */
+/* Estado vacío */
 
 .vacio {
   display: flex;
@@ -556,18 +518,11 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   color: var(--tenue-texto);
 }
 .vacio-icono .icono { width: 24px; height: 24px; }
-/* En una página de error (403, 404) el título es el h1 de la página */
+/* En 403 y 404 el título es el h1 */
 .vacio :is(h1, h2, h3) { font-size: var(--letra-base); font-weight: 600; letter-spacing: 0; margin: 0; }
 .vacio p { margin: 0 0 8px; max-width: 36ch; font-size: var(--letra-sm); color: var(--tenue-texto); }
 
-/* ---------- Partes de la tarjeta (Card de shadcn) ----------
-   <section class="tarjeta">
-     <header class="tarjeta-encabezado">
-       <h2 class="tarjeta-titulo">…</h2> <p class="tarjeta-descripcion">…</p> [<div class="acciones">…</div>]
-     </header>
-     <div class="tarjeta-contenido">…</div>
-     <footer class="tarjeta-pie">…</footer>
-   </section> */
+/* Partes de la tarjeta */
 
 .tarjeta-encabezado {
   display: grid;
@@ -591,12 +546,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   border-top: 1px solid var(--borde);
 }
 
-/* ---------- Cifras del panel y de los reportes ----------
-   <div class="cifras">
-     <div class="tarjeta cifra">
-       <p class="cifra-etiqueta">Casos OK [ícono]</p> <p class="cifra-valor">32</p> <p class="cifra-nota">56 % del total</p>
-     </div>
-   </div> */
+/* Cifras del panel */
 
 .cifras {
   display: grid;
@@ -624,14 +574,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 }
 .cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
 
-/* ---------- Barra de progreso y medidor ----------
-   <progress> para el avance de una tarea (casos con resultado); <meter> para una medida (cobertura).
-   Siempre con el número escrito al lado: la barra sola no basta (RNF-ACC-04).
-   <div class="progreso-fila"><label for="p">Con resultado</label><span>18 de 24</span></div>
-   <progress class="progreso" id="p" max="24" value="18">18 de 24</progress>
-   <progress>: azul, o progreso-exito / -aviso / -peligro.
-   <meter low="70" high="90" optimum="100">: el color lo elige el navegador según el valor
-   (verde sobre high, amarillo entre low y high, rojo bajo low). */
+/* <progress> para avance, <meter> para medidas. Siempre con el número al lado */
 
 .progreso {
   --progreso-color: var(--primario);
@@ -648,7 +591,7 @@ progress.progreso { appearance: none; }
 .progreso-exito { --progreso-color: var(--exito); }
 .progreso-aviso { --progreso-color: var(--aviso); }
 .progreso-peligro { --progreso-color: var(--peligro); }
-/* Cada pseudo-elemento en su propia regla: si un navegador no conoce uno, ignora la regla entera. */
+/* Una regla por pseudo-elemento: si uno falla, no tumba los demás */
 .progreso::-webkit-progress-bar { background: var(--progreso-pista); }
 .progreso::-webkit-progress-value { background: var(--progreso-color); border-radius: var(--radio-total); }
 .progreso::-moz-progress-bar { background: var(--progreso-color); border-radius: var(--radio-total); }
@@ -673,17 +616,11 @@ meter.progreso { --progreso-pista: var(--secundario); }
 .progreso-fila > :first-child { font-weight: 500; }
 .progreso-fila > :last-child { color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
 
-/* Barra dentro de una celda, con el porcentaje a la derecha */
+/* Barra en celda */
 .progreso-celda { display: flex; align-items: center; gap: 10px; min-width: 9rem; }
 .progreso-celda output { min-width: 3.5em; text-align: right; font-variant-numeric: tabular-nums; }
 
-/* ---------- Tabla editable (formularios 2 a 9) ----------
-   La misma .tabla con controles dentro de las celdas. Cada control lleva aria-label con su columna.
-   Filas que se agregan y quitan (app.js):
-   <tbody id="clases">…</tbody>
-   <template id="clases-fila"><tr>… <td class="celda-acciones"><button data-quitar-fila>…</button></td></tr></template>
-   <button type="button" data-agregar-fila="clases">Agregar fila</button>
-   Nombres con [] (name="campo[]") para que PHP reciba cada columna como arreglo. */
+/* Tabla editable: name="campo[]" y aria-label por control. Filas en app.js */
 
 .tabla-editable th { white-space: normal; }
 .tabla-editable td { padding: 6px 8px; vertical-align: top; white-space: normal; }
@@ -695,7 +632,7 @@ meter.progreso { --progreso-pista: var(--secundario); }
 .tabla-editable td.celda-acciones { vertical-align: top; padding-top: 8px; }
 .tabla-editable td:has(> input[type="checkbox"]) { vertical-align: middle; }
 .tabla-editable .control[type="number"] { font-variant-numeric: tabular-nums; }
-/* Totales alineados con el texto de los controles de arriba (celda 8px + borde 1px + control 12px) */
+/* Alinea con el texto de los controles */
 .tabla-editable tfoot td { padding: 10px 8px 10px 21px; }
 
 .tabla .celda-centro { text-align: center; }
@@ -708,9 +645,9 @@ meter.progreso { --progreso-pista: var(--secundario); }
   accent-color: var(--primario);
 }
 
-/* Encabezado de fila (<th scope="row">): texto normal, sin el fondo de la cabecera */
+/* <th scope="row"> sin fondo */
 .tabla tbody th { background: none; color: var(--texto); }
-/* Fila que separa grupos dentro de la misma tabla (condiciones / acciones) */
+/* Separa condiciones y acciones */
 .tabla tbody .fila-grupo th {
   padding: 6px 12px;
   background: var(--tenue);
@@ -718,7 +655,7 @@ meter.progreso { --progreso-pista: var(--secundario); }
   font-size: var(--letra-xs);
   font-weight: 600;
 }
-/* Fila de totales */
+/* Totales */
 .tabla tfoot :is(th, td) {
   background: var(--tenue);
   color: var(--texto);
@@ -728,9 +665,7 @@ meter.progreso { --progreso-pista: var(--secundario); }
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Valores cambiados (historial, RF-20) ----------
-   <del class="cambio">Alta</del> → <ins class="cambio">Media</ins>
-   Además del color, el anterior va tachado y cada uno en su propia columna. */
+/* Historial: el anterior tachado, no solo color */
 
 del.cambio,
 ins.cambio {
@@ -741,10 +676,7 @@ ins.cambio {
 del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
 ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: none; }
 
-/* ---------- Lista de casillas con scroll (asignar miembros) ----------
-   <fieldset class="grupo"><legend>…</legend>
-     <div class="lista-opciones"><label class="opcion"><input type="checkbox"> Nombre <small>usuario</small></label>…</div>
-   </fieldset> */
+/* Casillas con scroll */
 
 .lista-opciones {
   display: flex;
@@ -763,14 +695,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 .lista-opciones .opcion:hover { background: var(--acento); color: var(--acento-texto); }
 .lista-opciones .opcion small { margin-left: auto; font-size: var(--letra-xs); color: var(--tenue-texto); }
 
-/* ---------- Lista de archivos (evidencias, RF-24) ----------
-   <ul class="archivos">
-     <li class="archivo">
-       <span class="archivo-icono">[ícono o <img alt="descripción">]</span>
-       <p class="archivo-nombre">…</p> <p class="archivo-detalle">PNG · 240 KB · 30/09/2026</p>
-       <div class="acciones">…</div>
-     </li>
-   </ul> */
+/* Archivos de evidencia */
 
 .archivos {
   list-style: none;
@@ -805,7 +730,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 .archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
 .archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: 4px; }
 
-/* Vista previa de la captura elegida, antes de subirla. */
+/* Vista previa de la captura */
 .vista-previa {
   max-width: 100%;
   max-height: 10rem;
@@ -814,12 +739,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   object-fit: contain;
 }
 
-/* ---------- Pantalla de acceso (login y registro) ----------
-   <main class="acceso">
-     <img class="acceso-logo" src="/Frame.svg" alt="Safeguard">
-     <section class="tarjeta">…formulario…</section>
-     <p class="acceso-pie">¿No tiene cuenta? <a href="/registro">Crear cuenta</a></p>
-   </main> */
+/* Acceso: login y registro */
 
 .acceso {
   min-height: 100dvh;
@@ -831,27 +751,20 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   background: var(--tenue);
 }
 .acceso-logo { height: 32px; }
-/* El logo es negro: en tema oscuro se invierte para que se vea */
+/* Logo negro: se invierte en oscuro */
 :root[data-tema="dark"] .acceso-logo { filter: invert(1); }
 .acceso > .tarjeta { width: min(100%, 24rem); padding: 24px; box-shadow: var(--sombra-sm); }
 .acceso-pie { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); text-align: center; }
 
 .btn-bloque { width: 100%; }
 
-/* ---------- Impresión ----------
-   "Generar formulario" (RF-08 a RF-17) y los reportes (RF-23) se imprimen o se guardan
-   como PDF desde el navegador. <button data-imprimir> abre el diálogo de impresión (app.js).
-   .no-imprimir esconde algo al imprimir; .solo-impresion lo muestra solo en papel. */
+/* Impresión: .no-imprimir y .solo-impresion */
 
 .solo-impresion { display: none; }
 
-/* ======================================================================
-   Celular y pantallas táctiles
-   ====================================================================== */
+/* Celular y táctil */
 
-/* Tabla como tarjetas: en pantallas angostas cada fila se apila y cada celda
-   muestra el nombre de su columna. Requiere data-columna="…" en cada <td>.
-   <table class="tabla tabla-tarjetas"> … <td data-columna="Estado">…</td> */
+/* Tabla como tarjetas: requiere data-columna en cada <td> */
 @media (max-width: 40rem) {
   .tabla-tarjetas thead {
     position: absolute;
@@ -896,16 +809,16 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   }
   .tabla-tarjetas .celda-acciones::before { content: none; }
 
-  /* Filtros: búsqueda y botones a todo el ancho, los selects de dos en dos */
+  /* Filtros de dos en dos */
   .filtros { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
   .filtros .campo-busqueda,
   .filtros .acciones { grid-column: 1 / -1; }
 
-  /* Botones del encabezado alineados a la izquierda, debajo del título */
+  /* Botones bajo el título */
   .encabezado > .acciones { justify-content: flex-start; }
 }
 
-/* Alertas con acción: en pantallas angostas la acción baja debajo del texto */
+/* La acción baja bajo el texto */
 @media (max-width: 30rem) {
   .alerta-accion {
     grid-column: contenido;
@@ -915,8 +828,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .alerta:has(> .icono) .alerta-accion { margin-left: 10px; }
 }
 
-/* Pantallas táctiles: blancos más grandes para el dedo, y campos a 16px
-   para que el iPhone no haga zoom al tocar un campo. */
+/* Táctil: blancos grandes y 16px para que iOS no haga zoom */
 @media (pointer: coarse) {
   .btn { min-height: 2.5rem; }
   .btn-icono { width: 2.5rem; min-height: 2.5rem; }
@@ -927,7 +839,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .opcion { min-height: 2rem; }
 }
 
-/* Filas editables como tarjetas: cada control debajo del nombre de su columna */
+/* Filas editables como tarjetas */
 @media (max-width: 40rem) {
   .tabla-tarjetas tfoot { display: block; }
   .tabla-tarjetas tbody th,
@@ -949,9 +861,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
 }
 
-/* ======================================================================
-   Impresión: siempre en claro, sin navegación ni botones
-   ====================================================================== */
+/* Impresión: claro, sin navegación ni botones */
 
 @media print {
   :root,
@@ -973,12 +883,12 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .control::placeholder { color: transparent; }
   .tabla-contenedor { overflow: visible; }
   .vista-detalle { grid-template-columns: 1fr; }
-  /* En papel sobra ancho: los datos cortos vuelven a nombre y valor lado a lado */
+  /* En papel, nombre y valor lado a lado */
   .detalle-apilado { grid-template-columns: max-content 1fr; gap: 6px 20px; }
   .detalle-apilado dd { margin: 0; }
   a { color: inherit; text-decoration: none; }
 
-  /* Sin esto el navegador quita los fondos y las insignias y barras quedan en blanco */
+  /* Sin esto se pierden fondos de insignias y barras */
   .insignia,
   .progreso,
   .tabla th,
@@ -987,7 +897,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
     print-color-adjust: exact;
   }
 
-  /* Que no se corte una fila, un campo o una cifra entre dos hojas */
+  /* No cortar entre hojas */
   thead { display: table-header-group; }
   tr,
   .campo,

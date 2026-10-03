@@ -1,4 +1,4 @@
-/* Estructura de la app: sidebar + barra superior + contenido. Requiere tokens.css y base.css. */
+/* Estructura: sidebar, barra superior y contenido */
 
 .app {
   display: flex;
@@ -19,7 +19,7 @@
   top: 8px;
 }
 
-/* ---------- Sidebar ---------- */
+/* Sidebar */
 
 .sidebar {
   position: sticky;
@@ -45,7 +45,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* Al llegar al final del menú, el scroll no pasa a la página */
+  /* El scroll no pasa a la página */
   overscroll-behavior: contain;
 }
 
@@ -76,7 +76,7 @@
   gap: 2px;
 }
 
-/* Botón base: enlaces, summary de desplegables, marca y usuario */
+/* Botón base del menú */
 .sidebar-boton {
   position: relative;
   display: flex;
@@ -142,7 +142,7 @@
   text-overflow: ellipsis;
 }
 
-/* Marca y usuario: bloque de dos líneas */
+/* Marca y usuario */
 .sidebar-marca,
 .sidebar-usuario {
   min-height: 3rem;
@@ -185,7 +185,7 @@
   font-weight: 600;
 }
 
-/* Menú del usuario: se abre hacia arriba */
+/* Menú del usuario, hacia arriba */
 .usuario-menu {
   position: relative;
 }
@@ -203,7 +203,7 @@
   z-index: 50;
 }
 
-/* ---------- Barra superior ---------- */
+/* Barra superior */
 
 .app-cuerpo {
   flex: 1;
@@ -292,14 +292,14 @@
   outline: none;
 }
 
-/* ---------- Escritorio: colapsar a íconos ---------- */
+/* Escritorio: colapsar a íconos */
 
 @media (min-width: 48rem) {
   [data-sidebar="colapsado"] .sidebar {
     width: var(--lateral-ancho-icono);
   }
 
-  /* Los textos se ocultan a la vista pero los lectores de pantalla los siguen leyendo */
+  /* Ocultos a la vista, no al lector */
   [data-sidebar="colapsado"] .sidebar-texto,
   [data-sidebar="colapsado"] .flecha,
   [data-sidebar="colapsado"] .flecha-usuario,
@@ -340,7 +340,7 @@
     min-width: 12rem;
   }
 
-  /* Globo con el nombre al pasar el mouse o con el foco del teclado */
+  /* Globo con el nombre */
   [data-sidebar="colapsado"] [data-etiqueta]:hover::after,
   [data-sidebar="colapsado"] [data-etiqueta]:focus-visible::after {
     content: attr(data-etiqueta);
@@ -360,7 +360,7 @@
   }
 }
 
-/* ---------- Móvil: el sidebar se abre encima del contenido ---------- */
+/* Móvil: sidebar encima del contenido */
 
 @media (max-width: 47.99rem) {
   .sidebar {
@@ -389,7 +389,7 @@
   }
 }
 
-/* ---------- Panel de ejemplo ---------- */
+/* Panel de ejemplo */
 
 .rejilla-panel {
   display: grid;
@@ -407,7 +407,7 @@
   aspect-ratio: auto;
 }
 
-/* ---------- Impresión: solo el contenido, sin sidebar ni barra ---------- */
+/* Impresión: solo el contenido */
 
 @media print {
   .sidebar,
