@@ -43,6 +43,30 @@ final class IncidenteModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** @return array<string, mixed>|null */
+    public static function porId(int $id): ?array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT i.*, c.codigo AS caso, c.objetivo AS caso_objetivo, p.nombre AS proyecto,
+                    u.nombre AS autor, a.nombre AS asignado
+             FROM incidentes i
+             JOIN casos_prueba c ON c.id = i.caso_id
+             JOIN proyectos p ON p.id = i.proyecto_id
+             JOIN usuarios u ON u.id = i.creado_por
+             LEFT JOIN usuarios a ON a.id = i.asignado_id
+             WHERE i.id = ?'
+        );
+        $sql->execute([$id]);
+
+        return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public static function actualizar(int $id, int $estado, ?int $asignadoId, int $stopper): void
+    {
+        Conexion::pdo()->prepare('UPDATE incidentes SET estado = ?, asignado_id = ?, es_stopper = ? WHERE id = ?')
+            ->execute([$estado, $asignadoId, $stopper, $id]);
+    }
+
     /** @return list<array<string, mixed>> */
     public static function deCaso(int $casoId): array
     {

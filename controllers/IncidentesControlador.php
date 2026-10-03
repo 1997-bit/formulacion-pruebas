@@ -73,15 +73,57 @@ final class IncidentesControlador
     {
         $casoId = (int) ($_POST['caso_id'] ?? 0);
         CasoServicio::ver($casoId, Sesion::usuario()) ?? Respuesta::error(404);
-        $datos = [];
-        foreach (self::CAMPOS as $campo) {
-            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
-        }
+        $datos = $this->texto(self::CAMPOS);
         try {
-            $codigo = IncidenteServicio::registrar($casoId, $datos, Sesion::usuario());
+            [$id, $codigo] = IncidenteServicio::registrar($casoId, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, $datos, '/formularios/incidentes/registrar?caso=' . $casoId);
         }
-        Respuesta::exito("Incidente {$codigo} registrado.", '/casos/resultado?id=' . $casoId);
+        Respuesta::exito("Incidente {$codigo} registrado.", '/formularios/incidentes/ver?id=' . $id);
+    }
+
+    public function ver(): void
+    {
+        $incidente = IncidenteServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
+        Vista::pagina('incidentes/ver', [
+            'titulo' => $incidente['codigo'],
+            'incidente' => $incidente,
+            'asignables' => IncidenteServicio::asignables($incidente),
+            'flash' => Sesion::tomar('flash'),
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos') ?? [
+                'estado' => (string) $incidente['estado'],
+                'asignado_id' => (string) $incidente['asignado_id'],
+                'es_stopper' => (string) $incidente['es_stopper'],
+            ],
+            'migas' => [['texto' => 'Incidentes', 'ruta' => '/formularios/incidentes'], ['texto' => $incidente['codigo']]],
+        ]);
+    }
+
+    public function actualizar(): void
+    {
+        $id = (int) ($_POST['id'] ?? 0);
+        IncidenteServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
+        $datos = $this->texto(['estado', 'asignado_id', 'es_stopper']);
+        try {
+            $codigo = IncidenteServicio::seguimiento($id, $datos, Sesion::usuario());
+        } catch (ErrorValidacion $e) {
+            Respuesta::errores($e->errores, $datos, '/formularios/incidentes/ver?id=' . $id);
+        }
+        Respuesta::exito("Incidente {$codigo} guardado.", '/formularios/incidentes/ver?id=' . $id);
+    }
+
+    /**
+     * @param list<string> $campos
+     * @return array<string, string>
+     */
+    private function texto(array $campos): array
+    {
+        $datos = [];
+        foreach ($campos as $campo) {
+            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
+        }
+
+        return $datos;
     }
 }
