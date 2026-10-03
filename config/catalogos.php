@@ -65,6 +65,17 @@ return [
             20 => ['texto' => 'Cobertura de clases', 'variante' => 'borde'],
         ],
     ],
+    // Dónde corre lo que se prueba. El detalle (navegador, versión) va en entorno.
+    'plataforma' => [
+        'nombre' => 'Plataforma',
+        'valores' => [
+            1 => ['texto' => 'Web', 'variante' => 'borde'],
+            2 => ['texto' => 'Escritorio', 'variante' => 'borde'],
+            3 => ['texto' => 'Android', 'variante' => 'borde'],
+            4 => ['texto' => 'iOS', 'variante' => 'borde'],
+            5 => ['texto' => 'API', 'variante' => 'borde'],
+        ],
+    ],
     // Captura acepta png y jpg; archivo, pdf, txt y log (RNF-03).
     'tipo_evidencia' => [
         'nombre' => 'Tipo de evidencia',

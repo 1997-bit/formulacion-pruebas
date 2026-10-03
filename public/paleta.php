@@ -254,9 +254,18 @@ use App\Helpers\Icono;
               <input class="control" id="f-modulo" name="modulo" required value="Inicio de sesión">
             </div>
             <div class="campo">
+              <label for="f-plataforma">Plataforma <span class="requerido" aria-hidden="true">*</span></label>
+              <div class="select">
+                <select class="control" id="f-plataforma" name="plataforma" required>
+                  <option value="">Elegir…</option>
+                  <?= Catalogo::opciones('plataforma', 1) ?>
+                </select>
+              </div>
+            </div>
+            <div class="campo">
               <label for="f-entorno">Entorno</label>
               <input class="control" id="f-entorno" name="entorno" maxlength="255" value="Windows 11, Chrome 129, v1.2" aria-describedby="f-entorno-ayuda">
-              <p class="campo-ayuda" id="f-entorno-ayuda">Sistema operativo, navegador y versión probada.</p>
+              <p class="campo-ayuda" id="f-entorno-ayuda">Detalle de la plataforma: sistema operativo, navegador y versión probada.</p>
             </div>
           </div>
 
@@ -1165,6 +1174,7 @@ Contraseña: (vacía)</dd>
             <dt>Requerimiento</dt><dd>RF-01 · Iniciar sesión</dd>
             <dt>Tipo de prueba</dt><dd>Sistema</dd>
             <dt>Módulo</dt><dd>Inicio de sesión</dd>
+            <dt>Plataforma</dt><dd>Web · Windows 11, Chrome 129</dd>
             <dt>Técnica</dt><dd>Caja negra · Partición de equivalencia</dd>
             <dt>Fechas</dt><dd>30/09/2026 al 03/10/2026</dd>
             <dt>Resultado anotado por</dt><dd>mperez · 30/09/2026 14:32</dd>
