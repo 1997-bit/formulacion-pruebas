@@ -18,14 +18,7 @@ use App\Helpers\Icono;
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/componentes.css">
-<script>
-  // Tema antes de pintar, sin parpadeo.
-  (() => {
-    let t = null;
-    try { t = localStorage.getItem('tema'); } catch (e) {}
-    document.documentElement.dataset.tema = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  })();
-</script>
+<script src="/assets/js/tema.js"></script>
 <script src="/assets/js/app.js" defer></script>
 <style>
   /* Solo para esta página */
