@@ -20,8 +20,7 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (3, 2, 'RF-01', 'Prestar un libro. No se presta si el estudiante tiene 3 préstamos activos o una multa sin pagar.', 0),
     (4, 1, 'RF-04', 'Registrar caso con el formulario 1. Los campos opcionales pueden quedar vacíos.', 0),
     (5, 1, 'RF-06', 'Editar caso: admin edita cualquiera; tester solo los que creó.', 0),
-    (6, 1, 'RF-20', 'Historial: cada cambio de un caso guarda campo, valor anterior, valor nuevo, usuario y fecha.', 0),
-    (7, 1, 'RF-08', 'Formulario 1: vista imprimible del caso.', 0);
+    (6, 1, 'RF-20', 'Historial: cada cambio de un caso guarda campo, valor anterior, valor nuevo, usuario y fecha.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
@@ -106,30 +105,8 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'Sale la sección Historial con los cambios de SIS-001, y no sale el botón Editar.',
         '2026-10-03', '2026-10-05',
         0, NULL, NULL,
-        2, '2026-10-03 16:20:00', NULL, NULL),
-    (9, 1, 7, 'SIS-005', 3, 8, 'Casos', 1,
-        'Linux, Chrome, PHP 8.5, MariaDB',
-        'Verificar que la impresión del formulario 1 sale completa y legible cuando ocupa más de una hoja.',
-        'Sesión iniciada como gloria. Existe el caso INT-001 de Biblioteca escolar.',
-        'Caso: INT-001 de Biblioteca escolar (id 3)',
-        '1. Abrir INT-001 de Biblioteca escolar.\n2. Pulsar Imprimir.\n3. Revisar la vista previa hoja por hoja.',
-        'Salen todos los campos del formulario 1, sin textos encimados. "Impreso el" va al final, debajo de los datos del caso.',
-        '2026-10-03', '2026-10-03',
-        2, 'Los datos del caso pasan a la hoja 2 y "Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
-        'En una sola hoja no pasa.',
-        2, '2026-10-03 17:00:00', 2, '2026-10-03 17:10:00');
+        2, '2026-10-03 16:20:00', NULL, NULL);
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
-    (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00'),
-    (9, 4, 'http://127.0.0.1:8000/casos/resultado?id=3', 'Página que se imprime: en la hoja 2 el pie queda encima de los datos.', 2, '2026-10-03 17:10:00');
-
--- F10: el FAULT de SIS-005.
-INSERT INTO incidentes (id, proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado,
-    resultado_obtenido, severidad, prioridad, estado, es_stopper, asignado_id, creado_por, creado_en) VALUES
-    (1, 1, 9, 'BUG-001', 'Al imprimir, el pie se encima en la hoja 2', 'Casos',
-        'Cuando los datos del caso pasan a la hoja 2, el texto "Impreso el…" se dibuja encima de ellos.',
-        '1. Abrir INT-001 de Biblioteca escolar.\n2. Pulsar Imprimir.\n3. Ver la hoja 2 en la vista previa.',
-        '"Impreso el" sale al final, debajo de los datos del caso.',
-        '"Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
-        2, 2, 0, 0, NULL, 2, '2026-10-03 17:15:00');
+    (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00');
