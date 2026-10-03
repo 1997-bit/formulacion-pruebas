@@ -1,8 +1,6 @@
-/* Variables del sistema de diseño. Los estilos de los elementos van en base.css.
-   Los colores van en pares: --x es el fondo y --x-texto lo que va encima.
-   Entre paréntesis, el nombre equivalente en shadcn/ui. */
+/* Variables de diseño. --x es fondo; --x-texto, lo que va encima. */
 
-/* Inter servida desde el proyecto, sin depender de internet. Licencia: fonts/Inter-LICENSE.txt */
+/* Inter local, sin internet. */
 @font-face {
   font-family: "Inter";
   src: url("../fonts/InterVariable.woff2") format("woff2");
@@ -18,8 +16,7 @@
   font-display: swap;
 }
 
-/* Tema: sigue al sistema operativo, salvo que <html data-tema="light|dark"> lo fije.
-   light-dark(claro, oscuro) elige el valor según color-scheme. */
+/* Tema del sistema, salvo <html data-tema>. light-dark(claro, oscuro). */
 :root {
   color-scheme: light dark;
 }
@@ -27,79 +24,70 @@
 :root[data-tema="dark"]  { color-scheme: dark; }
 
 :root {
-  /* ---- Superficies ---- */
-  --fondo: light-dark(#FFFFFF, oklch(18% 0.03 231));                /* background */
-  --texto: light-dark(#111111, oklch(95% 0 0));                     /* foreground */
-  --tarjeta: light-dark(#FFFFFF, oklch(21% 0.03 231));              /* card */
-  --tarjeta-texto: var(--texto);                                    /* card-foreground */
-  --flotante: light-dark(#FFFFFF, oklch(23% 0.03 231));             /* popover */
-  --flotante-texto: var(--texto);                                   /* popover-foreground */
+  --fondo: light-dark(#FFFFFF, oklch(18% 0.03 231));
+  --texto: light-dark(#111111, oklch(95% 0 0));
+  --tarjeta: light-dark(#FFFFFF, oklch(21% 0.03 231));
+  --tarjeta-texto: var(--texto);
+  --flotante: light-dark(#FFFFFF, oklch(23% 0.03 231));
+  --flotante-texto: var(--texto);
 
-  /* ---- Acciones: el azul es el color de la marca ---- */
-  --primario: #1A5AFF;                                              /* primary */
-  --primario-texto: #FFFFFF;                                        /* primary-foreground */
-  --secundario: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));    /* secondary */
-  --secundario-texto: var(--texto);                                 /* secondary-foreground */
-  --tenue: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));         /* muted */
-  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0.01 231));   /* muted-foreground */
-  --acento: light-dark(oklch(95% 0.03 262), oklch(32% 0.07 262));   /* accent: tinte azul para hover y selección */
-  --acento-texto: var(--texto);                                     /* accent-foreground */
+  --primario: #1A5AFF;
+  --primario-texto: #FFFFFF;
+  --secundario: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
+  --secundario-texto: var(--texto);
+  --tenue: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
+  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0.01 231));
+  --acento: light-dark(oklch(95% 0.03 262), oklch(32% 0.07 262));   /* hover y selección */
+  --acento-texto: var(--texto);
 
-  /* Naranja: color de apoyo para resaltar (novedades, destacados). Siempre con texto oscuro. */
   --destacado: #FF8000;
   --destacado-texto: #111111;
 
-  /* ---- Estados de un caso de prueba ---- */
-  --peligro: #D93036;                                               /* destructive: fallido */
+  /* Estados */
+  --peligro: #D93036;                                               /* FAULT */
   --peligro-texto: #FFFFFF;
-  --exito: #33CC80;                                                 /* aprobado */
+  --exito: #33CC80;                                                 /* OK */
   --exito-texto: #111111;
-  --aviso: #FFD633;                                                 /* pendiente */
+  --aviso: #FFD633;                                                 /* Pendiente */
   --aviso-texto: #111111;
-  --info: #1A5AFF;                                                  /* en progreso (incidentes) */
+  --info: #1A5AFF;                                                  /* En progreso */
   --info-texto: #FFFFFF;
-  /* Rojo para TEXTO de error sobre el fondo (mensajes de campo). --peligro es para fondos. */
+  /* Texto sobre el fondo; --peligro y --exito son fondos. */
   --error: light-dark(#C4262C, oklch(70% 0.16 25));
-  /* Verde para TEXTO e íconos de éxito sobre el fondo (alerta de guardado). --exito es para fondos. */
   --correcto: light-dark(#1E7A4C, oklch(78% 0.15 155));
 
-  /* ---- Líneas y foco ---- */
-  --borde: light-dark(oklch(92% 0 0), oklch(100% 0 0 / 12%));       /* border */
-  --entrada: light-dark(oklch(88% 0 0), oklch(100% 0 0 / 18%));     /* input */
-  --anillo: light-dark(#1A5AFF, oklch(72% 0.13 260));               /* ring */
+  --borde: light-dark(oklch(92% 0 0), oklch(100% 0 0 / 12%));
+  --entrada: light-dark(oklch(88% 0 0), oklch(100% 0 0 / 18%));
+  --anillo: light-dark(#1A5AFF, oklch(72% 0.13 260));
   --enlace: light-dark(#1A5AFF, oklch(72% 0.13 260));
 
-  /* ---- Velo: fondo detrás de diálogos y del sidebar móvil ----
-     Desenfoque + tinte suave en degradado, en vez de un negro plano al 40%.
-     En oscuro el tinte es más fuerte porque el negro al 10-15% casi no se nota sobre fondo oscuro. */
+  /* Fondo de diálogos y sidebar móvil. Más oscuro en tema oscuro. */
   --velo: linear-gradient(
     light-dark(rgb(0 0 0 / 0.10), rgb(0 0 0 / 0.25)),
     light-dark(rgb(0 0 0 / 0.15), rgb(0 0 0 / 0.35))
   );
   --velo-desenfoque: blur(8px);
-  --velo-respaldo: rgb(0 0 0 / 0.4); /* navegadores sin backdrop-filter */
+  --velo-respaldo: rgb(0 0 0 / 0.4); /* sin backdrop-filter */
 
-  /* ---- Barra lateral (sidebar) ---- */
-  --lateral: light-dark(oklch(98.5% 0 0), oklch(20% 0.03 231));     /* sidebar */
-  --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));      /* sidebar-foreground */
-  --lateral-acento: var(--acento);                                  /* sidebar-accent */
-  --lateral-acento-texto: var(--acento-texto);                      /* sidebar-accent-foreground */
-  --lateral-borde: var(--borde);                                    /* sidebar-border */
+  --lateral: light-dark(oklch(98.5% 0 0), oklch(20% 0.03 231));
+  --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));
+  --lateral-acento: var(--acento);
+  --lateral-acento-texto: var(--acento-texto);
+  --lateral-borde: var(--borde);
   --lateral-ancho: 16rem;
   --lateral-ancho-icono: 3rem;
 
-  /* ---- Radios: todos salen de --radio ---- */
-  --radio: 0.625rem;                                                /* 10px */
-  --radio-sm: calc(var(--radio) - 4px);                             /* 6px */
-  --radio-md: calc(var(--radio) - 2px);                             /* 8px */
-  --radio-lg: var(--radio);                                         /* 10px */
-  --radio-xl: calc(var(--radio) + 4px);                             /* 14px */
-  --radio-2xl: calc(var(--radio) + 8px);                            /* 18px */
-  --radio-3xl: calc(var(--radio) + 12px);                           /* 22px */
-  --radio-4xl: calc(var(--radio) + 16px);                           /* 26px */
-  --radio-total: 9999px;                                            /* rounded-full */
+  --radio: 0.625rem;
+  --radio-sm: calc(var(--radio) - 4px);
+  --radio-md: calc(var(--radio) - 2px);
+  --radio-lg: var(--radio);
+  --radio-xl: calc(var(--radio) + 4px);
+  --radio-2xl: calc(var(--radio) + 8px);
+  --radio-3xl: calc(var(--radio) + 12px);
+  --radio-4xl: calc(var(--radio) + 16px);
+  --radio-total: 9999px;
 
-  /* ---- Sombras: más fuertes en oscuro para que se noten ---- */
+  /* Sombras más fuertes en oscuro. */
   --sombra-color: light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.45));
   --sombra-xs: 0 1px 2px 0 light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.3));
   --sombra-sm: 0 1px 3px 0 var(--sombra-color), 0 1px 2px -1px var(--sombra-color);
@@ -107,12 +95,10 @@
   --sombra-lg: 0 10px 15px -3px var(--sombra-color), 0 4px 6px -4px var(--sombra-color);
   --sombra-xl: 0 20px 25px -5px var(--sombra-color), 0 8px 10px -6px var(--sombra-color);
 
-  /* ---- Tipografía ---- */
   --fuente: "Inter", system-ui, sans-serif;
   --fuente-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* Texto normal fijo en rem: crece exactamente 200% con el zoom.
-     Títulos fluidos (rem + vw): se adaptan a la pantalla y pasan del doble al 300% de zoom. */
+  /* Texto en rem: crece 200 % con el zoom. Títulos fluidos con vw. */
   --letra-xs: 0.75rem;
   --letra-sm: 0.875rem;
   --letra-base: 1rem;

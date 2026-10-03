@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Token contra CSRF para cada formulario POST. Uno por sesión.
+// Un token por sesión.
 final class Csrf
 {
     public static function token(): string

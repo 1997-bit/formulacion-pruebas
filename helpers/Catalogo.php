@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// Lee config/catalogos.php y pinta sus valores. Así un texto o un color se cambia en un solo lugar.
-// La clave es el número que se guarda en la base; acepta int (de PDO) o string (de $_POST).
-//   Catalogo::insignia('estado_caso', $caso['estado'])        -> <span class="insignia …">FAULT</span>
-//   Catalogo::opciones('tipo_prueba', $caso['tipo_prueba'])   -> <option>… para un <select>
-//   Catalogo::existe('severidad', $_POST['severidad'])        -> validar en el servidor antes de guardar
+// Lee y pinta config/catalogos.php. Clave int (PDO) o string ($_POST).
 final class Catalogo
 {
     /** @var array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string}>}>|null */
@@ -33,7 +29,7 @@ final class Catalogo
         return $clave !== null && isset(self::valores($catalogo)[$clave]);
     }
 
-    // Texto para mostrar. Si la clave ya no está en el catálogo, se muestra tal cual en vez de fallar.
+    // Clave desconocida: se muestra tal cual.
     public static function texto(string $catalogo, int|string|null $clave): string
     {
         return self::valores($catalogo)[$clave ?? '']['texto'] ?? (string) $clave;
@@ -47,7 +43,7 @@ final class Catalogo
             . Html::e(self::texto($catalogo, $clave)) . '</span>';
     }
 
-    // <option> de cada valor, con la elegida marcada. El "Elegir…" o "Todos" va aparte, en la vista.
+    // Sin "Elegir…": va en la vista.
     public static function opciones(string $catalogo, int|string|null $elegida = null): string
     {
         $html = '';

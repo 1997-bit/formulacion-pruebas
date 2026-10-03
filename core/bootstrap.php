@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-// Arranque sin Composer: autoloader propio y carga del .env.
-// App\Core\Env -> core/Env.php, App\Models\Caso -> models/Caso.php, etc.
+// Autoloader propio (App\Core\Env -> core/Env.php) y .env.
 spl_autoload_register(function (string $clase): void {
     if (!str_starts_with($clase, 'App\\')) {
         return;
@@ -18,10 +17,5 @@ spl_autoload_register(function (string $clase): void {
 
 App\Core\Env::cargar(RAIZ . '/.env');
 
-// Una sola zona para todo el sistema. MySQL usa la misma al conectar (config/Conexion.php).
-$zona = App\Core\Env::get('APP_ZONA', 'America/Panama');
-if (!in_array($zona, \DateTimeZone::listIdentifiers(), true)) {
-    throw new \RuntimeException("APP_ZONA no es una zona horaria válida: {$zona}");
-}
-date_default_timezone_set($zona);
-unset($zona);
+// La base usa la misma zona (Conexion.php).
+date_default_timezone_set(App\Core\Env::get('APP_ZONA', 'America/Panama'));

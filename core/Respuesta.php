@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Redirecciones, páginas de error y JSON.
 final class Respuesta
 {
     public static function redirigir(string $ruta): never
@@ -34,14 +33,6 @@ final class Respuesta
     {
         http_response_code($codigo);
         echo Vista::capturar('error', ['codigo' => $codigo]);
-        exit;
-    }
-
-    public static function json(mixed $datos, int $codigo = 200): never
-    {
-        http_response_code($codigo);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($datos, JSON_UNESCAPED_UNICODE);
         exit;
     }
 }

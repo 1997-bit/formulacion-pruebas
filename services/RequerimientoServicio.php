@@ -7,11 +7,10 @@ namespace App\Services;
 use App\Core\Validador;
 use App\Models\RequerimientoModelo;
 
-// Registrar y listar requerimientos. Los casos se registran sobre ellos (RF-04).
 final class RequerimientoServicio
 {
     /**
-     * El tipo sale del código: RF es funcional, RNF no funcional.
+     * RNF-xx es no funcional.
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario

@@ -18,26 +18,19 @@ final class RequerimientosControlador
     {
         Vista::pagina('requerimientos/listar', [
             'titulo' => 'Requerimientos',
-            'usuario' => Sesion::usuario(),
             'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
-            'flash' => Sesion::tomarFlash(),
+            'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Requerimientos'], ['texto' => 'Listar']],
         ]);
     }
 
     public function registrar(): void
     {
-        // Errores y datos que dejó Respuesta::errores() en el POST anterior.
-        $errores = $_SESSION['errores'] ?? [];
-        $datos = $_SESSION['datos'] ?? [];
-        unset($_SESSION['errores'], $_SESSION['datos']);
-
         Vista::pagina('requerimientos/registrar', [
             'titulo' => 'Registrar requerimiento',
-            'usuario' => Sesion::usuario(),
             'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
-            'errores' => $errores,
-            'datos' => $datos,
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos', []),
             'migas' => [['texto' => 'Requerimientos', 'ruta' => '/requerimientos/listar'], ['texto' => 'Registrar']],
         ]);
     }

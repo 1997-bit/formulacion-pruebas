@@ -5,8 +5,6 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Aviso de éxito tras guardar y resumen cuando el formulario volvió con errores.
- *
  * @var ?string $flash
  * @var ?array<string, string> $errores
  */

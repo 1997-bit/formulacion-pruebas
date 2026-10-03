@@ -56,18 +56,13 @@ final class AccesoControlador
         Respuesta::redirigir('/');
     }
 
-    // Errores y datos que dejó Respuesta::errores() en el POST anterior.
     private function pintar(string $vista, string $titulo): void
     {
-        $errores = $_SESSION['errores'] ?? [];
-        $datos = $_SESSION['datos'] ?? [];
-        unset($_SESSION['errores'], $_SESSION['datos']);
-
         Vista::pagina($vista, [
             'titulo' => $titulo,
-            'errores' => $errores,
-            'datos' => $datos,
-            'flash' => Sesion::tomarFlash(),
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos', []),
+            'flash' => Sesion::tomar('flash'),
         ], 'layouts/acceso');
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Lector minimo de .env. Reemplaza a vlucas/phpdotenv.
+// Lector mínimo de .env.
 final class Env
 {
     public static function cargar(string $ruta): void

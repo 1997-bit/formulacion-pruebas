@@ -1,11 +1,6 @@
--- Esquema completo (IR, sección 9). Funciona en MySQL 8 y en MariaDB 10.6 o superior.
--- Cargar en una base vacía o existente: mysql casos_prueba < database/schema.sql
--- Borra y crea las tablas: se puede correr de nuevo para empezar desde cero.
--- Catálogos (TINYINT): el número es la clave en config/catalogos.php.
--- Borrado: por defecto RESTRICT; CASCADE solo en lo que no vale sin su dueño.
--- Collation explícita: la de cada motor por defecto no existe en el otro.
--- Formularios: la llave primaria es dueño + orden. InnoDB guarda las filas juntas y ordenadas,
--- y se guardan con DELETE + un INSERT de varias filas en una transacción.
+-- Esquema (IR §9). MySQL 8 o MariaDB 10.6+. Borra y crea todo: mysql casos_prueba < database/schema.sql
+-- TINYINT de catálogo: clave en config/catalogos.php. Collation explícita: compatible con ambos motores.
+-- Formularios: llave dueño + orden; se guardan con DELETE + un INSERT en transacción.
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP VIEW IF EXISTS v_trazabilidad;
@@ -15,14 +10,14 @@ DROP TABLE IF EXISTS portafolio, autoevaluaciones, rubrica_evaluaciones, plan_pr
     requerimientos, proyecto_miembros, proyectos, usuarios;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ---------- Núcleo ----------
+-- Núcleo
 
 CREATE TABLE usuarios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL, -- nombre completo en un campo (RNF-05)
+    nombre VARCHAR(100) NOT NULL, -- RNF-05
     usuario VARCHAR(30) NOT NULL UNIQUE,
-    clave VARCHAR(255) NOT NULL, -- password_hash con PASSWORD_ARGON2ID
-    rol TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 tester, 1 admin
+    clave VARCHAR(255) NOT NULL, -- Argon2id
+    rol TINYINT UNSIGNED NOT NULL DEFAULT 0,
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -44,24 +39,24 @@ CREATE TABLE proyecto_miembros (
 CREATE TABLE requerimientos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     proyecto_id INT UNSIGNED NOT NULL,
-    codigo VARCHAR(10) NOT NULL, -- RF-01, RNF-03
+    codigo VARCHAR(10) NOT NULL,
     descripcion TEXT NOT NULL,
-    no_funcional TINYINT NOT NULL DEFAULT 0, -- 0 funcional, 1 no funcional
+    no_funcional TINYINT NOT NULL DEFAULT 0,
     UNIQUE (proyecto_id, codigo),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 1.
+-- F1
 CREATE TABLE casos_prueba (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    proyecto_id INT UNSIGNED NOT NULL, -- igual al del requerimiento; lo revisa el servicio
+    proyecto_id INT UNSIGNED NOT NULL, -- igual al del requerimiento
     requerimiento_id INT UNSIGNED NOT NULL,
-    codigo VARCHAR(10) NOT NULL, -- sigla del tipo + consecutivo: SIS-001
-    tipo_prueba TINYINT UNSIGNED NOT NULL, -- 1 UNI … 9 SEG
-    subtecnica TINYINT UNSIGNED NOT NULL, -- 1 a 10 caja negra, 11 a 20 caja blanca
+    codigo VARCHAR(10) NOT NULL, -- SIS-001
+    tipo_prueba TINYINT UNSIGNED NOT NULL,
+    subtecnica TINYINT UNSIGNED NOT NULL,
     modulo VARCHAR(100) NOT NULL,
-    plataforma TINYINT UNSIGNED NOT NULL, -- 1 Web … 5 API
-    entorno VARCHAR(255) NULL, -- detalle de la plataforma: SO, navegador, versión
+    plataforma TINYINT UNSIGNED NOT NULL,
+    entorno VARCHAR(255) NULL,
     objetivo TEXT NOT NULL,
     precondiciones TEXT NULL,
     entrada TEXT NOT NULL,
@@ -69,15 +64,15 @@ CREATE TABLE casos_prueba (
     resultado_esperado TEXT NOT NULL,
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
-    estado TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 Pendiente, 1 OK, 2 FAULT
+    estado TINYINT UNSIGNED NOT NULL DEFAULT 0,
     resultado_obtenido TEXT NULL,
     observaciones TEXT NULL,
-    creado_por INT UNSIGNED NOT NULL, -- RF-06: tester edita solo los suyos
+    creado_por INT UNSIGNED NOT NULL, -- RF-06
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    anotado_por INT UNSIGNED NULL, -- RF-24: quién y cuándo anotó el resultado
+    anotado_por INT UNSIGNED NULL, -- RF-24
     anotado_en DATETIME NULL,
     UNIQUE (proyecto_id, codigo),
-    INDEX (proyecto_id, estado), -- filtros de /casos/listar
+    INDEX (proyecto_id, estado),
     CHECK (fecha_fin >= fecha_inicio),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
     FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id),
@@ -85,24 +80,24 @@ CREATE TABLE casos_prueba (
     FOREIGN KEY (anotado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- Seguimiento ----------
+-- Seguimiento
 
--- Formulario 10.
+-- F10
 CREATE TABLE incidentes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    proyecto_id INT UNSIGNED NOT NULL, -- igual al del caso; da el consecutivo del código
+    proyecto_id INT UNSIGNED NOT NULL, -- igual al del caso
     caso_id INT UNSIGNED NOT NULL,
-    codigo VARCHAR(10) NOT NULL, -- BUG-001
+    codigo VARCHAR(10) NOT NULL,
     titulo VARCHAR(150) NOT NULL,
     modulo VARCHAR(100) NOT NULL,
     descripcion TEXT NOT NULL,
     pasos TEXT NOT NULL,
     resultado_esperado TEXT NOT NULL,
     resultado_obtenido TEXT NOT NULL,
-    severidad TINYINT UNSIGNED NOT NULL, -- 1 Baja, 2 Media, 3 Alta, 4 Crítica
-    prioridad TINYINT UNSIGNED NOT NULL, -- 1 Baja, 2 Media, 3 Alta
-    estado TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 Abierto, 1 En progreso, 2 Cerrado
-    es_stopper TINYINT NOT NULL DEFAULT 0, -- 0 no, 1 sí
+    severidad TINYINT UNSIGNED NOT NULL,
+    prioridad TINYINT UNSIGNED NOT NULL,
+    estado TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    es_stopper TINYINT NOT NULL DEFAULT 0,
     asignado_id INT UNSIGNED NULL,
     creado_por INT UNSIGNED NOT NULL,
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -113,16 +108,15 @@ CREATE TABLE incidentes (
     FOREIGN KEY (creado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Una fila por evidencia marcada en el formulario 1 o el 10.
 CREATE TABLE evidencias (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     caso_id INT UNSIGNED NOT NULL,
-    incidente_id INT UNSIGNED NULL, -- lleno si se subió con un incidente del caso
-    tipo TINYINT UNSIGNED NOT NULL, -- 1 Captura, 2 Log, 3 Documento, 4 Enlace
-    archivo VARCHAR(50) NULL, -- nombre aleatorio en storage/evidencias/
+    incidente_id INT UNSIGNED NULL,
+    tipo TINYINT UNSIGNED NOT NULL,
+    archivo VARCHAR(50) NULL, -- en storage/evidencias/
     nombre_original VARCHAR(255) NULL,
     enlace VARCHAR(500) NULL,
-    descripcion VARCHAR(255) NOT NULL, -- texto alternativo
+    descripcion VARCHAR(255) NOT NULL,
     subido_por INT UNSIGNED NOT NULL,
     subido_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHECK ((tipo = 4) = (enlace IS NOT NULL) AND (tipo = 4) = (archivo IS NULL)),
@@ -131,12 +125,12 @@ CREATE TABLE evidencias (
     FOREIGN KEY (subido_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- RF-20. Valores de catálogo se guardan como número y se muestran con Catalogo::texto().
+-- RF-20
 CREATE TABLE logs_cambios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     caso_id INT UNSIGNED NOT NULL,
     usuario_id INT UNSIGNED NOT NULL,
-    campo VARCHAR(50) NOT NULL, -- nombre de la columna de casos_prueba
+    campo VARCHAR(50) NOT NULL,
     antes TEXT NULL,
     despues TEXT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -144,12 +138,12 @@ CREATE TABLE logs_cambios (
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- Formularios 2 a 5: de un requerimiento ----------
+-- F2 a F5: de un requerimiento
 
--- Formulario 2.
+-- F2
 CREATE TABLE clases_equivalencia (
     requerimiento_id INT UNSIGNED NOT NULL,
-    orden TINYINT UNSIGNED NOT NULL, -- posición en pantalla, desde 1
+    orden TINYINT UNSIGNED NOT NULL,
     campo VARCHAR(100) NOT NULL,
     clase_valida TEXT NOT NULL,
     clases_invalidas TEXT NOT NULL,
@@ -159,7 +153,7 @@ CREATE TABLE clases_equivalencia (
     FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 3. Mínimo y máximo son texto: pueden ser números, fechas o largos.
+-- F3. Mínimo y máximo en texto: números, fechas o largos.
 CREATE TABLE valor_limite (
     requerimiento_id INT UNSIGNED NOT NULL,
     orden TINYINT UNSIGNED NOT NULL,
@@ -173,30 +167,30 @@ CREATE TABLE valor_limite (
     FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 4. Cada fila es una condición o una acción; cada columna, una regla.
+-- F4: filas son condiciones o acciones; columnas, reglas.
 CREATE TABLE decision_filas (
     requerimiento_id INT UNSIGNED NOT NULL,
     orden TINYINT UNSIGNED NOT NULL,
-    es_accion TINYINT NOT NULL DEFAULT 0, -- 0 condición, 1 acción
+    es_accion TINYINT NOT NULL DEFAULT 0,
     texto VARCHAR(255) NOT NULL,
     PRIMARY KEY (requerimiento_id, orden),
     FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Solo se guardan las celdas marcadas: una condición sin fila aquí es "—"; una acción, vacía.
+-- Solo celdas marcadas: sin fila es "—".
 CREATE TABLE decision_celdas (
     requerimiento_id INT UNSIGNED NOT NULL,
     fila_orden TINYINT UNSIGNED NOT NULL,
-    regla TINYINT UNSIGNED NOT NULL, -- número de columna, desde 1
-    valor TINYINT NOT NULL, -- condición: 1 V, 0 F. Acción: 1 X
+    regla TINYINT UNSIGNED NOT NULL,
+    valor TINYINT NOT NULL, -- condición 1 V, 0 F; acción 1 X
     PRIMARY KEY (requerimiento_id, fila_orden, regla),
     FOREIGN KEY (requerimiento_id, fila_orden) REFERENCES decision_filas (requerimiento_id, orden) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 5. El porcentaje lo calcula la base: no puede diferir del que se ve.
+-- F5. El porcentaje lo calcula la base.
 CREATE TABLE cobertura_blanca (
     requerimiento_id INT UNSIGNED NOT NULL,
-    metrica TINYINT UNSIGNED NOT NULL, -- sub-técnica de caja blanca: 11, 12, 13, 16, 18
+    metrica TINYINT UNSIGNED NOT NULL, -- sub-técnica de caja blanca
     total INT UNSIGNED NOT NULL,
     cubiertos INT UNSIGNED NOT NULL,
     porcentaje DECIMAL(5, 2) AS (IF(total = 0, 0, cubiertos * 100 / total)) STORED,
@@ -207,9 +201,9 @@ CREATE TABLE cobertura_blanca (
     FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- Formularios 6 a 9: de un proyecto ----------
+-- F6 a F9: de un proyecto
 
--- Formulario 6. Uno por proyecto.
+-- F6
 CREATE TABLE plan_pruebas (
     proyecto_id INT UNSIGNED NOT NULL PRIMARY KEY,
     version VARCHAR(20) NOT NULL,
@@ -217,21 +211,21 @@ CREATE TABLE plan_pruebas (
     fecha DATE NOT NULL,
     alcance TEXT NOT NULL,
     objetivos TEXT NOT NULL,
-    estrategia TINYINT UNSIGNED NOT NULL, -- 1 Caja negra, 2 Caja blanca, 3 Mixta
+    estrategia TINYINT UNSIGNED NOT NULL,
     recursos TEXT NULL,
     cronograma TEXT NULL,
     criterios_aceptacion TEXT NOT NULL,
     riesgos TEXT NULL,
-    estado TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 Borrador, 1 Aprobado, 2 Cerrado
+    estado TINYINT UNSIGNED NOT NULL DEFAULT 0,
     actualizado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id) ON DELETE CASCADE,
     FOREIGN KEY (responsable_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 7. Solo admin. El total sobre 30 es SUM(puntos): no se guarda.
+-- F7. Total = SUM(puntos).
 CREATE TABLE rubrica_evaluaciones (
     proyecto_id INT UNSIGNED NOT NULL,
-    criterio TINYINT UNSIGNED NOT NULL, -- 1 Diseño de casos … 6 Presentación
+    criterio TINYINT UNSIGNED NOT NULL,
     puntos TINYINT UNSIGNED NOT NULL,
     evaluado_por INT UNSIGNED NOT NULL,
     evaluado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -241,13 +235,12 @@ CREATE TABLE rubrica_evaluaciones (
     FOREIGN KEY (evaluado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 8. Autoevaluación cuando evaluador = evaluado. Promedios con AVG(puntos).
--- Las llaves a proyecto_miembros obligan a que ambos sean del proyecto.
+-- F8. Auto si evaluador = evaluado. Ambos deben ser miembros.
 CREATE TABLE autoevaluaciones (
     proyecto_id INT UNSIGNED NOT NULL,
     evaluador_id INT UNSIGNED NOT NULL,
     evaluado_id INT UNSIGNED NOT NULL,
-    aspecto TINYINT UNSIGNED NOT NULL, -- 1 Comprensión de conceptos … 6 Cumplimiento de plazos
+    aspecto TINYINT UNSIGNED NOT NULL,
     puntos TINYINT UNSIGNED NOT NULL,
     comentario VARCHAR(500) NULL,
     PRIMARY KEY (proyecto_id, evaluador_id, evaluado_id, aspecto),
@@ -256,24 +249,23 @@ CREATE TABLE autoevaluaciones (
     FOREIGN KEY (proyecto_id, evaluado_id) REFERENCES proyecto_miembros (proyecto_id, usuario_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Formulario 9. Lo que entrega cada persona por semana de la unidad.
+-- F9
 CREATE TABLE portafolio (
     proyecto_id INT UNSIGNED NOT NULL,
     usuario_id INT UNSIGNED NOT NULL,
     orden TINYINT UNSIGNED NOT NULL,
     semana TINYINT UNSIGNED NOT NULL,
     evidencia VARCHAR(150) NOT NULL,
-    tipo TINYINT UNSIGNED NOT NULL, -- 1 Documento … 5 Presentación
+    tipo TINYINT UNSIGNED NOT NULL,
     fecha DATE NOT NULL,
     observaciones TEXT NULL,
     PRIMARY KEY (proyecto_id, usuario_id, orden),
     FOREIGN KEY (proyecto_id, usuario_id) REFERENCES proyecto_miembros (proyecto_id, usuario_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- Vista ----------
+-- Vista
 
--- Un requerimiento sin casos sale con caso NULL: así se ven los huecos.
--- Las evidencias se cuentan con subconsulta y no con GROUP BY: igual en ambos motores.
+-- Requerimiento sin casos: caso NULL. Subconsulta en vez de GROUP BY: igual en ambos motores.
 CREATE VIEW v_trazabilidad AS
 SELECT r.proyecto_id,
        r.id AS requerimiento_id,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-// Permisos sobre datos según la matriz 7.1 del IR. Lanzan ErrorPermiso.
+// Matriz 7.1 del IR.
 final class Permisos
 {
     /** @param array<string, mixed> $usuario */

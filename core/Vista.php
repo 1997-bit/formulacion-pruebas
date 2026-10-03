@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Renderiza plantillas de views/. Cada pagina pinta su vista dentro de un layout.
+// Vista dentro de un layout.
 final class Vista
 {
     /** @param array<string, mixed> $datos */
     public static function pagina(string $vista, array $datos = [], string $layout = 'layouts/app'): void
     {
+        $datos['usuario'] ??= Sesion::usuario();
         $datos['contenido'] = self::capturar($vista, $datos);
         echo self::capturar($layout, $datos);
     }

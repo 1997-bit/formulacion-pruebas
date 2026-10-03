@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Front controller. Todas las peticiones pasan por aqui.
+// Toda petición entra aquí.
 define('RAIZ', dirname(__DIR__));
 require RAIZ . '/core/bootstrap.php';
 
@@ -18,7 +18,7 @@ $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $ruta = Ruteador::buscar($metodo, $_SERVER['REQUEST_URI'] ?? '/') ?? Respuesta::error(404);
 $usuario = Sesion::usuario();
 
-// Sesión y rol de la ruta (RF-21, RNF-02).
+// RF-21, RNF-02
 if ($ruta['rol'] !== null && $usuario === null) {
     Respuesta::redirigir('/');
 }

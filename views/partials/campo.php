@@ -5,7 +5,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Etiqueta, control, ayuda y error enlazados con aria-describedby (RNF-07).
+ * RNF-07
  *
  * @var string $nombre
  * @var string $etiqueta
