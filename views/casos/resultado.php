@@ -28,6 +28,7 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
     <h1><?= Html::e($caso['modulo']) ?></h1>
   </div>
   <div class="acciones">
+    <a class="btn btn-secundario" href="/formularios/incidentes?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
       <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
@@ -111,6 +112,12 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
           <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
         <?php endif; ?>
         <dt>Creado por</dt><dd><?= Html::e($caso['autor']) ?> · <?= $hora($caso['creado_en']) ?></dd>
+        <?php if ($caso['incidentes']): ?>
+          <dt>Incidentes</dt>
+          <?php foreach ($caso['incidentes'] as $i): ?>
+            <dd><span class="codigo"><?= Html::e($i['codigo']) ?></span> <?= Catalogo::insignia('estado_incidente', $i['estado']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?> <?= Html::e($i['titulo']) ?></dd>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </dl>
     </aside>
   </div>
