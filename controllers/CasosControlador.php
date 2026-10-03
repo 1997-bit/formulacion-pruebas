@@ -9,9 +9,11 @@ use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
 use App\Services\CasoServicio;
+use App\Services\Historial;
+use App\Services\Permisos;
 use App\Services\RequerimientoServicio;
 
-// RF-04, RF-05, RF-24
+// RF-04, RF-05, RF-06, RF-07, RF-22, RF-24
 final class CasosControlador
 {
     private const CAMPOS = [
@@ -25,11 +27,18 @@ final class CasosControlador
 
     public function listar(): void
     {
-        [$casos, $paginacion] = CasoServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
+        $filtros = [];
+        foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
+            $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
+        }
+        [$casos, $paginacion] = CasoServicio::listar(Sesion::usuario(), $filtros, (int) ($_GET['pagina'] ?? 1));
         Vista::pagina('casos/listar', [
             'titulo' => 'Casos de prueba',
             'casos' => $casos,
             'paginacion' => $paginacion,
+            'filtros' => $filtros,
+            'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
+            'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Casos de prueba'], ['texto' => 'Listar']],
         ]);
@@ -37,8 +46,10 @@ final class CasosControlador
 
     public function registrar(): void
     {
-        Vista::pagina('casos/registrar', [
+        Vista::pagina('casos/formulario', [
             'titulo' => 'Registrar caso',
+            'caso' => null,
+            'historial' => [],
             'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => []]),
@@ -58,12 +69,44 @@ final class CasosControlador
         Respuesta::exito("Caso {$codigo} guardado.", '/casos/resultado?id=' . $id);
     }
 
+    public function editar(): void
+    {
+        $caso = CasoServicio::paraEditar((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
+        Vista::pagina('casos/formulario', [
+            'titulo' => 'Editar ' . $caso['codigo'],
+            'caso' => $caso,
+            'historial' => Historial::deCaso($caso['id']),
+            'requerimientos' => array_values(CasoServicio::requerimientos($caso, Sesion::usuario())),
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos') ?? array_map('strval', array_intersect_key($caso, array_flip(self::CAMPOS))),
+            'migas' => [
+                ['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'],
+                ['texto' => $caso['codigo'], 'ruta' => '/casos/resultado?id=' . $caso['id']],
+                ['texto' => 'Editar'],
+            ],
+        ]);
+    }
+
+    public function actualizar(): void
+    {
+        $id = (int) ($_POST['id'] ?? 0);
+        CasoServicio::paraEditar($id, Sesion::usuario()) ?? Respuesta::error(404);
+        $datos = $this->texto(self::CAMPOS);
+        try {
+            $codigo = CasoServicio::editar($id, $datos, Sesion::usuario());
+        } catch (ErrorValidacion $e) {
+            Respuesta::errores($e->errores, $datos, '/casos/editar?id=' . $id);
+        }
+        Respuesta::exito("Caso {$codigo} guardado.", '/casos/resultado?id=' . $id);
+    }
+
     public function resultado(): void
     {
         $caso = CasoServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
         Vista::pagina('casos/resultado', [
             'titulo' => $caso['codigo'],
             'caso' => $caso,
+            'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [
@@ -88,6 +131,18 @@ final class CasosControlador
             Respuesta::errores($e->errores, $datos + ['evidencias' => $marcadas], '/casos/resultado?id=' . $id);
         }
         Respuesta::exito("Resultado de {$codigo} guardado.", '/casos/resultado?id=' . $id);
+    }
+
+    public function eliminar(): void
+    {
+        $id = (int) ($_POST['id'] ?? 0);
+        $caso = CasoServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
+        try {
+            CasoServicio::eliminar($id, Sesion::usuario());
+        } catch (ErrorValidacion $e) {
+            Respuesta::errores($e->errores, [], '/casos/resultado?id=' . $id);
+        }
+        Respuesta::exito("Caso {$caso['codigo']} eliminado.", '/casos/listar');
     }
 
     /**

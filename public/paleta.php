@@ -886,7 +886,7 @@ Contraseña: (vacía)</textarea>
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Casos de prueba del proyecto</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th></tr>
         </thead>
         <tbody>
           <?php
@@ -904,12 +904,6 @@ Contraseña: (vacía)</textarea>
               <td data-columna="Tipo"><?= Html::e(Catalogo::texto('tipo_prueba', $tipo)) ?></td>
               <td data-columna="Creado por"><?= Html::e($autor) ?></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $estado) ?></td>
-              <td class="celda-acciones">
-                <div class="acciones">
-                  <a class="btn btn-fantasma btn-icono" href="#" aria-label="Editar <?= Html::e($codigo) ?>" data-tooltip="Editar"><?= Icono::svg('pencil') ?></a>
-                  <button class="btn btn-fantasma btn-icono" type="button" data-abrir-dialogo="dlg-eliminar" aria-label="Eliminar <?= Html::e($codigo) ?>" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-                </div>
-              </td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -1097,6 +1091,7 @@ Contraseña: (vacía)</textarea>
           <a class="btn btn-secundario" href="#"><?= Icono::svg('pencil') ?> Editar</a>
           <a class="btn btn-secundario" href="#"><?= Icono::svg('bug') ?> Registrar incidente</a>
           <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+          <button class="btn btn-secundario btn-icono" type="button" data-abrir-dialogo="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
         </div>
       </header>
 
@@ -1193,13 +1188,13 @@ Contraseña: (vacía)</dd>
 
   <section class="seccion" id="dialogo">
     <h2>Diálogo de confirmación</h2>
-    <p>&lt;dialog&gt; nativo: atrapa el foco y se cierra con Escape sin código extra (RNF-04). También se abre desde el ícono de eliminar de la tabla.</p>
+    <p>&lt;dialog&gt; nativo: atrapa el foco y se cierra con Escape sin código extra (RNF-04). Se abre desde el ícono de eliminar del detalle del caso, solo para admin.</p>
     <div class="marco escenario">
       <button class="btn btn-peligro" type="button" data-abrir-dialogo="dlg-eliminar"><?= Icono::svg('trash-2') ?> Eliminar caso</button>
     </div>
     <dialog class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
       <h2 id="dlg-eliminar-titulo">¿Eliminar este caso de prueba?</h2>
-      <p>Su historial y sus evidencias se borran con él. Esta acción no se puede deshacer.</p>
+      <p>Si tiene evidencias o incidentes no se elimina. Esta acción no se puede deshacer.</p>
       <form method="dialog" class="acciones">
         <button class="btn btn-secundario" value="cancelar" autofocus>Cancelar</button>
         <button class="btn btn-peligro" value="eliminar">Eliminar</button>
@@ -1374,7 +1369,7 @@ Contraseña: (vacía)</dd>
           <div class="velo escena-capa"></div>
           <div class="dialogo dialogo-demo">
             <h2>¿Eliminar este caso de prueba?</h2>
-            <p>Su historial y sus evidencias se borran con él.</p>
+            <p>Si tiene evidencias o incidentes no se elimina.</p>
             <div class="acciones">
               <button class="btn btn-secundario" type="button">Cancelar</button>
               <button class="btn btn-peligro" type="button">Eliminar</button>

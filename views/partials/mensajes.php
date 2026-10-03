@@ -16,6 +16,6 @@ use App\Helpers\Icono;
 <?php endif; ?>
 <?php if (!empty($errores)): ?>
   <div class="alerta alerta-error" role="alert"><?= Icono::svg('circle-alert') ?>
-    <p class="alerta-titulo">Revise los campos marcados.</p>
+    <p class="alerta-titulo"><?= Html::e($errores['general'] ?? 'Revise los campos marcados.') ?></p>
   </div>
 <?php endif; ?>
