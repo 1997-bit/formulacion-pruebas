@@ -11,6 +11,7 @@ use App\Core\Validador;
 use App\Helpers\Catalogo;
 use App\Models\CasoModelo;
 use App\Models\EvidenciaModelo;
+use App\Models\IncidenteModelo;
 use App\Models\RequerimientoModelo;
 
 // RF-04, RF-05, RF-07, RF-24
@@ -181,7 +182,7 @@ final class CasoServicio
     }
 
     /**
-     * Con 'evidencias'. Null si no existe.
+     * Con 'evidencias' e 'incidentes'. Null si no existe.
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -194,7 +195,7 @@ final class CasoServicio
         }
         Permisos::exigirMiembro($usuario, (int) $caso['proyecto_id']);
 
-        return $caso + ['evidencias' => EvidenciaModelo::deCaso($id)];
+        return $caso + ['evidencias' => EvidenciaModelo::deCaso($id), 'incidentes' => IncidenteModelo::deCaso($id)];
     }
 
     /**
