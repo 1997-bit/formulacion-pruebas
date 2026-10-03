@@ -76,13 +76,14 @@ return [
             5 => ['texto' => 'API', 'variante' => 'borde'],
         ],
     ],
-    // Captura acepta png y jpg; archivo, pdf, txt y log (RNF-03).
+    // Captura: png y jpg. Log: txt y log. Documento: pdf (RNF-03).
     'tipo_evidencia' => [
         'nombre' => 'Tipo de evidencia',
         'valores' => [
             1 => ['texto' => 'Captura', 'variante' => 'borde'],
-            2 => ['texto' => 'Archivo', 'variante' => 'borde'],
-            3 => ['texto' => 'Enlace', 'variante' => 'borde'],
+            2 => ['texto' => 'Log', 'variante' => 'borde'],
+            3 => ['texto' => 'Documento', 'variante' => 'borde'],
+            4 => ['texto' => 'Enlace', 'variante' => 'borde'],
         ],
     ],
     // De menor a mayor: ORDER BY severidad DESC deja lo más grave arriba.

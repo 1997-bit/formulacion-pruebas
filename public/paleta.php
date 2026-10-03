@@ -369,8 +369,9 @@ Contraseña: (vacía)</textarea>
           // Un bloque por tipo de evidencia: aparece solo si su casilla está marcada.
           $evidencias = [
               1 => ['image', 'captura', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
-              2 => ['file-text', 'archivo', 'file', 'accept=".pdf,.txt,.log"', 'Log o documento: PDF, TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
-              3 => ['link', 'enlace', 'url', 'placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
+              2 => ['terminal', 'log', 'file', 'accept=".txt,.log"', 'Salida de consola o del servidor: TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
+              3 => ['file-text', 'documento', 'file', 'accept=".pdf"', 'Reporte o informe en PDF, máximo 5 MB.', 'Reporte de cobertura de PHPUnit'],
+              4 => ['link', 'enlace', 'url', 'placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
           ];
           ?>
           <fieldset class="grupo" aria-describedby="f-evidencias-ayuda">
@@ -1146,7 +1147,7 @@ Contraseña: (vacía)</dd>
               <?php
               $evidencias = [
                   ['image', 'SIS-002_1.png', 'PNG · 240 KB · 30/09/2026 14:20', 'Pantalla de login con el mensaje de error'],
-                  ['file-text', 'SIS-002_2.log', 'LOG · 3 KB · 30/09/2026 14:21', 'Registro del servidor durante el intento'],
+                  ['terminal', 'SIS-002_2.log', 'LOG · 3 KB · 30/09/2026 14:21', 'Registro del servidor durante el intento'],
               ];
               foreach ($evidencias as [$icono, $archivo, $detalle, $descripcion]): ?>
                 <li class="archivo">
