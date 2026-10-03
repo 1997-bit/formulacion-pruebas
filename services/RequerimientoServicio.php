@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\RequerimientoModelo;
 
@@ -44,6 +45,20 @@ final class RequerimientoServicio
     public static function listar(array $usuario): array
     {
         return RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+    }
+
+    /**
+     * RNF-09
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @return array{0: list<array<string, mixed>>, 1: Paginacion}
+     */
+    public static function pagina(array $usuario, int $pagina): array
+    {
+        $admin = $usuario['rol'] === 1;
+        $paginacion = new Paginacion(RequerimientoModelo::contar($usuario['id'], $admin), $pagina);
+
+        return [RequerimientoModelo::listar($usuario['id'], $admin, $paginacion->offset()), $paginacion];
     }
 
     /**

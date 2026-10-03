@@ -16,7 +16,7 @@ INSERT INTO proyecto_miembros (proyecto_id, usuario_id) VALUES
 
 INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) VALUES
     (1, 1, 'RF-01', 'Iniciar sesión con usuario y contraseña. Un inicio fallido no dice si el usuario existe.', 0),
-    (2, 1, 'RNF-03', 'Evidencias: solo png, jpg, pdf, txt o log. Máximo 5 MB. El archivo se renombra y se guarda fuera de la raíz pública.', 1),
+    (2, 1, 'RNF-03', 'Evidencias: solo png, jpg, txt o log, o un enlace. Máximo 5 MB. El archivo se renombra y se guarda fuera de la raíz pública.', 1),
     (3, 2, 'RF-01', 'Prestar un libro. No se presta si el estudiante tiene 3 préstamos activos o una multa sin pagar.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,

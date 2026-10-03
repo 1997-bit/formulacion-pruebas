@@ -15,16 +15,21 @@ use App\Services\RequerimientoServicio;
 final class CasosControlador
 {
     private const CAMPOS = [
-        'requerimiento_id', 'tipo_prueba', 'tecnica', 'subtecnica', 'modulo', 'plataforma', 'entorno', 'objetivo',
+        'requerimiento_id', 'tipo_prueba', 'subtecnica', 'modulo', 'plataforma', 'entorno', 'objetivo',
         'precondiciones', 'entrada', 'pasos', 'resultado_esperado', 'fecha_inicio', 'fecha_fin',
-        'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace', 'evidencia_descripcion',
+    ];
+    private const CAMPOS_RESULTADO = [
+        'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace',
+        'descripcion_captura', 'descripcion_log', 'descripcion_enlace',
     ];
 
     public function listar(): void
     {
+        [$casos, $paginacion] = CasoServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
         Vista::pagina('casos/listar', [
             'titulo' => 'Casos de prueba',
-            'casos' => CasoServicio::listar(Sesion::usuario()),
+            'casos' => $casos,
+            'paginacion' => $paginacion,
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Casos de prueba'], ['texto' => 'Listar']],
         ]);
@@ -36,24 +41,86 @@ final class CasosControlador
             'titulo' => 'Registrar caso',
             'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
-            'datos' => Sesion::tomar('datos', []),
+            'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => []]),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
         ]);
     }
 
     public function guardar(): void
     {
+        $datos = $this->texto([...self::CAMPOS, ...self::CAMPOS_RESULTADO]);
+        $marcadas = $this->marcadas();
+        try {
+            [$id, $codigo] = CasoServicio::registrar($datos, $marcadas, $this->archivos(), Sesion::usuario());
+        } catch (ErrorValidacion $e) {
+            Respuesta::errores($e->errores, $datos + ['evidencias' => $marcadas], '/casos/registrar');
+        }
+        Respuesta::exito("Caso {$codigo} guardado.", '/casos/resultado?id=' . $id);
+    }
+
+    public function resultado(): void
+    {
+        $caso = CasoServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
+        Vista::pagina('casos/resultado', [
+            'titulo' => $caso['codigo'],
+            'caso' => $caso,
+            'flash' => Sesion::tomar('flash'),
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos') ?? [
+                'estado' => (string) $caso['estado'],
+                'resultado_obtenido' => (string) $caso['resultado_obtenido'],
+                'observaciones' => (string) $caso['observaciones'],
+                'evidencias' => [],
+            ],
+            'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => $caso['codigo']]],
+        ]);
+    }
+
+    public function anotar(): void
+    {
+        $id = (int) ($_POST['id'] ?? 0);
+        CasoServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
+        $datos = $this->texto(self::CAMPOS_RESULTADO);
+        $marcadas = $this->marcadas();
+        try {
+            $codigo = CasoServicio::registrarResultado($id, $datos, $marcadas, $this->archivos(), Sesion::usuario());
+        } catch (ErrorValidacion $e) {
+            Respuesta::errores($e->errores, $datos + ['evidencias' => $marcadas], '/casos/resultado?id=' . $id);
+        }
+        Respuesta::exito("Resultado de {$codigo} guardado.", '/casos/resultado?id=' . $id);
+    }
+
+    /**
+     * @param list<string> $campos
+     * @return array<string, string>
+     */
+    private function texto(array $campos): array
+    {
         $datos = [];
-        foreach (self::CAMPOS as $campo) {
+        foreach ($campos as $campo) {
             $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
         }
-        $archivo = $_FILES['evidencia'] ?? null;
-        $archivo = is_array($archivo) && is_string($archivo['name'] ?? null) ? $archivo : null;
-        try {
-            $codigo = CasoServicio::registrar($datos, $archivo, Sesion::usuario());
-        } catch (ErrorValidacion $e) {
-            Respuesta::errores($e->errores, $datos, '/casos/registrar');
+
+        return $datos;
+    }
+
+    /** @return list<string> */
+    private function marcadas(): array
+    {
+        return is_array($_POST['evidencias'] ?? null) ? array_values(array_filter($_POST['evidencias'], 'is_string')) : [];
+    }
+
+    /** @return array<string, array{name: string, tmp_name: string, size: int, error: int}> */
+    private function archivos(): array
+    {
+        $archivos = [];
+        foreach (['captura', 'log'] as $nombre) {
+            $archivo = $_FILES['evidencia_' . $nombre] ?? null;
+            if (is_array($archivo) && is_string($archivo['name'] ?? null)) {
+                $archivos[$nombre] = $archivo;
+            }
         }
-        Respuesta::exito("Caso {$codigo} guardado.", '/casos/listar');
+
+        return $archivos;
     }
 }
