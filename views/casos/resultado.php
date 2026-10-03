@@ -115,7 +115,7 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
         <?php if ($caso['incidentes']): ?>
           <dt>Incidentes</dt>
           <?php foreach ($caso['incidentes'] as $i): ?>
-            <dd><span class="codigo"><?= Html::e($i['codigo']) ?></span> <?= Catalogo::insignia('estado_incidente', $i['estado']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?> <?= Html::e($i['titulo']) ?></dd>
+            <dd><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a> <?= Catalogo::insignia('estado_incidente', $i['estado']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?> <?= Html::e($i['titulo']) ?></dd>
           <?php endforeach; ?>
         <?php endif; ?>
       </dl>

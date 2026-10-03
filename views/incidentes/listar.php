@@ -39,7 +39,7 @@ use App\Helpers\Icono;
         <tbody>
           <?php foreach ($incidentes as $i): ?>
             <tr>
-              <td data-columna="Código"><span class="codigo"><?= Html::e($i['codigo']) ?></span></td>
+              <td data-columna="Código"><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a></td>
               <td data-columna="Título" class="celda-larga"><?= Html::e($i['titulo']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?></td>
               <td data-columna="Caso"><a class="codigo" href="/casos/resultado?id=<?= (int) $i['caso_id'] ?>"><?= Html::e($i['caso']) ?></a></td>
               <td data-columna="Proyecto"><?= Html::e($i['proyecto']) ?></td>
