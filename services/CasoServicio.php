@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Helpers\Catalogo;
@@ -12,7 +13,7 @@ use App\Models\CasoModelo;
 use App\Models\EvidenciaModelo;
 use App\Models\RequerimientoModelo;
 
-// RF-04, RF-05, RF-24
+// RF-04, RF-05, RF-07, RF-24
 final class CasoServicio
 {
     // Tipo de evidencia => sufijo de los campos: evidencia_captura, descripcion_captura…
@@ -168,6 +169,15 @@ final class CasoServicio
         }
 
         return $caso['codigo'];
+    }
+
+    /** @param array{id: int, rol: int} $usuario */
+    public static function eliminar(int $id, array $usuario): void
+    {
+        Permisos::exigirAdmin($usuario);
+        if (!CasoModelo::eliminar($id)) {
+            throw new ErrorValidacion(['general' => 'Tiene evidencias o incidentes: no se puede eliminar.']);
+        }
     }
 
     /**
