@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\ErrorPermiso;
+use App\Models\ProyectoModelo;
 
 // Matriz 7.1 del IR.
 final class Permisos
@@ -20,7 +21,9 @@ final class Permisos
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
-        throw new \LogicException('Pendiente');
+        if ($usuario['rol'] !== 1 && !ProyectoModelo::esMiembro($proyectoId, $usuario['id'])) {
+            throw new ErrorPermiso();
+        }
     }
 
     /**
@@ -29,6 +32,9 @@ final class Permisos
      */
     public static function exigirEditarCaso(array $usuario, array $caso): void
     {
-        throw new \LogicException('Pendiente');
+        self::exigirMiembro($usuario, $caso['proyecto_id']);
+        if ($usuario['rol'] !== 1 && $caso['creado_por'] !== $usuario['id']) {
+            throw new ErrorPermiso();
+        }
     }
 }

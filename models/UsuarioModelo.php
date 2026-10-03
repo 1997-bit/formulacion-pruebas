@@ -33,6 +33,12 @@ final class UsuarioModelo
         return Conexion::pdo()->query('SELECT id, nombre, usuario, rol, creado_en FROM usuarios ORDER BY nombre')->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** @return list<array<string, mixed>> */
+    public static function testers(): array
+    {
+        return Conexion::pdo()->query('SELECT id, nombre, usuario FROM usuarios WHERE rol = 0 ORDER BY nombre')->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public static function crear(string $nombre, string $usuario, string $clave, int $rol): int
     {
         $sql = Conexion::pdo()->prepare('INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (?, ?, ?, ?)');
