@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Vista de referencia del sistema de diseño. Solo para desarrollo: no es parte de la app.
+// Referencia de diseño. Solo desarrollo, no se entrega.
 define('RAIZ', dirname(__DIR__));
 require RAIZ . '/core/bootstrap.php';
 
@@ -19,7 +19,7 @@ use App\Helpers\Icono;
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/componentes.css">
 <script>
-  // Tema antes de pintar, para que no parpadee: el elegido por la persona o, si no eligió, el del sistema.
+  // Tema antes de pintar, sin parpadeo.
   (() => {
     let t = null;
     try { t = localStorage.getItem('tema'); } catch (e) {}
@@ -28,7 +28,7 @@ use App\Helpers\Icono;
 </script>
 <script src="/assets/js/app.js" defer></script>
 <style>
-  /* Estilos solo de esta página de muestra */
+  /* Solo para esta página */
   body { background: var(--tenue); }
   main { max-width: 1120px; margin: 0 auto; padding: 16px 16px 64px; }
 
@@ -37,7 +37,7 @@ use App\Helpers\Icono;
     padding: 12px 16px; background: var(--fondo); border-bottom: 1px solid var(--borde);
   }
   .barra img { height: 28px; }
-  /* El logo es negro: en tema oscuro se invierte para que se vea */
+  /* Logo negro: se invierte en oscuro */
   :root[data-tema="dark"] .barra img { filter: invert(1); }
   @media (prefers-color-scheme: dark) { :root:not([data-tema]) .barra img { filter: invert(1); } }
 
@@ -88,7 +88,7 @@ use App\Helpers\Icono;
     border: 1px solid var(--borde); border-radius: var(--radio-md); box-shadow: var(--sombra-md); padding: 6px 12px;
   }
 
-  /* Diálogo dibujado estático (el real se abre en la sección "Diálogo") */
+  /* Diálogo estático; el real está en "Diálogo" */
   .dialogo-demo { position: relative; width: 100%; max-width: 24rem; }
   .dialogo-demo h2 { font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; margin: 0 0 6px; }
   .dialogo-demo p { margin: 0 0 16px; font-size: var(--letra-sm); color: var(--tenue-texto); }
@@ -100,7 +100,7 @@ use App\Helpers\Icono;
 
   .tipografia { padding: 0 20px 8px; }
 
-  /* Índice fijo para saltar entre secciones (útil sobre todo en el celular) */
+  /* Índice fijo */
   .indice {
     position: sticky; top: 0; z-index: 20;
     display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
@@ -113,12 +113,12 @@ use App\Helpers\Icono;
   .indice a:hover { background: var(--acento); color: var(--acento-texto); }
   .seccion { scroll-margin-top: 64px; }
 
-  /* QR para abrir la página en el celular */
+  /* QR para el celular */
   .qr-caja { width: min(100%, 220px); padding: 12px; background: #FFFFFF; border-radius: var(--radio-xl); }
   .qr { display: block; width: 100%; height: auto; }
 
 
-  /* Al imprimir esta página sale solo la vista formal de la sección "Impresión" */
+  /* Al imprimir sale solo "Detalle" */
   @media print {
     .barra, .indice, main > :not(#detalle), #detalle > :is(h2, p) { display: none !important; }
     body { background: #FFFFFF; }
@@ -173,7 +173,6 @@ use App\Helpers\Icono;
     </div>
   </header>
 
-  <!-- ================= Colores ================= -->
   <section class="seccion" id="colores">
     <h2>Colores</h2>
     <p>Cada fondo con el texto que va encima. Abajo, el nombre equivalente en shadcn.</p>
@@ -196,7 +195,6 @@ use App\Helpers\Icono;
     </div>
   </section>
 
-  <!-- ================= Formulario ================= -->
   <section class="seccion" id="formulario">
     <h2>Formulario</h2>
     <p>Formularios 1, 6 y 10. Etiqueta, obligatorio, ayuda y error en texto enlazado con aria-describedby (RNF-07). La persona anota a mano el resultado: la plataforma solo da seguimiento, no ejecuta pruebas. Cada tipo de evidencia marcado abre su bloque; sin JS se ven todos.</p>
@@ -366,7 +364,7 @@ Contraseña: (vacía)</textarea>
           </div>
 
           <?php
-          // Un bloque por tipo de evidencia: aparece solo si su casilla está marcada.
+          // Un bloque por tipo marcado.
           $evidencias = [
               1 => ['image', 'captura', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
               2 => ['terminal', 'log', 'file', 'accept=".txt,.log"', 'Salida de consola o del servidor: TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
@@ -599,10 +597,8 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Tablas editables ================= -->
   <?php
-  // Una fila de tabla editable. Vacía sirve de plantilla para "Agregar fila".
-  // $columnas: nombre => [etiqueta, control]; control es textarea, un type de input o catalogo:nombre.
+  // Fila editable; vacía es la plantilla. control: textarea, type de input o catalogo:nombre.
   $fila = function (array $columnas, array $v = []): string {
       $html = '<tr>';
       foreach ($columnas as $nombre => [$etiqueta, $control]) {
@@ -761,7 +757,7 @@ Contraseña: (vacía)</textarea>
         <form class="pila" action="#" onsubmit="return false">
           <p class="titulo-seccion">Rúbrica de evaluación <small class="campo-ayuda">Formulario 7 · solo admin · Portal web</small></p>
           <?php
-          // Descriptores del documento: Excelente (5), Bueno (4), Regular (3), Deficiente (1-2).
+          // Descriptores: 5, 4, 3 y 1-2.
           $rubrica = [
               ['Diseño de casos', 5, ['Todos los casos bien documentados y justificados', 'La mayoría bien documentados', 'Algunos casos documentados', 'Casos incompletos o ausentes']],
               ['Aplicación de técnicas', 4, ['Aplica correctamente caja negra y blanca', 'Aplica la mayoría correctamente', 'Aplica parcialmente', 'No aplica correctamente']],
@@ -864,7 +860,6 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Tabla ================= -->
   <section class="seccion" id="lista">
     <h2>Lista: encabezado, filtros, tabla y paginación</h2>
     <p>Así se arma cada listado. Filtros por GET (RF-22), 20 filas por página (RNF-09), botones de ícono con aria-label. En el celular cada fila se vuelve una tarjeta.</p>
@@ -943,7 +938,6 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Historial ================= -->
   <section class="seccion" id="historial">
     <h2>Historial de cambios</h2>
     <p>Lo que guarda logs_cambios (RF-20). El valor anterior va tachado y cada valor en su columna, no solo con color.</p>
@@ -972,7 +966,6 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Panel ================= -->
   <section class="seccion" id="panel">
     <h2>Panel y reportes</h2>
     <p>Cifras, barras de avance y tarjetas con encabezado, contenido y pie. Para el dashboard y el reporte de cierre (RF-23).</p>
@@ -1048,7 +1041,6 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Acceso ================= -->
   <section class="seccion" id="acceso">
     <h2>Pantalla de acceso</h2>
     <p>Login y registro: tarjeta centrada sobre fondo tenue. Error genérico que no dice si el usuario existe (RNF-02).</p>
@@ -1078,7 +1070,6 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Casillas ================= -->
   <section class="seccion" id="miembros">
     <h2>Lista de casillas</h2>
     <p>Para elegir varios de una lista larga, como los miembros de un proyecto. Casillas nativas en una caja con scroll; sin combobox.</p>
@@ -1103,7 +1094,6 @@ Contraseña: (vacía)</textarea>
     </div>
   </section>
 
-  <!-- ================= Detalle ================= -->
   <section class="seccion" id="detalle">
     <h2>Detalle del caso</h2>
     <p>La página que más se abre, estilo Jira: contenido a la izquierda y datos cortos a la derecha. Es también la vista formal del formulario 1: al imprimir sale en una columna, en claro y sin botones. Un botón sin permiso no se muestra (RF-21).</p>
@@ -1184,7 +1174,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Tooltips ================= -->
   <section class="seccion" id="tooltips">
     <h2>Tooltips</h2>
     <p>Con el mouse o con Tab. Se puede pasar el mouse encima y se cierra con Escape. Solo repiten lo que ya dice el aria-label.</p>
@@ -1212,7 +1201,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Diálogo ================= -->
   <section class="seccion" id="dialogo">
     <h2>Diálogo de confirmación</h2>
     <p>&lt;dialog&gt; nativo: atrapa el foco y se cierra con Escape sin código extra (RNF-04). También se abre desde el ícono de eliminar de la tabla.</p>
@@ -1229,7 +1217,6 @@ Contraseña: (vacía)</dd>
     </dialog>
   </section>
 
-  <!-- ================= Alertas ================= -->
   <section class="seccion" id="alertas">
     <h2>Alertas</h2>
     <p>Resultado de una acción. Normal, de éxito (datos guardados) o de error; ícono, título, descripción y acción son opcionales.</p>
@@ -1294,7 +1281,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Estado vacío ================= -->
   <section class="seccion" id="vacio">
     <h2>Estado vacío</h2>
     <p>Lo que ve una lista sin datos: qué pasa y cuál es el siguiente paso. Las páginas de error usan lo mismo, con el título como h1.</p>
@@ -1332,7 +1318,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Radios ================= -->
   <section class="seccion" id="radios">
     <h2>Escala de radios</h2>
     <p>Todos los pasos salen de --radio (10px), de la esquina más cerrada a la más redonda.</p>
@@ -1343,7 +1328,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Sombras ================= -->
   <section class="seccion" id="sombras">
     <h2>Sombras en contexto</h2>
     <p>Cada superficie con el paso de sombra que le toca.</p>
@@ -1412,7 +1396,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Radios en contexto ================= -->
   <section class="seccion" id="insignias">
     <h2>Botones, entrada e insignias</h2>
     <p>Los componentes que redondea la escala, cada uno con el paso que usa.</p>
@@ -1465,7 +1448,6 @@ Contraseña: (vacía)</dd>
     </div>
   </section>
 
-  <!-- ================= Tipografía ================= -->
   <section class="seccion" id="tipografia">
     <h2>Tipografía</h2>
     <p>Inter. Texto normal fijo en rem; títulos fluidos.</p>
@@ -1478,10 +1460,8 @@ Contraseña: (vacía)</dd>
       <p><small>Texto pequeño: creado por el administrador el 30/09/2026.</small></p>
     </div>
   </section>
-  <!-- ================= Abrir en el celular ================= -->
   <?php
-  // IPs IPv4 de esta compu en la red (sin 127.x). 2 = AF_INET: la constante
-  // no existe si PHP no tiene la extensión sockets.
+  // IPv4 de la red, sin 127.x. 2 = AF_INET (sin extensión sockets).
   $ipsRed = [];
   foreach (net_get_interfaces() ?: [] as $interfaz) {
       foreach ($interfaz['unicast'] ?? [] as $direccion) {
@@ -1492,13 +1472,13 @@ Contraseña: (vacía)</dd>
   }
   $ipsRed = array_values(array_unique($ipsRed));
 
-  // Con "php -S 127.0.0.1:8000" el celular no puede entrar: hay que usar 0.0.0.0.
+  // El celular necesita php -S 0.0.0.0.
   $soloEstaCompu = in_array($_SERVER['SERVER_NAME'] ?? '', ['127.0.0.1', 'localhost', '::1'], true);
   $puerto = $_SERVER['SERVER_PORT'] ?? '8000';
   $ruta = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '/paleta.php';
   $urlRed = $ipsRed !== [] ? "http://{$ipsRed[0]}:{$puerto}{$ruta}" : null;
 
-  // El QR lo dibuja qrencode (herramienta del sistema). Si no está instalado, se muestra solo la dirección.
+  // QR con qrencode; sin él, solo la dirección.
   $qr = null;
   if ($urlRed !== null && !$soloEstaCompu && function_exists('shell_exec')) {
       $svg = shell_exec('command -v qrencode >/dev/null && qrencode -t SVG -m 2 -o - ' . escapeshellarg($urlRed) . ' 2>/dev/null');
