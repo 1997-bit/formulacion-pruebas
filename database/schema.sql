@@ -14,7 +14,7 @@ CREATE TABLE usuarios (
     nombre VARCHAR(100) NOT NULL, -- nombre completo en un campo (RNF-05)
     usuario VARCHAR(30) NOT NULL UNIQUE,
     clave VARCHAR(255) NOT NULL, -- password_hash con PASSWORD_ARGON2ID
-    rol TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 general, 1 admin
+    rol TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 tester, 1 admin
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -61,7 +61,7 @@ CREATE TABLE casos_prueba (
     estado TINYINT UNSIGNED NOT NULL DEFAULT 0, -- 0 Pendiente, 1 OK, 2 FAULT
     resultado_obtenido TEXT NULL,
     observaciones TEXT NULL,
-    creado_por INT UNSIGNED NOT NULL, -- RF-06: general edita solo los suyos
+    creado_por INT UNSIGNED NOT NULL, -- RF-06: tester edita solo los suyos
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24: quién y cuándo anotó el resultado
     anotado_en DATETIME NULL,

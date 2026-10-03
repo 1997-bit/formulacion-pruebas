@@ -25,7 +25,7 @@ final class AccesoServicio
         return ['id' => $fila['id'], 'nombre' => $fila['nombre'], 'usuario' => $fila['usuario'], 'rol' => $fila['rol']];
     }
 
-    // Siempre rol general: el rol que llegue en el POST se ignora.
+    // Siempre rol tester: el rol que llegue en el POST se ignora.
     public static function registrar(string $nombre, string $usuario, string $clave): int
     {
         $nombre = trim($nombre);

@@ -20,7 +20,7 @@ $campos = [
   <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
   <header class="tarjeta-encabezado" style="margin:0">
     <h1 class="tarjeta-titulo" id="ac-titulo">Crear cuenta</h1>
-    <p class="tarjeta-descripcion">La cuenta nueva tiene rol general.</p>
+    <p class="tarjeta-descripcion">La cuenta nueva tiene rol tester.</p>
   </header>
   <?php foreach ($campos as [$campo, $etiqueta, $tipo, $autocompletar, $maximo]): ?>
     <?php $error = $errores[$campo] ?? null; ?>
