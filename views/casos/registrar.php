@@ -11,7 +11,6 @@ use App\Services\CasoServicio;
 /**
  * Formulario 1 de la paleta.
  *
- * @var list<array<string, mixed>> $proyectos
  * @var list<array<string, mixed>> $requerimientos
  * @var array<string, string> $errores
  * @var array<string, mixed> $datos  evidencias: tipos marcados
@@ -48,24 +47,24 @@ $evidencias = [
     4 => ['link', 'url', 'maxlength="500" placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
 ];
 $marcadas = $datos['evidencias'] ?? [];
+// Cerrado mientras el caso siga Pendiente y sin evidencias.
+$conResultado = ($datos['estado'] ?? '0') !== '0' || $marcadas !== [] || isset($errores['estado']);
 
-$opcionesProy = '';
-foreach ($proyectos as $p) {
-    $opcionesProy .= '<option value="' . $p['id'] . '"' . $elegido('proyecto_id', $p['id']) . '>' . Html::e($p['nombre']) . '</option>';
-}
-// Agrupados por proyecto, como la sub-técnica por técnica.
-$opcionesReq = '';
+// El proyecto sale del requerimiento: se agrupan por proyecto, sin grupos si hay uno solo.
 $porProyecto = [];
 foreach ($requerimientos as $r) {
     $porProyecto[$r['proyecto']][] = $r;
 }
+$opcionesReq = '';
 foreach ($porProyecto as $proyecto => $reqs) {
-    $opcionesReq .= '<optgroup label="' . Html::e($proyecto) . '">';
+    $opcionesReq .= count($porProyecto) > 1 ? '<optgroup label="' . Html::e($proyecto) . '">' : '';
     foreach ($reqs as $r) {
         $opcionesReq .= '<option value="' . $r['id'] . '"' . $elegido('requerimiento_id', $r['id']) . '>' . Html::e($r['codigo'] . ' · ' . $r['descripcion']) . '</option>';
     }
-    $opcionesReq .= '</optgroup>';
+    $opcionesReq .= count($porProyecto) > 1 ? '</optgroup>' : '';
 }
+// La técnica sale de la sub-técnica.
+
 $opcionesSub = '';
 foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$desde, $hasta]) {
     $opcionesSub .= '<optgroup label="' . $tecnica . '">';
@@ -88,8 +87,7 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
   <form class="tarjeta pila" method="post" action="/casos/registrar" enctype="multipart/form-data">
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
     <div class="campos">
-      <?= $campo('proyecto_id', 'Proyecto', ['tipo' => 'select', 'opciones' => $opcionesProy]) ?>
-      <?= $campo('requerimiento_id', 'Requerimiento', ['tipo' => 'select', 'opciones' => $opcionesReq]) ?>
+      <?= $campo('requerimiento_id', 'Requerimiento', ['tipo' => 'select', 'opciones' => $opcionesReq, 'ayuda' => count($porProyecto) > 1 ? 'Agrupados por proyecto.' : '']) ?>
       <?= $campo('tipo_prueba', 'Tipo de prueba', ['tipo' => 'select', 'opciones' => Catalogo::opciones('tipo_prueba', $datos['tipo_prueba'] ?? null)]) ?>
       <div class="campo">
         <label for="f-codigo">Código</label>
@@ -105,16 +103,8 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
       ]) ?>
     </div>
 
-    <fieldset class="grupo"<?= $aria('tecnica') ?>>
-      <legend>Técnica utilizada <span class="requerido" aria-hidden="true">*</span></legend>
-      <div class="grupo grupo-fila">
-        <label class="opcion"><input type="radio" name="tecnica" value="1" required<?= $marcado('tecnica', 1) ?>> Caja negra</label>
-        <label class="opcion"><input type="radio" name="tecnica" value="2"<?= $marcado('tecnica', 2) ?>> Caja blanca</label>
-      </div>
-      <?= $error('tecnica') ?>
-    </fieldset>
     <div class="campos">
-      <?= $campo('subtecnica', 'Sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Debe ser de la técnica elegida: 10 de caja negra y 10 de caja blanca.']) ?>
+      <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>
       <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
       <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
     </div>
@@ -128,62 +118,70 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
     </div>
 
     <hr class="separador">
-    <p class="titulo-seccion" style="margin:0">Resultado</p>
-    <fieldset class="resultado"<?= $aria('estado') ?>>
-      <legend>Estado <span class="requerido" aria-hidden="true">*</span></legend>
-      <label class="resultado-opcion resultado-pendiente">
-        <input type="radio" name="estado" value="0" required<?= $marcado('estado', 0) ?>>
-        <?= Icono::svg('circle-alert') ?> Pendiente
-      </label>
-      <label class="resultado-opcion resultado-ok">
-        <input type="radio" name="estado" value="1"<?= $marcado('estado', 1) ?>>
-        <?= Icono::svg('circle-check') ?> OK
-      </label>
-      <label class="resultado-opcion resultado-fault">
-        <input type="radio" name="estado" value="2"<?= $marcado('estado', 2) ?>>
-        <?= Icono::svg('circle-x') ?> FAULT
-      </label>
-      <?= $error('estado') ?>
-    </fieldset>
-    <div class="campos">
-      <?= $campo('resultado_obtenido', 'Resultado obtenido', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué hizo el sistema"']) ?>
-      <?= $campo('observaciones', 'Observaciones', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Notas adicionales"']) ?>
-    </div>
+    <details class="plegable"<?= $conResultado ? ' open' : '' ?>>
+      <summary>
+        <span class="titulo-seccion">Resultado</span>
+        <span class="campo-ayuda">Si ya lo probó. Si no, el caso queda Pendiente.</span>
+        <?= Icono::svg('chevron-right', 'icono flecha') ?>
+      </summary>
+      <div class="pila">
+        <fieldset class="resultado"<?= $aria('estado') ?>>
+          <legend>Estado <span class="requerido" aria-hidden="true">*</span></legend>
+          <label class="resultado-opcion resultado-pendiente">
+            <input type="radio" name="estado" value="0" required<?= $marcado('estado', 0) ?>>
+            <?= Icono::svg('circle-alert') ?> Pendiente
+          </label>
+          <label class="resultado-opcion resultado-ok">
+            <input type="radio" name="estado" value="1"<?= $marcado('estado', 1) ?>>
+            <?= Icono::svg('circle-check') ?> OK
+          </label>
+          <label class="resultado-opcion resultado-fault">
+            <input type="radio" name="estado" value="2"<?= $marcado('estado', 2) ?>>
+            <?= Icono::svg('circle-x') ?> FAULT
+          </label>
+          <?= $error('estado') ?>
+        </fieldset>
+        <div class="campos">
+          <?= $campo('resultado_obtenido', 'Resultado obtenido', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué hizo el sistema"']) ?>
+          <?= $campo('observaciones', 'Observaciones', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Notas adicionales"']) ?>
+        </div>
 
-    <fieldset class="grupo" aria-describedby="<?= isset($errores['evidencias']) ? 'f-evidencias-error ' : '' ?>f-evidencias-ayuda">
-      <legend>Evidencias</legend>
-      <div class="grupo grupo-fila">
-        <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
-          <label class="opcion"><input type="checkbox" name="evidencias[]" value="<?= $clave ?>"<?= in_array((string) $clave, $marcadas, true) ? ' checked' : '' ?>> <?= Icono::svg($evidencias[$clave][0]) ?> <?= Html::e($tipo['texto']) ?></label>
+        <fieldset class="grupo" aria-describedby="<?= isset($errores['evidencias']) ? 'f-evidencias-error ' : '' ?>f-evidencias-ayuda">
+          <legend>Evidencias</legend>
+          <div class="grupo grupo-fila">
+            <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
+              <label class="opcion"><input type="checkbox" name="evidencias[]" value="<?= $clave ?>"<?= in_array((string) $clave, $marcadas, true) ? ' checked' : '' ?>> <?= Icono::svg($evidencias[$clave][0]) ?> <?= Html::e($tipo['texto']) ?></label>
+            <?php endforeach; ?>
+          </div>
+          <p class="campo-ayuda" id="f-evidencias-ayuda">Marque las que va a usar. Con OK o FAULT hace falta al menos una.</p>
+          <?= $error('evidencias') ?>
+        </fieldset>
+        <?php foreach ($evidencias as $clave => [$icono, $control, $atributos, $ayuda, $ejemplo]): ?>
+          <?php
+          $nombre = CasoServicio::EVIDENCIAS[$clave][0];
+          $id = 'f-' . $nombre;
+          ?>
+          <div class="tarjeta pila" data-cuando="evidencias[]=<?= $clave ?>">
+            <p class="titulo-seccion fila" style="margin:0;justify-content:flex-start"><?= Icono::svg($icono) ?> <?= Html::e(Catalogo::texto('tipo_evidencia', $clave)) ?></p>
+            <div class="campos">
+              <div class="campo">
+                <label for="<?= $id ?>"><?= $control === 'url' ? 'Dirección' : 'Archivo' ?> <span class="requerido" aria-hidden="true">*</span></label>
+                <input class="control" id="<?= $id ?>" name="evidencia_<?= $nombre ?>" type="<?= $control ?>" <?= $atributos ?><?= $control === 'url' ? ' value="' . Html::e($datos['evidencia_enlace'] ?? '') . '"' : '' ?><?= $describir($id, 'evidencia_' . $nombre) ?>>
+                <p class="campo-ayuda" id="<?= $id ?>-ayuda"><?= Html::e($ayuda) ?></p>
+                <?= $errorDe($id, 'evidencia_' . $nombre) ?>
+                <?php if ($clave === 1): ?><img id="f-captura-previa" class="vista-previa" alt="" hidden><?php endif; ?>
+              </div>
+              <div class="campo">
+                <label for="<?= $id ?>-desc">Qué muestra <span class="requerido" aria-hidden="true">*</span></label>
+                <input class="control" id="<?= $id ?>-desc" name="descripcion_<?= $nombre ?>" maxlength="255" placeholder="<?= Html::e($ejemplo) ?>" value="<?= Html::e($datos['descripcion_' . $nombre] ?? '') ?>"<?= $describir($id . '-desc', 'descripcion_' . $nombre) ?>>
+                <p class="campo-ayuda" id="<?= $id ?>-desc-ayuda">Texto alternativo (RNF-07).</p>
+                <?= $errorDe($id . '-desc', 'descripcion_' . $nombre) ?>
+              </div>
+            </div>
+          </div>
         <?php endforeach; ?>
       </div>
-      <p class="campo-ayuda" id="f-evidencias-ayuda">Marque las que va a usar. Con OK o FAULT hace falta al menos una.</p>
-      <?= $error('evidencias') ?>
-    </fieldset>
-    <?php foreach ($evidencias as $clave => [$icono, $control, $atributos, $ayuda, $ejemplo]): ?>
-      <?php
-      $nombre = CasoServicio::EVIDENCIAS[$clave][0];
-      $id = 'f-' . $nombre;
-      ?>
-      <div class="tarjeta pila" data-cuando="evidencias[]=<?= $clave ?>">
-        <p class="titulo-seccion fila" style="margin:0;justify-content:flex-start"><?= Icono::svg($icono) ?> <?= Html::e(Catalogo::texto('tipo_evidencia', $clave)) ?></p>
-        <div class="campos">
-          <div class="campo">
-            <label for="<?= $id ?>"><?= $control === 'url' ? 'Dirección' : 'Archivo' ?> <span class="requerido" aria-hidden="true">*</span></label>
-            <input class="control" id="<?= $id ?>" name="evidencia_<?= $nombre ?>" type="<?= $control ?>" <?= $atributos ?><?= $control === 'url' ? ' value="' . Html::e($datos['evidencia_enlace'] ?? '') . '"' : '' ?><?= $describir($id, 'evidencia_' . $nombre) ?>>
-            <p class="campo-ayuda" id="<?= $id ?>-ayuda"><?= Html::e($ayuda) ?></p>
-            <?= $errorDe($id, 'evidencia_' . $nombre) ?>
-            <?php if ($clave === 1): ?><img id="f-captura-previa" class="vista-previa" alt="" hidden><?php endif; ?>
-          </div>
-          <div class="campo">
-            <label for="<?= $id ?>-desc">Qué muestra <span class="requerido" aria-hidden="true">*</span></label>
-            <input class="control" id="<?= $id ?>-desc" name="descripcion_<?= $nombre ?>" maxlength="255" placeholder="<?= Html::e($ejemplo) ?>" value="<?= Html::e($datos['descripcion_' . $nombre] ?? '') ?>"<?= $describir($id . '-desc', 'descripcion_' . $nombre) ?>>
-            <p class="campo-ayuda" id="<?= $id ?>-desc-ayuda">Texto alternativo (RNF-07).</p>
-            <?= $errorDe($id . '-desc', 'descripcion_' . $nombre) ?>
-          </div>
-        </div>
-      </div>
-    <?php endforeach; ?>
+    </details>
 
     <p class="campo-ayuda"><span class="requerido" aria-hidden="true">*</span> Campo obligatorio</p>
     <div class="acciones">

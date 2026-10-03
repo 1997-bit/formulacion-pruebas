@@ -30,9 +30,10 @@ final class CasoModelo
     public static function listar(int $usuarioId, bool $admin, ?int $offset = null): array
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.objetivo, c.tipo_prueba, c.estado, p.nombre AS proyecto
+            'SELECT c.id, c.codigo, c.objetivo, c.tipo_prueba, c.estado, p.nombre AS proyecto, u.nombre AS autor
              FROM casos_prueba c
              JOIN proyectos p ON p.id = c.proyecto_id
+             JOIN usuarios u ON u.id = c.creado_por
              WHERE ' . self::PERMITIDO . '
              ORDER BY p.nombre, c.codigo'
              . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)

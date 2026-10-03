@@ -15,7 +15,7 @@ use App\Services\RequerimientoServicio;
 final class CasosControlador
 {
     private const CAMPOS = [
-        'proyecto_id', 'requerimiento_id', 'tipo_prueba', 'tecnica', 'subtecnica', 'modulo', 'plataforma', 'entorno', 'objetivo',
+        'requerimiento_id', 'tipo_prueba', 'subtecnica', 'modulo', 'plataforma', 'entorno', 'objetivo',
         'precondiciones', 'entrada', 'pasos', 'resultado_esperado', 'fecha_inicio', 'fecha_fin',
         'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace',
         'descripcion_captura', 'descripcion_log', 'descripcion_enlace',
@@ -37,7 +37,6 @@ final class CasosControlador
     {
         Vista::pagina('casos/registrar', [
             'titulo' => 'Registrar caso',
-            'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
             'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => []]),

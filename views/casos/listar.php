@@ -34,7 +34,7 @@ use App\Helpers\Icono;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Casos de prueba</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Estado</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th></tr>
         </thead>
         <tbody>
           <?php foreach ($casos as $c): ?>
@@ -43,6 +43,7 @@ use App\Helpers\Icono;
               <td data-columna="Caso" class="celda-larga"><?= Html::e($c['objetivo']) ?></td>
               <td data-columna="Proyecto"><?= Html::e($c['proyecto']) ?></td>
               <td data-columna="Tipo"><?= Html::e(Catalogo::texto('tipo_prueba', $c['tipo_prueba'])) ?></td>
+              <td data-columna="Creado por"><?= Html::e($c['autor']) ?></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $c['estado']) ?></td>
             </tr>
           <?php endforeach; ?>

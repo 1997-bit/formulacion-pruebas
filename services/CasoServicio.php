@@ -24,7 +24,7 @@ final class CasoServicio
     private const MAX_BYTES = 5 * 1024 * 1024;
 
     /**
-     * Formulario 1. La técnica no se guarda: sale de la sub-técnica.
+     * Formulario 1. El proyecto sale del requerimiento y la técnica de la sub-técnica.
      *
      * @param array<string, string> $datos
      * @param list<string> $marcadas tipos de evidencia marcados
@@ -40,17 +40,12 @@ final class CasoServicio
         $anotado = in_array($d['estado'], ['1', '2'], true);
 
         $v = (new Validador())
-            ->requerido('proyecto_id', $d['proyecto_id'])
             ->requerido('requerimiento_id', $d['requerimiento_id'])
             ->regla('requerimiento_id', $d['requerimiento_id'] === '' || $requerimiento !== null, 'Valor no válido.')
-            ->regla('requerimiento_id', $requerimiento === null || $d['proyecto_id'] === '' || (string) $requerimiento['proyecto_id'] === $d['proyecto_id'], 'No es del proyecto elegido.')
             ->requerido('tipo_prueba', $d['tipo_prueba'])
             ->catalogo('tipo_prueba', 'tipo_prueba', $d['tipo_prueba'])
-            ->requerido('tecnica', $d['tecnica'])
-            ->regla('tecnica', in_array($d['tecnica'], ['', '1', '2'], true), 'Valor no válido.')
             ->requerido('subtecnica', $d['subtecnica'])
             ->catalogo('subtecnica', 'subtecnica', $d['subtecnica'])
-            ->regla('subtecnica', $d['tecnica'] === '' || $d['subtecnica'] === '' || ((int) $d['subtecnica'] > 10 ? '2' : '1') === $d['tecnica'], 'No es de la técnica elegida.')
             ->requerido('modulo', $d['modulo'])
             ->regla('modulo', mb_strlen($d['modulo']) <= 100, 'Máximo 100 caracteres.')
             ->requerido('plataforma', $d['plataforma'])

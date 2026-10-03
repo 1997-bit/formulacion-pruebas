@@ -207,24 +207,20 @@ use App\Helpers\Icono;
           <p class="titulo-seccion">Registrar caso de prueba <small class="campo-ayuda">Formulario 1</small></p>
           <div class="campos">
             <div class="campo">
-              <label for="f-proyecto">Proyecto <span class="requerido" aria-hidden="true">*</span></label>
-              <div class="select">
-                <select class="control" id="f-proyecto" name="proyecto" required>
-                  <option selected>Portal web</option>
-                  <option>App de inventario</option>
-                </select>
-              </div>
-            </div>
-            <div class="campo">
               <label for="f-req">Requerimiento <span class="requerido" aria-hidden="true">*</span></label>
               <div class="select">
-                <select class="control" id="f-req" name="requerimiento" required>
+                <select class="control" id="f-req" name="requerimiento" required aria-describedby="f-req-ayuda">
                   <option value="">Elegir…</option>
-                  <option selected>RF-01 · Iniciar sesión</option>
-                  <option>RF-02 · Crear cuenta</option>
-                  <option>RF-24 · Anotar resultado</option>
+                  <optgroup label="Portal web">
+                    <option selected>RF-01 · Iniciar sesión</option>
+                    <option>RF-02 · Crear cuenta</option>
+                  </optgroup>
+                  <optgroup label="App de inventario">
+                    <option>RF-24 · Anotar resultado</option>
+                  </optgroup>
                 </select>
               </div>
+              <p class="campo-ayuda" id="f-req-ayuda">Agrupados por proyecto: el proyecto sale del requerimiento.</p>
             </div>
             <div class="campo">
               <label for="f-tipo">Tipo de prueba <span class="requerido" aria-hidden="true">*</span></label>
@@ -260,16 +256,9 @@ use App\Helpers\Icono;
             </div>
           </div>
 
-          <fieldset class="grupo">
-            <legend>Técnica utilizada <span class="requerido" aria-hidden="true">*</span></legend>
-            <div class="grupo grupo-fila">
-              <label class="opcion"><input type="radio" name="tecnica" value="1" required checked> Caja negra</label>
-              <label class="opcion"><input type="radio" name="tecnica" value="2"> Caja blanca</label>
-            </div>
-          </fieldset>
           <div class="campos">
             <div class="campo">
-              <label for="f-subtecnica">Sub-técnica <span class="requerido" aria-hidden="true">*</span></label>
+              <label for="f-subtecnica">Técnica y sub-técnica <span class="requerido" aria-hidden="true">*</span></label>
               <div class="select">
                 <select class="control" id="f-subtecnica" name="subtecnica" required aria-describedby="f-subtecnica-ayuda">
                   <option value="">Elegir…</option>
@@ -284,7 +273,7 @@ use App\Helpers\Icono;
                   <?php endforeach; ?>
                 </select>
               </div>
-              <p class="campo-ayuda" id="f-subtecnica-ayuda">Debe ser de la técnica elegida: 10 de caja negra y 10 de caja blanca.</p>
+              <p class="campo-ayuda" id="f-subtecnica-ayuda">Agrupadas en caja negra y caja blanca.</p>
             </div>
             <div class="campo">
               <label for="f-inicio">Fecha de inicio <span class="requerido" aria-hidden="true">*</span></label>
@@ -329,68 +318,76 @@ Contraseña: (vacía)</textarea>
 
 
           <hr class="separador">
-          <p class="titulo-seccion" style="margin:0">Resultado</p>
-          <fieldset class="resultado">
-            <legend>Estado</legend>
-            <label class="resultado-opcion resultado-pendiente">
-              <input type="radio" name="estado" value="0" checked>
-              <?= Icono::svg('circle-alert') ?> Pendiente
-            </label>
-            <label class="resultado-opcion resultado-ok">
-              <input type="radio" name="estado" value="1">
-              <?= Icono::svg('circle-check') ?> OK
-            </label>
-            <label class="resultado-opcion resultado-fault">
-              <input type="radio" name="estado" value="2">
-              <?= Icono::svg('circle-x') ?> FAULT
-            </label>
-          </fieldset>
-          <div class="campos">
-            <div class="campo">
-              <label for="f-obtenido">Resultado obtenido</label>
-              <textarea class="control" id="f-obtenido" name="resultado_obtenido" placeholder="Qué hizo el sistema"></textarea>
-            </div>
-            <div class="campo">
-              <label for="f-obs">Observaciones</label>
-              <textarea class="control" id="f-obs" name="observaciones" placeholder="Notas adicionales"></textarea>
-            </div>
-          </div>
-
-          <?php
-          // Un bloque por tipo marcado.
-          $evidencias = [
-              1 => ['image', 'captura', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
-              2 => ['terminal', 'log', 'file', 'accept=".txt,.log"', 'Salida de consola o del servidor: TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
-              4 => ['link', 'enlace', 'url', 'placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
-          ];
-          ?>
-          <fieldset class="grupo" aria-describedby="f-evidencias-ayuda">
-            <legend>Evidencias <span class="requerido" aria-hidden="true">*</span></legend>
-            <div class="grupo grupo-fila">
-              <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
-                <label class="opcion"><input type="checkbox" name="evidencias[]" value="<?= $clave ?>"<?= $clave === 1 ? ' checked' : '' ?>> <?= Icono::svg($evidencias[$clave][0]) ?> <?= Html::e($tipo['texto']) ?></label>
-              <?php endforeach; ?>
-            </div>
-            <p class="campo-ayuda" id="f-evidencias-ayuda">Marque las que va a usar. Con OK o FAULT hace falta al menos una.</p>
-          </fieldset>
-          <?php foreach ($evidencias as $clave => [$icono, $nombre, $control, $atributos, $ayuda, $ejemplo]): ?>
-            <div class="tarjeta pila" data-cuando="evidencias[]=<?= $clave ?>">
-              <p class="titulo-seccion fila" style="margin:0;justify-content:flex-start"><?= Icono::svg($icono) ?> <?= Html::e(Catalogo::texto('tipo_evidencia', $clave)) ?></p>
+          <details class="plegable" open>
+            <summary>
+              <span class="titulo-seccion">Resultado</span>
+              <span class="campo-ayuda">Si ya lo probó. Si no, el caso queda Pendiente.</span>
+              <?= Icono::svg('chevron-right', 'icono flecha') ?>
+            </summary>
+            <div class="pila">
+              <fieldset class="resultado">
+                <legend>Estado</legend>
+                <label class="resultado-opcion resultado-pendiente">
+                  <input type="radio" name="estado" value="0" checked>
+                  <?= Icono::svg('circle-alert') ?> Pendiente
+                </label>
+                <label class="resultado-opcion resultado-ok">
+                  <input type="radio" name="estado" value="1">
+                  <?= Icono::svg('circle-check') ?> OK
+                </label>
+                <label class="resultado-opcion resultado-fault">
+                  <input type="radio" name="estado" value="2">
+                  <?= Icono::svg('circle-x') ?> FAULT
+                </label>
+              </fieldset>
               <div class="campos">
                 <div class="campo">
-                  <label for="f-<?= $nombre ?>"><?= $control === 'url' ? 'Dirección' : 'Archivo' ?> <span class="requerido" aria-hidden="true">*</span></label>
-                  <input class="control" id="f-<?= $nombre ?>" name="evidencia_<?= $nombre ?>" type="<?= $control ?>" <?= $atributos ?> aria-describedby="f-<?= $nombre ?>-ayuda">
-                  <p class="campo-ayuda" id="f-<?= $nombre ?>-ayuda"><?= Html::e($ayuda) ?></p>
-                  <?php if ($clave === 1): ?><img id="f-captura-previa" class="vista-previa" alt="" hidden><?php endif; ?>
+                  <label for="f-obtenido">Resultado obtenido</label>
+                  <textarea class="control" id="f-obtenido" name="resultado_obtenido" placeholder="Qué hizo el sistema"></textarea>
                 </div>
                 <div class="campo">
-                  <label for="f-<?= $nombre ?>-desc">Qué muestra <span class="requerido" aria-hidden="true">*</span></label>
-                  <input class="control" id="f-<?= $nombre ?>-desc" name="descripcion_<?= $nombre ?>" maxlength="255" placeholder="<?= Html::e($ejemplo) ?>" aria-describedby="f-<?= $nombre ?>-desc-ayuda">
-                  <p class="campo-ayuda" id="f-<?= $nombre ?>-desc-ayuda">Texto alternativo (RNF-07).</p>
+                  <label for="f-obs">Observaciones</label>
+                  <textarea class="control" id="f-obs" name="observaciones" placeholder="Notas adicionales"></textarea>
                 </div>
               </div>
+
+              <?php
+              // Un bloque por tipo marcado.
+              $evidencias = [
+                  1 => ['image', 'captura', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
+                  2 => ['terminal', 'log', 'file', 'accept=".txt,.log"', 'Salida de consola o del servidor: TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
+                  4 => ['link', 'enlace', 'url', 'placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
+              ];
+              ?>
+              <fieldset class="grupo" aria-describedby="f-evidencias-ayuda">
+                <legend>Evidencias</legend>
+                <div class="grupo grupo-fila">
+                  <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
+                    <label class="opcion"><input type="checkbox" name="evidencias[]" value="<?= $clave ?>"<?= $clave === 1 ? ' checked' : '' ?>> <?= Icono::svg($evidencias[$clave][0]) ?> <?= Html::e($tipo['texto']) ?></label>
+                  <?php endforeach; ?>
+                </div>
+                <p class="campo-ayuda" id="f-evidencias-ayuda">Marque las que va a usar. Con OK o FAULT hace falta al menos una.</p>
+              </fieldset>
+              <?php foreach ($evidencias as $clave => [$icono, $nombre, $control, $atributos, $ayuda, $ejemplo]): ?>
+                <div class="tarjeta pila" data-cuando="evidencias[]=<?= $clave ?>">
+                  <p class="titulo-seccion fila" style="margin:0;justify-content:flex-start"><?= Icono::svg($icono) ?> <?= Html::e(Catalogo::texto('tipo_evidencia', $clave)) ?></p>
+                  <div class="campos">
+                    <div class="campo">
+                      <label for="f-<?= $nombre ?>"><?= $control === 'url' ? 'Dirección' : 'Archivo' ?> <span class="requerido" aria-hidden="true">*</span></label>
+                      <input class="control" id="f-<?= $nombre ?>" name="evidencia_<?= $nombre ?>" type="<?= $control ?>" <?= $atributos ?> aria-describedby="f-<?= $nombre ?>-ayuda">
+                      <p class="campo-ayuda" id="f-<?= $nombre ?>-ayuda"><?= Html::e($ayuda) ?></p>
+                      <?php if ($clave === 1): ?><img id="f-captura-previa" class="vista-previa" alt="" hidden><?php endif; ?>
+                    </div>
+                    <div class="campo">
+                      <label for="f-<?= $nombre ?>-desc">Qué muestra <span class="requerido" aria-hidden="true">*</span></label>
+                      <input class="control" id="f-<?= $nombre ?>-desc" name="descripcion_<?= $nombre ?>" maxlength="255" placeholder="<?= Html::e($ejemplo) ?>" aria-describedby="f-<?= $nombre ?>-desc-ayuda">
+                      <p class="campo-ayuda" id="f-<?= $nombre ?>-desc-ayuda">Texto alternativo (RNF-07).</p>
+                    </div>
+                  </div>
+                </div>
+              <?php endforeach; ?>
             </div>
-          <?php endforeach; ?>
+          </details>
 
           <p class="campo-ayuda"><span class="requerido" aria-hidden="true">*</span> Campo obligatorio</p>
           <div class="acciones">
@@ -889,22 +886,23 @@ Contraseña: (vacía)</textarea>
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Casos de prueba del proyecto</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Estado</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
         </thead>
         <tbody>
           <?php
           $filas = [
-              ['SIS-001', 'Login con credenciales válidas', 3, 1, 'Portal web'],
-              ['SIS-002', 'Login con contraseña vacía', 3, 2, 'Portal web'],
-              ['UNI-126274-01', 'Edad en el valor límite 18', 1, 0, 'Portal web'],
-              ['INT-126280-01', 'Subir captura de 5 MB', 2, 0, 'App de inventario'],
+              ['SIS-001', 'Login con credenciales válidas', 3, 1, 'Portal web', 'Gloria'],
+              ['SIS-002', 'Login con contraseña vacía', 3, 2, 'Portal web', 'Pan'],
+              ['UNI-126274-01', 'Edad en el valor límite 18', 1, 0, 'Portal web', 'Gloria'],
+              ['INT-126280-01', 'Subir captura de 5 MB', 2, 0, 'App de inventario', 'Pan'],
           ];
-          foreach ($filas as [$codigo, $caso, $tipo, $estado, $proyecto]): ?>
+          foreach ($filas as [$codigo, $caso, $tipo, $estado, $proyecto, $autor]): ?>
             <tr>
               <td data-columna="Código"><a class="codigo" href="#"><?= Html::e($codigo) ?></a></td>
               <td data-columna="Caso" class="celda-larga"><?= Html::e($caso) ?></td>
               <td data-columna="Proyecto"><?= Html::e($proyecto) ?></td>
               <td data-columna="Tipo"><?= Html::e(Catalogo::texto('tipo_prueba', $tipo)) ?></td>
+              <td data-columna="Creado por"><?= Html::e($autor) ?></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $estado) ?></td>
               <td class="celda-acciones">
                 <div class="acciones">
