@@ -12,12 +12,14 @@ final class CasoModelo
     // Tester: solo sus proyectos (RF-05).
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
-    public static function contar(int $usuarioId, bool $admin): int
+    /** @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros */
+    public static function contar(int $usuarioId, bool $admin, array $filtros): int
     {
+        [$donde, $valores] = self::donde($usuarioId, $admin, $filtros);
         $sql = Conexion::pdo()->prepare(
-            'SELECT COUNT(*) FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id WHERE ' . self::PERMITIDO
+            'SELECT COUNT(*) FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id WHERE ' . $donde
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }
@@ -25,20 +27,22 @@ final class CasoModelo
     /**
      * $offset null: todos.
      *
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
      * @return list<array<string, mixed>>
      */
-    public static function listar(int $usuarioId, bool $admin, ?int $offset = null): array
+    public static function listar(int $usuarioId, bool $admin, array $filtros, ?int $offset = null): array
     {
+        [$donde, $valores] = self::donde($usuarioId, $admin, $filtros);
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, c.tipo_prueba, c.estado, p.nombre AS proyecto, u.nombre AS autor
              FROM casos_prueba c
              JOIN proyectos p ON p.id = c.proyecto_id
              JOIN usuarios u ON u.id = c.creado_por
-             WHERE ' . self::PERMITIDO . '
+             WHERE ' . $donde . '
              ORDER BY p.nombre, c.codigo'
              . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -130,5 +134,25 @@ final class CasoModelo
         }
 
         return true;
+    }
+
+    /**
+     * RF-22: los filtros se suman al permiso.
+     *
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @return array{0: string, 1: list<int>}
+     */
+    private static function donde(int $usuarioId, bool $admin, array $filtros): array
+    {
+        $donde = self::PERMITIDO;
+        $valores = [(int) $admin, $usuarioId];
+        foreach (['proyecto' => 'c.proyecto_id', 'requerimiento' => 'c.requerimiento_id', 'estado' => 'c.estado'] as $filtro => $columna) {
+            if ($filtros[$filtro] !== null) {
+                $donde .= " AND {$columna} = ?";
+                $valores[] = $filtros[$filtro];
+            }
+        }
+
+        return [$donde, $valores];
     }
 }
