@@ -172,6 +172,29 @@
     ajustar();
   });
 
+  // Campos según un radio: <div data-cuando="nombre=valor"> se ve solo con ese radio marcado,
+  // y sus controles se desactivan para no enviarse. Sin JS se ven todos.
+  const mostrarSegunRadio = () => {
+    document.querySelectorAll('[data-cuando]').forEach((bloque) => {
+      const [nombre, valor] = bloque.dataset.cuando.split('=');
+      const marcado = bloque.closest('form')?.querySelector(`input[name="${nombre}"]:checked`);
+      bloque.hidden = marcado?.value !== valor;
+      bloque.querySelectorAll('input, select, textarea').forEach((c) => { c.disabled = bloque.hidden; });
+    });
+  };
+  document.addEventListener('change', mostrarSegunRadio);
+  mostrarSegunRadio();
+
+  // Vista previa: <input type="file" data-vista-previa="id-img"> muestra la imagen elegida.
+  document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
+    const img = document.getElementById(entrada.dataset.vistaPrevia);
+    entrada.addEventListener('change', () => {
+      const archivo = entrada.files[0];
+      img.hidden = !archivo;
+      if (archivo) img.src = URL.createObjectURL(archivo);
+    });
+  });
+
   // Tema: alterna entre claro y oscuro y recuerda la elección.
   const botonTema = document.getElementById('tema');
   if (botonTema) {

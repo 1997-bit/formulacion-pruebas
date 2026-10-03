@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+/* hidden gana aunque el componente ponga display (.campo es grid). */
+[hidden] {
+  display: none !important;
+}
+
 html {
   scrollbar-gutter: stable;
   overscroll-behavior: contain;

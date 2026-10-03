@@ -805,6 +805,15 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 .archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
 .archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: 4px; }
 
+/* Vista previa de la captura elegida, antes de subirla. */
+.vista-previa {
+  max-width: 100%;
+  max-height: 10rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  object-fit: contain;
+}
+
 /* ---------- Pantalla de acceso (login y registro) ----------
    <main class="acceso">
      <img class="acceso-logo" src="/Frame.svg" alt="Safeguard">
