@@ -6,6 +6,32 @@ declare(strict_types=1);
 define('RAIZ', dirname(__DIR__));
 require RAIZ . '/core/bootstrap.php';
 
-header('Content-Type: text/plain; charset=utf-8');
-echo "Sistema de Casos de Prueba: esqueleto OK\n";
-echo 'PHP ' . PHP_VERSION . "\n";
+use App\Core\Csrf;
+use App\Core\ErrorPermiso;
+use App\Core\Respuesta;
+use App\Core\Ruteador;
+use App\Core\Sesion;
+
+Sesion::iniciar();
+
+$metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$ruta = Ruteador::buscar($metodo, $_SERVER['REQUEST_URI'] ?? '/') ?? Respuesta::error(404);
+$usuario = Sesion::usuario();
+
+// Sesión y rol de la ruta (RF-21, RNF-02).
+if ($ruta['rol'] !== null && $usuario === null) {
+    Respuesta::redirigir('/');
+}
+if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
+    Respuesta::error(403);
+}
+if ($metodo === 'POST' && !Csrf::valido($_POST['csrf'] ?? null)) {
+    Respuesta::error(403);
+}
+
+$clase = 'App\\Controllers\\' . $ruta['controlador'] . 'Controlador';
+try {
+    (new $clase())->{$ruta['accion']}();
+} catch (ErrorPermiso) {
+    Respuesta::error(403);
+}

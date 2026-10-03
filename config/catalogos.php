@@ -100,7 +100,7 @@ return [
     'rol' => [
         'nombre' => 'Rol',
         'valores' => [
-            0 => ['texto' => 'general', 'variante' => 'borde'],
+            0 => ['texto' => 'tester', 'variante' => 'borde'],
             1 => ['texto' => 'admin', 'variante' => 'secundaria'],
         ],
     ],

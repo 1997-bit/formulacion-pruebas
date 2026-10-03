@@ -16,7 +16,7 @@ Sistema web en PHP y MySQL para registrar casos de prueba, darles seguimiento y 
 
 ## 2. Objetivos
 
-- Autenticación con roles `admin` y `general`, y creación de cuentas.
+- Autenticación con roles `admin` y `tester`, y creación de cuentas.
 - Registrar casos, su resultado y su evidencia, con fecha, hora y usuario.
 - Generar los 10 formularios de testing.
 - Consultar por proyecto, requerimiento y estado.
@@ -30,7 +30,7 @@ Toda petición entra por `public/index.php`. Cada pantalla es una ruta de `confi
 
 | Grupo | Rutas |
 | --- | --- |
-| Acceso | `/` inicio de sesión. `/registro` crea cuentas `general`. `/dashboard` panel con el avance. |
+| Acceso | `/` inicio de sesión. `/registro` crea cuentas `tester`. `/dashboard` panel con el avance. |
 | Administración | `/admin/usuarios`, `/admin/proyectos`. |
 | Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`. |
 | Casos | `/casos/registrar`, `/casos/listar` con filtros, `/casos/editar`, `/casos/eliminar`. En `/casos/editar` se anota el resultado y la evidencia, y se imprime el formulario 1. |
@@ -46,7 +46,7 @@ No incluye: producción, API REST, servicios externos, app móvil, pagos, ejecut
 | Rol | Hace |
 | --- | --- |
 | `admin` | Gestiona cuentas, roles, proyectos y formularios. Llena la Rúbrica 7. |
-| `general` | Registra casos, anota resultados, registra incidentes y llena la Auto y Coevaluación 8. |
+| `tester` | Registra casos, anota resultados, registra incidentes y llena la Auto y Coevaluación 8. |
 
 Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingeniería de requerimientos, ingeniería de sistemas, product owner, usuario y profesor Arturo Murillo, que evalúa la exposición y el trabajo escrito.
 
@@ -57,11 +57,11 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | ID | Requerimiento | Detalle | Prioridad |
 | --- | --- | --- | --- |
 | RF-01 | Iniciar sesión | Usuario y contraseña con `password_verify`. | Alta |
-| RF-02 | Crear cuenta | Registro público con rol `general`. Solo un `admin` crea cuentas `admin`. | Alta |
+| RF-02 | Crear cuenta | Registro público con rol `tester`. Solo un `admin` crea cuentas `admin`. | Alta |
 | RF-03 | Gestionar roles | Solo el `admin` cambia el rol, al editar un usuario. | Alta |
 | RF-04 | Registrar caso | Código, proyecto, requerimiento funcional o no funcional, tipo, módulo, técnica y sub-técnica, objetivo, precondiciones, entrada, pasos, resultado esperado, fecha de inicio y fecha final. La final no es anterior a la de inicio. Tipos: unitaria, integración, sistema, aceptación, mantenimiento, regresión, smoke, performance o seguridad. | Alta |
-| RF-05 | Listar casos | Orden por código. `admin` ve todos. `general` ve los de sus proyectos. | Alta |
-| RF-06 | Editar caso | `admin` edita cualquiera. `general` edita solo los que creó. | Media |
+| RF-05 | Listar casos | Orden por código. `admin` ve todos. `tester` ve los de sus proyectos. | Alta |
+| RF-06 | Editar caso | `admin` edita cualquiera. `tester` edita solo los que creó. | Media |
 | RF-07 | Eliminar caso | Solo `admin`, con confirmación. Un caso con evidencias o incidentes no se elimina. | Media |
 | RF-08 | Formulario 1 | Registro de Caso de Prueba: vista imprimible del caso. | Alta |
 | RF-09 | Formulario 2 | Matriz de Clases de Equivalencia. | Alta |
@@ -108,7 +108,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 
 ### 7.1 Matriz rol por operación
 
-| Operación | admin | general |
+| Operación | admin | tester |
 | --- | --- | --- |
 | Usuarios y roles | Sí | No |
 | Proyectos y miembros | Sí | No |
