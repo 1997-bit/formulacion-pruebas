@@ -361,7 +361,6 @@ Contraseña: (vacía)</textarea>
           $evidencias = [
               1 => ['image', 'captura', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
               2 => ['terminal', 'log', 'file', 'accept=".txt,.log"', 'Salida de consola o del servidor: TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
-              3 => ['file-text', 'documento', 'file', 'accept=".pdf"', 'Reporte o informe en PDF, máximo 5 MB.', 'Reporte de cobertura de PHPUnit'],
               4 => ['link', 'enlace', 'url', 'placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
           ];
           ?>
@@ -898,7 +897,7 @@ Contraseña: (vacía)</textarea>
               ['SIS-001', 'Login con credenciales válidas', 3, 1, 'Portal web'],
               ['SIS-002', 'Login con contraseña vacía', 3, 2, 'Portal web'],
               ['UNI-126274-01', 'Edad en el valor límite 18', 1, 0, 'Portal web'],
-              ['INT-126280-01', 'Subir evidencia PDF de 5 MB', 2, 0, 'App de inventario'],
+              ['INT-126280-01', 'Subir captura de 5 MB', 2, 0, 'App de inventario'],
           ];
           foreach ($filas as [$codigo, $caso, $tipo, $estado, $proyecto]): ?>
             <tr>

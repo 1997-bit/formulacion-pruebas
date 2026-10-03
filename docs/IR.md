@@ -89,7 +89,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | --- | --- | --- |
 | RNF-01 | Seguridad | Contraseñas con `PASSWORD_ARGON2ID`, nunca en texto plano. SQL con sentencias preparadas de PDO. Credenciales solo en `.env`; se entrega `.env.example`. |
 | RNF-02 | Acceso | El servidor valida rol y sesión en cada página. La sesión se regenera al entrar. Un inicio fallido no dice si el usuario existe. La sesión no borra un formulario a medias. |
-| RNF-03 | Evidencias | Solo png, jpg, pdf, txt o log. Máximo 5 MB. El archivo se renombra y se guarda fuera de la raíz pública. |
+| RNF-03 | Evidencias | Solo png, jpg, txt o log, o un enlace. Máximo 5 MB. El archivo se renombra y se guarda fuera de la raíz pública. |
 | RNF-04 | Fiabilidad | Borrar un caso pide confirmación. Los pasos y datos de un caso permiten repetir la prueba. |
 | RNF-05 | Datos | InnoDB, `utf8mb4` y UTF-8. Nombre completo en un solo campo. Sin campo de género obligatorio. |
 | RNF-06 | Fechas | ISO en la base. `dd/mm/aaaa` en pantalla. |
