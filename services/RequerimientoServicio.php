@@ -62,6 +62,22 @@ final class RequerimientoServicio
     }
 
     /**
+     * Null si no existe.
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @return array<string, mixed>|null
+     */
+    public static function ver(int $id, array $usuario): ?array
+    {
+        $requerimiento = RequerimientoModelo::porId($id);
+        if ($requerimiento !== null) {
+            Permisos::exigirMiembro($usuario, (int) $requerimiento['proyecto_id']);
+        }
+
+        return $requerimiento;
+    }
+
+    /**
      * @param array{id: int, rol: int} $usuario
      * @return list<array<string, mixed>>
      */

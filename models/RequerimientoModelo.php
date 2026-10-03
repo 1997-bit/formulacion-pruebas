@@ -52,6 +52,17 @@ final class RequerimientoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** @return array<string, mixed>|null */
+    public static function porId(int $id): ?array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT r.*, p.nombre AS proyecto FROM requerimientos r JOIN proyectos p ON p.id = r.proyecto_id WHERE r.id = ?'
+        );
+        $sql->execute([$id]);
+
+        return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
     public static function existe(int $proyectoId, string $codigo): bool
     {
         $sql = Conexion::pdo()->prepare('SELECT 1 FROM requerimientos WHERE proyecto_id = ? AND codigo = ?');
