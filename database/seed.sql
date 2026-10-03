@@ -22,7 +22,8 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (5, 1, 'RF-06', 'Editar caso: admin edita cualquiera; tester solo los que creó.', 0),
     (6, 1, 'RF-20', 'Historial: cada cambio de un caso guarda campo, valor anterior, valor nuevo, usuario y fecha.', 0),
     (7, 1, 'RF-22', 'Consultar resultados: la lista de casos filtra por proyecto, requerimiento y estado.', 0),
-    (8, 1, 'RF-05', 'Listar casos: admin ve todos; tester ve los de sus proyectos.', 0);
+    (8, 1, 'RF-05', 'Listar casos: admin ve todos; tester ve los de sus proyectos.', 0),
+    (9, 1, 'RF-24', 'Anotar resultado: con OK o FAULT lleva resultado, observaciones y al menos una evidencia. Puede volver a Pendiente.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
@@ -167,7 +168,27 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'Admin ve casos de los dos proyectos, incluido INT-001 de Biblioteca escolar. Pan no ve ningún caso de Biblioteca escolar. En los dos, ordenados por proyecto y código.',
         '2026-10-03', '2026-10-07',
         0, NULL, NULL,
-        3, '2026-10-03 17:25:00', NULL, NULL);
+        3, '2026-10-03 17:25:00', NULL, NULL),
+    (15, 1, 9, 'SIS-010', 3, 1, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que un resultado OK sin evidencia no se guarda.',
+        'Sesión iniciada como pan. SIS-002 está Pendiente y sin evidencias.',
+        'Estado: OK\nResultado obtenido: Funcionó\nObservaciones: Ninguna\nEvidencias: ninguna marcada',
+        '1. Abrir SIS-002.\n2. Anotar la entrada y guardar.',
+        'No se guarda. Sale "Con OK o FAULT hace falta al menos una." junto a Evidencias y SIS-002 sigue Pendiente.',
+        '2026-10-03', '2026-10-07',
+        0, NULL, NULL,
+        3, '2026-10-03 17:30:00', NULL, NULL),
+    (16, 1, 9, 'SIS-011', 3, 4, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que un caso OK puede volver a Pendiente y queda en el historial.',
+        'Sesión iniciada como gloria. SIS-001 está OK con una evidencia.',
+        'Estado: Pendiente',
+        '1. Abrir SIS-001.\n2. Cambiar el estado a Pendiente y guardar.\n3. Pulsar Editar y revisar el historial.',
+        'Se guarda sin pedir evidencia nueva. SIS-001 sale Pendiente y el historial tiene una fila de Estado de OK a Pendiente con Gloria.',
+        '2026-10-03', '2026-10-07',
+        0, NULL, NULL,
+        2, '2026-10-03 17:35:00', NULL, NULL);
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
