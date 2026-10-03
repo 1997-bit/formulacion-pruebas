@@ -32,7 +32,8 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (15, 1, 'RNF-01', 'Seguridad: contraseñas con Argon2id y SQL con sentencias preparadas de PDO.', 1),
     (16, 1, 'RNF-07', 'Accesibilidad: WCAG 2.2 AA, todo con teclado y errores junto al campo.', 1),
     (17, 1, 'RNF-06', 'Fechas: ISO en la base y dd/mm/aaaa en pantalla.', 1),
-    (18, 1, 'RF-18', 'Recrear ambiente: schema.sql, seed.sql, .env.example y docs/recrear_ambiente.md.', 0);
+    (18, 1, 'RF-18', 'Recrear ambiente: schema.sql, seed.sql, .env.example y docs/recrear_ambiente.md.', 0),
+    (19, 1, 'RF-08', 'Formulario 1: vista imprimible del caso.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
@@ -620,14 +621,26 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-03', '2026-10-05',
         2, 'La URL responde 200 y pan sigue usando Usuarios y Proyectos hasta que sale.',
         'El rol se guarda en la sesión al entrar y no se vuelve a leer. Ver BUG-003.',
-        2, '2026-10-03 20:30:00', 2, '2026-10-03 20:40:00');
+        2, '2026-10-03 20:30:00', 2, '2026-10-03 20:40:00'),
+    (59, 1, 19, 'SIS-022', 3, 8, 'Casos', 1,
+        'Linux, Chrome, PHP 8.5, MariaDB',
+        'Verificar que la impresión del formulario 1 sale completa y legible cuando ocupa más de una hoja.',
+        'Sesión iniciada como gloria. Existe el caso INT-001 de Biblioteca escolar.',
+        'Caso: INT-001 de Biblioteca escolar (id 3)',
+        '1. Abrir INT-001 de Biblioteca escolar.\n2. Pulsar Imprimir.\n3. Revisar la vista previa hoja por hoja.',
+        'Salen todos los campos del formulario 1, sin textos encimados. "Impreso el" va al final, debajo de los datos del caso.',
+        '2026-10-03', '2026-10-03',
+        2, 'Los datos del caso pasan a la hoja 2 y "Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
+        'En una sola hoja no pasa. Ver BUG-004.',
+        2, '2026-10-03 21:00:00', 2, '2026-10-03 21:10:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
     (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00'),
     (7, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'Línea de campos(): entorno y precondiciones con ?: null, que trata "0" como vacío.', 2, '2026-10-03 20:10:00'),
     (8, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/casos/resultado.php', 'Vista del detalle: no incluye el historial.', 3, '2026-10-03 20:20:00'),
-    (58, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Sesion.php', 'Sesion::usuario() devuelve el rol guardado al entrar.', 2, '2026-10-03 20:40:00');
+    (58, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Sesion.php', 'Sesion::usuario() devuelve el rol guardado al entrar.', 2, '2026-10-03 20:40:00'),
+    (59, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/componentes.css', 'Bloque @media print: .vista-detalle sigue en grid al imprimir.', 2, '2026-10-03 21:10:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -649,4 +662,10 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Pan entra con rol admin.\n2. Admin le cambia el rol a tester.\n3. Pan abre /admin/usuarios sin salir.',
         'Responde 403.',
         'Responde 200 y pan puede crear y borrar usuarios.',
-        4, 3, 0, 1, 2, 2, '2026-10-03 20:42:00');
+        4, 3, 0, 1, 2, 2, '2026-10-03 20:42:00'),
+    (1, 59, 'BUG-004', 'Al imprimir, el pie se encima en la hoja 2', 'Casos',
+        'Al imprimir, .vista-detalle sigue en grid. Cuando los datos del caso pasan a la hoja 2, Chrome dibuja "Impreso el…" donde iría sin el salto, encima de ellos.',
+        '1. Abrir INT-001 de Biblioteca escolar.\n2. Pulsar Imprimir.\n3. Ver la hoja 2 en la vista previa.',
+        '"Impreso el" sale al final, debajo de los datos del caso.',
+        '"Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
+        2, 2, 0, 0, NULL, 2, '2026-10-03 21:12:00');
