@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-// 'MÉTODO /camino' => [controlador, acción, rol, RF]
-// rol: null pública, 0 cualquier sesión, 1 solo admin (config/catalogos.php).
+// rol: null pública, 0 con sesión, 1 admin.
 return [
     'GET /' => ['controlador' => 'Acceso', 'accion' => 'login', 'rol' => null, 'rf' => 'RF-01'],
     'POST /' => ['controlador' => 'Acceso', 'accion' => 'entrar', 'rol' => null, 'rf' => 'RF-01'],
@@ -12,4 +11,16 @@ return [
     'GET /salir' => ['controlador' => 'Acceso', 'accion' => 'salir', 'rol' => 0, 'rf' => 'RF-01'],
     'GET /dashboard' => ['controlador' => 'Panel', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RF-23'],
     'GET /casos/editar' => ['controlador' => 'Casos', 'accion' => 'editar', 'rol' => 0, 'rf' => 'RF-06'],
+    'GET /admin/usuarios' => ['controlador' => 'Usuarios', 'accion' => 'listar', 'rol' => 1, 'rf' => 'RF-03'],
+    'GET /admin/usuarios/crear' => ['controlador' => 'Usuarios', 'accion' => 'crear', 'rol' => 1, 'rf' => 'RF-02'],
+    'POST /admin/usuarios/crear' => ['controlador' => 'Usuarios', 'accion' => 'guardar', 'rol' => 1, 'rf' => 'RF-02'],
+    'GET /admin/usuarios/editar' => ['controlador' => 'Usuarios', 'accion' => 'editar', 'rol' => 1, 'rf' => 'RF-03'],
+    'POST /admin/usuarios/editar' => ['controlador' => 'Usuarios', 'accion' => 'actualizar', 'rol' => 1, 'rf' => 'RF-03'],
+    'POST /admin/usuarios/eliminar' => ['controlador' => 'Usuarios', 'accion' => 'eliminar', 'rol' => 1, 'rf' => 'RF-03'],
+    'GET /admin/proyectos' => ['controlador' => 'Proyectos', 'accion' => 'listar', 'rol' => 1, 'rf' => 'RF-21'],
+    'GET /admin/proyectos/crear' => ['controlador' => 'Proyectos', 'accion' => 'crear', 'rol' => 1, 'rf' => 'RF-21'],
+    'POST /admin/proyectos/crear' => ['controlador' => 'Proyectos', 'accion' => 'guardar', 'rol' => 1, 'rf' => 'RF-21'],
+    'GET /admin/proyectos/editar' => ['controlador' => 'Proyectos', 'accion' => 'editar', 'rol' => 1, 'rf' => 'RF-21'],
+    'POST /admin/proyectos/editar' => ['controlador' => 'Proyectos', 'accion' => 'actualizar', 'rol' => 1, 'rf' => 'RF-21'],
+    'POST /admin/proyectos/eliminar' => ['controlador' => 'Proyectos', 'accion' => 'eliminar', 'rol' => 1, 'rf' => 'RF-21'],
 ];

@@ -6,7 +6,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Enlaces de página. Conservan los demás parámetros de la URL, como los filtros.
+ * Conserva los filtros de la URL.
  *
  * @var Paginacion $paginacion
  */

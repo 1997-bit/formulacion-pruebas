@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Usuario en sesión y mensajes flash.
 final class Sesion
 {
-    // 8 horas sin actividad: alcanza para llenar un formulario largo.
+    // 8 h: alcanza para un formulario largo.
     private const DURACION = 28800;
 
     public static function iniciar(): void
@@ -17,7 +16,7 @@ final class Sesion
         }
         ini_set('session.gc_maxlifetime', (string) self::DURACION);
         ini_set('session.use_strict_mode', '1');
-        session_name(Env::get('SESSION_NOMBRE', 'casos_sesion'));
+        session_name('casos_sesion');
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
@@ -53,11 +52,12 @@ final class Sesion
         $_SESSION['flash'] = $mensaje;
     }
 
-    public static function tomarFlash(): ?string
+    // Lee y borra: flash, errores y datos de Respuesta::errores().
+    public static function tomar(string $clave, mixed $defecto = null): mixed
     {
-        $mensaje = $_SESSION['flash'] ?? null;
-        unset($_SESSION['flash']);
+        $valor = $_SESSION[$clave] ?? $defecto;
+        unset($_SESSION[$clave]);
 
-        return $mensaje;
+        return $valor;
     }
 }

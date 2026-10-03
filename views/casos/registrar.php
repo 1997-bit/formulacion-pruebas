@@ -22,7 +22,7 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
 ]);
 $elegido = fn (string $campo, int|string $valor): string => (string) $valor === ($datos[$campo] ?? '') ? ' selected' : '';
 $marcado = fn (string $campo, int|string $valor): string => (string) $valor === ($datos[$campo] ?? '') ? ' checked' : '';
-// Los grupos de radios no usan el partial: el error va en el fieldset (RNF-07).
+// Radios: el error va en el fieldset.
 $aria = fn (string $campo): string => isset($errores[$campo]) ? ' aria-describedby="f-' . $campo . '-error"' : '';
 $error = fn (string $campo): string => isset($errores[$campo])
     ? '<p class="campo-error" id="f-' . $campo . '-error">' . Icono::svg('circle-x') . Html::e($errores[$campo]) . '</p>'

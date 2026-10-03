@@ -6,8 +6,7 @@ namespace App\Core;
 
 use App\Helpers\Catalogo;
 
-// Junta los errores por campo y lanza ErrorValidacion si hay alguno.
-// Los textos se revisan sin espacios al inicio ni al final.
+// Junta errores y lanza ErrorValidacion.
 final class Validador
 {
     /** @var array<string, string> */
@@ -18,7 +17,7 @@ final class Validador
         return $this->regla($campo, trim((string) $valor) !== '', 'Es obligatorio.');
     }
 
-    // Formato de <input type="date">: 2026-05-15. Vacío pasa; para exigirlo, usar requerido().
+    // AAAA-MM-DD. Vacío pasa: usar requerido().
     public function fecha(string $campo, ?string $valor): self
     {
         $valor = trim((string) $valor);
@@ -27,7 +26,7 @@ final class Validador
         return $this->regla($campo, $valor === '' || ($fecha && $fecha->format('Y-m-d') === $valor), 'Fecha inválida.');
     }
 
-    // Vacío pasa; para exigirlo, usar requerido().
+    // Vacío pasa: usar requerido().
     public function catalogo(string $campo, string $catalogo, int|string|null $valor): self
     {
         $valor = trim((string) $valor);

@@ -9,8 +9,9 @@ use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
 use App\Services\CasoServicio;
+use App\Services\RequerimientoServicio;
 
-// Casos de prueba: registrar con resultado y evidencia (RF-04, RF-24, formulario 1) y listar (RF-05).
+// RF-04, RF-05, RF-24
 final class CasosControlador
 {
     private const CAMPOS = [
@@ -23,26 +24,19 @@ final class CasosControlador
     {
         Vista::pagina('casos/listar', [
             'titulo' => 'Casos de prueba',
-            'usuario' => Sesion::usuario(),
             'casos' => CasoServicio::listar(Sesion::usuario()),
-            'flash' => Sesion::tomarFlash(),
+            'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Casos de prueba'], ['texto' => 'Listar']],
         ]);
     }
 
     public function registrar(): void
     {
-        // Errores y datos que dejó Respuesta::errores() en el POST anterior.
-        $errores = $_SESSION['errores'] ?? [];
-        $datos = $_SESSION['datos'] ?? [];
-        unset($_SESSION['errores'], $_SESSION['datos']);
-
         Vista::pagina('casos/registrar', [
             'titulo' => 'Registrar caso',
-            'usuario' => Sesion::usuario(),
-            'requerimientos' => CasoServicio::requerimientos(Sesion::usuario()),
-            'errores' => $errores,
-            'datos' => $datos,
+            'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos', []),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
         ]);
     }

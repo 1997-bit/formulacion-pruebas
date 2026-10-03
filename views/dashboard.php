@@ -1,7 +1,5 @@
 <?php
 declare(strict_types=1);
-
-/** @var array{nombre: string, usuario: string, rol: string} $usuario */
 ?>
 <header class="encabezado">
   <div>

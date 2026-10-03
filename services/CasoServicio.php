@@ -9,19 +9,17 @@ use App\Core\Validador;
 use App\Helpers\Catalogo;
 use App\Models\CasoModelo;
 use App\Models\EvidenciaModelo;
+use App\Models\RequerimientoModelo;
 
-// Registrar caso con su resultado y evidencia (RF-04, RF-24, formulario 1) y listar casos (RF-05).
+// RF-04, RF-05, RF-24
 final class CasoServicio
 {
-    // RNF-03: tipos permitidos y tamaño máximo de la evidencia.
-    // Extensión => tipo de evidencia (config/catalogos.php). El enlace es el tipo 4.
+    // Extensión => tipo de evidencia; enlace es 4 (RNF-03).
     private const EXTENSIONES = ['png' => 1, 'jpg' => 1, 'jpeg' => 1, 'txt' => 2, 'log' => 2, 'pdf' => 3];
     private const MAX_BYTES = 5 * 1024 * 1024;
 
     /**
-     * El proyecto sale del requerimiento y el código lo genera el sistema.
-     * La técnica no se guarda: sale de la sub-técnica. Estado 1 Éxito o 2 Fallo.
-     * La evidencia es un archivo, un enlace o ambos: al menos uno.
+     * La técnica no se guarda: sale de la sub-técnica.
      *
      * @param array<string, string> $datos
      * @param array{name: string, tmp_name: string, size: int, error: int}|null $archivo
@@ -30,7 +28,7 @@ final class CasoServicio
     public static function registrar(array $datos, ?array $archivo, array $usuario): string
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(CasoModelo::requerimientosPermitidos($usuario['id'], $usuario['rol'] === 1), null, 'id');
+        $requerimientos = array_column(RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1), null, 'id');
         $hayArchivo = $archivo !== null && $archivo['error'] !== UPLOAD_ERR_NO_FILE;
         $extension = $hayArchivo ? strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION)) : '';
 
@@ -43,7 +41,6 @@ final class CasoServicio
             ->regla('tecnica', in_array($d['tecnica'], ['', '1', '2'], true), 'Valor no válido.')
             ->requerido('subtecnica', $d['subtecnica'])
             ->catalogo('subtecnica', 'subtecnica', $d['subtecnica'])
-            // 1 a 10 caja negra, 11 a 20 caja blanca (config/catalogos.php).
             ->regla('subtecnica', $d['tecnica'] === '' || $d['subtecnica'] === '' || ((int) $d['subtecnica'] > 10 ? '2' : '1') === $d['tecnica'], 'No es de la técnica elegida.')
             ->requerido('modulo', $d['modulo'])
             ->regla('modulo', mb_strlen($d['modulo']) <= 100, 'Máximo 100 caracteres.')
@@ -74,7 +71,7 @@ final class CasoServicio
 
         $proyectoId = (int) $requerimientos[$d['requerimiento_id']]['proyecto_id'];
         $sigla = Catalogo::valores('tipo_prueba')[(int) $d['tipo_prueba']]['sigla'] ?? 'CP';
-        // Nombre aleatorio fuera de public/ (RNF-03).
+        // RNF-03
         $guardado = $hayArchivo ? bin2hex(random_bytes(16)) . '.' . $extension : null;
         $destino = $guardado !== null ? RAIZ . '/storage/evidencias/' . $guardado : null;
 
@@ -133,14 +130,5 @@ final class CasoServicio
     public static function listar(array $usuario): array
     {
         return CasoModelo::listar($usuario['id'], $usuario['rol'] === 1);
-    }
-
-    /**
-     * @param array{id: int, rol: int} $usuario
-     * @return list<array<string, mixed>>
-     */
-    public static function requerimientos(array $usuario): array
-    {
-        return CasoModelo::requerimientosPermitidos($usuario['id'], $usuario['rol'] === 1);
     }
 }

@@ -6,7 +6,6 @@ use App\Helpers\Icono;
 
 /** @var int $codigo */
 
-// Sección Vacío de la paleta.
 [$icono, $titulo, $texto] = match ($codigo) {
     403 => ['lock', 'No tiene permiso para ver esta página', 'Pida acceso al administrador del proyecto.'],
     404 => ['file-question-mark', 'No encontramos esta página', 'Puede que el caso se haya eliminado o que la dirección esté mal.'],
@@ -22,6 +21,7 @@ use App\Helpers\Icono;
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/componentes.css">
+<script src="/assets/js/tema.js"></script>
 </head>
 <body>
 <main class="vacio" style="max-width:32rem;margin:10vh auto">

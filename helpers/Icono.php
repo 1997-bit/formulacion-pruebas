@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// Pega en el HTML un icono de public/assets/icons/ (Lucide, licencia ISC).
-// Se pega en linea, no con <img>, para que tome el color del texto (currentColor) y cambie con el tema.
-// Para agregar uno: descargar el .svg desde lucide.dev y guardarlo en esa carpeta.
+// SVG de Lucide en línea, no <img>: toma el color del texto.
 final class Icono
 {
     public static function svg(string $nombre, string $clase = 'icono'): string
