@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Sesion;
 use App\Core\Vista;
 
 // RF-23
@@ -14,7 +13,6 @@ final class PanelControlador
     {
         Vista::pagina('dashboard', [
             'titulo' => 'Panel',
-            'usuario' => Sesion::usuario(),
             'migas' => [
                 ['texto' => 'Plataforma'],
                 ['texto' => 'Panel'],

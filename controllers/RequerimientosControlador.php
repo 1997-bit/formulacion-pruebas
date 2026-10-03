@@ -18,7 +18,6 @@ final class RequerimientosControlador
     {
         Vista::pagina('requerimientos/listar', [
             'titulo' => 'Requerimientos',
-            'usuario' => Sesion::usuario(),
             'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Requerimientos'], ['texto' => 'Listar']],
@@ -29,7 +28,6 @@ final class RequerimientosControlador
     {
         Vista::pagina('requerimientos/registrar', [
             'titulo' => 'Registrar requerimiento',
-            'usuario' => Sesion::usuario(),
             'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos', []),

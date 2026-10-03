@@ -10,6 +10,7 @@ final class Vista
     /** @param array<string, mixed> $datos */
     public static function pagina(string $vista, array $datos = [], string $layout = 'layouts/app'): void
     {
+        $datos['usuario'] ??= Sesion::usuario();
         $datos['contenido'] = self::capturar($vista, $datos);
         echo self::capturar($layout, $datos);
     }

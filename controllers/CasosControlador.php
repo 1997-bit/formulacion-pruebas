@@ -23,7 +23,6 @@ final class CasosControlador
     {
         Vista::pagina('casos/listar', [
             'titulo' => 'Casos de prueba',
-            'usuario' => Sesion::usuario(),
             'casos' => CasoServicio::listar(Sesion::usuario()),
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Casos de prueba'], ['texto' => 'Listar']],
@@ -34,7 +33,6 @@ final class CasosControlador
     {
         Vista::pagina('casos/registrar', [
             'titulo' => 'Registrar caso',
-            'usuario' => Sesion::usuario(),
             'requerimientos' => CasoServicio::requerimientos(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos', []),
