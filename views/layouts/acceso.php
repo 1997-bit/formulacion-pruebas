@@ -28,7 +28,7 @@ use App\Helpers\Html;
 </head>
 <body>
 <main class="acceso">
-  <img class="acceso-logo" src="/Frame.svg" alt="Safeguard">
+  <img class="acceso-logo" src="/Frame.svg" alt="Casos de Prueba">
   <?= $contenido ?>
 </main>
 </body>

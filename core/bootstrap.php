@@ -18,9 +18,4 @@ spl_autoload_register(function (string $clase): void {
 App\Core\Env::cargar(RAIZ . '/.env');
 
 // La base usa la misma zona (Conexion.php).
-$zona = App\Core\Env::get('APP_ZONA', 'America/Panama');
-if (!in_array($zona, \DateTimeZone::listIdentifiers(), true)) {
-    throw new \RuntimeException("APP_ZONA no es una zona horaria válida: {$zona}");
-}
-date_default_timezone_set($zona);
-unset($zona);
+date_default_timezone_set(App\Core\Env::get('APP_ZONA', 'America/Panama'));

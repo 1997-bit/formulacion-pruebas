@@ -12,10 +12,4 @@ final class Fecha
     {
         return $fecha->format('d/m/Y');
     }
-
-    // 15/05/2026 14:30
-    public static function legibleConHora(\DateTimeInterface $fecha): string
-    {
-        return $fecha->format('d/m/Y H:i');
-    }
 }

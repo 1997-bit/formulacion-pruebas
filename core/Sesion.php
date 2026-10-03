@@ -16,7 +16,7 @@ final class Sesion
         }
         ini_set('session.gc_maxlifetime', (string) self::DURACION);
         ini_set('session.use_strict_mode', '1');
-        session_name(Env::get('SESSION_NOMBRE', 'casos_sesion'));
+        session_name('casos_sesion');
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
