@@ -214,17 +214,19 @@ final class CasoServicio
     }
 
     /**
-     * RNF-09
+     * RF-22, RNF-09. Un filtro vacío no filtra; con uno de otro proyecto sale vacía.
      *
+     * @param array<string, string> $filtros proyecto, requerimiento, estado
      * @param array{id: int, rol: int} $usuario
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
      */
-    public static function pagina(array $usuario, int $pagina): array
+    public static function listar(array $usuario, array $filtros, int $pagina): array
     {
         $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(CasoModelo::contar($usuario['id'], $admin), $pagina);
+        $f = self::filtros($filtros);
+        $paginacion = new Paginacion(CasoModelo::contar($usuario['id'], $admin, $f), $pagina);
 
-        return [CasoModelo::listar($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [CasoModelo::listar($usuario['id'], $admin, $f, $paginacion->offset()), $paginacion];
     }
 
     /**
@@ -280,6 +282,22 @@ final class CasoServicio
             'resultado_esperado' => $d['resultado_esperado'],
             'fecha_inicio' => $d['fecha_inicio'],
             'fecha_fin' => $d['fecha_fin'],
+        ];
+    }
+
+    /**
+     * @param array<string, string> $filtros
+     * @return array{proyecto: ?int, requerimiento: ?int, estado: ?int}
+     */
+    private static function filtros(array $filtros): array
+    {
+        $numero = fn (string $clave): ?int => ctype_digit($filtros[$clave] ?? '') ? (int) $filtros[$clave] : null;
+        $estado = $numero('estado');
+
+        return [
+            'proyecto' => $numero('proyecto'),
+            'requerimiento' => $numero('requerimiento'),
+            'estado' => Catalogo::existe('estado_caso', $estado) ? $estado : null,
         ];
     }
 
