@@ -16,6 +16,7 @@ use App\Helpers\Icono;
  * @var ?string $flash
  * @var array<string, string> $errores
  * @var array<string, mixed> $datos
+ * @var array{rol: int} $usuario
  */
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
@@ -26,9 +27,24 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?></p>
     <h1><?= Html::e($caso['modulo']) ?></h1>
   </div>
-  <?php if ($editable): ?>
-    <div class="acciones"><a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a></div>
-  <?php endif; ?>
+  <div class="acciones">
+    <?php if ($editable): ?>
+      <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
+    <?php endif; ?>
+    <?php if ($usuario['rol'] === 1): ?>
+      <button class="btn btn-secundario btn-icono" type="button" data-abrir-dialogo="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
+      <dialog class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
+        <h2 id="dlg-eliminar-titulo">¿Eliminar el caso <?= Html::e($caso['codigo']) ?>?</h2>
+        <p>Si tiene evidencias o incidentes no se elimina. Esta acción no se puede deshacer.</p>
+        <form method="post" action="/casos/eliminar" class="acciones">
+          <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+          <input type="hidden" name="id" value="<?= (int) $caso['id'] ?>">
+          <button class="btn btn-secundario" type="submit" formmethod="dialog" autofocus>Cancelar</button>
+          <button class="btn btn-peligro" type="submit">Eliminar</button>
+        </form>
+      </dialog>
+    <?php endif; ?>
+  </div>
 </header>
 
 <div class="pila">

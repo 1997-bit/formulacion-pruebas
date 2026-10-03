@@ -116,4 +116,19 @@ final class CasoModelo
 
         return (int) Conexion::pdo()->lastInsertId();
     }
+
+    // False si tiene evidencias o incidentes. El historial se borra con él.
+    public static function eliminar(int $id): bool
+    {
+        try {
+            Conexion::pdo()->prepare('DELETE FROM casos_prueba WHERE id = ?')->execute([$id]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() === '23000') {
+                return false;
+            }
+            throw $e;
+        }
+
+        return true;
+    }
 }
