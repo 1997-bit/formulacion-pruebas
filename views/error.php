@@ -21,6 +21,7 @@ use App\Helpers\Icono;
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/componentes.css">
+<script src="/assets/js/tema.js"></script>
 </head>
 <body>
 <main class="vacio" style="max-width:32rem;margin:10vh auto">
