@@ -36,6 +36,9 @@ final class CasosControlador
             'titulo' => 'Casos de prueba',
             'casos' => $casos,
             'paginacion' => $paginacion,
+            'filtros' => $filtros,
+            'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
+            'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Casos de prueba'], ['texto' => 'Listar']],
         ]);
