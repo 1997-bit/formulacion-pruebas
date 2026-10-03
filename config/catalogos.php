@@ -38,18 +38,52 @@ return [
             9 => ['texto' => 'Seguridad', 'sigla' => 'SEG', 'variante' => 'borde'],
         ],
     ],
-    // 1 a 3 son caja negra; 4 a 8, caja blanca. Las métricas del formulario 5 usan 4 a 8.
+    // 1 a 10 caja negra; 11 a 20 caja blanca (documento de la Unidad III).
+    // Las métricas del formulario 5 son 11, 12, 13, 16 y 18.
     'subtecnica' => [
         'nombre' => 'Sub-técnica',
         'valores' => [
-            1 => ['texto' => 'Clases de equivalencia', 'variante' => 'borde'],
-            2 => ['texto' => 'Valor límite', 'variante' => 'borde'],
-            3 => ['texto' => 'Tabla de decisión', 'variante' => 'borde'],
-            4 => ['texto' => 'Sentencia', 'variante' => 'borde'],
-            5 => ['texto' => 'Decisión', 'variante' => 'borde'],
-            6 => ['texto' => 'Condición', 'variante' => 'borde'],
-            7 => ['texto' => 'Caminos', 'variante' => 'borde'],
-            8 => ['texto' => 'Bucles', 'variante' => 'borde'],
+            1 => ['texto' => 'Partición de equivalencia', 'variante' => 'borde'],
+            2 => ['texto' => 'Análisis de valores límite', 'variante' => 'borde'],
+            3 => ['texto' => 'Tabla de decisiones', 'variante' => 'borde'],
+            4 => ['texto' => 'Transición de estados', 'variante' => 'borde'],
+            5 => ['texto' => 'Grafos causa-efecto', 'variante' => 'borde'],
+            6 => ['texto' => 'Combinatoria por pares', 'variante' => 'borde'],
+            7 => ['texto' => 'Casos de uso', 'variante' => 'borde'],
+            8 => ['texto' => 'Escenarios', 'variante' => 'borde'],
+            9 => ['texto' => 'Basada en modelos', 'variante' => 'borde'],
+            10 => ['texto' => 'Aleatoria', 'variante' => 'borde'],
+            11 => ['texto' => 'Cobertura de sentencias', 'variante' => 'borde'],
+            12 => ['texto' => 'Cobertura de decisiones', 'variante' => 'borde'],
+            13 => ['texto' => 'Cobertura de condiciones', 'variante' => 'borde'],
+            14 => ['texto' => 'Cobertura de decisión/condición', 'variante' => 'borde'],
+            15 => ['texto' => 'Cobertura de condiciones múltiples', 'variante' => 'borde'],
+            16 => ['texto' => 'Cobertura de caminos', 'variante' => 'borde'],
+            17 => ['texto' => 'Cobertura de caminos básicos', 'variante' => 'borde'],
+            18 => ['texto' => 'Cobertura de bucles', 'variante' => 'borde'],
+            19 => ['texto' => 'Cobertura de funciones/métodos', 'variante' => 'borde'],
+            20 => ['texto' => 'Cobertura de clases', 'variante' => 'borde'],
+        ],
+    ],
+    // Dónde corre lo que se prueba. El detalle (navegador, versión) va en entorno.
+    'plataforma' => [
+        'nombre' => 'Plataforma',
+        'valores' => [
+            1 => ['texto' => 'Web', 'variante' => 'borde'],
+            2 => ['texto' => 'Escritorio', 'variante' => 'borde'],
+            3 => ['texto' => 'Android', 'variante' => 'borde'],
+            4 => ['texto' => 'iOS', 'variante' => 'borde'],
+            5 => ['texto' => 'API', 'variante' => 'borde'],
+        ],
+    ],
+    // Captura: png y jpg. Log: txt y log. Documento: pdf (RNF-03).
+    'tipo_evidencia' => [
+        'nombre' => 'Tipo de evidencia',
+        'valores' => [
+            1 => ['texto' => 'Captura', 'variante' => 'borde'],
+            2 => ['texto' => 'Log', 'variante' => 'borde'],
+            3 => ['texto' => 'Documento', 'variante' => 'borde'],
+            4 => ['texto' => 'Enlace', 'variante' => 'borde'],
         ],
     ],
     // De menor a mayor: ORDER BY severidad DESC deja lo más grave arriba.
@@ -93,14 +127,43 @@ return [
         'nombre' => 'Aspecto de la auto y coevaluación',
         'valores' => [
             1 => ['texto' => 'Comprensión de conceptos', 'variante' => 'borde'],
-            2 => ['texto' => 'Trabajo en equipo', 'variante' => 'borde'],
-            3 => ['texto' => 'Cumplimiento de plazos', 'variante' => 'borde'],
+            2 => ['texto' => 'Aplicación de técnicas', 'variante' => 'borde'],
+            3 => ['texto' => 'Trabajo en equipo', 'variante' => 'borde'],
+            4 => ['texto' => 'Uso de herramientas', 'variante' => 'borde'],
+            5 => ['texto' => 'Calidad de documentación', 'variante' => 'borde'],
+            6 => ['texto' => 'Cumplimiento de plazos', 'variante' => 'borde'],
+        ],
+    ],
+    'estrategia' => [
+        'nombre' => 'Estrategia del plan',
+        'valores' => [
+            1 => ['texto' => 'Caja negra', 'variante' => 'borde'],
+            2 => ['texto' => 'Caja blanca', 'variante' => 'borde'],
+            3 => ['texto' => 'Mixta', 'variante' => 'borde'],
+        ],
+    ],
+    'estado_plan' => [
+        'nombre' => 'Estado del plan',
+        'valores' => [
+            0 => ['texto' => 'Borrador', 'variante' => 'aviso'],
+            1 => ['texto' => 'Aprobado', 'variante' => 'info'],
+            2 => ['texto' => 'Cerrado', 'variante' => 'secundaria'],
+        ],
+    ],
+    'tipo_portafolio' => [
+        'nombre' => 'Tipo de evidencia del portafolio',
+        'valores' => [
+            1 => ['texto' => 'Documento', 'variante' => 'borde'],
+            2 => ['texto' => 'Taller', 'variante' => 'borde'],
+            3 => ['texto' => 'Laboratorio', 'variante' => 'borde'],
+            4 => ['texto' => 'Proyecto', 'variante' => 'borde'],
+            5 => ['texto' => 'Presentación', 'variante' => 'borde'],
         ],
     ],
     'rol' => [
         'nombre' => 'Rol',
         'valores' => [
-            0 => ['texto' => 'general', 'variante' => 'borde'],
+            0 => ['texto' => 'tester', 'variante' => 'borde'],
             1 => ['texto' => 'admin', 'variante' => 'secundaria'],
         ],
     ],

@@ -16,7 +16,7 @@ Sistema web en PHP y MySQL para registrar casos de prueba, darles seguimiento y 
 
 ## 2. Objetivos
 
-- Autenticación con roles `admin` y `general`, y creación de cuentas.
+- Autenticación con roles `admin` y `tester`, y creación de cuentas.
 - Registrar casos, su resultado y su evidencia, con fecha, hora y usuario.
 - Generar los 10 formularios de testing.
 - Consultar por proyecto, requerimiento y estado.
@@ -30,7 +30,7 @@ Toda petición entra por `public/index.php`. Cada pantalla es una ruta de `confi
 
 | Grupo | Rutas |
 | --- | --- |
-| Acceso | `/` inicio de sesión. `/registro` crea cuentas `general`. `/dashboard` panel con el avance. |
+| Acceso | `/` inicio de sesión. `/registro` crea cuentas `tester`. `/dashboard` panel con el avance. |
 | Administración | `/admin/usuarios`, `/admin/proyectos`. |
 | Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`. |
 | Casos | `/casos/registrar`, `/casos/listar` con filtros, `/casos/editar`, `/casos/eliminar`. En `/casos/editar` se anota el resultado y la evidencia, y se imprime el formulario 1. |
@@ -46,7 +46,7 @@ No incluye: producción, API REST, servicios externos, app móvil, pagos, ejecut
 | Rol | Hace |
 | --- | --- |
 | `admin` | Gestiona cuentas, roles, proyectos y formularios. Llena la Rúbrica 7. |
-| `general` | Registra casos, anota resultados, registra incidentes y llena la Auto y Coevaluación 8. |
+| `tester` | Registra casos, anota resultados, registra incidentes y llena la Auto y Coevaluación 8. |
 
 Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingeniería de requerimientos, ingeniería de sistemas, product owner, usuario y profesor Arturo Murillo, que evalúa la exposición y el trabajo escrito.
 
@@ -57,11 +57,11 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | ID | Requerimiento | Detalle | Prioridad |
 | --- | --- | --- | --- |
 | RF-01 | Iniciar sesión | Usuario y contraseña con `password_verify`. | Alta |
-| RF-02 | Crear cuenta | Registro público con rol `general`. Solo un `admin` crea cuentas `admin`. | Alta |
+| RF-02 | Crear cuenta | Registro público con rol `tester`. Solo un `admin` crea cuentas `admin`. | Alta |
 | RF-03 | Gestionar roles | Solo el `admin` cambia el rol, al editar un usuario. | Alta |
 | RF-04 | Registrar caso | Código, proyecto, requerimiento funcional o no funcional, tipo, módulo, técnica y sub-técnica, objetivo, precondiciones, entrada, pasos, resultado esperado, fecha de inicio y fecha final. La final no es anterior a la de inicio. Tipos: unitaria, integración, sistema, aceptación, mantenimiento, regresión, smoke, performance o seguridad. | Alta |
-| RF-05 | Listar casos | Orden por código. `admin` ve todos. `general` ve los de sus proyectos. | Alta |
-| RF-06 | Editar caso | `admin` edita cualquiera. `general` edita solo los que creó. | Media |
+| RF-05 | Listar casos | Orden por código. `admin` ve todos. `tester` ve los de sus proyectos. | Alta |
+| RF-06 | Editar caso | `admin` edita cualquiera. `tester` edita solo los que creó. | Media |
 | RF-07 | Eliminar caso | Solo `admin`, con confirmación. Un caso con evidencias o incidentes no se elimina. | Media |
 | RF-08 | Formulario 1 | Registro de Caso de Prueba: vista imprimible del caso. | Alta |
 | RF-09 | Formulario 2 | Matriz de Clases de Equivalencia. | Alta |
@@ -71,7 +71,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | RF-13 | Formulario 6 | Plan de Pruebas del Proyecto. | Alta |
 | RF-14 | Formulario 7 | Rúbrica de Evaluación. Solo `admin`. | Media |
 | RF-15 | Formulario 8 | Autoevaluación y Coevaluación. Ambos roles. | Media |
-| RF-16 | Formulario 9 | Portafolio de Evidencias: lista de las evidencias del proyecto. | Media |
+| RF-16 | Formulario 9 | Portafolio de Evidencias: lo que entrega cada persona por semana, con tipo y fecha. | Media |
 | RF-17 | Formulario 10 | Registro de Incidentes. | Alta |
 | RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example` y `docs/recrear_ambiente.md`. | Alta |
 | RF-19 | Incidentes | Los defectos de un caso se registran en el formulario 10. | Alta |
@@ -94,7 +94,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | RNF-05 | Datos | InnoDB, `utf8mb4` y UTF-8. Nombre completo en un solo campo. Sin campo de género obligatorio. |
 | RNF-06 | Fechas | ISO en la base. `dd/mm/aaaa` en pantalla. |
 | RNF-07 | Accesibilidad | WCAG 2.2 AA. HTML semántico y `lang="es"`. Todo con teclado y foco visible. Contraste 4.5:1. El color no es la única señal. Errores junto al campo con `aria-describedby`. Texto alternativo. Zoom de 200 %. Mensajes cortos. Campos obligatorios marcados. |
-| RNF-08 | Compatibilidad | PHP 8.2 o superior, MySQL 8 o superior. Chrome, Firefox y Edge. |
+| RNF-08 | Compatibilidad | PHP 8.2 o superior, MySQL 8 o MariaDB 10.6 o superior. Chrome, Firefox y Edge. |
 | RNF-09 | Desempeño | Listados de 20 filas por página. |
 | RNF-10 | Mantenibilidad | Cada función corresponde a un RF. Hay manual por pantalla y guía para recrear el ambiente. |
 
@@ -103,12 +103,12 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 ## 7. Reglas de negocio
 
 - Un caso pertenece a un proyecto. Su código es la sigla del tipo y un consecutivo, único en el proyecto: `SIS-001`.
-- Formularios 2 a 5 pertenecen a un requerimiento. Formularios 6 y 7, a un proyecto. Formulario 8, a una persona: cada una llena su autoevaluación y la coevaluación de su compañero.
+- Formularios 2 a 5 pertenecen a un requerimiento. Formularios 6 y 7, a un proyecto. Formularios 8 y 9, a una persona del proyecto: cada una llena su autoevaluación, la coevaluación de su compañero y su portafolio.
 - Estados, tipos y roles se validan contra `config/catalogos.php`.
 
 ### 7.1 Matriz rol por operación
 
-| Operación | admin | general |
+| Operación | admin | tester |
 | --- | --- | --- |
 | Usuarios y roles | Sí | No |
 | Proyectos y miembros | Sí | No |
@@ -137,7 +137,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | --- | --- |
 | Núcleo | `usuarios`, `proyectos`, `proyecto_miembros`, `requerimientos`, `casos_prueba` |
 | Seguimiento | `evidencias`, `incidentes`, `logs_cambios` |
-| Formularios | `clases_equivalencia`, `valor_limite`, `decision_reglas`, `decision_celdas`, `cobertura_blanca`, `plan_pruebas`, `rubrica_evaluaciones`, `autoevaluaciones` |
+| Formularios | `clases_equivalencia`, `valor_limite`, `decision_filas`, `decision_celdas`, `cobertura_blanca`, `plan_pruebas`, `rubrica_evaluaciones`, `autoevaluaciones`, `portafolio` |
 | Vista | `v_trazabilidad` |
 
 ---

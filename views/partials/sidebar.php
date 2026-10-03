@@ -16,7 +16,7 @@ $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
 ?>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-cabecera">
-    <a class="sidebar-boton sidebar-marca" href="/dashboard.php" data-etiqueta="Casos de Prueba">
+    <a class="sidebar-boton sidebar-marca" href="/dashboard" data-etiqueta="Casos de Prueba">
       <span class="marca-icono"><?= Icono::svg('flask-conical') ?></span>
       <span class="sidebar-texto sidebar-dos-lineas">
         <strong>Casos de Prueba</strong>
@@ -88,7 +88,7 @@ $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
         <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
       </summary>
       <div class="usuario-flotante">
-        <a class="sidebar-boton" href="/logout.php">
+        <a class="sidebar-boton" href="/salir">
           <?= Icono::svg('log-out') ?>
           <span>Cerrar sesión</span>
         </a>
