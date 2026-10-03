@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Vista;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
@@ -19,11 +20,7 @@ use App\Helpers\Icono;
   <div class="acciones"><a class="btn btn-primario" href="/casos/registrar"><?= Icono::svg('plus') ?> Registrar caso</a></div>
 </header>
 <div class="pila">
-  <?php if ($flash): ?>
-    <div class="alerta alerta-exito" role="status"><?= Icono::svg('circle-check') ?>
-      <p class="alerta-titulo"><?= Html::e($flash) ?></p>
-    </div>
-  <?php endif; ?>
+  <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
   <?php if (!$casos): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
