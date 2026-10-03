@@ -86,10 +86,11 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
       <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
       <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
     </div>
+    <?= $campo('plataforma', 'Plataforma', ['tipo' => 'select', 'opciones' => Catalogo::opciones('plataforma', $datos['plataforma'] ?? null)]) ?>
     <?= $campo('entorno', 'Entorno', [
         'requerido' => false,
         'atributos' => 'maxlength="255"',
-        'ayuda' => 'Sistema operativo, navegador y versión probada. Ej.: Windows 11, Chrome 129, v1.2.',
+        'ayuda' => 'Detalle de la plataforma: sistema operativo, navegador y versión. Ej.: Windows 11, Chrome 129, v1.2.',
     ]) ?>
 
     <?= $campo('objetivo', 'Objetivo', ['tipo' => 'textarea', 'ayuda' => 'Qué se pretende verificar.']) ?>

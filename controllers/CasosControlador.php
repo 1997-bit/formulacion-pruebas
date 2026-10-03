@@ -14,7 +14,7 @@ use App\Services\CasoServicio;
 final class CasosControlador
 {
     private const CAMPOS = [
-        'requerimiento_id', 'tipo_prueba', 'tecnica', 'subtecnica', 'modulo', 'entorno', 'objetivo',
+        'requerimiento_id', 'tipo_prueba', 'tecnica', 'subtecnica', 'modulo', 'plataforma', 'entorno', 'objetivo',
         'precondiciones', 'entrada', 'pasos', 'resultado_esperado', 'fecha_inicio', 'fecha_fin',
         'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace', 'evidencia_descripcion',
     ];
