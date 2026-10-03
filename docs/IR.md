@@ -71,7 +71,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | RF-13 | Formulario 6 | Plan de Pruebas del Proyecto. | Alta |
 | RF-14 | Formulario 7 | Rúbrica de Evaluación. Solo `admin`. | Media |
 | RF-15 | Formulario 8 | Autoevaluación y Coevaluación. Ambos roles. | Media |
-| RF-16 | Formulario 9 | Portafolio de Evidencias: lista de las evidencias del proyecto. | Media |
+| RF-16 | Formulario 9 | Portafolio de Evidencias: lo que entrega cada persona por semana, con tipo y fecha. | Media |
 | RF-17 | Formulario 10 | Registro de Incidentes. | Alta |
 | RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example` y `docs/recrear_ambiente.md`. | Alta |
 | RF-19 | Incidentes | Los defectos de un caso se registran en el formulario 10. | Alta |
@@ -94,7 +94,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | RNF-05 | Datos | InnoDB, `utf8mb4` y UTF-8. Nombre completo en un solo campo. Sin campo de género obligatorio. |
 | RNF-06 | Fechas | ISO en la base. `dd/mm/aaaa` en pantalla. |
 | RNF-07 | Accesibilidad | WCAG 2.2 AA. HTML semántico y `lang="es"`. Todo con teclado y foco visible. Contraste 4.5:1. El color no es la única señal. Errores junto al campo con `aria-describedby`. Texto alternativo. Zoom de 200 %. Mensajes cortos. Campos obligatorios marcados. |
-| RNF-08 | Compatibilidad | PHP 8.2 o superior, MySQL 8 o superior. Chrome, Firefox y Edge. |
+| RNF-08 | Compatibilidad | PHP 8.2 o superior, MySQL 8 o MariaDB 10.6 o superior. Chrome, Firefox y Edge. |
 | RNF-09 | Desempeño | Listados de 20 filas por página. |
 | RNF-10 | Mantenibilidad | Cada función corresponde a un RF. Hay manual por pantalla y guía para recrear el ambiente. |
 
@@ -103,7 +103,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 ## 7. Reglas de negocio
 
 - Un caso pertenece a un proyecto. Su código es la sigla del tipo y un consecutivo, único en el proyecto: `SIS-001`.
-- Formularios 2 a 5 pertenecen a un requerimiento. Formularios 6 y 7, a un proyecto. Formulario 8, a una persona: cada una llena su autoevaluación y la coevaluación de su compañero.
+- Formularios 2 a 5 pertenecen a un requerimiento. Formularios 6 y 7, a un proyecto. Formularios 8 y 9, a una persona del proyecto: cada una llena su autoevaluación, la coevaluación de su compañero y su portafolio.
 - Estados, tipos y roles se validan contra `config/catalogos.php`.
 
 ### 7.1 Matriz rol por operación
@@ -137,7 +137,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | --- | --- |
 | Núcleo | `usuarios`, `proyectos`, `proyecto_miembros`, `requerimientos`, `casos_prueba` |
 | Seguimiento | `evidencias`, `incidentes`, `logs_cambios` |
-| Formularios | `clases_equivalencia`, `valor_limite`, `decision_reglas`, `decision_celdas`, `cobertura_blanca`, `plan_pruebas`, `rubrica_evaluaciones`, `autoevaluaciones` |
+| Formularios | `clases_equivalencia`, `valor_limite`, `decision_filas`, `decision_celdas`, `cobertura_blanca`, `plan_pruebas`, `rubrica_evaluaciones`, `autoevaluaciones`, `portafolio` |
 | Vista | `v_trazabilidad` |
 
 ---
