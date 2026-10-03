@@ -52,11 +52,12 @@ final class Sesion
         $_SESSION['flash'] = $mensaje;
     }
 
-    public static function tomarFlash(): ?string
+    // Lee y borra: flash, errores y datos de Respuesta::errores().
+    public static function tomar(string $clave, mixed $defecto = null): mixed
     {
-        $mensaje = $_SESSION['flash'] ?? null;
-        unset($_SESSION['flash']);
+        $valor = $_SESSION[$clave] ?? $defecto;
+        unset($_SESSION[$clave]);
 
-        return $mensaje;
+        return $valor;
     }
 }

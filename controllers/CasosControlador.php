@@ -25,24 +25,19 @@ final class CasosControlador
             'titulo' => 'Casos de prueba',
             'usuario' => Sesion::usuario(),
             'casos' => CasoServicio::listar(Sesion::usuario()),
-            'flash' => Sesion::tomarFlash(),
+            'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Casos de prueba'], ['texto' => 'Listar']],
         ]);
     }
 
     public function registrar(): void
     {
-        // Lo que dejó Respuesta::errores()
-        $errores = $_SESSION['errores'] ?? [];
-        $datos = $_SESSION['datos'] ?? [];
-        unset($_SESSION['errores'], $_SESSION['datos']);
-
         Vista::pagina('casos/registrar', [
             'titulo' => 'Registrar caso',
             'usuario' => Sesion::usuario(),
             'requerimientos' => CasoServicio::requerimientos(Sesion::usuario()),
-            'errores' => $errores,
-            'datos' => $datos,
+            'errores' => Sesion::tomar('errores', []),
+            'datos' => Sesion::tomar('datos', []),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
         ]);
     }
