@@ -22,6 +22,7 @@ return [
     'GET /casos/editar' => ['controlador' => 'Casos', 'accion' => 'editar', 'rol' => 0, 'rf' => 'RF-06'],
     'POST /casos/editar' => ['controlador' => 'Casos', 'accion' => 'actualizar', 'rol' => 0, 'rf' => 'RF-06'],
     'POST /casos/eliminar' => ['controlador' => 'Casos', 'accion' => 'eliminar', 'rol' => 1, 'rf' => 'RF-07'],
+    'GET /formularios/portafolio' => ['controlador' => 'Evidencias', 'accion' => 'portafolio', 'rol' => 0, 'rf' => 'RF-16'],
     'GET /formularios/incidentes' => ['controlador' => 'Incidentes', 'accion' => 'listar', 'rol' => 0, 'rf' => 'RF-19'],
     'GET /formularios/incidentes/registrar' => ['controlador' => 'Incidentes', 'accion' => 'registrar', 'rol' => 0, 'rf' => 'RF-17'],
     'POST /formularios/incidentes/registrar' => ['controlador' => 'Incidentes', 'accion' => 'guardar', 'rol' => 0, 'rf' => 'RF-17'],
