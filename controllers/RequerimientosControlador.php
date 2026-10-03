@@ -16,9 +16,11 @@ final class RequerimientosControlador
 
     public function listar(): void
     {
+        [$requerimientos, $paginacion] = RequerimientoServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
         Vista::pagina('requerimientos/listar', [
             'titulo' => 'Requerimientos',
-            'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
+            'requerimientos' => $requerimientos,
+            'paginacion' => $paginacion,
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Requerimientos'], ['texto' => 'Listar']],
         ]);

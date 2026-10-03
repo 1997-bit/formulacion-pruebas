@@ -1,12 +1,14 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Paginacion;
 use App\Core\Vista;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
  * @var list<array<string, mixed>> $requerimientos
+ * @var Paginacion $paginacion
  * @var ?string $flash
  */
 ?>
@@ -46,5 +48,6 @@ use App\Helpers\Icono;
         </tbody>
       </table>
     </div>
+    <?= Vista::capturar('partials/paginacion', ['paginacion' => $paginacion]) ?>
   <?php endif; ?>
 </div>
