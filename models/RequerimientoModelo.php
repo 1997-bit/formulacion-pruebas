@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Config\Conexion;
+use App\Core\Paginacion;
 
 final class RequerimientoModelo
 {
     // Tester: solo sus proyectos.
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
-    /** @return list<array<string, mixed>> */
-    public static function listar(int $usuarioId, bool $admin): array
+    /**
+     * $offset null: todos.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function listar(int $usuarioId, bool $admin, ?int $offset = null): array
     {
         $sql = Conexion::pdo()->prepare(
             'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
@@ -21,10 +26,21 @@ final class RequerimientoModelo
              JOIN proyectos p ON p.id = r.proyecto_id
              WHERE ' . self::PERMITIDO . '
              ORDER BY p.nombre, r.no_funcional, CAST(SUBSTRING_INDEX(r.codigo, \'-\', -1) AS UNSIGNED)'
+             . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
         );
         $sql->execute([(int) $admin, $usuarioId]);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public static function contar(int $usuarioId, bool $admin): int
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT COUNT(*) FROM requerimientos r JOIN proyectos p ON p.id = r.proyecto_id WHERE ' . self::PERMITIDO
+        );
+        $sql->execute([(int) $admin, $usuarioId]);
+
+        return (int) $sql->fetchColumn();
     }
 
     /** @return list<array<string, mixed>> */
