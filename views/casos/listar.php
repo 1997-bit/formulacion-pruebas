@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Paginacion;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
-use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
  * @var list<array<string, mixed>> $casos
+ * @var Paginacion $paginacion
  * @var ?string $flash
  */
 ?>
@@ -33,25 +34,22 @@ use App\Helpers\Icono;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Casos de prueba</caption>
         <thead>
-          <tr>
-            <th scope="col">Código</th><th scope="col">Módulo</th><th scope="col">Requerimiento</th>
-            <th scope="col">Tipo</th><th scope="col">Sub-técnica</th><th scope="col">Fechas</th><th scope="col">Estado</th>
-          </tr>
+          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th></tr>
         </thead>
         <tbody>
           <?php foreach ($casos as $c): ?>
             <tr>
               <td data-columna="Código"><span class="codigo"><?= Html::e($c['codigo']) ?></span></td>
-              <td data-columna="Módulo" class="celda-larga"><?= Html::e($c['modulo']) ?></td>
-              <td data-columna="Requerimiento"><?= Html::e($c['requerimiento']) ?></td>
+              <td data-columna="Caso" class="celda-larga"><?= Html::e($c['objetivo']) ?></td>
+              <td data-columna="Proyecto"><?= Html::e($c['proyecto']) ?></td>
               <td data-columna="Tipo"><?= Html::e(Catalogo::texto('tipo_prueba', $c['tipo_prueba'])) ?></td>
-              <td data-columna="Sub-técnica" class="celda-larga"><?= Html::e(Catalogo::texto('subtecnica', $c['subtecnica'])) ?></td>
-              <td data-columna="Fechas"><?= Fecha::legible(new DateTime($c['fecha_inicio'])) ?> – <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></td>
+              <td data-columna="Creado por"><?= Html::e($c['autor']) ?></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $c['estado']) ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
       </table>
     </div>
+    <?= Vista::capturar('partials/paginacion', ['paginacion' => $paginacion]) ?>
   <?php endif; ?>
 </div>

@@ -64,13 +64,12 @@ return [
             5 => ['texto' => 'API', 'variante' => 'borde'],
         ],
     ],
-    // Captura png/jpg, log txt/log, documento pdf (RNF-03).
+    // Captura png/jpg, log txt/log (RNF-03). El 3 era Documento: no se reutiliza.
     'tipo_evidencia' => [
         'nombre' => 'Tipo de evidencia',
         'valores' => [
             1 => ['texto' => 'Captura', 'variante' => 'borde'],
             2 => ['texto' => 'Log', 'variante' => 'borde'],
-            3 => ['texto' => 'Documento', 'variante' => 'borde'],
             4 => ['texto' => 'Enlace', 'variante' => 'borde'],
         ],
     ],
