@@ -36,6 +36,17 @@ final class ClasesEquivalenciaServicio
     }
 
     /**
+     * @param array{id: int, rol: int} $usuario
+     * @return array{autor: string, guardado_en: string}|null
+     */
+    public static function guardado(int $requerimientoId, array $usuario): ?array
+    {
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+
+        return FilasModelo::guardado(self::TABLA, $requerimientoId);
+    }
+
+    /**
      * Requerimientos del usuario, paginados, con cuántas filas tiene su matriz (RNF-09).
      *
      * @param array{id: int, rol: int} $usuario
@@ -79,7 +90,7 @@ final class ClasesEquivalenciaServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            FilasModelo::reemplazar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas);
+            FilasModelo::reemplazar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

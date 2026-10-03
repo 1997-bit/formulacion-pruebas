@@ -149,8 +149,11 @@ CREATE TABLE clases_equivalencia (
     clases_invalidas TEXT NOT NULL,
     valores_representativos VARCHAR(255) NOT NULL,
     resultado_esperado TEXT NOT NULL,
+    guardado_por INT UNSIGNED NOT NULL,
+    guardado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (requerimiento_id, orden),
-    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
+    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE,
+    FOREIGN KEY (guardado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- F3. Mínimo y máximo en texto: números, fechas o largos.
