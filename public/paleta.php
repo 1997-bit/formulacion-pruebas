@@ -1086,7 +1086,7 @@ Contraseña: (vacía)</textarea>
 
   <section class="seccion" id="detalle">
     <h2>Detalle del caso</h2>
-    <p>La página que más se abre, estilo Jira: contenido a la izquierda y datos cortos a la derecha. Es también la vista formal del formulario 1: al imprimir sale en una columna, en claro y sin botones. Un botón sin permiso no se muestra (RF-21).</p>
+    <p>La página que más se abre, estilo Jira: contenido a la izquierda y datos cortos a la derecha. Es también la vista formal del formulario 1: al imprimir sale en una columna, en claro y sin botones. Un botón sin permiso no se muestra (RF-21). En la tarjeta Resultado va el bloque Resultado del formulario 1, para que cualquiera del proyecto lo anote.</p>
     <div class="marco escenario-libre">
       <header class="encabezado">
         <div>

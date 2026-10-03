@@ -33,7 +33,7 @@ Toda petición entra por `public/index.php`. Cada pantalla es una ruta de `confi
 | Acceso | `/` inicio de sesión. `/registro` crea cuentas `tester`. `/dashboard` panel con el avance. |
 | Administración | `/admin/usuarios`, `/admin/proyectos`. |
 | Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`. |
-| Casos | `/casos/registrar`, `/casos/listar` con filtros, `/casos/editar`, `/casos/eliminar`. En `/casos/editar` se anota el resultado y la evidencia, y se imprime el formulario 1. |
+| Casos | `/casos/registrar`, `/casos/listar` con filtros, `/casos/resultado`, `/casos/editar`, `/casos/eliminar`, `/evidencias/ver`. En `/casos/resultado` se ve el caso, se anota el resultado y la evidencia, y se imprime el formulario 1. |
 | Formularios | `/formularios/` + `clases_equivalencia` 2, `valor_limite` 3, `tabla_decision` 4, `cobertura_blanca` 5, `plan_pruebas` 6, `rubrica` 7, `autoevaluacion` 8, `portafolio` 9, `incidentes` 10. |
 | Reportes | `/reportes/cierre`. |
 

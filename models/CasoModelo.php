@@ -43,6 +43,31 @@ final class CasoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** @return array<string, mixed>|null */
+    public static function porId(int $id): ?array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.*, p.nombre AS proyecto, r.codigo AS requerimiento, r.descripcion AS requerimiento_descripcion,
+                    u.nombre AS autor, a.nombre AS anotador
+             FROM casos_prueba c
+             JOIN proyectos p ON p.id = c.proyecto_id
+             JOIN requerimientos r ON r.id = c.requerimiento_id
+             JOIN usuarios u ON u.id = c.creado_por
+             LEFT JOIN usuarios a ON a.id = c.anotado_por
+             WHERE c.id = ?'
+        );
+        $sql->execute([$id]);
+
+        return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, int $usuarioId): void
+    {
+        Conexion::pdo()->prepare(
+            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
+        )->execute([$estado, $obtenido, $observaciones, $usuarioId, $id]);
+    }
+
     // Dentro de una transacción.
     public static function siguienteNumero(int $proyectoId, string $sigla): int
     {
