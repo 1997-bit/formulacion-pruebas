@@ -15,7 +15,7 @@ final class RequerimientoModelo
     public static function listar(int $usuarioId, bool $admin): array
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT r.id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
+            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
                     (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos
              FROM requerimientos r
              JOIN proyectos p ON p.id = r.proyecto_id

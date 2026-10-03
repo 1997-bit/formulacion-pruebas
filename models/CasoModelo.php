@@ -15,28 +15,13 @@ final class CasoModelo
     public static function listar(int $usuarioId, bool $admin): array
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.modulo, c.objetivo, c.tipo_prueba, c.subtecnica, c.estado, c.fecha_inicio, c.fecha_fin,
+            'SELECT c.id, c.codigo, c.modulo, c.tipo_prueba, c.subtecnica, c.estado, c.fecha_inicio, c.fecha_fin,
                     p.nombre AS proyecto, r.codigo AS requerimiento
              FROM casos_prueba c
              JOIN proyectos p ON p.id = c.proyecto_id
              JOIN requerimientos r ON r.id = c.requerimiento_id
              WHERE ' . self::PERMITIDO . '
              ORDER BY p.nombre, c.codigo'
-        );
-        $sql->execute([(int) $admin, $usuarioId]);
-
-        return $sql->fetchAll(\PDO::FETCH_ASSOC);
-    }
-
-    /** @return list<array<string, mixed>> */
-    public static function requerimientosPermitidos(int $usuarioId, bool $admin): array
-    {
-        $sql = Conexion::pdo()->prepare(
-            'SELECT r.id, r.codigo, r.descripcion, r.proyecto_id, p.nombre AS proyecto
-             FROM requerimientos r
-             JOIN proyectos p ON p.id = r.proyecto_id
-             WHERE ' . self::PERMITIDO . '
-             ORDER BY p.nombre, r.codigo'
         );
         $sql->execute([(int) $admin, $usuarioId]);
 

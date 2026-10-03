@@ -9,6 +9,7 @@ use App\Core\Validador;
 use App\Helpers\Catalogo;
 use App\Models\CasoModelo;
 use App\Models\EvidenciaModelo;
+use App\Models\RequerimientoModelo;
 
 // RF-04, RF-05, RF-24
 final class CasoServicio
@@ -27,7 +28,7 @@ final class CasoServicio
     public static function registrar(array $datos, ?array $archivo, array $usuario): string
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(CasoModelo::requerimientosPermitidos($usuario['id'], $usuario['rol'] === 1), null, 'id');
+        $requerimientos = array_column(RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1), null, 'id');
         $hayArchivo = $archivo !== null && $archivo['error'] !== UPLOAD_ERR_NO_FILE;
         $extension = $hayArchivo ? strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION)) : '';
 
@@ -129,14 +130,5 @@ final class CasoServicio
     public static function listar(array $usuario): array
     {
         return CasoModelo::listar($usuario['id'], $usuario['rol'] === 1);
-    }
-
-    /**
-     * @param array{id: int, rol: int} $usuario
-     * @return list<array<string, mixed>>
-     */
-    public static function requerimientos(array $usuario): array
-    {
-        return CasoModelo::requerimientosPermitidos($usuario['id'], $usuario['rol'] === 1);
     }
 }

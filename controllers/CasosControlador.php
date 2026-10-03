@@ -9,6 +9,7 @@ use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
 use App\Services\CasoServicio;
+use App\Services\RequerimientoServicio;
 
 // RF-04, RF-05, RF-24
 final class CasosControlador
@@ -33,7 +34,7 @@ final class CasosControlador
     {
         Vista::pagina('casos/registrar', [
             'titulo' => 'Registrar caso',
-            'requerimientos' => CasoServicio::requerimientos(Sesion::usuario()),
+            'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos', []),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
