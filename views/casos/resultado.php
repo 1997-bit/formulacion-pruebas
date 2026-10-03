@@ -12,6 +12,7 @@ use App\Helpers\Icono;
  * Detalle de la paleta: la prueba a la izquierda, con el resultado para anotar; los datos a la derecha.
  *
  * @var array<string, mixed> $caso  con evidencias
+ * @var bool $editable
  * @var ?string $flash
  * @var array<string, string> $errores
  * @var array<string, mixed> $datos
@@ -25,6 +26,9 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?></p>
     <h1><?= Html::e($caso['modulo']) ?></h1>
   </div>
+  <?php if ($editable): ?>
+    <div class="acciones"><a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a></div>
+  <?php endif; ?>
 </header>
 
 <div class="pila">

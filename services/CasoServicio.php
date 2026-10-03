@@ -34,27 +34,7 @@ final class CasoServicio
         $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
         $tipos = self::tipos($marcadas);
 
-        $v = (new Validador())
-            ->requerido('requerimiento_id', $d['requerimiento_id'])
-            ->regla('requerimiento_id', $d['requerimiento_id'] === '' || $requerimiento !== null, 'Valor no válido.')
-            ->requerido('tipo_prueba', $d['tipo_prueba'])
-            ->catalogo('tipo_prueba', 'tipo_prueba', $d['tipo_prueba'])
-            ->requerido('subtecnica', $d['subtecnica'])
-            ->catalogo('subtecnica', 'subtecnica', $d['subtecnica'])
-            ->requerido('modulo', $d['modulo'])
-            ->regla('modulo', mb_strlen($d['modulo']) <= 100, 'Máximo 100 caracteres.')
-            ->requerido('plataforma', $d['plataforma'])
-            ->catalogo('plataforma', 'plataforma', $d['plataforma'])
-            ->regla('entorno', mb_strlen($d['entorno']) <= 255, 'Máximo 255 caracteres.')
-            ->requerido('objetivo', $d['objetivo'])
-            ->requerido('entrada', $d['entrada'])
-            ->requerido('pasos', $d['pasos'])
-            ->requerido('resultado_esperado', $d['resultado_esperado'])
-            ->requerido('fecha_inicio', $d['fecha_inicio'])
-            ->fecha('fecha_inicio', $d['fecha_inicio'])
-            ->requerido('fecha_fin', $d['fecha_fin'])
-            ->fecha('fecha_fin', $d['fecha_fin'])
-            ->regla('fecha_fin', $d['fecha_fin'] >= $d['fecha_inicio'], 'No puede ser anterior a la fecha de inicio.');
+        $v = self::validarCaso($d, $requerimiento);
         self::validarResultado($v, $d, $tipos, $archivos, 0);
         $v->comprobar();
 
@@ -70,20 +50,8 @@ final class CasoServicio
             $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
             $casoId = CasoModelo::crear([
                 'proyecto_id' => $proyectoId,
-                'requerimiento_id' => (int) $d['requerimiento_id'],
                 'codigo' => $codigo,
-                'tipo_prueba' => (int) $d['tipo_prueba'],
-                'subtecnica' => (int) $d['subtecnica'],
-                'modulo' => $d['modulo'],
-                'plataforma' => (int) $d['plataforma'],
-                'entorno' => $d['entorno'] ?: null,
-                'objetivo' => $d['objetivo'],
-                'precondiciones' => $d['precondiciones'] ?: null,
-                'entrada' => $d['entrada'],
-                'pasos' => $d['pasos'],
-                'resultado_esperado' => $d['resultado_esperado'],
-                'fecha_inicio' => $d['fecha_inicio'],
-                'fecha_fin' => $d['fecha_fin'],
+                ...self::campos($d),
                 'estado' => (int) $d['estado'],
                 'resultado_obtenido' => $d['resultado_obtenido'] ?: null,
                 'observaciones' => $d['observaciones'] ?: null,
@@ -100,6 +68,65 @@ final class CasoServicio
         }
 
         return [$casoId, $codigo];
+    }
+
+    /**
+     * RF-06. El código no cambia aunque cambie el tipo; el requerimiento queda en el mismo proyecto.
+     *
+     * @param array<string, string> $datos
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function editar(int $id, array $datos, array $usuario): string
+    {
+        $caso = self::paraEditar($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $d = array_map('trim', $datos);
+        $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
+        self::validarCaso($d, $requerimiento)->comprobar();
+
+        $campos = self::campos($d);
+        $pdo = Conexion::pdo();
+        $pdo->beginTransaction();
+        try {
+            $antes = CasoModelo::bloquear($id);
+            CasoModelo::actualizar($id, $campos);
+            Historial::registrar($id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        return $caso['codigo'];
+    }
+
+    /**
+     * Con 'evidencias'. Null si no existe; ErrorPermiso si no puede editarlo.
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @return array<string, mixed>|null
+     */
+    public static function paraEditar(int $id, array $usuario): ?array
+    {
+        $caso = self::ver($id, $usuario);
+        if ($caso !== null) {
+            Permisos::exigirEditarCaso($usuario, $caso);
+        }
+
+        return $caso;
+    }
+
+    /**
+     * Los del proyecto del caso, por id.
+     *
+     * @param array<string, mixed> $caso
+     * @param array{id: int, rol: int} $usuario
+     * @return array<int, array<string, mixed>>
+     */
+    public static function requerimientos(array $caso, array $usuario): array
+    {
+        $todos = RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+
+        return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
     }
 
     /**
@@ -124,7 +151,14 @@ final class CasoServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            CasoModelo::anotar($id, (int) $d['estado'], $d['resultado_obtenido'] ?: null, $d['observaciones'] ?: null, $usuario['id']);
+            $antes = CasoModelo::bloquear($id);
+            $resultado = [
+                'estado' => (int) $d['estado'],
+                'resultado_obtenido' => $d['resultado_obtenido'] ?: null,
+                'observaciones' => $d['observaciones'] ?: null,
+            ];
+            CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
+            Historial::registrar($id, $antes, $resultado, $usuario['id']);
             self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             $pdo->commit();
         } catch (\Throwable $e) {
@@ -181,6 +215,62 @@ final class CasoServicio
         $paginacion = new Paginacion(CasoModelo::contar($usuario['id'], $admin), $pagina);
 
         return [CasoModelo::listar($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+    }
+
+    /**
+     * Formulario 1 sin el resultado.
+     *
+     * @param array<string, string> $d
+     * @param array<string, mixed>|null $requerimiento null si no es válido
+     */
+    private static function validarCaso(array $d, ?array $requerimiento): Validador
+    {
+        return (new Validador())
+            ->requerido('requerimiento_id', $d['requerimiento_id'])
+            ->regla('requerimiento_id', $d['requerimiento_id'] === '' || $requerimiento !== null, 'Valor no válido.')
+            ->requerido('tipo_prueba', $d['tipo_prueba'])
+            ->catalogo('tipo_prueba', 'tipo_prueba', $d['tipo_prueba'])
+            ->requerido('subtecnica', $d['subtecnica'])
+            ->catalogo('subtecnica', 'subtecnica', $d['subtecnica'])
+            ->requerido('modulo', $d['modulo'])
+            ->regla('modulo', mb_strlen($d['modulo']) <= 100, 'Máximo 100 caracteres.')
+            ->requerido('plataforma', $d['plataforma'])
+            ->catalogo('plataforma', 'plataforma', $d['plataforma'])
+            ->regla('entorno', mb_strlen($d['entorno']) <= 255, 'Máximo 255 caracteres.')
+            ->requerido('objetivo', $d['objetivo'])
+            ->requerido('entrada', $d['entrada'])
+            ->requerido('pasos', $d['pasos'])
+            ->requerido('resultado_esperado', $d['resultado_esperado'])
+            ->requerido('fecha_inicio', $d['fecha_inicio'])
+            ->fecha('fecha_inicio', $d['fecha_inicio'])
+            ->requerido('fecha_fin', $d['fecha_fin'])
+            ->fecha('fecha_fin', $d['fecha_fin'])
+            ->regla('fecha_fin', $d['fecha_fin'] >= $d['fecha_inicio'], 'No puede ser anterior a la fecha de inicio.');
+    }
+
+    /**
+     * Columnas del formulario 1, sin el resultado.
+     *
+     * @param array<string, string> $d
+     * @return array<string, mixed>
+     */
+    private static function campos(array $d): array
+    {
+        return [
+            'requerimiento_id' => (int) $d['requerimiento_id'],
+            'tipo_prueba' => (int) $d['tipo_prueba'],
+            'subtecnica' => (int) $d['subtecnica'],
+            'modulo' => $d['modulo'],
+            'plataforma' => (int) $d['plataforma'],
+            'entorno' => $d['entorno'] ?: null,
+            'objetivo' => $d['objetivo'],
+            'precondiciones' => $d['precondiciones'] ?: null,
+            'entrada' => $d['entrada'],
+            'pasos' => $d['pasos'],
+            'resultado_esperado' => $d['resultado_esperado'],
+            'fecha_inicio' => $d['fecha_inicio'],
+            'fecha_fin' => $d['fecha_fin'],
+        ];
     }
 
     /**

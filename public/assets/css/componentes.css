@@ -679,6 +679,7 @@ ins.cambio {
   padding: 1px 4px;
   border-radius: var(--radio-sm);
   color: var(--texto);
+  white-space: pre-line;
 }
 del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
 ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: none; }

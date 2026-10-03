@@ -61,6 +61,31 @@ final class CasoModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
+    /**
+     * Dentro de una transacción: los valores de antes para el historial.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function bloquear(int $id): ?array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.*, r.codigo AS requerimiento
+             FROM casos_prueba c JOIN requerimientos r ON r.id = c.requerimiento_id
+             WHERE c.id = ? FOR UPDATE'
+        );
+        $sql->execute([$id]);
+
+        return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /** @param array<string, mixed> $campos */
+    public static function actualizar(int $id, array $campos): void
+    {
+        Conexion::pdo()->prepare(
+            'UPDATE casos_prueba SET ' . implode(' = ?, ', array_keys($campos)) . ' = ? WHERE id = ?'
+        )->execute([...array_values($campos), $id]);
+    }
+
     public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, int $usuarioId): void
     {
         Conexion::pdo()->prepare(
