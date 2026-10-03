@@ -29,6 +29,17 @@ final class Respuesta
         self::redirigir($ruta);
     }
 
+    // nosniff: el navegador no adivina otro tipo (RNF-03).
+    public static function archivo(string $ruta, string $tipo, string $nombre): never
+    {
+        header('Content-Type: ' . $tipo);
+        header('Content-Length: ' . filesize($ruta));
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Disposition: inline; filename="' . str_replace(['"', '\\', "\r", "\n"], '_', $nombre) . '"');
+        readfile($ruta);
+        exit;
+    }
+
     public static function error(int $codigo): never
     {
         http_response_code($codigo);
