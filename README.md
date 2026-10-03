@@ -1,2 +1,12 @@
 # formulacion-pruebas
 Sistema web en PHP para la identificación, clasificación, registro y generación de formularios orientados a la gestión de casos de prueba. Incluye autenticación, roles de administrador y testers, gestión de casos de prueba, técnicas de caja negra y caja blanca, plan de pruebas, registro de incidentes y evidencias.
+
+## Usuarios de prueba
+
+Los crea `database/seed.sql`.
+
+| Rol | Usuario | Contraseña |
+| --- | --- | --- |
+| admin | `admin` | `admin1234` |
+| tester | `gloria` | `gloria1234` |
+| tester | `pan` | `pan12345` |

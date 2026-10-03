@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
+// Solo porUsuario() lee la clave: es para entrar.
 final class UsuarioModelo
 {
     /** @return array<string, mixed>|null */
@@ -17,11 +18,48 @@ final class UsuarioModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
+    /** @return array<string, mixed>|null */
+    public static function porId(int $id): ?array
+    {
+        $sql = Conexion::pdo()->prepare('SELECT id, nombre, usuario, rol FROM usuarios WHERE id = ?');
+        $sql->execute([$id]);
+
+        return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /** @return list<array<string, mixed>> */
+    public static function listar(): array
+    {
+        return Conexion::pdo()->query('SELECT id, nombre, usuario, rol, creado_en FROM usuarios ORDER BY nombre')->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public static function crear(string $nombre, string $usuario, string $clave, int $rol): int
     {
         $sql = Conexion::pdo()->prepare('INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (?, ?, ?, ?)');
         $sql->execute([$nombre, $usuario, $clave, $rol]);
 
         return (int) Conexion::pdo()->lastInsertId();
+    }
+
+    // Clave null: no la cambia.
+    public static function actualizar(int $id, string $nombre, string $usuario, ?string $clave, int $rol): void
+    {
+        $sql = Conexion::pdo()->prepare('UPDATE usuarios SET nombre = ?, usuario = ?, rol = ?, clave = COALESCE(?, clave) WHERE id = ?');
+        $sql->execute([$nombre, $usuario, $rol, $clave, $id]);
+    }
+
+    // False si tiene casos, evidencias u otros registros a su nombre.
+    public static function eliminar(int $id): bool
+    {
+        try {
+            Conexion::pdo()->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() === '23000') {
+                return false;
+            }
+            throw $e;
+        }
+
+        return true;
     }
 }
