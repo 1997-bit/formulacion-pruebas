@@ -2,17 +2,8 @@
 
 declare(strict_types=1);
 
-// Valores fijos del sistema: estados, severidades, tipos de prueba, roles.
-// Es la única fuente: listas, insignias y validación salen de aquí (helpers/Catalogo.php).
-// Tipos y números de cada valor: docs/tipos-datos.md.
-//
-// Cada valor es  número => ['texto' => …, 'variante' => …]
-// - número: lo que se guarda en la base (TINYINT UNSIGNED). No se cambia ni se reutiliza;
-//   un valor nuevo toma el siguiente número.
-// - texto: lo que ve la persona. Se cambia libre.
-// - variante: color de la insignia (exito, peligro, aviso, info, destacado, secundaria, borde).
-//   Ver la tabla de insignias en public/paleta.php.
-// El orden aquí es el orden en las listas.
+// Única fuente de valores fijos. número => texto y variante (color de la insignia).
+// El número va en la base: no se cambia ni se reutiliza. El orden aquí es el de las listas.
 return [
     'estado_caso' => [
         'nombre' => 'Estado del caso',
@@ -22,8 +13,7 @@ return [
             2 => ['texto' => 'FAULT', 'variante' => 'peligro'],
         ],
     ],
-    // La sigla va al inicio del código del caso (SIS-001).
-    // Cambiar una sigla solo afecta a los casos nuevos: un código ya generado no cambia.
+    // La sigla abre el código (SIS-001). Cambiarla no toca códigos ya generados.
     'tipo_prueba' => [
         'nombre' => 'Tipo de prueba',
         'valores' => [
@@ -38,8 +28,7 @@ return [
             9 => ['texto' => 'Seguridad', 'sigla' => 'SEG', 'variante' => 'borde'],
         ],
     ],
-    // 1 a 10 caja negra; 11 a 20 caja blanca (documento de la Unidad III).
-    // Las métricas del formulario 5 son 11, 12, 13, 16 y 18.
+    // 1-10 caja negra, 11-20 caja blanca. Métricas del F5: 11, 12, 13, 16 y 18.
     'subtecnica' => [
         'nombre' => 'Sub-técnica',
         'valores' => [
@@ -65,7 +54,6 @@ return [
             20 => ['texto' => 'Cobertura de clases', 'variante' => 'borde'],
         ],
     ],
-    // Dónde corre lo que se prueba. El detalle (navegador, versión) va en entorno.
     'plataforma' => [
         'nombre' => 'Plataforma',
         'valores' => [
@@ -76,7 +64,7 @@ return [
             5 => ['texto' => 'API', 'variante' => 'borde'],
         ],
     ],
-    // Captura: png y jpg. Log: txt y log. Documento: pdf (RNF-03).
+    // Captura png/jpg, log txt/log, documento pdf (RNF-03).
     'tipo_evidencia' => [
         'nombre' => 'Tipo de evidencia',
         'valores' => [
@@ -86,7 +74,7 @@ return [
             4 => ['texto' => 'Enlace', 'variante' => 'borde'],
         ],
     ],
-    // De menor a mayor: ORDER BY severidad DESC deja lo más grave arriba.
+    // De menor a mayor: DESC deja lo grave arriba.
     'severidad' => [
         'nombre' => 'Severidad',
         'valores' => [

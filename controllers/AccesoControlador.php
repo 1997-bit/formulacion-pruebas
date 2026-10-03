@@ -56,7 +56,7 @@ final class AccesoControlador
         Respuesta::redirigir('/');
     }
 
-    // Errores y datos que dejó Respuesta::errores() en el POST anterior.
+    // Lo que dejó Respuesta::errores()
     private function pintar(string $vista, string $titulo): void
     {
         $errores = $_SESSION['errores'] ?? [];

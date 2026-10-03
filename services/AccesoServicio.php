@@ -8,10 +8,10 @@ use App\Core\ErrorValidacion;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
 
-// Inicio de sesión (RF-01) y registro público (RF-02).
+// RF-01, RF-02
 final class AccesoServicio
 {
-    // Mismo mensaje si el usuario no existe o la clave está mal (RNF-02).
+    // No dice si el usuario existe (RNF-02).
     private const ERROR_ENTRAR = 'Usuario o contraseña incorrectos.';
 
     /** @return array{id: int, nombre: string, usuario: string, rol: int} */
@@ -25,7 +25,7 @@ final class AccesoServicio
         return ['id' => $fila['id'], 'nombre' => $fila['nombre'], 'usuario' => $fila['usuario'], 'rol' => $fila['rol']];
     }
 
-    // Siempre rol tester: el rol que llegue en el POST se ignora.
+    // Siempre tester.
     public static function registrar(string $nombre, string $usuario, string $clave): int
     {
         $nombre = trim($nombre);

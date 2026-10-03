@@ -8,7 +8,7 @@ use App\Config\Conexion;
 
 final class RequerimientoModelo
 {
-    // Admin ve todo; tester, solo lo de los proyectos donde es miembro.
+    // Tester: solo sus proyectos.
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /** @return list<array<string, mixed>> */

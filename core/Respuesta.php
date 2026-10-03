@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Redirecciones, páginas de error y JSON.
 final class Respuesta
 {
     public static function redirigir(string $ruta): never

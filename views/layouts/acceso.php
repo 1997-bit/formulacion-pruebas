@@ -18,7 +18,7 @@ use App\Helpers\Html;
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/componentes.css">
 <script>
-  // Tema antes de pintar, para que no parpadee: el elegido por la persona o, si no eligió, el del sistema.
+  // Tema antes de pintar, sin parpadeo.
   (() => {
     let t = null;
     try { t = localStorage.getItem('tema'); } catch (e) {}

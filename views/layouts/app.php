@@ -13,7 +13,7 @@ use App\Helpers\Icono;
  */
 
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-// El estado del sidebar se guarda en una cookie para pintarlo bien desde el servidor, sin parpadeo.
+// Sidebar desde la cookie, sin parpadeo.
 $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 ?>
 <!doctype html>
@@ -27,7 +27,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 <link rel="stylesheet" href="/assets/css/componentes.css">
 <link rel="stylesheet" href="/assets/css/app.css">
 <script>
-  // Tema antes de pintar, para que no parpadee: el elegido por la persona o, si no eligió, el del sistema.
+  // Tema antes de pintar, sin parpadeo.
   (() => {
     let t = null;
     try { t = localStorage.getItem('tema'); } catch (e) {}

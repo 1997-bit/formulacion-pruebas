@@ -6,7 +6,7 @@ namespace App\Config;
 
 use App\Core\Env;
 
-// Conexión PDO única, con los datos del .env.
+// Una conexión PDO por petición.
 final class Conexion
 {
     private static ?\PDO $pdo = null;
@@ -24,7 +24,7 @@ final class Conexion
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_EMULATE_PREPARES => false,
             ]);
-            // Hora de Panama
+            // Misma zona que PHP
             self::$pdo->exec("SET time_zone = '" . date('P') . "'");
         }
 

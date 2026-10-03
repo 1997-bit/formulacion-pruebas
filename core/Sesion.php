@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Usuario en sesión y mensajes flash.
 final class Sesion
 {
-    // 8 horas sin actividad: alcanza para llenar un formulario largo.
+    // 8 h: alcanza para un formulario largo.
     private const DURACION = 28800;
 
     public static function iniciar(): void

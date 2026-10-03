@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Renderiza plantillas de views/. Cada pagina pinta su vista dentro de un layout.
+// Vista dentro de un layout.
 final class Vista
 {
     /** @param array<string, mixed> $datos */

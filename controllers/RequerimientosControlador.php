@@ -27,7 +27,7 @@ final class RequerimientosControlador
 
     public function registrar(): void
     {
-        // Errores y datos que dejó Respuesta::errores() en el POST anterior.
+        // Lo que dejó Respuesta::errores()
         $errores = $_SESSION['errores'] ?? [];
         $datos = $_SESSION['datos'] ?? [];
         unset($_SESSION['errores'], $_SESSION['datos']);

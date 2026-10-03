@@ -7,7 +7,7 @@ namespace App\Controllers;
 use App\Core\Sesion;
 use App\Core\Vista;
 
-// Panel según rol (docs/IR.md, sección 3).
+// RF-23
 final class PanelControlador
 {
     public function ver(): void

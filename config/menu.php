@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-// Menu del sidebar. Rutas y permisos segun docs/IR.md (seccion 3 y matriz 7.1).
-// 'rol' => 1 (admin, ver config/catalogos.php) oculta el grupo o el elemento al rol tester.
-// Ocultar en el menu no protege nada: cada pagina debe validar el rol en el servidor (RF-21).
+// Menú del sidebar. 'rol' => 1 lo oculta al tester; ocultar no protege (RF-21).
 return [
     [
         'grupo' => 'Plataforma',

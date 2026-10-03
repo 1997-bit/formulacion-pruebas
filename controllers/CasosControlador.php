@@ -10,7 +10,7 @@ use App\Core\Sesion;
 use App\Core\Vista;
 use App\Services\CasoServicio;
 
-// Casos de prueba: registrar con resultado y evidencia (RF-04, RF-24, formulario 1) y listar (RF-05).
+// RF-04, RF-05, RF-24
 final class CasosControlador
 {
     private const CAMPOS = [
@@ -32,7 +32,7 @@ final class CasosControlador
 
     public function registrar(): void
     {
-        // Errores y datos que dejó Respuesta::errores() en el POST anterior.
+        // Lo que dejó Respuesta::errores()
         $errores = $_SESSION['errores'] ?? [];
         $datos = $_SESSION['datos'] ?? [];
         unset($_SESSION['errores'], $_SESSION['datos']);

@@ -8,7 +8,7 @@ use App\Config\Conexion;
 
 final class CasoModelo
 {
-    // Admin ve todo; tester, solo lo de los proyectos donde es miembro (RF-05).
+    // Tester: solo sus proyectos (RF-05).
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /** @return list<array<string, mixed>> */
@@ -43,7 +43,7 @@ final class CasoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // Siguiente consecutivo de la sigla en el proyecto. Llamar dentro de una transacción.
+    // Dentro de una transacción.
     public static function siguienteNumero(int $proyectoId, string $sigla): int
     {
         $sql = Conexion::pdo()->prepare(
