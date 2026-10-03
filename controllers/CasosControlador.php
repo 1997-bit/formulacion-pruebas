@@ -13,7 +13,7 @@ use App\Services\Historial;
 use App\Services\Permisos;
 use App\Services\RequerimientoServicio;
 
-// RF-04, RF-05, RF-06, RF-24
+// RF-04, RF-05, RF-06, RF-22, RF-24
 final class CasosControlador
 {
     private const CAMPOS = [
@@ -27,7 +27,11 @@ final class CasosControlador
 
     public function listar(): void
     {
-        [$casos, $paginacion] = CasoServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
+        $filtros = [];
+        foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
+            $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
+        }
+        [$casos, $paginacion] = CasoServicio::listar(Sesion::usuario(), $filtros, (int) ($_GET['pagina'] ?? 1));
         Vista::pagina('casos/listar', [
             'titulo' => 'Casos de prueba',
             'casos' => $casos,
