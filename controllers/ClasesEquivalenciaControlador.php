@@ -14,19 +14,17 @@ use App\Services\RequerimientoServicio;
 // RF-09
 final class ClasesEquivalenciaControlador
 {
-    // Sin requerimiento: la lista de matrices. Con requerimiento: la matriz.
+    // Sin requerimiento: la lista de matrices. Con requerimiento: la matriz de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        $migas = [['texto' => 'Formularios'], ['texto' => 'Clases de equivalencia']];
         if (!isset($_GET['requerimiento'])) {
             [$requerimientos, $paginacion] = ClasesEquivalenciaServicio::pagina($usuario, (int) ($_GET['pagina'] ?? 1));
-            Vista::pagina('clases_equivalencia/ver', [
+            Vista::pagina('clases_equivalencia/listar', [
                 'titulo' => 'Clases de equivalencia',
-                'requerimiento' => null,
                 'requerimientos' => $requerimientos,
                 'paginacion' => $paginacion,
-                'migas' => $migas,
+                'migas' => [['texto' => 'Formularios'], ['texto' => 'Clases de equivalencia']],
             ]);
 
             return;
@@ -34,30 +32,52 @@ final class ClasesEquivalenciaControlador
 
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('clases_equivalencia/ver', [
-            'titulo' => 'Clases de equivalencia',
+            'titulo' => 'Clases de equivalencia · ' . $requerimiento['codigo'],
+            'requerimiento' => $requerimiento,
+            'filas' => ClasesEquivalenciaServicio::filas($requerimiento['id'], $usuario),
+            'guardado' => ClasesEquivalenciaServicio::guardado($requerimiento['id'], $usuario),
+            'flash' => Sesion::tomar('flash'),
+            'migas' => $this->migas($requerimiento),
+        ]);
+    }
+
+    public function editar(): void
+    {
+        $usuario = Sesion::usuario();
+        $requerimiento = RequerimientoServicio::ver((int) ($_GET['requerimiento'] ?? 0), $usuario) ?? Respuesta::error(404);
+        Vista::pagina('clases_equivalencia/editar', [
+            'titulo' => 'Editar clases de equivalencia · ' . $requerimiento['codigo'],
             'requerimiento' => $requerimiento,
             'filas' => Sesion::tomar('datos')['filas'] ?? ClasesEquivalenciaServicio::filas($requerimiento['id'], $usuario),
             'errores' => Sesion::tomar('errores', []),
-            'flash' => Sesion::tomar('flash'),
-            'migas' => [
-                ['texto' => 'Formularios'],
-                ['texto' => 'Clases de equivalencia', 'ruta' => '/formularios/clases_equivalencia'],
-                ['texto' => $requerimiento['codigo']],
-            ],
+            'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
         ]);
     }
 
     public function guardar(): void
     {
         $id = (int) ($_POST['requerimiento_id'] ?? 0);
-        $ruta = '/formularios/clases_equivalencia?requerimiento=' . $id;
         $filas = $this->filas(array_keys(ClasesEquivalenciaServicio::COLUMNAS));
         try {
             ClasesEquivalenciaServicio::guardar($id, $filas, Sesion::usuario());
         } catch (ErrorValidacion $e) {
-            Respuesta::errores($e->errores, ['filas' => $filas], $ruta);
+            Respuesta::errores($e->errores, ['filas' => $filas], '/formularios/clases_equivalencia/editar?requerimiento=' . $id);
         }
-        Respuesta::exito('Matriz guardada.', $ruta);
+        Respuesta::exito('Matriz guardada.', '/formularios/clases_equivalencia?requerimiento=' . $id);
+    }
+
+    /**
+     * @param array<string, mixed> $requerimiento
+     * @return list<array{texto: string, ruta?: string}>
+     */
+    private function migas(array $requerimiento, bool $enlace = false): array
+    {
+        $codigo = ['texto' => $requerimiento['codigo']];
+        if ($enlace) {
+            $codigo['ruta'] = '/formularios/clases_equivalencia?requerimiento=' . $requerimiento['id'];
+        }
+
+        return [['texto' => 'Formularios'], ['texto' => 'Clases de equivalencia', 'ruta' => '/formularios/clases_equivalencia'], $codigo];
     }
 
     /**

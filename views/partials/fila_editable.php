@@ -8,7 +8,7 @@ use App\Helpers\Icono;
  * Fila de una tabla editable (formularios 2 a 5). Sin $indice es la plantilla vacía.
  * Errores con clave "fila.columna", junto a la celda (RNF-07).
  *
- * @var array<string, array{0: string, 1: string, 2: ?int}> $columnas  nombre => [etiqueta, text o textarea, maxlength]
+ * @var array<string, array{0: string, 1: ?int}> $columnas  nombre => [etiqueta, maxlength]; sin maxlength es textarea
  * @var ?array<string, mixed> $valores
  * @var ?int $indice
  * @var ?array<string, string> $errores
@@ -18,7 +18,7 @@ $valores ??= [];
 $errores ??= [];
 ?>
 <tr>
-  <?php foreach ($columnas as $nombre => [$etiqueta, $control, $maximo]): ?>
+  <?php foreach ($columnas as $nombre => [$etiqueta, $maximo]): ?>
     <?php
     $error = isset($indice) ? ($errores["{$indice}.{$nombre}"] ?? '') : '';
     $id = isset($indice) ? "f-{$indice}-{$nombre}" : '';
@@ -28,7 +28,7 @@ $errores ??= [];
     $valor = Html::e((string) ($valores[$nombre] ?? ''));
     ?>
     <td data-columna="<?= Html::e($etiqueta) ?>">
-      <?php if ($control === 'textarea'): ?>
+      <?php if ($maximo === null): ?>
         <textarea <?= $atributos ?>><?= $valor ?></textarea>
       <?php else: ?>
         <input <?= $atributos ?> type="text" value="<?= $valor ?>">

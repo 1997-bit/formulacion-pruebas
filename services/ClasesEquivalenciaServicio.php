@@ -15,13 +15,13 @@ final class ClasesEquivalenciaServicio
 {
     private const TABLA = 'clases_equivalencia';
 
-    // Columna => largo máximo; null es TEXT.
+    // Columna => [etiqueta, largo máximo]; null es TEXT.
     public const COLUMNAS = [
-        'campo' => 100,
-        'clase_valida' => null,
-        'clases_invalidas' => null,
-        'valores_representativos' => 255,
-        'resultado_esperado' => null,
+        'campo' => ['Campo', 100],
+        'clase_valida' => ['Clase válida', null],
+        'clases_invalidas' => ['Clases inválidas', null],
+        'valores_representativos' => ['Valores representativos', 255],
+        'resultado_esperado' => ['Resultado esperado', null],
     ];
 
     /**
@@ -80,7 +80,7 @@ final class ClasesEquivalenciaServicio
             ->regla('general', $filas !== [], 'Agregue al menos una fila.')
             ->regla('general', count($filas) <= 255, 'Máximo 255 filas.');
         foreach ($filas as $i => $fila) {
-            foreach (self::COLUMNAS as $columna => $maximo) {
+            foreach (self::COLUMNAS as $columna => [, $maximo]) {
                 $v->requerido("{$i}.{$columna}", $fila[$columna])
                     ->regla("{$i}.{$columna}", $maximo === null || mb_strlen($fila[$columna]) <= $maximo, "Máximo {$maximo} caracteres.");
             }

@@ -203,7 +203,8 @@
 }
 .detalle dt { color: var(--tenue-texto); font-weight: 500; }
 .detalle dd { margin: 0; min-width: 0; }
-.detalle .multilinea { white-space: pre-line; }
+.detalle .multilinea,
+.tabla .multilinea { white-space: pre-line; }
 /* Apilada: nombre arriba, valor abajo */
 .detalle-apilado { grid-template-columns: 1fr; gap: 2px; }
 .detalle-apilado dd { margin-bottom: 12px; }

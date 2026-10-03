@@ -1,109 +1,73 @@
 <?php
 declare(strict_types=1);
 
-use App\Core\Csrf;
-use App\Core\Paginacion;
 use App\Core\Vista;
+use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 use App\Services\ClasesEquivalenciaServicio;
 
 /**
- * Formulario 2 de la paleta (RF-09). Sin requerimiento, la lista de matrices.
+ * Formulario 2 (RF-09) de solo lectura. Al imprimir es la plantilla de la guía.
  *
- * @var ?array<string, mixed> $requerimiento
- * @var ?list<array<string, mixed>> $requerimientos  solo sin requerimiento, con filas
- * @var ?Paginacion $paginacion  solo sin requerimiento
- * @var ?list<array<string, mixed>> $filas
- * @var ?array<string, string> $errores
+ * @var array<string, mixed> $requerimiento
+ * @var list<array<string, mixed>> $filas
+ * @var ?array{autor: string, guardado_en: string} $guardado
  * @var ?string $flash
  */
 
-$etiquetas = [
-    'campo' => ['Campo', 'text'],
-    'clase_valida' => ['Clase válida', 'textarea'],
-    'clases_invalidas' => ['Clases inválidas', 'textarea'],
-    'valores_representativos' => ['Valores representativos', 'text'],
-    'resultado_esperado' => ['Resultado esperado', 'textarea'],
-];
-$columnas = [];
-foreach (ClasesEquivalenciaServicio::COLUMNAS as $nombre => $maximo) {
-    $columnas[$nombre] = [...$etiquetas[$nombre], $maximo];
-}
+$editar = '/formularios/clases_equivalencia/editar?requerimiento=' . (int) $requerimiento['id'];
 ?>
 <header class="encabezado">
   <div>
-    <?php if ($requerimiento !== null): ?>
-      <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
-    <?php endif; ?>
+    <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Matriz de clases de equivalencia</h1>
-    <p><?= $requerimiento !== null ? Html::e($requerimiento['descripcion']) : 'Formulario 2' ?></p>
+    <p><?= Html::e($requerimiento['descripcion']) ?></p>
+    <p class="solo-impresion">Formulario 2 · Matriz de clases de equivalencia</p>
   </div>
-</header>
-
-<?php if ($requerimiento === null): ?>
-  <?php if (!$requerimientos): ?>
-    <div class="vacio">
-      <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
-      <h2>Todavía no hay requerimientos</h2>
-      <p>La matriz pertenece a un requerimiento. Registre uno primero.</p>
-      <a class="btn btn-primario" href="/requerimientos/registrar"><?= Icono::svg('plus') ?> Registrar requerimiento</a>
-    </div>
-  <?php else: ?>
-    <div class="pila">
-      <div class="tabla-contenedor">
-        <table class="tabla tabla-tarjetas">
-          <caption class="solo-lector">Matrices por requerimiento</caption>
-          <thead>
-            <tr><th scope="col">Requerimiento</th><th scope="col">Descripción</th><th scope="col">Proyecto</th><th scope="col">Filas</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
-          </thead>
-          <tbody>
-            <?php foreach ($requerimientos as $r): ?>
-              <tr>
-                <td data-columna="Requerimiento"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
-                <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
-                <td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td>
-                <td data-columna="Filas"><?= $r['filas'] ? (int) $r['filas'] : '<span class="insignia insignia-borde">Sin matriz</span>' ?></td>
-                <td class="celda-acciones">
-                  <a class="btn btn-secundario" href="/formularios/clases_equivalencia?requerimiento=<?= (int) $r['id'] ?>"
-                    aria-label="<?= Html::e(($r['filas'] ? 'Ver matriz de ' : 'Crear matriz de ') . $r['codigo'] . ', ' . $r['proyecto']) ?>"><?= $r['filas'] ? 'Ver matriz' : 'Crear matriz' ?></a>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-      <?= Vista::capturar('partials/paginacion', ['paginacion' => $paginacion]) ?>
+  <?php if ($filas): ?>
+    <div class="acciones">
+      <a class="btn btn-secundario" href="<?= $editar ?>"><?= Icono::svg('pencil') ?> Editar</a>
+      <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
     </div>
   <?php endif; ?>
-<?php else: ?>
-  <div class="pila">
-    <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
-    <form class="tarjeta pila" method="post" action="/formularios/clases_equivalencia">
-      <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-      <input type="hidden" name="requerimiento_id" value="<?= (int) $requerimiento['id'] ?>">
-      <div class="tabla-contenedor">
-        <table class="tabla tabla-editable tabla-tarjetas">
-          <caption class="solo-lector">Clases de equivalencia por campo</caption>
-          <thead>
+</header>
+
+<div class="pila">
+  <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
+  <?php if (!$filas): ?>
+    <div class="vacio">
+      <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
+      <h2>Este requerimiento no tiene matriz</h2>
+      <p>Divida cada campo de entrada en clases válidas e inválidas.</p>
+      <a class="btn btn-primario" href="<?= $editar ?>"><?= Icono::svg('plus') ?> Crear matriz</a>
+    </div>
+  <?php else: ?>
+    <div class="tabla-contenedor">
+      <table class="tabla tabla-tarjetas">
+        <caption class="solo-lector">Clases de equivalencia por campo</caption>
+        <thead>
+          <tr><?php foreach (ClasesEquivalenciaServicio::COLUMNAS as [$etiqueta]): ?><th scope="col"><?= Html::e($etiqueta) ?></th><?php endforeach; ?></tr>
+        </thead>
+        <tbody>
+          <?php foreach ($filas as $fila): ?>
             <tr>
-              <?php foreach ($columnas as [$etiqueta]): ?><th scope="col"><?= Html::e($etiqueta) ?></th><?php endforeach; ?>
-              <th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th>
+              <?php foreach (ClasesEquivalenciaServicio::COLUMNAS as $nombre => [$etiqueta]): ?>
+                <?php if ($nombre === 'campo'): ?>
+                  <th scope="row" data-columna="<?= Html::e($etiqueta) ?>"><?= Html::e($fila[$nombre]) ?></th>
+                <?php else: ?>
+                  <td data-columna="<?= Html::e($etiqueta) ?>" class="multilinea"><?= Html::e($fila[$nombre]) ?></td>
+                <?php endif; ?>
+              <?php endforeach; ?>
             </tr>
-          </thead>
-          <tbody id="clases">
-            <?php foreach ($filas ?: [[]] as $i => $fila): ?>
-              <?= Vista::capturar('partials/fila_editable', ['columnas' => $columnas, 'valores' => $fila, 'indice' => $i, 'errores' => $errores]) ?>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-      <template id="clases-fila"><?= Vista::capturar('partials/fila_editable', ['columnas' => $columnas]) ?></template>
-      <p class="campo-ayuda">Todas las celdas son obligatorias. Si una fila tiene un error, no se guarda ninguna.</p>
-      <div class="acciones acciones-separadas">
-        <button class="btn btn-secundario" type="button" data-agregar-fila="clases"><?= Icono::svg('plus') ?> Agregar fila</button>
-        <button class="btn btn-primario" type="submit">Guardar matriz</button>
-      </div>
-    </form>
-  </div>
-<?php endif; ?>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+    <?php if ($guardado !== null): ?>
+      <?php $fecha = new DateTime($guardado['guardado_en']); ?>
+      <p class="campo-ayuda">Guardada por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
+    <?php endif; ?>
+  <?php endif; ?>
+  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
+</div>
