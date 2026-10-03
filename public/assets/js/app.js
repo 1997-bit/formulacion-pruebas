@@ -1,4 +1,4 @@
-// Comportamiento de la interfaz: sidebar, menú de usuario, diálogos, tooltips, tablas editables, totales, impresión y tema.
+// Interfaz: sidebar, menús, diálogos, tooltips, tablas editables, totales y tema.
 (() => {
   const raiz = document.documentElement;
   const sidebar = document.getElementById('sidebar');
@@ -16,7 +16,7 @@
 
     const fijarColapsado = (valor) => {
       raiz.dataset.sidebar = valor ? 'colapsado' : 'expandido';
-      // La cookie permite que PHP pinte el estado correcto en la próxima página.
+      // Cookie: PHP pinta el estado en la próxima página.
       document.cookie = `sidebar=${raiz.dataset.sidebar}; path=/; max-age=31536000; SameSite=Lax`;
       sincronizarAria();
     };
@@ -52,7 +52,7 @@
       if (e.key === 'Escape' && movilAbierto()) cerrarMovil();
     });
 
-    // Colapsado: al pulsar un grupo con submenú, se expande el sidebar y se abre ese grupo.
+    // Colapsado: abrir un grupo expande el sidebar.
     sidebar.querySelectorAll('.sidebar-desplegable > summary').forEach((summary) => {
       summary.addEventListener('click', (e) => {
         if (escritorio.matches && colapsado()) {
@@ -70,7 +70,7 @@
     sincronizarAria();
   }
 
-  // Menú del usuario: se cierra al hacer clic fuera o con Escape.
+  // Menú del usuario: cierra con clic fuera o Escape.
   const menuUsuario = document.querySelector('.usuario-menu');
   if (menuUsuario) {
     document.addEventListener('click', (e) => {
@@ -84,21 +84,20 @@
     });
   }
 
-  // Diálogos: <button data-abrir-dialogo="id"> abre <dialog id="id">. Se cierran con Escape,
-  // con un botón dentro de <form method="dialog"> o haciendo clic en el velo.
+  // <button data-abrir-dialogo="id"> abre <dialog id="id">.
   document.querySelectorAll('[data-abrir-dialogo]').forEach((boton) => {
     const dialogo = document.getElementById(boton.dataset.abrirDialogo);
     if (!dialogo) return;
     boton.addEventListener('click', () => dialogo.showModal());
     dialogo.addEventListener('click', (e) => {
-      // Solo si el clic cae fuera del recuadro (en el velo), no en el relleno del diálogo.
+      // Solo clic en el velo, no en el relleno.
       const r = dialogo.getBoundingClientRect();
       const fuera = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
       if (e.target === dialogo && fuera) dialogo.close();
     });
   });
 
-  // Tooltips: Escape los esconde; vuelven al mover el mouse o el foco.
+  // Escape esconde los tooltips hasta mover el mouse o el foco.
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') raiz.setAttribute('data-tooltips-ocultos', '');
   });
@@ -106,8 +105,7 @@
   document.addEventListener('pointermove', mostrarTooltips);
   document.addEventListener('focusin', mostrarTooltips);
 
-  // Tablas editables: <button data-agregar-fila="id-del-tbody"> agrega al final una copia de
-  // <template id="id-del-tbody-fila">; <button data-quitar-fila> borra su fila. Siempre queda una.
+  // data-agregar-fila="tbody" copia <template id="tbody-fila">; data-quitar-fila borra. Siempre queda una.
   document.addEventListener('click', (e) => {
     const agregar = e.target.closest('[data-agregar-fila]');
     if (agregar) {
@@ -129,11 +127,7 @@
     }
   });
 
-  // Totales en vivo. El servidor los vuelve a calcular al guardar; esto es solo para ver.
-  // <output data-suma="g"> / <output data-promedio="g">: suma o promedia los controles con
-  //   data-grupo="g" (radios marcados, selects y números con valor).
-  // <output data-porcentaje> dentro de una fila: cubiertos / total de esa misma fila, y mueve
-  //   el <meter> de la fila.
+  // Totales en vivo, solo para ver: el servidor recalcula. data-suma, data-promedio y data-porcentaje.
   function calcular() {
     document.querySelectorAll('output[data-suma], output[data-promedio]').forEach((salida) => {
       const grupo = salida.dataset.suma ?? salida.dataset.promedio;
@@ -157,13 +151,11 @@
   document.addEventListener('input', calcular);
   calcular();
 
-  // Imprimir: <button data-imprimir> abre el diálogo de impresión del navegador.
   document.querySelectorAll('[data-imprimir]').forEach((boton) => {
     boton.addEventListener('click', () => window.print());
   });
 
-  // Rango de fechas: <input type="date" data-desde="id-inicio"> no deja elegir una fecha
-  // anterior a la de inicio. El servidor lo vuelve a validar al guardar.
+  // data-desde="id-inicio": la fecha final no puede ser anterior.
   document.querySelectorAll('input[data-desde]').forEach((fin) => {
     const inicio = document.getElementById(fin.dataset.desde);
     if (!inicio) return;
@@ -172,9 +164,7 @@
     ajustar();
   });
 
-  // Campos según lo marcado: <div data-cuando="nombre=valor"> se ve solo si el radio o la
-  // casilla con ese nombre y valor está marcada; si no, sus controles se desactivan para no
-  // enviarse. Sin JS se ven todos.
+  // data-cuando="nombre=valor": se ve y se envía solo si esa opción está marcada.
   const mostrarSegunMarcado = () => {
     document.querySelectorAll('[data-cuando]').forEach((bloque) => {
       const [nombre, valor] = bloque.dataset.cuando.split('=');
@@ -185,7 +175,7 @@
   document.addEventListener('change', mostrarSegunMarcado);
   mostrarSegunMarcado();
 
-  // Vista previa: <input type="file" data-vista-previa="id-img"> muestra la imagen elegida.
+  // data-vista-previa="id-img": muestra la imagen elegida.
   document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
     const img = document.getElementById(entrada.dataset.vistaPrevia);
     entrada.addEventListener('change', () => {
@@ -195,7 +185,7 @@
     });
   });
 
-  // Tema: alterna entre claro y oscuro y recuerda la elección.
+  // Tema claro u oscuro, recordado.
   const botonTema = document.getElementById('tema');
   if (botonTema) {
     const pintar = () => {
