@@ -18,6 +18,14 @@ final class FilasModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** @return array<int, int> requerimiento_id => filas */
+    public static function contar(string $tabla): array
+    {
+        $sql = Conexion::pdo()->query("SELECT requerimiento_id, COUNT(*) FROM {$tabla} GROUP BY requerimiento_id");
+
+        return array_map(intval(...), $sql->fetchAll(\PDO::FETCH_KEY_PAIR));
+    }
+
     /**
      * Borra y vuelve a insertar con orden 1, 2, 3… Dentro de una transacción.
      *

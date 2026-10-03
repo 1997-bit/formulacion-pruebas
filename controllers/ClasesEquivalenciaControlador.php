@@ -14,16 +14,18 @@ use App\Services\RequerimientoServicio;
 // RF-09
 final class ClasesEquivalenciaControlador
 {
-    // Sin requerimiento: primero se elige. Con requerimiento: la matriz.
+    // Sin requerimiento: la lista de matrices. Con requerimiento: la matriz.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
         $migas = [['texto' => 'Formularios'], ['texto' => 'Clases de equivalencia']];
         if (!isset($_GET['requerimiento'])) {
+            [$requerimientos, $paginacion] = ClasesEquivalenciaServicio::pagina($usuario, (int) ($_GET['pagina'] ?? 1));
             Vista::pagina('clases_equivalencia/ver', [
                 'titulo' => 'Clases de equivalencia',
                 'requerimiento' => null,
-                'requerimientos' => RequerimientoServicio::listar($usuario),
+                'requerimientos' => $requerimientos,
+                'paginacion' => $paginacion,
                 'migas' => $migas,
             ]);
 

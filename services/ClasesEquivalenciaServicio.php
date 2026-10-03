@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Config\Conexion;
 use App\Core\ErrorPermiso;
+use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
 
@@ -32,6 +33,24 @@ final class ClasesEquivalenciaServicio
         RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
 
         return FilasModelo::deRequerimiento(self::TABLA, $requerimientoId);
+    }
+
+    /**
+     * Requerimientos del usuario, paginados, con cuántas filas tiene su matriz (RNF-09).
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @return array{0: list<array<string, mixed>>, 1: Paginacion}
+     */
+    public static function pagina(array $usuario, int $pagina): array
+    {
+        [$requerimientos, $paginacion] = RequerimientoServicio::pagina($usuario, $pagina);
+        $filas = FilasModelo::contar(self::TABLA);
+        foreach ($requerimientos as &$r) {
+            $r['filas'] = $filas[$r['id']] ?? 0;
+        }
+        unset($r);
+
+        return [$requerimientos, $paginacion];
     }
 
     /**

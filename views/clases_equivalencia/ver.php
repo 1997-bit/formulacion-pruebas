@@ -2,16 +2,18 @@
 declare(strict_types=1);
 
 use App\Core\Csrf;
+use App\Core\Paginacion;
 use App\Core\Vista;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 use App\Services\ClasesEquivalenciaServicio;
 
 /**
- * Formulario 2 de la paleta (RF-09). Sin requerimiento, primero se elige uno.
+ * Formulario 2 de la paleta (RF-09). Sin requerimiento, la lista de matrices.
  *
  * @var ?array<string, mixed> $requerimiento
- * @var ?list<array<string, mixed>> $requerimientos  solo sin requerimiento
+ * @var ?list<array<string, mixed>> $requerimientos  solo sin requerimiento, con filas
+ * @var ?Paginacion $paginacion  solo sin requerimiento
  * @var ?list<array<string, mixed>> $filas
  * @var ?array<string, string> $errores
  * @var ?string $flash
@@ -40,12 +42,6 @@ foreach (ClasesEquivalenciaServicio::COLUMNAS as $nombre => $maximo) {
 </header>
 
 <?php if ($requerimiento === null): ?>
-  <?php
-  $porProyecto = [];
-  foreach ($requerimientos as $r) {
-      $porProyecto[$r['proyecto']][] = $r;
-  }
-  ?>
   <?php if (!$requerimientos): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
@@ -54,26 +50,31 @@ foreach (ClasesEquivalenciaServicio::COLUMNAS as $nombre => $maximo) {
       <a class="btn btn-primario" href="/requerimientos/registrar"><?= Icono::svg('plus') ?> Registrar requerimiento</a>
     </div>
   <?php else: ?>
-    <form class="tarjeta pila" method="get" action="/formularios/clases_equivalencia">
-      <div class="campo">
-        <label for="f-requerimiento">Requerimiento <span class="requerido" aria-hidden="true">*</span></label>
-        <div class="select">
-          <select class="control" id="f-requerimiento" name="requerimiento" required>
-            <option value="">Elegir…</option>
-            <?php foreach ($porProyecto as $proyecto => $lista): ?>
-              <?= count($porProyecto) > 1 ? '<optgroup label="' . Html::e($proyecto) . '">' : '' ?>
-              <?php foreach ($lista as $r): ?>
-                <option value="<?= (int) $r['id'] ?>"><?= Html::e($r['codigo'] . ' · ' . $r['descripcion']) ?></option>
-              <?php endforeach; ?>
-              <?= count($porProyecto) > 1 ? '</optgroup>' : '' ?>
+    <div class="pila">
+      <div class="tabla-contenedor">
+        <table class="tabla tabla-tarjetas">
+          <caption class="solo-lector">Matrices por requerimiento</caption>
+          <thead>
+            <tr><th scope="col">Requerimiento</th><th scope="col">Descripción</th><th scope="col">Proyecto</th><th scope="col">Filas</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($requerimientos as $r): ?>
+              <tr>
+                <td data-columna="Requerimiento"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
+                <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
+                <td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td>
+                <td data-columna="Filas"><?= $r['filas'] ? (int) $r['filas'] : '<span class="insignia insignia-borde">Sin matriz</span>' ?></td>
+                <td class="celda-acciones">
+                  <a class="btn btn-secundario" href="/formularios/clases_equivalencia?requerimiento=<?= (int) $r['id'] ?>"
+                    aria-label="<?= Html::e(($r['filas'] ? 'Ver matriz de ' : 'Crear matriz de ') . $r['codigo'] . ', ' . $r['proyecto']) ?>"><?= $r['filas'] ? 'Ver matriz' : 'Crear matriz' ?></a>
+                </td>
+              </tr>
             <?php endforeach; ?>
-          </select>
-        </div>
+          </tbody>
+        </table>
       </div>
-      <div class="acciones">
-        <button class="btn btn-primario" type="submit">Continuar</button>
-      </div>
-    </form>
+      <?= Vista::capturar('partials/paginacion', ['paginacion' => $paginacion]) ?>
+    </div>
   <?php endif; ?>
 <?php else: ?>
   <div class="pila">
