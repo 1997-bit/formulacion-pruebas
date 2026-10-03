@@ -172,18 +172,18 @@
     ajustar();
   });
 
-  // Campos según un radio: <div data-cuando="nombre=valor"> se ve solo con ese radio marcado,
-  // y sus controles se desactivan para no enviarse. Sin JS se ven todos.
-  const mostrarSegunRadio = () => {
+  // Campos según lo marcado: <div data-cuando="nombre=valor"> se ve solo si el radio o la
+  // casilla con ese nombre y valor está marcada; si no, sus controles se desactivan para no
+  // enviarse. Sin JS se ven todos.
+  const mostrarSegunMarcado = () => {
     document.querySelectorAll('[data-cuando]').forEach((bloque) => {
       const [nombre, valor] = bloque.dataset.cuando.split('=');
-      const marcado = bloque.closest('form')?.querySelector(`input[name="${nombre}"]:checked`);
-      bloque.hidden = marcado?.value !== valor;
+      bloque.hidden = !bloque.closest('form')?.querySelector(`input[name="${nombre}"][value="${valor}"]:checked`);
       bloque.querySelectorAll('input, select, textarea').forEach((c) => { c.disabled = bloque.hidden; });
     });
   };
-  document.addEventListener('change', mostrarSegunRadio);
-  mostrarSegunRadio();
+  document.addEventListener('change', mostrarSegunMarcado);
+  mostrarSegunMarcado();
 
   // Vista previa: <input type="file" data-vista-previa="id-img"> muestra la imagen elegida.
   document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {

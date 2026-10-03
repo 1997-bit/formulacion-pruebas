@@ -199,7 +199,7 @@ use App\Helpers\Icono;
   <!-- ================= Formulario ================= -->
   <section class="seccion" id="formulario">
     <h2>Formulario</h2>
-    <p>Formularios 1, 6 y 10. Etiqueta, obligatorio, ayuda y error en texto enlazado con aria-describedby (RNF-07). La persona anota a mano el resultado: la plataforma solo da seguimiento, no ejecuta pruebas. El tipo de evidencia muestra solo sus campos; sin JS se ven todos.</p>
+    <p>Formularios 1, 6 y 10. Etiqueta, obligatorio, ayuda y error en texto enlazado con aria-describedby (RNF-07). La persona anota a mano el resultado: la plataforma solo da seguimiento, no ejecuta pruebas. Cada tipo de evidencia marcado abre su bloque; sin JS se ven todos.</p>
     <div class="rejilla">
       <div class="marco" style="grid-column:1/-1">
         <div class="escenario-libre">
@@ -365,39 +365,41 @@ Contraseña: (vacía)</textarea>
             </div>
           </div>
 
-          <fieldset class="grupo">
-            <legend>Tipo de evidencia <span class="requerido" aria-hidden="true">*</span></legend>
+          <?php
+          // Un bloque por tipo de evidencia: aparece solo si su casilla está marcada.
+          $evidencias = [
+              1 => ['image', 'captura', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
+              2 => ['file-text', 'archivo', 'file', 'accept=".pdf,.txt,.log"', 'Log o documento: PDF, TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],
+              3 => ['link', 'enlace', 'url', 'placeholder="https://…"', 'Video, carpeta de Drive o ejecución en CI.', 'Video del intento de inicio de sesión'],
+          ];
+          ?>
+          <fieldset class="grupo" aria-describedby="f-evidencias-ayuda">
+            <legend>Evidencias <span class="requerido" aria-hidden="true">*</span></legend>
             <div class="grupo grupo-fila">
               <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
-                <label class="opcion"><input type="radio" name="evidencia_tipo" value="<?= $clave ?>" required<?= $clave === 1 ? ' checked' : '' ?>> <?= Html::e($tipo['texto']) ?></label>
+                <label class="opcion"><input type="checkbox" name="evidencias[]" value="<?= $clave ?>"<?= $clave === 1 ? ' checked' : '' ?>> <?= Icono::svg($evidencias[$clave][0]) ?> <?= Html::e($tipo['texto']) ?></label>
               <?php endforeach; ?>
             </div>
+            <p class="campo-ayuda" id="f-evidencias-ayuda">Marque las que va a usar. Con OK o FAULT hace falta al menos una.</p>
           </fieldset>
-          <div class="campos">
-            <div class="campo" data-cuando="evidencia_tipo=1">
-              <label for="f-captura">Captura <span class="requerido" aria-hidden="true">*</span></label>
-              <input class="control" id="f-captura" name="evidencia" type="file" accept=".png,.jpg,.jpeg"
-                     data-vista-previa="f-captura-previa" aria-describedby="f-captura-ayuda">
-              <p class="campo-ayuda" id="f-captura-ayuda">PNG o JPG, máximo 5 MB.</p>
-              <img id="f-captura-previa" class="vista-previa" alt="" hidden>
+          <?php foreach ($evidencias as $clave => [$icono, $nombre, $control, $atributos, $ayuda, $ejemplo]): ?>
+            <div class="tarjeta pila" data-cuando="evidencias[]=<?= $clave ?>">
+              <p class="titulo-seccion fila" style="margin:0;justify-content:flex-start"><?= Icono::svg($icono) ?> <?= Html::e(Catalogo::texto('tipo_evidencia', $clave)) ?></p>
+              <div class="campos">
+                <div class="campo">
+                  <label for="f-<?= $nombre ?>"><?= $control === 'url' ? 'Dirección' : 'Archivo' ?> <span class="requerido" aria-hidden="true">*</span></label>
+                  <input class="control" id="f-<?= $nombre ?>" name="evidencia_<?= $nombre ?>" type="<?= $control ?>" <?= $atributos ?> aria-describedby="f-<?= $nombre ?>-ayuda">
+                  <p class="campo-ayuda" id="f-<?= $nombre ?>-ayuda"><?= Html::e($ayuda) ?></p>
+                  <?php if ($clave === 1): ?><img id="f-captura-previa" class="vista-previa" alt="" hidden><?php endif; ?>
+                </div>
+                <div class="campo">
+                  <label for="f-<?= $nombre ?>-desc">Qué muestra <span class="requerido" aria-hidden="true">*</span></label>
+                  <input class="control" id="f-<?= $nombre ?>-desc" name="descripcion_<?= $nombre ?>" maxlength="255" placeholder="<?= Html::e($ejemplo) ?>" aria-describedby="f-<?= $nombre ?>-desc-ayuda">
+                  <p class="campo-ayuda" id="f-<?= $nombre ?>-desc-ayuda">Texto alternativo (RNF-07).</p>
+                </div>
+              </div>
             </div>
-            <div class="campo" data-cuando="evidencia_tipo=2">
-              <label for="f-archivo">Archivo <span class="requerido" aria-hidden="true">*</span></label>
-              <input class="control" id="f-archivo" name="evidencia" type="file" accept=".pdf,.txt,.log" aria-describedby="f-archivo-ayuda">
-              <p class="campo-ayuda" id="f-archivo-ayuda">Log o documento: PDF, TXT o LOG, máximo 5 MB.</p>
-            </div>
-            <div class="campo" data-cuando="evidencia_tipo=3">
-              <label for="f-enlace">Enlace <span class="requerido" aria-hidden="true">*</span></label>
-              <input class="control" id="f-enlace" name="evidencia_enlace" type="url" placeholder="https://…" aria-describedby="f-enlace-ayuda">
-              <p class="campo-ayuda" id="f-enlace-ayuda">Video, carpeta de Drive o ejecución en CI.</p>
-            </div>
-            <div class="campo">
-              <label for="f-evidencia-desc">Qué muestra la evidencia <span class="requerido" aria-hidden="true">*</span></label>
-              <input class="control" id="f-evidencia-desc" name="evidencia_descripcion" required maxlength="255" aria-describedby="f-evidencia-desc-ayuda"
-                     placeholder="Pantalla de login con el mensaje de error">
-              <p class="campo-ayuda" id="f-evidencia-desc-ayuda">Texto alternativo de la captura (RNF-07).</p>
-            </div>
-          </div>
+          <?php endforeach; ?>
 
           <p class="campo-ayuda"><span class="requerido" aria-hidden="true">*</span> Campo obligatorio</p>
           <div class="acciones">
@@ -466,28 +468,22 @@ Contraseña: (vacía)</textarea>
             </div>
           </div>
 
-          <fieldset class="grupo">
-            <legend>Tipo de evidencia</legend>
+          <fieldset class="grupo" aria-describedby="f-inc-evidencias-ayuda">
+            <legend>Evidencias</legend>
             <div class="grupo grupo-fila">
               <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
-                <label class="opcion"><input type="radio" name="evidencia_tipo" value="<?= $clave ?>"<?= $clave === 1 ? ' checked' : '' ?>> <?= Html::e($tipo['texto']) ?></label>
+                <label class="opcion"><input type="checkbox" name="evidencias[]" value="<?= $clave ?>"> <?= Icono::svg($evidencias[$clave][0]) ?> <?= Html::e($tipo['texto']) ?></label>
               <?php endforeach; ?>
             </div>
+            <p class="campo-ayuda" id="f-inc-evidencias-ayuda">Opcionales: el caso ya tiene las suyas. Cada una marcada abre su bloque, como en el formulario 1.</p>
           </fieldset>
-          <div class="campo" data-cuando="evidencia_tipo=1">
-            <label for="f-inc-captura">Captura</label>
-            <input class="control" id="f-inc-captura" name="evidencia" type="file" accept=".png,.jpg,.jpeg" data-vista-previa="f-inc-captura-previa">
-            <img id="f-inc-captura-previa" class="vista-previa" alt="" hidden>
-          </div>
-          <div class="campo" data-cuando="evidencia_tipo=2">
-            <label for="f-inc-archivo">Archivo</label>
-            <input class="control" id="f-inc-archivo" name="evidencia" type="file" accept=".pdf,.txt,.log">
-          </div>
-          <div class="campo" data-cuando="evidencia_tipo=3">
-            <label for="f-inc-enlace">Enlace</label>
-            <input class="control" id="f-inc-enlace" name="evidencia_enlace" type="url" placeholder="https://…">
-          </div>
-          <p class="campo-ayuda" style="margin-top:-8px">Opcional: el caso ya tiene la suya. Mismo bloque que el formulario 1.</p>
+          <?php foreach ($evidencias as $clave => [$icono, $nombre, $control, $atributos]): ?>
+            <div class="tarjeta campo" data-cuando="evidencias[]=<?= $clave ?>">
+              <label for="f-inc-<?= $nombre ?>"><?= Html::e(Catalogo::texto('tipo_evidencia', $clave)) ?></label>
+              <input class="control" id="f-inc-<?= $nombre ?>" name="evidencia_<?= $nombre ?>" type="<?= $control ?>" <?= str_replace('f-captura-previa', 'f-inc-captura-previa', $atributos) ?>>
+              <?php if ($clave === 1): ?><img id="f-inc-captura-previa" class="vista-previa" alt="" hidden><?php endif; ?>
+            </div>
+          <?php endforeach; ?>
 
           <div class="campos">
             <div class="campo">
