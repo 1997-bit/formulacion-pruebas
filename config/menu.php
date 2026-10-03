@@ -16,7 +16,10 @@ return [
                 ['texto' => 'Listar', 'ruta' => '/requerimientos/listar'],
                 ['texto' => 'Registrar', 'ruta' => '/requerimientos/registrar'],
             ]],
-            ['texto' => 'Incidentes', 'icono' => 'bug', 'ruta' => '/formularios/incidentes'],
+            ['texto' => 'Incidentes', 'icono' => 'bug', 'hijos' => [
+                ['texto' => 'Listar', 'ruta' => '/formularios/incidentes'],
+                ['texto' => 'Registrar', 'ruta' => '/formularios/incidentes/registrar'],
+            ]],
             ['texto' => 'Reporte de cierre', 'icono' => 'chart-column', 'ruta' => '/reportes/cierre'],
         ],
     ],

@@ -31,6 +31,7 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
     <p class="solo-impresion">Formulario 1 · Registro de caso de prueba</p>
   </div>
   <div class="acciones">
+    <a class="btn btn-secundario" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
       <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
@@ -119,6 +120,12 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
           <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
         <?php endif; ?>
         <dt>Creado por</dt><dd><?= Html::e($caso['autor']) ?> · <?= $hora($caso['creado_en']) ?></dd>
+        <?php if ($caso['incidentes']): ?>
+          <dt>Incidentes</dt>
+          <?php foreach ($caso['incidentes'] as $i): ?>
+            <dd><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a> <?= Catalogo::insignia('estado_incidente', $i['estado']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?> <?= Html::e($i['titulo']) ?></dd>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </dl>
     </aside>
   </div>

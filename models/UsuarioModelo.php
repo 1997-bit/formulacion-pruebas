@@ -39,6 +39,17 @@ final class UsuarioModelo
         return Conexion::pdo()->query('SELECT id, nombre, usuario FROM usuarios WHERE rol = 0 ORDER BY nombre')->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /** @return list<array<string, mixed>> */
+    public static function deProyecto(int $proyectoId): array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT u.id, u.nombre FROM usuarios u JOIN proyecto_miembros m ON m.usuario_id = u.id WHERE m.proyecto_id = ? ORDER BY u.nombre'
+        );
+        $sql->execute([$proyectoId]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public static function crear(string $nombre, string $usuario, string $clave, int $rol): int
     {
         $sql = Conexion::pdo()->prepare('INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (?, ?, ?, ?)');
