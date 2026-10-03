@@ -69,7 +69,14 @@ foreach ($porProyecto as $proyecto => $reqs) {
       </div>
     </form>
   <?php endif; ?>
-  <?php if (!$casos): ?>
+  <?php if (!$casos && $filtrado): ?>
+    <div class="vacio">
+      <span class="vacio-icono"><?= Icono::svg('search') ?></span>
+      <h2>Ningún caso coincide con los filtros</h2>
+      <p>Cambie los filtros o límpielos para ver todos los casos.</p>
+      <a class="btn btn-secundario" href="/casos/listar">Limpiar filtros</a>
+    </div>
+  <?php elseif (!$casos): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
       <h2>Todavía no hay casos de prueba</h2>
