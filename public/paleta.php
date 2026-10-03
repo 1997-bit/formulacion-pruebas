@@ -199,7 +199,7 @@ use App\Helpers\Icono;
   <!-- ================= Formulario ================= -->
   <section class="seccion" id="formulario">
     <h2>Formulario</h2>
-    <p>Registro del caso (formulario 1). Etiqueta, obligatorio, ayuda y error en texto enlazado con aria-describedby (RNF-07). La persona anota a mano el resultado: la plataforma solo da seguimiento, no ejecuta pruebas.</p>
+    <p>Formularios 1, 6 y 10. Etiqueta, obligatorio, ayuda y error en texto enlazado con aria-describedby (RNF-07). La persona anota a mano el resultado: la plataforma solo da seguimiento, no ejecuta pruebas. El tipo de evidencia muestra solo sus campos; sin JS se ven todos.</p>
     <div class="rejilla">
       <div class="marco" style="grid-column:1/-1">
         <div class="escenario-libre">
@@ -247,32 +247,44 @@ use App\Helpers\Icono;
             <div class="campo">
               <label for="f-codigo">Código</label>
               <input class="control codigo" id="f-codigo" value="SIS-003" disabled aria-describedby="f-codigo-ayuda">
-              <p class="campo-ayuda" id="f-codigo-ayuda">Se genera al guardar con el tipo y la fecha.</p>
+              <p class="campo-ayuda" id="f-codigo-ayuda">Se genera al guardar con la sigla del tipo: SIS-001.</p>
             </div>
             <div class="campo">
               <label for="f-modulo">Módulo o funcionalidad <span class="requerido" aria-hidden="true">*</span></label>
               <input class="control" id="f-modulo" name="modulo" required value="Inicio de sesión">
             </div>
             <div class="campo">
-              <label for="f-tecnica">Técnica <span class="requerido" aria-hidden="true">*</span></label>
+              <label for="f-entorno">Entorno</label>
+              <input class="control" id="f-entorno" name="entorno" maxlength="255" value="Windows 11, Chrome 129, v1.2" aria-describedby="f-entorno-ayuda">
+              <p class="campo-ayuda" id="f-entorno-ayuda">Sistema operativo, navegador y versión probada.</p>
+            </div>
+          </div>
+
+          <fieldset class="grupo">
+            <legend>Técnica utilizada <span class="requerido" aria-hidden="true">*</span></legend>
+            <div class="grupo grupo-fila">
+              <label class="opcion"><input type="radio" name="tecnica" value="1" required checked> Caja negra</label>
+              <label class="opcion"><input type="radio" name="tecnica" value="2"> Caja blanca</label>
+            </div>
+          </fieldset>
+          <div class="campos">
+            <div class="campo">
+              <label for="f-subtecnica">Sub-técnica <span class="requerido" aria-hidden="true">*</span></label>
               <div class="select">
-                <select class="control" id="f-tecnica" name="subtecnica" required aria-describedby="f-tecnica-ayuda">
+                <select class="control" id="f-subtecnica" name="subtecnica" required aria-describedby="f-subtecnica-ayuda">
                   <option value="">Elegir…</option>
-                  <optgroup label="Caja negra">
-                    <option value="1" selected>Clases de equivalencia</option>
-                    <option value="2">Valor límite</option>
-                    <option value="3">Tabla de decisión</option>
-                  </optgroup>
-                  <optgroup label="Caja blanca">
-                    <option value="4">Cobertura de sentencia</option>
-                    <option value="5">Cobertura de decisión</option>
-                    <option value="6">Cobertura de condición</option>
-                    <option value="7">Cobertura de caminos</option>
-                    <option value="8">Cobertura de bucles</option>
-                  </optgroup>
+                  <?php foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $grupo => [$desde, $hasta]): ?>
+                    <optgroup label="<?= $grupo ?>">
+                      <?php foreach (Catalogo::valores('subtecnica') as $clave => $sub): ?>
+                        <?php if ($clave >= $desde && $clave <= $hasta): ?>
+                          <option value="<?= $clave ?>"<?= $clave === 1 ? ' selected' : '' ?>><?= Html::e($sub['texto']) ?></option>
+                        <?php endif; ?>
+                      <?php endforeach; ?>
+                    </optgroup>
+                  <?php endforeach; ?>
                 </select>
               </div>
-              <p class="campo-ayuda" id="f-tecnica-ayuda">La sub-técnica dice si es caja negra o blanca.</p>
+              <p class="campo-ayuda" id="f-subtecnica-ayuda">Debe ser de la técnica elegida: 10 de caja negra y 10 de caja blanca.</p>
             </div>
             <div class="campo">
               <label for="f-inicio">Fecha de inicio <span class="requerido" aria-hidden="true">*</span></label>
@@ -342,21 +354,39 @@ Contraseña: (vacía)</textarea>
               <label for="f-obs">Observaciones</label>
               <textarea class="control" id="f-obs" name="observaciones" placeholder="Notas adicionales"></textarea>
             </div>
-            <div class="campo">
-              <label for="f-evidencia">Evidencia</label>
-              <input class="control" id="f-evidencia" name="evidencias[]" type="file" multiple
-                     accept=".png,.jpg,.jpeg,.pdf,.txt,.log" aria-describedby="f-evidencia-ayuda">
-              <p class="campo-ayuda" id="f-evidencia-ayuda">Captura o log: PNG, JPG, PDF, TXT o LOG, máximo 5 MB cada uno.</p>
+          </div>
+
+          <fieldset class="grupo">
+            <legend>Tipo de evidencia <span class="requerido" aria-hidden="true">*</span></legend>
+            <div class="grupo grupo-fila">
+              <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
+                <label class="opcion"><input type="radio" name="evidencia_tipo" value="<?= $clave ?>" required<?= $clave === 1 ? ' checked' : '' ?>> <?= Html::e($tipo['texto']) ?></label>
+              <?php endforeach; ?>
+            </div>
+          </fieldset>
+          <div class="campos">
+            <div class="campo" data-cuando="evidencia_tipo=1">
+              <label for="f-captura">Captura <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-captura" name="evidencia" type="file" accept=".png,.jpg,.jpeg"
+                     data-vista-previa="f-captura-previa" aria-describedby="f-captura-ayuda">
+              <p class="campo-ayuda" id="f-captura-ayuda">PNG o JPG, máximo 5 MB.</p>
+              <img id="f-captura-previa" class="vista-previa" alt="" hidden>
+            </div>
+            <div class="campo" data-cuando="evidencia_tipo=2">
+              <label for="f-archivo">Archivo <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-archivo" name="evidencia" type="file" accept=".pdf,.txt,.log" aria-describedby="f-archivo-ayuda">
+              <p class="campo-ayuda" id="f-archivo-ayuda">Log o documento: PDF, TXT o LOG, máximo 5 MB.</p>
+            </div>
+            <div class="campo" data-cuando="evidencia_tipo=3">
+              <label for="f-enlace">Enlace <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-enlace" name="evidencia_enlace" type="url" placeholder="https://…" aria-describedby="f-enlace-ayuda">
+              <p class="campo-ayuda" id="f-enlace-ayuda">Video, carpeta de Drive o ejecución en CI.</p>
             </div>
             <div class="campo">
-              <label for="f-evidencia-desc">Qué muestra la evidencia</label>
-              <input class="control" id="f-evidencia-desc" name="evidencia_descripcion" aria-describedby="f-evidencia-desc-ayuda"
+              <label for="f-evidencia-desc">Qué muestra la evidencia <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-evidencia-desc" name="evidencia_descripcion" required maxlength="255" aria-describedby="f-evidencia-desc-ayuda"
                      placeholder="Pantalla de login con el mensaje de error">
-              <p class="campo-ayuda" id="f-evidencia-desc-ayuda">Texto alternativo de la imagen (RNF-07).</p>
-            </div>
-            <div class="campo">
-              <label for="f-enlace">O un enlace</label>
-              <input class="control" id="f-enlace" name="evidencia_enlace" type="url" placeholder="https://…">
+              <p class="campo-ayuda" id="f-evidencia-desc-ayuda">Texto alternativo de la captura (RNF-07).</p>
             </div>
           </div>
 
@@ -370,10 +400,22 @@ Contraseña: (vacía)</textarea>
 
       <div class="marco escenario-libre">
         <form class="pila" action="#" onsubmit="return false">
-          <p class="titulo-seccion">Registrar incidente <span class="codigo" style="font-weight:400">de SIS-002</span></p>
+          <p class="titulo-seccion">Registrar incidente <small class="campo-ayuda">Formulario 10 · de <span class="codigo">SIS-002</span></small></p>
+          <div class="campos">
+            <div class="campo">
+              <label for="f-inc-codigo">ID del incidente</label>
+              <input class="control codigo" id="f-inc-codigo" value="BUG-002" disabled aria-describedby="f-inc-codigo-ayuda">
+              <p class="campo-ayuda" id="f-inc-codigo-ayuda">Se genera al guardar: BUG y un consecutivo del proyecto.</p>
+            </div>
+            <div class="campo">
+              <label for="f-inc-modulo">Módulo <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-inc-modulo" name="modulo" required maxlength="100" value="Inicio de sesión" aria-describedby="f-inc-modulo-ayuda">
+              <p class="campo-ayuda" id="f-inc-modulo-ayuda">Componente afectado. Sale del caso; se puede cambiar.</p>
+            </div>
+          </div>
           <div class="campo">
             <label for="f-inc-titulo">Título <span class="requerido" aria-hidden="true">*</span></label>
-            <input class="control" id="f-inc-titulo" name="titulo" required value="Inicia sesión con contraseña vacía">
+            <input class="control" id="f-inc-titulo" name="titulo" required maxlength="150" value="Inicia sesión con contraseña vacía">
           </div>
           <fieldset class="grupo">
             <legend>Severidad <span class="requerido" aria-hidden="true">*</span></legend>
@@ -393,6 +435,51 @@ Contraseña: (vacía)</textarea>
             </div>
             <p class="campo-error" id="f-prioridad-error"><?= Icono::svg('circle-x') ?>Elija la prioridad.</p>
           </fieldset>
+          <div class="campo">
+            <label for="f-inc-desc">Descripción <span class="requerido" aria-hidden="true">*</span></label>
+            <textarea class="control" id="f-inc-desc" name="descripcion" required aria-describedby="f-inc-desc-ayuda">El login acepta una contraseña vacía y entra a la cuenta.</textarea>
+            <p class="campo-ayuda" id="f-inc-desc-ayuda">Detalle del problema.</p>
+          </div>
+          <div class="campo">
+            <label for="f-inc-pasos">Pasos para reproducir <span class="requerido" aria-hidden="true">*</span></label>
+            <textarea class="control" id="f-inc-pasos" name="pasos" required>1. Abrir el login.
+2. Escribir "demo" y dejar la contraseña vacía.
+3. Pulsar "Iniciar sesión".</textarea>
+          </div>
+          <div class="campos">
+            <div class="campo">
+              <label for="f-inc-esperado">Resultado esperado <span class="requerido" aria-hidden="true">*</span></label>
+              <textarea class="control" id="f-inc-esperado" name="resultado_esperado" required>No inicia sesión.</textarea>
+            </div>
+            <div class="campo">
+              <label for="f-inc-obtenido">Resultado obtenido <span class="requerido" aria-hidden="true">*</span></label>
+              <textarea class="control" id="f-inc-obtenido" name="resultado_obtenido" required>Inicia sesión.</textarea>
+            </div>
+          </div>
+
+          <fieldset class="grupo">
+            <legend>Tipo de evidencia</legend>
+            <div class="grupo grupo-fila">
+              <?php foreach (Catalogo::valores('tipo_evidencia') as $clave => $tipo): ?>
+                <label class="opcion"><input type="radio" name="evidencia_tipo" value="<?= $clave ?>"<?= $clave === 1 ? ' checked' : '' ?>> <?= Html::e($tipo['texto']) ?></label>
+              <?php endforeach; ?>
+            </div>
+          </fieldset>
+          <div class="campo" data-cuando="evidencia_tipo=1">
+            <label for="f-inc-captura">Captura</label>
+            <input class="control" id="f-inc-captura" name="evidencia" type="file" accept=".png,.jpg,.jpeg" data-vista-previa="f-inc-captura-previa">
+            <img id="f-inc-captura-previa" class="vista-previa" alt="" hidden>
+          </div>
+          <div class="campo" data-cuando="evidencia_tipo=2">
+            <label for="f-inc-archivo">Archivo</label>
+            <input class="control" id="f-inc-archivo" name="evidencia" type="file" accept=".pdf,.txt,.log">
+          </div>
+          <div class="campo" data-cuando="evidencia_tipo=3">
+            <label for="f-inc-enlace">Enlace</label>
+            <input class="control" id="f-inc-enlace" name="evidencia_enlace" type="url" placeholder="https://…">
+          </div>
+          <p class="campo-ayuda" style="margin-top:-8px">Opcional: el caso ya tiene la suya. Mismo bloque que el formulario 1.</p>
+
           <div class="campos">
             <div class="campo">
               <label for="f-inc-estado">Estado</label>
@@ -411,12 +498,6 @@ Contraseña: (vacía)</textarea>
               </div>
             </div>
           </div>
-          <div class="campo">
-            <label for="f-inc-pasos">Pasos para reproducir <span class="requerido" aria-hidden="true">*</span></label>
-            <textarea class="control" id="f-inc-pasos" name="pasos" required>1. Abrir el login.
-2. Escribir "demo" y dejar la contraseña vacía.
-3. Pulsar "Iniciar sesión".</textarea>
-          </div>
           <fieldset class="grupo">
             <legend>Bloqueo</legend>
             <label class="opcion"><input type="checkbox" name="es_stopper" value="1" checked> Es stopper: impide cerrar el plan</label>
@@ -426,33 +507,129 @@ Contraseña: (vacía)</textarea>
           </div>
         </form>
       </div>
+
+      <div class="marco escenario-libre">
+        <form class="pila" action="#" onsubmit="return false">
+          <p class="titulo-seccion">Plan de pruebas <small class="campo-ayuda">Formulario 6 · uno por proyecto</small></p>
+          <div class="campos">
+            <div class="campo">
+              <label for="f-plan-proyecto">Proyecto <span class="requerido" aria-hidden="true">*</span></label>
+              <div class="select">
+                <select class="control" id="f-plan-proyecto" name="proyecto_id" required>
+                  <option selected>Portal web</option><option>App de inventario</option>
+                </select>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="f-plan-version">Versión <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-plan-version" name="version" required maxlength="20" value="1.0">
+            </div>
+            <div class="campo">
+              <label for="f-plan-responsable">Responsable <span class="requerido" aria-hidden="true">*</span></label>
+              <div class="select">
+                <select class="control" id="f-plan-responsable" name="responsable_id" required>
+                  <option selected>María Pérez</option><option>José Rodríguez</option>
+                </select>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="f-plan-fecha">Fecha <span class="requerido" aria-hidden="true">*</span></label>
+              <input class="control" id="f-plan-fecha" name="fecha" type="date" required value="2026-10-03">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="f-plan-alcance">Alcance <span class="requerido" aria-hidden="true">*</span></label>
+            <textarea class="control" id="f-plan-alcance" name="alcance" required aria-describedby="f-plan-alcance-ayuda">Se prueban acceso, casos y formularios. No se prueba la carga con muchos usuarios.</textarea>
+            <p class="campo-ayuda" id="f-plan-alcance-ayuda">Qué se va a probar y qué no.</p>
+          </div>
+          <div class="campo">
+            <label for="f-plan-objetivos">Objetivos <span class="requerido" aria-hidden="true">*</span></label>
+            <textarea class="control" id="f-plan-objetivos" name="objetivos" required aria-describedby="f-plan-objetivos-ayuda"></textarea>
+            <p class="campo-ayuda" id="f-plan-objetivos-ayuda">Metas de las pruebas.</p>
+          </div>
+          <fieldset class="grupo">
+            <legend>Estrategia <span class="requerido" aria-hidden="true">*</span></legend>
+            <div class="grupo grupo-fila">
+              <?php foreach (Catalogo::valores('estrategia') as $clave => $e): ?>
+                <label class="opcion"><input type="radio" name="estrategia" value="<?= $clave ?>" required<?= $clave === 3 ? ' checked' : '' ?>> <?= Html::e($e['texto']) ?></label>
+              <?php endforeach; ?>
+            </div>
+          </fieldset>
+          <div class="campos">
+            <div class="campo">
+              <label for="f-plan-recursos">Recursos</label>
+              <textarea class="control" id="f-plan-recursos" name="recursos" aria-describedby="f-plan-recursos-ayuda"></textarea>
+              <p class="campo-ayuda" id="f-plan-recursos-ayuda">Herramientas, personal y tiempo.</p>
+            </div>
+            <div class="campo">
+              <label for="f-plan-cronograma">Cronograma</label>
+              <textarea class="control" id="f-plan-cronograma" name="cronograma" aria-describedby="f-plan-cronograma-ayuda"></textarea>
+              <p class="campo-ayuda" id="f-plan-cronograma-ayuda">Fases y fechas.</p>
+            </div>
+            <div class="campo">
+              <label for="f-plan-criterios">Criterios de aceptación <span class="requerido" aria-hidden="true">*</span></label>
+              <textarea class="control" id="f-plan-criterios" name="criterios_aceptacion" required aria-describedby="f-plan-criterios-ayuda"></textarea>
+              <p class="campo-ayuda" id="f-plan-criterios-ayuda">Cuándo se consideran exitosas las pruebas.</p>
+            </div>
+            <div class="campo">
+              <label for="f-plan-riesgos">Riesgos</label>
+              <textarea class="control" id="f-plan-riesgos" name="riesgos" aria-describedby="f-plan-riesgos-ayuda"></textarea>
+              <p class="campo-ayuda" id="f-plan-riesgos-ayuda">Cada riesgo con su mitigación.</p>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="f-plan-estado">Estado</label>
+            <div class="select">
+              <select class="control" id="f-plan-estado" name="estado">
+                <?= Catalogo::opciones('estado_plan', 0) ?>
+              </select>
+            </div>
+          </div>
+          <div class="acciones">
+            <button class="btn btn-primario" type="submit">Guardar plan</button>
+          </div>
+        </form>
+      </div>
     </div>
   </section>
 
   <!-- ================= Tablas editables ================= -->
   <?php
-  // Una fila de la matriz de clases de equivalencia. Vacía sirve de plantilla para "Agregar fila".
-  $filaClase = function (array $v = []): string {
-      $celda = fn (string $nombre, string $etiqueta, bool $largo = true) =>
-          '<td data-columna="' . Html::e($etiqueta) . '">'
-          . ($largo
-              ? '<textarea class="control" name="' . $nombre . '[]" aria-label="' . Html::e($etiqueta) . '">' . Html::e($v[$nombre] ?? '') . '</textarea>'
-              : '<input class="control" name="' . $nombre . '[]" aria-label="' . Html::e($etiqueta) . '" value="' . Html::e($v[$nombre] ?? '') . '">')
-          . '</td>';
-      return '<tr>'
-          . $celda('campo', 'Campo', false)
-          . $celda('valida', 'Clase válida')
-          . $celda('invalidas', 'Clases inválidas')
-          . $celda('valores', 'Valores representativos', false)
-          . $celda('esperado', 'Resultado esperado')
+  // Una fila de tabla editable. Vacía sirve de plantilla para "Agregar fila".
+  // $columnas: nombre => [etiqueta, control]; control es textarea, un type de input o catalogo:nombre.
+  $fila = function (array $columnas, array $v = []): string {
+      $html = '<tr>';
+      foreach ($columnas as $nombre => [$etiqueta, $control]) {
+          $atributos = 'class="control" name="' . $nombre . '[]" aria-label="' . Html::e($etiqueta) . '"';
+          $valor = $v[$nombre] ?? '';
+          $html .= '<td data-columna="' . Html::e($etiqueta) . '"' . ($control === 'number' ? ' class="celda-corta"' : '') . '>' . match (true) {
+              $control === 'textarea' => '<textarea ' . $atributos . '>' . Html::e((string) $valor) . '</textarea>',
+              str_starts_with($control, 'catalogo:') => '<div class="select"><select ' . $atributos . '><option value="">Elegir…</option>'
+                  . Catalogo::opciones(substr($control, 9), $valor === '' ? null : (int) $valor) . '</select></div>',
+              default => '<input ' . $atributos . ' type="' . $control . '"' . ($control === 'number' ? ' min="1" inputmode="numeric"' : '') . ' value="' . Html::e((string) $valor) . '">',
+          } . '</td>';
+      }
+      return $html
           . '<td class="celda-acciones"><button class="btn btn-fantasma btn-icono" type="button" data-quitar-fila aria-label="Quitar fila" data-tooltip="Quitar fila" data-tooltip-alinear="fin">'
           . Icono::svg('trash-2') . '</button></td>'
           . '</tr>';
   };
+  $colClases = [
+      'campo' => ['Campo', 'text'], 'valida' => ['Clase válida', 'textarea'], 'invalidas' => ['Clases inválidas', 'textarea'],
+      'valores' => ['Valores representativos', 'text'], 'esperado' => ['Resultado esperado', 'textarea'],
+  ];
+  $colLimite = [
+      'campo' => ['Campo', 'text'], 'rango' => ['Rango válido', 'text'], 'minimo' => ['Valor mínimo', 'text'],
+      'maximo' => ['Valor máximo', 'text'], 'limites' => ['Valores límite a probar', 'text'], 'esperado' => ['Resultado esperado', 'textarea'],
+  ];
+  $colPortafolio = [
+      'semana' => ['Semana', 'number'], 'evidencia' => ['Evidencia', 'text'], 'tipo' => ['Tipo', 'catalogo:tipo_portafolio'],
+      'fecha' => ['Fecha', 'date'], 'observaciones' => ['Observaciones', 'textarea'],
+  ];
   ?>
   <section class="seccion" id="matrices">
     <h2>Tablas editables</h2>
-    <p>Formularios 2 a 9: la misma tabla con controles en las celdas, cada uno con aria-label. Las filas con datos (2, 3, 8, 9) se vuelven tarjetas en el celular; las tablas por columnas (4, 5, 7) se desplazan de lado.</p>
+    <p>Formularios 2, 3, 4, 5, 7, 8 y 9: la misma tabla con controles en las celdas, cada uno con aria-label. Las filas con datos (2, 3, 8, 9) se vuelven tarjetas en el celular; las tablas por columnas (4, 5, 7) se desplazan de lado.</p>
     <div class="pila">
 
       <div class="marco escenario-libre">
@@ -465,15 +642,38 @@ Contraseña: (vacía)</textarea>
                 <tr><th scope="col">Campo</th><th scope="col">Clase válida</th><th scope="col">Clases inválidas</th><th scope="col">Valores representativos</th><th scope="col">Resultado esperado</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
               </thead>
               <tbody id="clases">
-                <?= $filaClase(['campo' => 'Edad', 'valida' => '18 a 65', 'invalidas' => 'Menor de 18; mayor de 65; no numérico', 'valores' => '30, 10, 70, abc', 'esperado' => 'Acepta 30; rechaza 10, 70 y abc']) ?>
-                <?= $filaClase(['campo' => 'Usuario', 'valida' => '4 a 20 letras o números', 'invalidas' => 'Vacío; más de 20; con espacios', 'valores' => 'demo, (vacío), a b', 'esperado' => 'Acepta demo; rechaza los demás']) ?>
+                <?= $fila($colClases, ['campo' => 'Edad', 'valida' => '18 a 65', 'invalidas' => 'Menor de 18; mayor de 65; no numérico', 'valores' => '30, 10, 70, abc', 'esperado' => 'Acepta 30; rechaza 10, 70 y abc']) ?>
+                <?= $fila($colClases, ['campo' => 'Usuario', 'valida' => '4 a 20 letras o números', 'invalidas' => 'Vacío; más de 20; con espacios', 'valores' => 'demo, (vacío), a b', 'esperado' => 'Acepta demo; rechaza los demás']) ?>
               </tbody>
             </table>
           </div>
-          <template id="clases-fila"><?= $filaClase() ?></template>
+          <template id="clases-fila"><?= $fila($colClases) ?></template>
           <div class="acciones acciones-separadas">
             <button class="btn btn-secundario" type="button" data-agregar-fila="clases"><?= Icono::svg('plus') ?> Agregar fila</button>
             <button class="btn btn-primario" type="submit">Guardar matriz</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="marco escenario-libre">
+        <form class="pila" action="#" onsubmit="return false">
+          <p class="titulo-seccion">Análisis de valor límite <small class="campo-ayuda">Formulario 3</small></p>
+          <div class="tabla-contenedor">
+            <table class="tabla tabla-editable tabla-tarjetas">
+              <caption class="solo-lector">Valores frontera por campo</caption>
+              <thead>
+                <tr><?php foreach ($colLimite as [$etiqueta]): ?><th scope="col"><?= Html::e($etiqueta) ?></th><?php endforeach; ?><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+              </thead>
+              <tbody id="limites">
+                <?= $fila($colLimite, ['campo' => 'Edad', 'rango' => '18 a 65', 'minimo' => '18', 'maximo' => '65', 'limites' => '17, 18, 19, 64, 65, 66', 'esperado' => 'Acepta de 18 a 65; rechaza 17 y 66']) ?>
+                <?= $fila($colLimite, ['campo' => 'Contraseña', 'rango' => '8 a 64 caracteres', 'minimo' => '8', 'maximo' => '64', 'limites' => '7, 8, 64, 65', 'esperado' => 'Acepta 8 y 64; rechaza 7 y 65']) ?>
+              </tbody>
+            </table>
+          </div>
+          <template id="limites-fila"><?= $fila($colLimite) ?></template>
+          <div class="acciones acciones-separadas">
+            <button class="btn btn-secundario" type="button" data-agregar-fila="limites"><?= Icono::svg('plus') ?> Agregar fila</button>
+            <button class="btn btn-primario" type="submit">Guardar análisis</button>
           </div>
         </form>
       </div>
@@ -551,62 +751,109 @@ Contraseña: (vacía)</textarea>
         </form>
       </div>
 
-      <div class="rejilla">
-        <div class="marco escenario-libre">
-          <form class="pila" action="#" onsubmit="return false">
-            <p class="titulo-seccion">Rúbrica de evaluación <small class="campo-ayuda">Formulario 7 · solo admin</small></p>
-            <div class="tabla-contenedor">
-              <table class="tabla tabla-editable">
-                <caption class="solo-lector">Puntos por criterio</caption>
-                <thead><tr><th scope="col">Criterio</th><th scope="col">Puntos</th></tr></thead>
-                <tbody>
-                  <?php foreach (['Diseño de casos' => 5, 'Aplicación de técnicas' => 4, 'Cobertura' => 4, 'Uso de herramientas' => 3, 'Documentación' => 5, 'Presentación' => 4] as $criterio => $puntos): ?>
-                    <tr>
-                      <th scope="row"><?= Html::e($criterio) ?></th>
-                      <td>
-                        <div class="select"><select class="control" name="puntos[]" data-grupo="rubrica" aria-label="Puntos de <?= Html::e(mb_strtolower($criterio)) ?>">
-                          <option value="">Elegir…</option>
-                          <?php foreach ([5 => 'Excelente', 4 => 'Bueno', 3 => 'Regular', 2 => 'Deficiente', 1 => 'Deficiente'] as $valor => $nivel): ?>
-                            <option value="<?= $valor ?>"<?= $valor === $puntos ? ' selected' : '' ?>><?= $valor ?> · <?= $nivel ?></option>
-                          <?php endforeach; ?>
-                        </select></div>
-                      </td>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
-                <tfoot>
-                  <tr><th scope="row">Total</th><td><output data-suma="rubrica">25</output> / 30</td></tr>
-                </tfoot>
-              </table>
-            </div>
-            <p class="campo-ayuda">La descripción de cada nivel va en la ayuda o en una tabla aparte; aquí solo se elige.</p>
-          </form>
-        </div>
+      <div class="marco escenario-libre">
+        <form class="pila" action="#" onsubmit="return false">
+          <p class="titulo-seccion">Rúbrica de evaluación <small class="campo-ayuda">Formulario 7 · solo admin · Portal web</small></p>
+          <?php
+          // Descriptores del documento: Excelente (5), Bueno (4), Regular (3), Deficiente (1-2).
+          $rubrica = [
+              ['Diseño de casos', 5, ['Todos los casos bien documentados y justificados', 'La mayoría bien documentados', 'Algunos casos documentados', 'Casos incompletos o ausentes']],
+              ['Aplicación de técnicas', 4, ['Aplica correctamente caja negra y blanca', 'Aplica la mayoría correctamente', 'Aplica parcialmente', 'No aplica correctamente']],
+              ['Cobertura', 4, ['Alcanza más de 90 %', 'Alcanza 70 a 90 %', 'Alcanza 50 a 70 %', 'Menos de 50 %']],
+              ['Uso de herramientas', 3, ['Domina Selenium, PHPUnit, JMeter, TestCover', 'Usa la mayoría', 'Usa algunas', 'No usa herramientas']],
+              ['Documentación', 5, ['Completa, clara y organizada', 'Completa pero poco clara', 'Incompleta', 'Ausente']],
+              ['Presentación', 4, ['Excelente comunicación', 'Buena comunicación', 'Comunicación regular', 'Deficiente']],
+          ];
+          ?>
+          <div class="tabla-contenedor">
+            <table class="tabla tabla-editable">
+              <caption class="solo-lector">Puntos por criterio</caption>
+              <thead><tr><th scope="col">Criterio</th><th scope="col">Puntos</th></tr></thead>
+              <tbody>
+                <?php foreach ($rubrica as $i => [$criterio, $puntos, $niveles]): ?>
+                  <tr>
+                    <th scope="row"><?= Html::e($criterio) ?></th>
+                    <td>
+                      <div class="select"><select class="control" name="puntos[]" data-grupo="rubrica" aria-label="Puntos de <?= Html::e(mb_strtolower($criterio)) ?>">
+                        <option value="">Elegir…</option>
+                        <?php foreach ([5 => 0, 4 => 1, 3 => 2, 2 => 3, 1 => 3] as $valor => $n): ?>
+                          <option value="<?= $valor ?>"<?= $valor === $puntos ? ' selected' : '' ?>><?= $valor ?> · <?= Html::e($niveles[$n]) ?></option>
+                        <?php endforeach; ?>
+                      </select></div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+              <tfoot>
+                <tr><th scope="row">Total</th><td><output data-suma="rubrica">25</output> / 30</td></tr>
+              </tfoot>
+            </table>
+          </div>
+          <p class="campo-ayuda">Cada opción dice el descriptor del nivel, así no hace falta otra tabla. Excelente 5, Bueno 4, Regular 3, Deficiente 1 o 2.</p>
+          <div class="acciones"><button class="btn btn-primario" type="submit">Guardar rúbrica</button></div>
+        </form>
+      </div>
 
-        <div class="marco escenario-libre">
-          <form class="pila" action="#" onsubmit="return false">
-            <p class="titulo-seccion">Autoevaluación y coevaluación <small class="campo-ayuda">Formulario 8</small></p>
-            <div class="tabla-contenedor">
-              <table class="tabla tabla-editable tabla-tarjetas">
-                <caption class="solo-lector">Puntos de 1 a 5 por aspecto</caption>
-                <thead><tr><th scope="col">Aspecto</th><th scope="col">Auto</th><th scope="col">Co</th></tr></thead>
-                <tbody>
-                  <?php foreach ([['Comprensión de conceptos', 4, 5], ['Trabajo en equipo', 5, 4], ['Cumplimiento de plazos', 3, 4]] as [$aspecto, $auto, $co]): ?>
-                    <tr>
-                      <th scope="row"><?= Html::e($aspecto) ?></th>
-                      <td class="celda-corta" data-columna="Autoevaluación"><input class="control" type="number" min="1" max="5" inputmode="numeric" name="auto[]" data-grupo="auto" aria-label="Autoevaluación de <?= Html::e(mb_strtolower($aspecto)) ?>" value="<?= $auto ?>"></td>
-                      <td class="celda-corta" data-columna="Coevaluación"><input class="control" type="number" min="1" max="5" inputmode="numeric" name="co[]" data-grupo="co" aria-label="Coevaluación de <?= Html::e(mb_strtolower($aspecto)) ?>" value="<?= $co ?>"></td>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
-                <tfoot>
-                  <tr><th scope="row">Promedio</th><td data-columna="Autoevaluación"><output data-promedio="auto">4.0</output></td><td data-columna="Coevaluación"><output data-promedio="co">4.3</output></td></tr>
-                </tfoot>
-              </table>
+      <div class="marco escenario-libre">
+        <form class="pila" action="#" onsubmit="return false">
+          <p class="titulo-seccion">Autoevaluación y coevaluación <small class="campo-ayuda">Formulario 8</small></p>
+          <div class="campo" style="max-width:24rem">
+            <label for="f-co-evaluado">Compañero que evalúa <span class="requerido" aria-hidden="true">*</span></label>
+            <div class="select">
+              <select class="control" id="f-co-evaluado" name="evaluado_id" required aria-describedby="f-co-evaluado-ayuda">
+                <option selected>José Rodríguez</option>
+              </select>
             </div>
-            <p class="campo-ayuda">Totales y promedios se ven al escribir; el servidor los vuelve a calcular al guardar.</p>
-          </form>
-        </div>
+            <p class="campo-ayuda" id="f-co-evaluado-ayuda">Solo salen los miembros del proyecto. La autoevaluación es de usted.</p>
+          </div>
+          <div class="tabla-contenedor">
+            <table class="tabla tabla-editable tabla-tarjetas">
+              <caption class="solo-lector">Puntos de 1 a 5 por aspecto</caption>
+              <thead><tr><th scope="col">Aspecto</th><th scope="col">Autoevaluación (1-5)</th><th scope="col">Coevaluación (1-5)</th><th scope="col">Comentarios</th></tr></thead>
+              <tbody>
+                <?php foreach (Catalogo::valores('aspecto_evaluacion') as $clave => $a): ?>
+                  <?php $aspecto = mb_strtolower($a['texto']); $auto = [1 => 4, 5, 5, 3, 4, 3][$clave]; $co = [1 => 5, 4, 4, 4, 5, 4][$clave]; ?>
+                  <tr>
+                    <th scope="row"><?= Html::e($a['texto']) ?></th>
+                    <td class="celda-corta" data-columna="Autoevaluación"><input class="control" type="number" min="1" max="5" inputmode="numeric" name="auto[<?= $clave ?>]" data-grupo="auto" aria-label="Autoevaluación de <?= Html::e($aspecto) ?>" value="<?= $auto ?>"></td>
+                    <td class="celda-corta" data-columna="Coevaluación"><input class="control" type="number" min="1" max="5" inputmode="numeric" name="co[<?= $clave ?>]" data-grupo="co" aria-label="Coevaluación de <?= Html::e($aspecto) ?>" value="<?= $co ?>"></td>
+                    <td data-columna="Comentarios"><textarea class="control" name="comentario[<?= $clave ?>]" aria-label="Comentarios de <?= Html::e($aspecto) ?>"></textarea></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+              <tfoot>
+                <tr><th scope="row">Promedio</th><td data-columna="Autoevaluación"><output data-promedio="auto">4.0</output></td><td data-columna="Coevaluación"><output data-promedio="co">4.3</output></td><td></td></tr>
+              </tfoot>
+            </table>
+          </div>
+          <p class="campo-ayuda">Totales y promedios se ven al escribir; el servidor los vuelve a calcular al guardar.</p>
+          <div class="acciones"><button class="btn btn-primario" type="submit">Guardar evaluación</button></div>
+        </form>
+      </div>
+
+      <div class="marco escenario-libre">
+        <form class="pila" action="#" onsubmit="return false">
+          <p class="titulo-seccion">Portafolio de evidencias <small class="campo-ayuda">Formulario 9 · lo que entrega cada semana de la unidad</small></p>
+          <div class="tabla-contenedor">
+            <table class="tabla tabla-editable tabla-tarjetas">
+              <caption class="solo-lector">Evidencias del aprendizaje por semana</caption>
+              <thead>
+                <tr><?php foreach ($colPortafolio as [$etiqueta]): ?><th scope="col"><?= Html::e($etiqueta) ?></th><?php endforeach; ?><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+              </thead>
+              <tbody id="portafolio">
+                <?= $fila($colPortafolio, ['semana' => 1, 'evidencia' => 'Glosario de términos', 'tipo' => 1, 'fecha' => '2026-09-12']) ?>
+                <?= $fila($colPortafolio, ['semana' => 2, 'evidencia' => 'Taller de caja negra', 'tipo' => 2, 'fecha' => '2026-09-19']) ?>
+                <?= $fila($colPortafolio, ['semana' => 3, 'evidencia' => 'Laboratorio de caja blanca', 'tipo' => 3, 'fecha' => '2026-09-26', 'observaciones' => 'Cobertura con PHPUnit.']) ?>
+                <?= $fila($colPortafolio, ['semana' => 4, 'evidencia' => 'Plan de pruebas del proyecto', 'tipo' => 4, 'fecha' => '2026-10-03']) ?>
+              </tbody>
+            </table>
+          </div>
+          <template id="portafolio-fila"><?= $fila($colPortafolio) ?></template>
+          <div class="acciones acciones-separadas">
+            <button class="btn btn-secundario" type="button" data-agregar-fila="portafolio"><?= Icono::svg('plus') ?> Agregar fila</button>
+            <button class="btn btn-primario" type="submit">Guardar portafolio</button>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -918,7 +1165,7 @@ Contraseña: (vacía)</dd>
             <dt>Requerimiento</dt><dd>RF-01 · Iniciar sesión</dd>
             <dt>Tipo de prueba</dt><dd>Sistema</dd>
             <dt>Módulo</dt><dd>Inicio de sesión</dd>
-            <dt>Técnica</dt><dd>Caja negra · Clases de equivalencia</dd>
+            <dt>Técnica</dt><dd>Caja negra · Partición de equivalencia</dd>
             <dt>Fechas</dt><dd>30/09/2026 al 03/10/2026</dd>
             <dt>Resultado anotado por</dt><dd>mperez · 30/09/2026 14:32</dd>
             <dt>Creado por</dt><dd>admin · 29/09/2026 16:40</dd>
