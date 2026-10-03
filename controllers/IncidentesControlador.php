@@ -29,7 +29,7 @@ final class IncidentesControlador
             Vista::pagina('incidentes/registrar', [
                 'titulo' => 'Registrar incidente',
                 'caso' => null,
-                'casos' => CasoModelo::listar($usuario['id'], $usuario['rol'] === 1),
+                'casos' => CasoModelo::listar($usuario['id'], $usuario['rol'] === 1, ['proyecto' => null, 'requerimiento' => null, 'estado' => null]),
                 'migas' => $migas,
             ]);
 
