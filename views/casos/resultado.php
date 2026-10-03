@@ -10,6 +10,7 @@ use App\Helpers\Icono;
 
 /**
  * Detalle de la paleta: la prueba a la izquierda, con el resultado para anotar; los datos a la derecha.
+ * Al imprimir es el formulario 1 (RF-08): una columna, sin el form del resultado.
  *
  * @var array<string, mixed> $caso  con evidencias
  * @var bool $editable
@@ -21,17 +22,20 @@ use App\Helpers\Icono;
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
+$texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—' : Html::e($valor);
 ?>
 <header class="encabezado">
   <div>
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?></p>
     <h1><?= Html::e($caso['modulo']) ?></h1>
+    <p class="solo-impresion">Formulario 1 · Registro de caso de prueba</p>
   </div>
   <div class="acciones">
     <a class="btn btn-secundario" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
       <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
+    <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
     <?php if ($usuario['rol'] === 1): ?>
       <button class="btn btn-secundario btn-icono" type="button" data-abrir-dialogo="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
       <dialog class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
@@ -56,9 +60,7 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
         <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="dt-prueba">Prueba</h2></header>
         <dl class="detalle">
           <dt>Objetivo</dt><dd><?= Html::e($caso['objetivo']) ?></dd>
-          <?php if ($caso['precondiciones'] !== null): ?>
-            <dt>Precondiciones</dt><dd class="multilinea"><?= Html::e($caso['precondiciones']) ?></dd>
-          <?php endif; ?>
+          <dt>Precondiciones</dt><dd class="multilinea"><?= $texto($caso['precondiciones']) ?></dd>
           <dt>Datos de entrada</dt><dd class="multilinea"><?= Html::e($caso['entrada']) ?></dd>
           <dt>Pasos</dt><dd class="multilinea"><?= Html::e($caso['pasos']) ?></dd>
           <dt>Resultado esperado</dt><dd class="multilinea"><?= Html::e($caso['resultado_esperado']) ?></dd>
@@ -67,6 +69,12 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
 
       <section class="tarjeta pila" aria-labelledby="dt-resultado">
         <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="dt-resultado">Resultado</h2></header>
+        <div class="solo-impresion">
+          <dl class="detalle">
+            <dt>Resultado obtenido</dt><dd class="multilinea"><?= $texto($caso['resultado_obtenido']) ?></dd>
+            <dt>Observaciones</dt><dd class="multilinea"><?= $texto($caso['observaciones']) ?></dd>
+          </dl>
+        </div>
         <?php if ($caso['evidencias']): ?>
           <div>
             <h3 class="titulo-seccion" style="margin:0 0 8px;font-size:var(--letra-sm)">Evidencia</h3>
@@ -88,7 +96,7 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
             </ul>
           </div>
         <?php endif; ?>
-        <form class="pila" method="post" action="/casos/resultado" enctype="multipart/form-data">
+        <form class="pila no-imprimir" method="post" action="/casos/resultado" enctype="multipart/form-data">
           <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
           <input type="hidden" name="id" value="<?= (int) $caso['id'] ?>">
           <?= Vista::capturar('partials/resultado', ['datos' => $datos, 'errores' => $errores, 'previas' => count($caso['evidencias'])]) ?>
@@ -121,4 +129,5 @@ $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
       </dl>
     </aside>
   </div>
+  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
 </div>
