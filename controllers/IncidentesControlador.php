@@ -11,6 +11,7 @@ use App\Core\Vista;
 use App\Models\CasoModelo;
 use App\Services\CasoServicio;
 use App\Services\IncidenteServicio;
+use App\Services\Permisos;
 
 // RF-17, RF-19
 final class IncidentesControlador
@@ -41,7 +42,7 @@ final class IncidentesControlador
             Vista::pagina('incidentes/registrar', [
                 'titulo' => 'Registrar incidente',
                 'caso' => null,
-                'casos' => CasoModelo::listar($usuario['id'], $usuario['rol'] === 1, ['proyecto' => null, 'requerimiento' => null, 'estado' => null]),
+                'casos' => CasoModelo::listar(Permisos::proyectos($usuario), ['proyecto' => null, 'requerimiento' => null, 'estado' => null]),
                 'migas' => $migas,
             ]);
 

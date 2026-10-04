@@ -237,11 +237,11 @@ final class CasoServicio
      */
     public static function listar(array $usuario, array $filtros, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
+        $proyectos = Permisos::proyectos($usuario);
         $f = self::filtros($filtros);
-        $paginacion = new Paginacion(CasoModelo::contar($usuario['id'], $admin, $f), $pagina);
+        $paginacion = new Paginacion(CasoModelo::contar($proyectos, $f), $pagina);
 
-        return [CasoModelo::listar($usuario['id'], $admin, $f, $paginacion->offset()), $paginacion];
+        return [CasoModelo::listar($proyectos, $f, $paginacion->offset()), $paginacion];
     }
 
     /**

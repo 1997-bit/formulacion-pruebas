@@ -49,6 +49,34 @@ final class ProyectoModelo
         return array_map('intval', $sql->fetchAll(\PDO::FETCH_COLUMN));
     }
 
+    /** @return list<int> */
+    public static function deUsuario(int $usuarioId): array
+    {
+        $sql = Conexion::pdo()->prepare('SELECT proyecto_id FROM proyecto_miembros WHERE usuario_id = ?');
+        $sql->execute([$usuarioId]);
+
+        return array_map('intval', $sql->fetchAll(\PDO::FETCH_COLUMN));
+    }
+
+    /**
+     * Permiso de lista (RF-05): $proyectos null es admin y no filtra.
+     * Una lista de ids da range sobre el índice; EXISTS o "? = 1 OR" obligan a leer toda la tabla.
+     *
+     * @param list<int>|null $proyectos
+     * @return array{0: list<string>, 1: list<int>} condiciones y valores
+     */
+    public static function permitidos(string $columna, ?array $proyectos): array
+    {
+        if ($proyectos === null) {
+            return [[], []];
+        }
+        if ($proyectos === []) {
+            return [['FALSE'], []];
+        }
+
+        return [[$columna . ' IN (' . implode(', ', array_fill(0, count($proyectos), '?')) . ')'], $proyectos];
+    }
+
     public static function esMiembro(int $id, int $usuarioId): bool
     {
         $sql = Conexion::pdo()->prepare('SELECT 1 FROM proyecto_miembros WHERE proyecto_id = ? AND usuario_id = ?');

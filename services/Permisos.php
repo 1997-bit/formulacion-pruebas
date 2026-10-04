@@ -27,6 +27,17 @@ final class Permisos
     }
 
     /**
+     * Proyectos que el usuario puede ver en una lista. null: admin, todos.
+     *
+     * @param array<string, mixed> $usuario
+     * @return list<int>|null
+     */
+    public static function proyectos(array $usuario): ?array
+    {
+        return $usuario['rol'] === 1 ? null : ProyectoModelo::deUsuario($usuario['id']);
+    }
+
+    /**
      * @param array<string, mixed> $usuario
      * @param array<string, mixed> $caso
      */
