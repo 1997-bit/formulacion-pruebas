@@ -19,20 +19,17 @@ final class CoberturaModelo
     }
 
     /**
-     * Borra y vuelve a insertar. Dentro de una transacción.
+     * Por diferencia. Dentro de una transacción.
      *
      * @param array<int, array{total: int, cubiertos: int, porcentaje: int, herramienta: string}> $filas  metrica => fila
      */
-    public static function reemplazar(int $requerimientoId, array $filas, int $usuarioId): void
+    public static function guardar(int $requerimientoId, array $filas, int $usuarioId): void
     {
-        $pdo = Conexion::pdo();
-        $pdo->prepare('DELETE FROM cobertura_blanca WHERE requerimiento_id = ?')->execute([$requerimientoId]);
-        $sql = $pdo->prepare(
-            'INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porcentaje, herramienta, guardado_por)
-             VALUES (?, ?, ?, ?, ?, ?, ?)'
-        );
+        $datos = [];
         foreach ($filas as $metrica => $f) {
-            $sql->execute([$requerimientoId, $metrica, $f['total'], $f['cubiertos'], $f['porcentaje'], $f['herramienta'], $usuarioId]);
+            $datos[] = ['metrica' => $metrica] + $f;
         }
+        FilasModelo::sincronizar('cobertura_blanca', ['requerimiento_id' => $requerimientoId], ['metrica'], $datos,
+            ['guardado_por' => $usuarioId, 'guardado_en' => date('Y-m-d H:i:s')]);
     }
 }

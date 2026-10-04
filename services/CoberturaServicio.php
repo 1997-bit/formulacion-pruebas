@@ -111,7 +111,7 @@ final class CoberturaServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            CoberturaModelo::reemplazar($requerimientoId, $guardar, $usuario['id']);
+            CoberturaModelo::guardar($requerimientoId, $guardar, $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
