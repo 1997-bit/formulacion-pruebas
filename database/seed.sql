@@ -1909,7 +1909,11 @@ INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
     -- Fase 4, integridad
     ('BUG-020', 134, '2026-10-04 15:16:00', 'Eliminar a un tester con proyecto responde "Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar." Las coevaluaciones se conservan.'),
     ('BUG-035', 134, '2026-10-04 15:16:00', 'Con el plan cerrado, registrar un stopper responde "El plan del proyecto está cerrado: reábralo para registrar un stopper."'),
-    ('BUG-048', 134, '2026-10-04 15:16:00', 'Anotar OK en un caso con un incidente abierto responde "No pasa a OK: tiene incidentes sin cerrar."');
+    ('BUG-048', 134, '2026-10-04 15:16:00', 'Anotar OK en un caso con un incidente abierto responde "No pasa a OK: tiene incidentes sin cerrar."'),
+    -- Fase 5, servidor
+    ('BUG-017', 135, '2026-10-04 15:16:00', 'Cada respuesta trae X-Frame-Options: DENY. La página no carga dentro de un iframe ajeno.'),
+    ('BUG-053', 135, '2026-10-04 15:16:00', 'Con display_errors=1, un error muestra la página 500 con un código. La pila y las rutas quedan solo en storage/logs/errores.log.'),
+    ('BUG-054', 135, '2026-10-04 15:16:00', 'Con Apache y la raíz web en el repositorio, /.env y /database/seed.sql responden 403.');
 
 -- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
