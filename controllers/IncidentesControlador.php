@@ -33,16 +33,22 @@ final class IncidentesControlador
         ]);
     }
 
-    // Sin caso: primero se elige. Con caso: el formulario 10, con lo del caso ya puesto.
+    // Sin caso: primero se busca por código (BUG-050). Con caso: el formulario 10, con lo del caso ya puesto.
     public function registrar(): void
     {
         $usuario = Sesion::usuario();
         $migas = [['texto' => 'Incidentes', 'ruta' => '/formularios/incidentes'], ['texto' => 'Registrar']];
         if (!isset($_GET['caso'])) {
+            $codigo = strtoupper(trim((string) ($_GET['codigo'] ?? '')));
+            $casos = $codigo === '' ? [] : CasoModelo::porCodigo(Permisos::proyectos($usuario), $codigo);
+            if (count($casos) === 1) {
+                Respuesta::redirigir('/formularios/incidentes/registrar?caso=' . $casos[0]['id']);
+            }
             Vista::pagina('incidentes/registrar', [
                 'titulo' => 'Registrar incidente',
                 'caso' => null,
-                'casos' => CasoModelo::listar(Permisos::proyectos($usuario), ['proyecto' => null, 'requerimiento' => null, 'estado' => null]),
+                'codigo' => $codigo,
+                'casos' => $casos,
                 'migas' => $migas,
             ]);
 

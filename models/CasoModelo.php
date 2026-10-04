@@ -50,6 +50,26 @@ final class CasoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Por código exacto, en los proyectos permitidos. Varios si el código se repite entre proyectos (#111).
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function porCodigo(?array $proyectos, string $codigo): array
+    {
+        [$condiciones, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, p.nombre AS proyecto
+             FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id
+             WHERE ' . implode(' AND ', [...$condiciones, 'c.codigo = ?']) . '
+             ORDER BY c.proyecto_id LIMIT ' . Paginacion::POR_PAGINA
+        );
+        $sql->execute([...$valores, $codigo]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** @return array<string, mixed>|null */
     public static function porId(int $id): ?array
     {
