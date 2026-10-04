@@ -13,7 +13,7 @@ final class RequerimientoModelo
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * $offset null: todos. Orden del índice (proyecto_id, no_funcional, numero): sin filesort.
+     * $offset null: todos, sin la cuenta de casos. Orden del índice (proyecto_id, no_funcional, numero): sin filesort.
      * Con $offset, la subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
@@ -30,8 +30,9 @@ final class RequerimientoModelo
             $donde = '';
         }
         $sql = Conexion::pdo()->prepare(
-            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
-                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos
+            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto'
+             // Casos por requerimiento: solo en la página, 20 conteos por índice (#108).
+             . ($offset === null ? '' : ', (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos') . '
              FROM ' . ($desde ?? 'requerimientos r') . '
              JOIN proyectos p ON p.id = r.proyecto_id' . $donde . $orden
         );
