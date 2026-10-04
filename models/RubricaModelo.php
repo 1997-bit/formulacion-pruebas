@@ -29,7 +29,11 @@ final class RubricaModelo
 
         $puntos = array_map(intval(...), array_column($filas, 'puntos', 'criterio'));
 
-        return ['puntos' => $puntos, 'total' => array_sum($puntos), 'autor' => $filas[0]['autor'], 'guardado_en' => $filas[0]['evaluado_en']];
+        // Quién y cuándo: el último criterio que cambió. Guardar sin cambios no escribe (#98).
+        $fechas = array_column($filas, 'evaluado_en');
+        $ultima = $filas[array_search(max($fechas), $fechas, true)];
+
+        return ['puntos' => $puntos, 'total' => array_sum($puntos), 'autor' => $ultima['autor'], 'guardado_en' => $ultima['evaluado_en']];
     }
 
     /** @return array<int, int> proyecto_id => total */
