@@ -738,7 +738,6 @@ Contraseña: (vacía)</textarea>
               </tbody>
             </table>
           </div>
-          <p class="campo-ayuda">Verde desde 90 %, amarillo de 70 a 89 %, rojo bajo 70 %: los cortes de la rúbrica.</p>
         </form>
       </div>
 
