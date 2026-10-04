@@ -700,7 +700,7 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '1. Como admin, abrir BUG-001.\n2. Cambiar el estado a En progreso.\n3. Guardar.',
         'Guarda el estado. Asignado a sigue diciendo Gloria o pide elegir a otro.',
         '2026-10-04', '2026-10-04',
-        2, 'El select Asignado a sale en Sin asignar. Si se elige a Gloria a mano responde "Valor no válido."; si se deja así, guarda y la quita sin avisar.',
+        2, 'El select Asignado a sale en "Elegir…". Si se elige a Gloria a mano responde "Valor no válido."; si se deja así, guarda y la quita sin avisar.',
         'Asignado a solo ofrece miembros actuales. Ver BUG-010.',
         1, '2026-10-04 00:50:00', 1, '2026-10-04 00:55:00'),
     (66, 1, 13, 'SEG-014', 9, 8, 'Acceso', 1,
