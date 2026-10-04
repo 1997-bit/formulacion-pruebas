@@ -69,7 +69,11 @@ final class AccesoServicio
         self::frenar($llave);
         $d = UsuarioServicio::validar(['nombre' => $nombre, 'usuario' => $usuario, 'clave' => $clave, 'rol' => '0'], null);
 
-        $id = UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON), 0);
+        try {
+            $id = UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON), 0);
+        } catch (\PDOException $e) {
+            throw ErrorValidacion::siDuplicado($e, UsuarioServicio::USUARIO_REPETIDO);
+        }
         IntentoModelo::fallar($llave);
 
         return $id;

@@ -13,6 +13,7 @@ use App\Services\CoberturaServicio;
  * El porcentaje se ve al escribir; el servidor lo recalcula con el mismo redondeo. Se guardan todas o ninguna.
  *
  * @var array<string, mixed> $requerimiento
+ * @var string $huella  lo leído, para avisar si otro guardó antes (#100)
  * @var array<int, array<string, mixed>> $filas  metrica => total, cubiertos, herramienta
  * @var bool $nueva
  * @var array<string, string> $errores
@@ -36,6 +37,7 @@ $invalido = fn (string $clave): string => isset($errores[$clave]) ? ' aria-inval
   <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <form class="tarjeta pila" method="post" action="/formularios/cobertura_blanca/editar">
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+    <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
     <input type="hidden" name="requerimiento_id" value="<?= (int) $requerimiento['id'] ?>">
     <p class="campo-ayuda" id="cb-ayuda">Por métrica: cuántos elementos tiene el código, cuántos recorren las pruebas y la herramienta que lo midió. Deje vacía la métrica que no midió.</p>
     <div class="tabla-contenedor">

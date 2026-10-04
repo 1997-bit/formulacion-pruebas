@@ -12,6 +12,7 @@ use App\Services\TablaDecisionServicio;
  * agregar o quitar una fila envía el formulario sin guardar. Se guardan todas las reglas o ninguna.
  *
  * @var array<string, mixed> $requerimiento
+ * @var string $huella  lo leído, para avisar si otro guardó antes (#100)
  * @var array{condiciones: list<array{texto: string, reglas: list<string>}>, acciones: list<array{texto: string, reglas: list<string>}>} $tabla
  * @var bool $nueva
  * @var array<string, string> $errores
@@ -46,6 +47,7 @@ $reglasConError = array_filter(range(0, $reglas - 1), fn (int $r): bool => isset
     <!-- Enter guarda: es el primer botón de envío -->
     <button class="solo-lector" type="submit" tabindex="-1" aria-hidden="true">Guardar tabla</button>
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+    <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
     <input type="hidden" name="requerimiento_id" value="<?= (int) $requerimiento['id'] ?>">
     <input type="hidden" name="reglas" value="<?= $reglas ?>">
     <p class="campo-ayuda" id="td-ayuda">Las reglas salen de las condiciones: 2 condiciones son 4 reglas. Al agregar o quitar una condición, las reglas vuelven a todas las combinaciones y las acciones se desmarcan. Use — cuando la condición no importa.</p>

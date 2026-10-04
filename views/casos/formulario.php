@@ -13,6 +13,7 @@ use App\Helpers\Icono;
  *
  * @var ?array<string, mixed> $caso  null al registrar
  * @var list<array<string, mixed>> $historial
+ * @var ?string $huella  solo al editar (#100)
  * @var list<array<string, mixed>> $requerimientos
  * @var array<string, string> $errores
  * @var array<string, mixed> $datos  evidencias: tipos marcados
@@ -69,6 +70,10 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
   <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <form class="tarjeta pila" method="post" action="<?= $caso === null ? '/casos/registrar' : '/casos/editar' ?>" enctype="multipart/form-data">
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+    <input type="hidden" name="envio" value="<?= Csrf::envio() ?>">
+    <?php if (isset($huella)): ?>
+      <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
+    <?php endif; ?>
     <?php if ($caso !== null): ?><input type="hidden" name="id" value="<?= (int) $caso['id'] ?>"><?php endif; ?>
     <div class="campos">
       <?= $campo('requerimiento_id', 'Requerimiento', ['tipo' => 'select', 'opciones' => $opcionesReq, 'ayuda' => count($porProyecto) > 1 ? 'Agrupados por proyecto.' : '']) ?>

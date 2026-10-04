@@ -39,6 +39,10 @@ if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
 if ($metodo === 'POST' && !Csrf::valido($_POST['csrf'] ?? null)) {
     Respuesta::error(403);
 }
+// Doble clic (BUG-031): el envío ya se guardó; va al registro que creó el primero.
+if ($metodo === 'POST' && is_string($_POST['envio'] ?? null) && isset($_SESSION['envios'][$_POST['envio']])) {
+    Respuesta::redirigir($_SESSION['envios'][$_POST['envio']]);
+}
 
 $clase = 'App\\Controllers\\' . $ruta['controlador'] . 'Controlador';
 try {

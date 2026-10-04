@@ -86,6 +86,7 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
     <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
     <form class="tarjeta pila" method="post" action="/formularios/incidentes/registrar">
       <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+      <input type="hidden" name="envio" value="<?= Csrf::envio() ?>">
       <input type="hidden" name="caso_id" value="<?= (int) $caso['id'] ?>">
       <div class="campos">
         <div class="campo">

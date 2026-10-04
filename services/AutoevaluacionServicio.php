@@ -137,7 +137,7 @@ final class AutoevaluacionServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            AutoevaluacionModelo::reemplazar($proyectoId, $usuario['id'], $filas);
+            AutoevaluacionModelo::guardar($proyectoId, $usuario['id'], $filas);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

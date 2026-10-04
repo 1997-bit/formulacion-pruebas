@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\FilasModelo;
 use App\Services\CasoServicio;
 use App\Services\Historial;
 use App\Services\Permisos;
@@ -76,6 +77,7 @@ final class CasosControlador
             'titulo' => 'Editar ' . $caso['codigo'],
             'caso' => $caso,
             'historial' => Historial::deCaso($caso['id']),
+            'huella' => FilasModelo::huella(['casos_prueba'], 'id', $caso['id']),
             'requerimientos' => array_values(CasoServicio::requerimientos($caso, Sesion::usuario())),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? array_map('strval', array_intersect_key($caso, array_flip(self::CAMPOS))),
@@ -93,7 +95,7 @@ final class CasosControlador
         CasoServicio::paraEditar($id, Sesion::usuario()) ?? Respuesta::error(404);
         $datos = $this->texto(self::CAMPOS);
         try {
-            $codigo = CasoServicio::editar($id, $datos, Sesion::usuario());
+            $codigo = CasoServicio::editar($id, $datos, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, $datos, '/casos/editar?id=' . $id);
         }

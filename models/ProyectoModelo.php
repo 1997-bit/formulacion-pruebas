@@ -31,15 +31,6 @@ final class ProyectoModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function idPorNombre(string $nombre): ?int
-    {
-        $sql = Conexion::pdo()->prepare('SELECT id FROM proyectos WHERE nombre = ?');
-        $sql->execute([$nombre]);
-        $id = $sql->fetchColumn();
-
-        return $id === false ? null : (int) $id;
-    }
-
     /** @return list<int> */
     public static function miembros(int $id): array
     {
@@ -88,12 +79,10 @@ final class ProyectoModelo
                 $id = (int) $pdo->lastInsertId();
             } else {
                 $pdo->prepare('UPDATE proyectos SET nombre = ?, descripcion = ? WHERE id = ?')->execute([$nombre, $descripcion, $id]);
-                $pdo->prepare('DELETE FROM proyecto_miembros WHERE proyecto_id = ?')->execute([$id]);
             }
-            $sql = $pdo->prepare('INSERT INTO proyecto_miembros (proyecto_id, usuario_id) VALUES (?, ?)');
-            foreach ($miembros as $usuarioId) {
-                $sql->execute([$id, $usuarioId]);
-            }
+            // Por diferencia: solo sale quien se quitó, y con él su auto y coevaluación (BUG-007).
+            FilasModelo::sincronizar('proyecto_miembros', ['proyecto_id' => $id], ['usuario_id'],
+                array_map(fn (int $u): array => ['usuario_id' => $u], $miembros));
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
