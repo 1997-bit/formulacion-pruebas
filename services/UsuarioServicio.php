@@ -11,6 +11,9 @@ use App\Models\UsuarioModelo;
 // RF-02, RF-03. Solo aquí se crea un admin.
 final class UsuarioServicio
 {
+    // Mínimo de OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo.
+    public const ARGON = ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1];
+
     /**
      * @param array{id: int, rol: int} $actor
      * @return list<array<string, mixed>>
@@ -41,7 +44,7 @@ final class UsuarioServicio
     {
         Permisos::exigirAdmin($actor);
         $d = self::validar($datos, null);
-        UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($datos['clave'], PASSWORD_ARGON2ID), $d['rol']);
+        UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON), $d['rol']);
 
         return $d['usuario'];
     }
@@ -59,7 +62,7 @@ final class UsuarioServicio
         if ($id === $actor['id'] && $d['rol'] !== 1) {
             throw new ErrorValidacion(['rol' => 'No puede quitarse su propio rol de admin.']);
         }
-        $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID);
+        $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON);
         UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
 
         return $d['usuario'];
