@@ -725,3 +725,35 @@ INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, c
         'Presta con 0 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 21:45:00'),
     (3, 2, 'Multa', 'Sin multa pendiente.', 'Multa sin pagar.', 'RD$0, RD$50',
         'Presta sin multa. Con RD$50 no presta y dice "Tiene una multa sin pagar".', 2, '2026-10-03 21:45:00');
+
+-- RF-10: formulario 3. Fronteras de las mismas reglas del formulario 2; cada límite con el valor de antes y el de después.
+INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, maximo, valores_limite, resultado_esperado, guardado_por, guardado_en) VALUES
+    -- RF-02 Crear cuenta: UsuarioServicio
+    (10, 1, 'Usuario', '1 a 30 caracteres', '1', '30', '0, 1, 2, 29, 30, 31 caracteres',
+        'Acepta de 1 a 30. Con 0: "Es obligatorio." Con 31: "Máximo 30 caracteres."', 3, '2026-10-03 22:10:00'),
+    (10, 2, 'Contraseña', '8 caracteres o más', '8', 'Sin máximo', '7, 8, 9 caracteres',
+        'Acepta 8 y 9. Con 7: "Mínimo 8 caracteres."', 3, '2026-10-03 22:10:00'),
+    (10, 3, 'Nombre completo', '1 a 100 caracteres', '1', '100', '0, 1, 99, 100, 101 caracteres',
+        'Acepta de 1 a 100. Con 0: "Es obligatorio." Con 101: "Máximo 100 caracteres."', 3, '2026-10-03 22:10:00'),
+    -- RNF-03 Evidencias: Subida y CasoServicio::validarResultado
+    (2, 1, 'Tamaño del archivo', '1 byte a 5 MB', '1 byte', '5 242 880 bytes', '0, 1, 5 242 879, 5 242 880, 5 242 881 bytes',
+        'Acepta de 1 byte a 5 MB exactos. Con 5 242 881: "Máximo 5 MB."', 3, '2026-10-03 22:15:00'),
+    (2, 2, 'Enlace', '1 a 500 caracteres', '1', '500', '499, 500, 501 caracteres',
+        'Acepta 499 y 500. Con 501: "Máximo 500 caracteres."', 3, '2026-10-03 22:15:00'),
+    (2, 3, 'Descripción de la evidencia', '1 a 255 caracteres', '1', '255', '0, 1, 254, 255, 256 caracteres',
+        'Acepta de 1 a 255. Con 0: "Es obligatorio." Con 256: "Máximo 255 caracteres."', 3, '2026-10-03 22:15:00'),
+    -- RF-04 Registrar caso: CasoServicio::validarCaso
+    (4, 1, 'Módulo', '1 a 100 caracteres', '1', '100', '0, 1, 100, 101 caracteres',
+        'Acepta 1 y 100. Con 0: "Es obligatorio." Con 101: "Máximo 100 caracteres."', 2, '2026-10-03 22:20:00'),
+    (4, 2, 'Entorno', '0 a 255 caracteres', '0', '255', '0, 1, 255, 256 caracteres',
+        'Acepta vacío, 1 y 255. Con 256: "Máximo 255 caracteres."', 2, '2026-10-03 22:20:00'),
+    (4, 3, 'Fecha final', 'Desde la fecha de inicio', 'Fecha de inicio', 'Sin máximo', 'Inicio 2026-10-05: 2026-10-04, 2026-10-05, 2026-10-06',
+        'Acepta 05 y 06. Con 04: "No puede ser anterior a la fecha de inicio."', 2, '2026-10-03 22:20:00'),
+    -- RNF-09 Desempeño: Paginacion, 20 por página
+    (14, 1, 'Filas por página', '1 a 20', '1', '20', '20, 21 y 40, 41 casos en la lista',
+        'Con 20 hay 1 página; con 21, 2 y la segunda tiene 1 fila. Con 40, 2 páginas; con 41, 3.', 2, '2026-10-03 22:25:00'),
+    (14, 2, 'Página', '1 a la última', '1', 'Última', '0, 1, 2, última, última + 1',
+        '1, 2 y la última muestran su página. 0 muestra la primera; última + 1, la última.', 2, '2026-10-03 22:25:00'),
+    -- RF-01 de Biblioteca escolar: caso INT-001
+    (3, 1, 'Préstamos activos', '0 a 2', '0', '2', '0, 1, 2, 3',
+        'Presta con 0, 1 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 22:30:00');
