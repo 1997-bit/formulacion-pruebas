@@ -14,7 +14,7 @@ use App\Models\EvidenciaModelo;
 use App\Models\IncidenteModelo;
 use App\Models\RequerimientoModelo;
 
-// RF-04, RF-05, RF-07, RF-24
+// RF-04, RF-05, RF-07, RF-16, RF-24
 final class CasoServicio
 {
     // Tipo de evidencia => sufijo de los campos: evidencia_captura, descripcion_captura…
@@ -212,6 +212,20 @@ final class CasoServicio
         }
 
         return $evidencia;
+    }
+
+    /**
+     * RF-16, RNF-09. Las evidencias de los proyectos del usuario.
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @return array{0: list<array<string, mixed>>, 1: Paginacion}
+     */
+    public static function portafolio(array $usuario, int $pagina): array
+    {
+        $admin = $usuario['rol'] === 1;
+        $paginacion = new Paginacion(EvidenciaModelo::contar($usuario['id'], $admin), $pagina);
+
+        return [EvidenciaModelo::portafolio($usuario['id'], $admin, $paginacion->offset()), $paginacion];
     }
 
     /**
