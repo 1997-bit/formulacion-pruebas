@@ -49,6 +49,7 @@ return [
     'POST /formularios/incidentes/registrar' => ['controlador' => 'Incidentes', 'accion' => 'guardar', 'rol' => 0, 'rf' => 'RF-17'],
     'GET /formularios/incidentes/ver' => ['controlador' => 'Incidentes', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RF-19'],
     'POST /formularios/incidentes/ver' => ['controlador' => 'Incidentes', 'accion' => 'actualizar', 'rol' => 0, 'rf' => 'RF-19'],
+    'GET /reportes/cierre' => ['controlador' => 'Panel', 'accion' => 'cierre', 'rol' => 0, 'rf' => 'RF-23'],
     'GET /admin/usuarios' => ['controlador' => 'Usuarios', 'accion' => 'listar', 'rol' => 1, 'rf' => 'RF-03'],
     'GET /admin/usuarios/crear' => ['controlador' => 'Usuarios', 'accion' => 'crear', 'rol' => 1, 'rf' => 'RF-02'],
     'POST /admin/usuarios/crear' => ['controlador' => 'Usuarios', 'accion' => 'guardar', 'rol' => 1, 'rf' => 'RF-02'],
