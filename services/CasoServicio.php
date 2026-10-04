@@ -163,6 +163,9 @@ final class CasoServicio
                 'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
                 'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
             ];
+            if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
+                throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
+            }
             CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
             Historial::registrar($id, $antes, $resultado, $usuario['id']);
             self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);

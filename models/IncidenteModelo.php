@@ -78,6 +78,15 @@ final class IncidenteModelo
         return (int) $sql->fetchColumn();
     }
 
+    // Sin cerrar del caso: impiden marcarlo OK (BUG-048). FOR UPDATE dentro de la transacción del resultado.
+    public static function abiertosDeCaso(int $casoId): int
+    {
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM (SELECT id FROM incidentes WHERE caso_id = ? AND estado <> 2 FOR UPDATE) a');
+        $sql->execute([$casoId]);
+
+        return (int) $sql->fetchColumn();
+    }
+
     /** @return list<array<string, mixed>> */
     public static function deCaso(int $casoId): array
     {
