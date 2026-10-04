@@ -12,8 +12,8 @@ final class IncidenteModelo
     /** @param list<int>|null $proyectos Permisos::proyectos() */
     public static function contar(?array $proyectos): int
     {
-        [$donde, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
-        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i' . ($donde === [] ? '' : ' WHERE ' . $donde[0]));
+        [$permiso, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i WHERE ' . $permiso);
         $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
@@ -27,13 +27,13 @@ final class IncidenteModelo
      */
     public static function listar(?array $proyectos, int $offset): array
     {
-        [$donde, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        [$permiso, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
         $orden = ' ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero';
         // La subconsulta salta solo por el índice (#107).
         $sql = Conexion::pdo()->prepare(
             'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
-             FROM (SELECT i.id FROM incidentes i' . ($donde === [] ? '' : ' WHERE ' . $donde[0]) . $orden
+             FROM (SELECT i.id FROM incidentes i WHERE ' . $permiso . $orden
                 . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
              JOIN incidentes i ON i.id = k.id
              JOIN casos_prueba c ON c.id = i.caso_id

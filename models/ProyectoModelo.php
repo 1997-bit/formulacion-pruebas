@@ -50,22 +50,19 @@ final class ProyectoModelo
     }
 
     /**
-     * Permiso de lista (RF-05): $proyectos null es admin y no filtra.
+     * Condición del permiso de lista (RF-05). null es admin: TRUE, que el optimizador descarta.
      * Una lista de ids da range sobre el índice; EXISTS o "? = 1 OR" obligan a leer toda la tabla.
      *
      * @param list<int>|null $proyectos
-     * @return array{0: list<string>, 1: list<int>} condiciones y valores
+     * @return array{0: string, 1: list<int>} condición y valores
      */
     public static function permitidos(string $columna, ?array $proyectos): array
     {
-        if ($proyectos === null) {
-            return [[], []];
-        }
-        if ($proyectos === []) {
-            return [['FALSE'], []];
-        }
-
-        return [[$columna . ' IN (' . implode(', ', array_fill(0, count($proyectos), '?')) . ')'], $proyectos];
+        return match (true) {
+            $proyectos === null => ['TRUE', []],
+            $proyectos === [] => ['FALSE', []],
+            default => [$columna . ' IN (' . implode(', ', array_fill(0, count($proyectos), '?')) . ')', $proyectos],
+        };
     }
 
     public static function esMiembro(int $id, int $usuarioId): bool

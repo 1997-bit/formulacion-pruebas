@@ -54,8 +54,8 @@ final class EvidenciaModelo
         if ($proyectos === null) {
             return (int) Conexion::pdo()->query('SELECT COUNT(*) FROM evidencias')->fetchColumn();
         }
-        [$donde, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
-        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $donde[0]);
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $permiso);
         $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
@@ -69,12 +69,12 @@ final class EvidenciaModelo
      */
     public static function portafolio(?array $proyectos, int $offset): array
     {
-        [$donde, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $orden = ' ORDER BY e.subido_en DESC, e.id DESC';
         // La subconsulta salta solo por el índice (#107). El admin no necesita el caso para filtrar.
-        $ids = $donde === []
+        $ids = $proyectos === null
             ? 'SELECT e.id FROM evidencias e'
-            : 'SELECT e.id FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $donde[0];
+            : 'SELECT e.id FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $permiso;
         $sql = Conexion::pdo()->prepare(
             'SELECT e.id, e.tipo, e.nombre_original, e.enlace, e.descripcion, e.subido_en,
                     u.nombre AS autor, c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto

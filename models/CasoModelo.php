@@ -58,11 +58,11 @@ final class CasoModelo
      */
     public static function porCodigo(?array $proyectos, string $codigo): array
     {
-        [$condiciones, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, p.nombre AS proyecto
              FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id
-             WHERE ' . implode(' AND ', [...$condiciones, 'c.codigo = ?']) . '
+             WHERE ' . $permiso . ' AND c.codigo = ?
              ORDER BY c.proyecto_id LIMIT ' . Paginacion::POR_PAGINA
         );
         $sql->execute([...$valores, $codigo]);
@@ -167,7 +167,8 @@ final class CasoModelo
      */
     private static function donde(?array $proyectos, array $filtros): array
     {
-        [$condiciones, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $condiciones = [$permiso];
         foreach (['proyecto' => 'c.proyecto_id', 'requerimiento' => 'c.requerimiento_id', 'estado' => 'c.estado'] as $filtro => $columna) {
             if ($filtros[$filtro] !== null) {
                 $condiciones[] = "{$columna} = ?";
@@ -175,6 +176,6 @@ final class CasoModelo
             }
         }
 
-        return [$condiciones === [] ? '' : ' WHERE ' . implode(' AND ', $condiciones), $valores];
+        return [' WHERE ' . implode(' AND ', $condiciones), $valores];
     }
 }

@@ -21,8 +21,8 @@ final class RequerimientoModelo
      */
     public static function listar(?array $proyectos, ?int $offset = null): array
     {
-        [$condiciones, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
-        $donde = $condiciones === [] ? '' : ' WHERE ' . $condiciones[0];
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $donde = ' WHERE ' . $permiso;
         $orden = ' ORDER BY r.proyecto_id, r.no_funcional, r.numero';
         if ($offset !== null) {
             $desde = '(SELECT r.id FROM requerimientos r' . $donde . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ')
@@ -44,8 +44,8 @@ final class RequerimientoModelo
     /** @param list<int>|null $proyectos Permisos::proyectos() */
     public static function contar(?array $proyectos): int
     {
-        [$condiciones, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
-        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM requerimientos r' . ($condiciones === [] ? '' : ' WHERE ' . $condiciones[0]));
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM requerimientos r WHERE ' . $permiso);
         $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
