@@ -772,3 +772,35 @@ INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, p
     (1, 2, 3, 4, 4, NULL),
     (1, 2, 3, 5, 5, NULL),
     (1, 2, 3, 6, 4, NULL);
+
+-- RF-11: formulario 4. Condiciones en V/F, acciones con X; una celda sin marcar no tiene fila.
+INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
+    -- RF-01 Iniciar sesión: AccesoServicio
+    (1, 1, 0, 'El usuario existe', 2, '2026-10-03 22:40:00'),
+    (1, 2, 0, 'La contraseña es correcta', 2, '2026-10-03 22:40:00'),
+    (1, 3, 1, 'Inicia sesión y va al panel', 2, '2026-10-03 22:40:00'),
+    (1, 4, 1, 'Muestra "Usuario o contraseña incorrectos."', 2, '2026-10-03 22:40:00'),
+    -- RF-06 Editar caso
+    (5, 1, 0, 'Es admin', 3, '2026-10-03 22:45:00'),
+    (5, 2, 0, 'Creó el caso', 3, '2026-10-03 22:45:00'),
+    (5, 3, 1, 'Abre el formulario de edición', 3, '2026-10-03 22:45:00'),
+    (5, 4, 1, 'Responde 403 sin cambiar el caso', 3, '2026-10-03 22:45:00'),
+    -- RF-01 de Biblioteca escolar
+    (3, 1, 0, 'Tiene 3 préstamos activos', 2, '2026-10-03 22:50:00'),
+    (3, 2, 0, 'Tiene una multa sin pagar', 2, '2026-10-03 22:50:00'),
+    (3, 3, 1, 'Presta el libro', 2, '2026-10-03 22:50:00'),
+    (3, 4, 1, 'Dice "Tiene 3 préstamos activos"', 2, '2026-10-03 22:50:00'),
+    (3, 5, 1, 'Dice "Tiene una multa sin pagar"', 2, '2026-10-03 22:50:00');
+
+-- (requerimiento, fila, regla, valor): condición 1 V, 0 F; acción 1 X.
+INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
+    (1, 1, 1, 1), (1, 1, 2, 1), (1, 1, 3, 0), (1, 1, 4, 0),
+    (1, 2, 1, 1), (1, 2, 2, 0), (1, 2, 3, 1), (1, 2, 4, 0),
+    (1, 3, 1, 1), (1, 4, 2, 1), (1, 4, 3, 1), (1, 4, 4, 1),
+    (5, 1, 1, 1), (5, 1, 2, 1), (5, 1, 3, 0), (5, 1, 4, 0),
+    (5, 2, 1, 1), (5, 2, 2, 0), (5, 2, 3, 1), (5, 2, 4, 0),
+    (5, 3, 1, 1), (5, 3, 2, 1), (5, 3, 3, 1), (5, 4, 4, 1),
+    -- Con 3 préstamos la multa no importa: reglas 1 y 2 dan lo mismo.
+    (3, 1, 1, 1), (3, 1, 2, 1), (3, 1, 3, 0), (3, 1, 4, 0),
+    (3, 2, 1, 1), (3, 2, 2, 0), (3, 2, 3, 1), (3, 2, 4, 0),
+    (3, 4, 1, 1), (3, 4, 2, 1), (3, 5, 3, 1), (3, 3, 4, 1);
