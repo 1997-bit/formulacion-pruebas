@@ -196,18 +196,23 @@ CREATE TABLE decision_celdas (
     FOREIGN KEY (requerimiento_id, fila_orden) REFERENCES decision_filas (requerimiento_id, orden) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- F5. El porcentaje lo calcula la base.
+-- F5. Una fila por métrica medida. El porcentaje lo calcula el servidor al guardar.
 CREATE TABLE cobertura_blanca (
     requerimiento_id INT UNSIGNED NOT NULL,
     metrica TINYINT UNSIGNED NOT NULL, -- sub-técnica de caja blanca
     total INT UNSIGNED NOT NULL,
     cubiertos INT UNSIGNED NOT NULL,
-    porcentaje DECIMAL(5, 2) AS (IF(total = 0, 0, cubiertos * 100 / total)) STORED,
+    porcentaje TINYINT UNSIGNED NOT NULL, -- entero, como en pantalla
     herramienta VARCHAR(100) NOT NULL,
+    guardado_por INT UNSIGNED NOT NULL,
+    guardado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (requerimiento_id, metrica),
     CHECK (metrica BETWEEN 11 AND 20),
+    CHECK (total > 0),
     CHECK (cubiertos <= total),
-    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
+    CHECK (porcentaje <= 100),
+    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE,
+    FOREIGN KEY (guardado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- F6 a F9: de un proyecto
