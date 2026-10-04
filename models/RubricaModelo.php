@@ -41,17 +41,16 @@ final class RubricaModelo
     }
 
     /**
-     * Borra la rúbrica del proyecto y la vuelve a insertar. Dentro de una transacción.
+     * Por diferencia. Dentro de una transacción.
      *
      * @param array<int, int> $puntos criterio => puntos
      */
-    public static function reemplazar(int $proyectoId, int $usuarioId, array $puntos): void
+    public static function guardar(int $proyectoId, int $usuarioId, array $puntos): void
     {
-        $pdo = Conexion::pdo();
-        $pdo->prepare('DELETE FROM rubrica_evaluaciones WHERE proyecto_id = ?')->execute([$proyectoId]);
-        $sql = $pdo->prepare('INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por) VALUES (?, ?, ?, ?)');
+        $filas = [];
         foreach ($puntos as $criterio => $p) {
-            $sql->execute([$proyectoId, $criterio, $p, $usuarioId]);
+            $filas[] = ['criterio' => $criterio, 'puntos' => $p];
         }
+        FilasModelo::sincronizar('rubrica_evaluaciones', ['proyecto_id' => $proyectoId], ['criterio'], $filas, ['evaluado_por' => $usuarioId]);
     }
 }

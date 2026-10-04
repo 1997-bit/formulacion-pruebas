@@ -78,7 +78,7 @@ final class RubricaServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            RubricaModelo::reemplazar($proyectoId, $usuario['id'], $filas);
+            RubricaModelo::guardar($proyectoId, $usuario['id'], $filas);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
