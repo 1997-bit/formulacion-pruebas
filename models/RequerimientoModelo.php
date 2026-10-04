@@ -13,28 +13,41 @@ final class RequerimientoModelo
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * $offset null: todos, sin la cuenta de casos. Orden del índice (proyecto_id, no_funcional, numero): sin filesort.
-     * Con $offset, la subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
+     * Todos, para los selects. Orden del índice (proyecto_id, no_funcional, numero).
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
      */
-    public static function listar(?array $proyectos, ?int $offset = null): array
+    public static function todos(?array $proyectos): array
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
-        $donde = ' WHERE ' . $permiso;
-        $orden = ' ORDER BY r.proyecto_id, r.no_funcional, r.numero';
-        if ($offset !== null) {
-            $desde = '(SELECT r.id FROM requerimientos r' . $donde . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ')
-                      k JOIN requerimientos r ON r.id = k.id';
-            $donde = '';
-        }
         $sql = Conexion::pdo()->prepare(
-            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto'
-             // Casos por requerimiento: solo en la página, 20 conteos por índice (#108).
-             . ($offset === null ? '' : ', (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos') . '
-             FROM ' . ($desde ?? 'requerimientos r') . '
-             JOIN proyectos p ON p.id = r.proyecto_id' . $donde . $orden
+            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto
+             FROM requerimientos r JOIN proyectos p ON p.id = r.proyecto_id
+             WHERE ' . $permiso . ' ORDER BY r.proyecto_id, r.no_funcional, r.numero'
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Una página, con cuántos casos tiene cada uno: 20 conteos por índice (#108).
+     * La subconsulta salta solo por el índice (#107).
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function pagina(?array $proyectos, int $offset): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $orden = ' ORDER BY r.proyecto_id, r.no_funcional, r.numero';
+        $sql = Conexion::pdo()->prepare(
+            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
+                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos
+             FROM (SELECT r.id FROM requerimientos r WHERE ' . $permiso . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
+             JOIN requerimientos r ON r.id = k.id
+             JOIN proyectos p ON p.id = r.proyecto_id' . $orden
         );
         $sql->execute($valores);
 

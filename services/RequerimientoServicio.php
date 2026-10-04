@@ -44,7 +44,7 @@ final class RequerimientoServicio
      */
     public static function listar(array $usuario): array
     {
-        return RequerimientoModelo::listar(Permisos::proyectos($usuario));
+        return RequerimientoModelo::todos(Permisos::proyectos($usuario));
     }
 
     /**
@@ -58,7 +58,7 @@ final class RequerimientoServicio
         $proyectos = Permisos::proyectos($usuario);
         $paginacion = new Paginacion(RequerimientoModelo::contar($proyectos), $pagina);
 
-        return [RequerimientoModelo::listar($proyectos, $paginacion->offset()), $paginacion];
+        return [RequerimientoModelo::pagina($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**
