@@ -45,6 +45,7 @@ CREATE TABLE requerimientos (
     no_funcional TINYINT NOT NULL DEFAULT 0,
     numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- RF-01 -> 1
     UNIQUE (proyecto_id, codigo),
+    UNIQUE (id, proyecto_id), -- destino de la llave compuesta de casos_prueba
     INDEX (proyecto_id, no_funcional, numero), -- orden de la lista
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -52,7 +53,7 @@ CREATE TABLE requerimientos (
 -- F1
 CREATE TABLE casos_prueba (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    proyecto_id INT UNSIGNED NOT NULL, -- igual al del requerimiento
+    proyecto_id INT UNSIGNED NOT NULL,
     requerimiento_id INT UNSIGNED NOT NULL,
     codigo VARCHAR(10) NOT NULL, -- SIS-001
     tipo_prueba TINYINT UNSIGNED NOT NULL,
@@ -79,10 +80,11 @@ CREATE TABLE casos_prueba (
     numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED,
     UNIQUE (proyecto_id, codigo),
     UNIQUE (proyecto_id, sigla, numero),
+    UNIQUE (id, proyecto_id), -- destino de la llave compuesta de incidentes
     INDEX (proyecto_id, estado),
     CHECK (fecha_fin >= fecha_inicio),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
-    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id),
+    FOREIGN KEY (requerimiento_id, proyecto_id) REFERENCES requerimientos (id, proyecto_id), -- mismo proyecto que el requerimiento
     FOREIGN KEY (creado_por) REFERENCES usuarios (id),
     FOREIGN KEY (anotado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -92,7 +94,7 @@ CREATE TABLE casos_prueba (
 -- F10
 CREATE TABLE incidentes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    proyecto_id INT UNSIGNED NOT NULL, -- igual al del caso
+    proyecto_id INT UNSIGNED NOT NULL,
     caso_id INT UNSIGNED NOT NULL,
     codigo VARCHAR(10) NOT NULL,
     titulo VARCHAR(150) NOT NULL,
@@ -114,7 +116,7 @@ CREATE TABLE incidentes (
     INDEX (proyecto_id, estado, severidad DESC, numero), -- orden de la lista
     INDEX (proyecto_id, es_stopper, estado),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
-    FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
+    FOREIGN KEY (caso_id, proyecto_id) REFERENCES casos_prueba (id, proyecto_id) ON DELETE RESTRICT, -- mismo proyecto que el caso
     FOREIGN KEY (asignado_id) REFERENCES usuarios (id),
     FOREIGN KEY (creado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
