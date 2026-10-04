@@ -14,6 +14,9 @@ use App\Core\Ruteador;
 use App\Core\Sesion;
 use App\Services\AccesoServicio;
 
+// Ningún sitio puede cargar estas páginas en un iframe (BUG-017).
+header('X-Frame-Options: DENY');
+
 // Un error no muestra la pila ni rutas: página 500 con un código corto, y el detalle con ese código en storage/logs (#125, #46).
 ini_set('display_errors', '0');
 set_exception_handler(function (\Throwable $e): void {
