@@ -36,7 +36,8 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (19, 1, 'RF-08', 'Formulario 1: vista imprimible del caso.', 0),
     (20, 1, 'RF-07', 'Eliminar caso: solo admin, con confirmación. Un caso con evidencias o incidentes no se elimina.', 0),
     (21, 1, 'RF-11', 'Formulario 4: tabla de decisión. De 1 a 4 condiciones y de 1 a 20 acciones; cada regla lleva al menos una acción.', 0),
-    (22, 1, 'RF-15', 'Formulario 8: auto y coevaluación. De 1 a 5 puntos por aspecto y comentario de hasta 500 caracteres.', 0);
+    (22, 1, 'RF-15', 'Formulario 8: auto y coevaluación. De 1 a 5 puntos por aspecto y comentario de hasta 500 caracteres.', 0),
+    (23, 1, 'RF-19', 'Incidentes: los defectos de un caso van al formulario 10. Cualquiera del proyecto cambia estado, asignado y stopper.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
@@ -690,7 +691,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'Muestra "Resultado anotado por Pan" con la hora en que lo volvió a Pendiente.',
         'CasoModelo::anotar pone anotado_por y anotado_en con cualquier estado; registrar los deja en NULL con Pendiente. Ver BUG-009.',
-        3, '2026-10-04 00:40:00', 3, '2026-10-04 00:45:00');
+        3, '2026-10-04 00:40:00', 3, '2026-10-04 00:45:00'),
+    (65, 1, 23, 'SIS-028', 3, 4, 'Incidentes', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que un incidente asignado a quien dejó el proyecto se puede seguir trabajando.',
+        'BUG-001 está asignado a Gloria. Admin quitó a Gloria de Formulación de pruebas.',
+        'Incidente: BUG-001\nEstado nuevo: En progreso, sin tocar Asignado a',
+        '1. Como admin, abrir BUG-001.\n2. Cambiar el estado a En progreso.\n3. Guardar.',
+        'Guarda el estado. Asignado a sigue diciendo Gloria o pide elegir a otro.',
+        '2026-10-04', '2026-10-04',
+        2, 'El select Asignado a sale en Sin asignar. Si se elige a Gloria a mano responde "Valor no válido."; si se deja así, guarda y la quita sin avisar.',
+        'Asignado a solo ofrece miembros actuales. Ver BUG-010.',
+        1, '2026-10-04 00:50:00', 1, '2026-10-04 00:55:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -703,7 +715,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (61, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/Subida.php', 'Subida::error(): un archivo de 0 bytes no empieza con text/.', 3, '2026-10-04 00:15:00'),
     (62, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/ProyectoModelo.php', 'ProyectoModelo::guardar: DELETE FROM proyecto_miembros al editar.', 1, '2026-10-04 00:25:00'),
     (63, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'validarCaso(): objetivo, entrada, pasos y resultado esperado sin máximo.', 2, '2026-10-04 00:35:00'),
-    (64, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/CasoModelo.php', 'CasoModelo::anotar: anotado_por = ? sin mirar el estado.', 3, '2026-10-04 00:45:00');
+    (64, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/CasoModelo.php', 'CasoModelo::anotar: anotado_por = ? sin mirar el estado.', 3, '2026-10-04 00:45:00'),
+    (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-04 00:55:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -761,7 +774,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Abrir un caso en OK o FAULT.\n2. Cambiarlo a Pendiente y guardar.\n3. Ver el detalle.',
         'No sale "Resultado anotado por".',
         'Sale "Resultado anotado por" con quien lo dejó en Pendiente.',
-        1, 1, 0, 0, NULL, 3, '2026-10-04 00:46:00');
+        1, 1, 0, 0, NULL, 3, '2026-10-04 00:46:00'),
+    (1, 65, 'BUG-010', 'Cambiar el estado quita al asignado que dejó el proyecto', 'Incidentes',
+        'IncidenteServicio::validarSeguimiento solo acepta miembros actuales. El select no tiene al asignado anterior, así que guardar el estado lo deja sin asignar.',
+        '1. Asignar un incidente a un tester.\n2. Quitarlo del proyecto.\n3. Abrir el incidente, cambiar solo el estado y guardar.',
+        'Cambia el estado y avisa que el asignado ya no es miembro.',
+        'Cambia el estado y deja el incidente sin asignar sin avisar.',
+        2, 2, 0, 0, NULL, 1, '2026-10-04 00:56:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
