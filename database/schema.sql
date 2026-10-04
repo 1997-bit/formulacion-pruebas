@@ -34,7 +34,7 @@ CREATE TABLE proyecto_miembros (
     usuario_id INT UNSIGNED NOT NULL,
     PRIMARY KEY (proyecto_id, usuario_id),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
+    FOREIGN KEY (usuario_id) REFERENCES usuarios (id) -- RESTRICT: borrar a un miembro no borra sus coevaluaciones (BUG-020)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE requerimientos (
