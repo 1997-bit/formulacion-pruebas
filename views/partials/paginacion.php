@@ -28,9 +28,13 @@ $hasta = min($p->offset() + Paginacion::POR_PAGINA, $p->total);
           <span aria-disabled="true"><?= Icono::svg('chevron-left') ?><span class="solo-lector">Anterior</span></span>
         <?php endif; ?>
       </li>
-      <?php for ($n = 1; $n <= $p->paginas(); $n++): ?>
-        <li><a href="<?= $enlace($n) ?>"<?= $n === $p->pagina ? ' aria-current="page"' : '' ?>><?= $n ?></a></li>
-      <?php endfor; ?>
+      <?php foreach ($p->ventana() as $n): ?>
+        <?php if ($n === null): ?>
+          <li><span class="salto" aria-hidden="true">…</span></li>
+        <?php else: ?>
+          <li><a href="<?= $enlace($n) ?>"<?= $n === $p->pagina ? ' aria-current="page"' : '' ?>><?= $n ?></a></li>
+        <?php endif; ?>
+      <?php endforeach; ?>
       <li>
         <?php if ($p->pagina < $p->paginas()): ?>
           <a href="<?= $enlace($p->pagina + 1) ?>"><?= Icono::svg('chevron-right') ?><span class="solo-lector">Siguiente</span></a>

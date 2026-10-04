@@ -415,7 +415,8 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   gap: 4px;
 }
 .paginacion a,
-.paginacion span[aria-disabled] {
+.paginacion span[aria-disabled],
+.paginacion .salto {
   display: grid;
   place-items: center;
   min-width: 2rem;
