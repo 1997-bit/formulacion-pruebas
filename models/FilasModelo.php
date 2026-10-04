@@ -54,6 +54,23 @@ final class FilasModelo
     }
 
     /**
+     * Un solo INSERT para todas las filas (#97). Sin filas no ejecuta nada.
+     *
+     * @param list<string> $columnas
+     * @param list<list<mixed>> $filas  valores en el orden de $columnas
+     */
+    public static function insertar(string $tabla, array $columnas, array $filas): void
+    {
+        if ($filas === []) {
+            return;
+        }
+        $fila = '(' . implode(', ', array_fill(0, count($columnas), '?')) . ')';
+        Conexion::pdo()->prepare(
+            "INSERT INTO {$tabla} (" . implode(', ', $columnas) . ') VALUES ' . implode(', ', array_fill(0, count($filas), $fila))
+        )->execute(array_merge(...$filas));
+    }
+
+    /**
      * Borra y vuelve a insertar con orden 1, 2, 3… Dentro de una transacción.
      *
      * @param list<string> $columnas
