@@ -142,7 +142,7 @@ CREATE TABLE logs_cambios (
 CREATE TABLE intentos_acceso (
     clave VARCHAR(64) PRIMARY KEY,
     fallos INT UNSIGNED NOT NULL DEFAULT 0,
-    bloqueado_hasta DATETIME NULL
+    bloqueado_hasta DATETIME(3) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- F2 a F5: de un requerimiento
