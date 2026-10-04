@@ -389,22 +389,12 @@
   }
 }
 
-/* Panel de ejemplo */
+/* Panel: una tarjeta por proyecto */
 
 .rejilla-panel {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-}
-.relleno {
-  background: var(--tenue);
-  border-radius: var(--radio-xl);
-  aspect-ratio: 16 / 9;
-}
-.relleno-grande {
-  margin-top: 16px;
-  min-height: 50dvh;
-  aspect-ratio: auto;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
 }
 
 /* Impresión: solo el contenido */

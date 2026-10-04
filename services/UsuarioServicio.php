@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Config\Conexion;
 use App\Core\ErrorValidacion;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
@@ -11,6 +12,12 @@ use App\Models\UsuarioModelo;
 // RF-02, RF-03. Solo aquí se crea un admin.
 final class UsuarioServicio
 {
+    // Mínimo de OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo.
+    public const ARGON = ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1];
+
+    // Sin SELECT previo: el UNIQUE decide, también en una carrera (#101).
+    public const USUARIO_REPETIDO = ['usuario' => 'Ese usuario ya existe.'];
+
     /**
      * @param array{id: int, rol: int} $actor
      * @return list<array<string, mixed>>
@@ -41,7 +48,11 @@ final class UsuarioServicio
     {
         Permisos::exigirAdmin($actor);
         $d = self::validar($datos, null);
-        UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($datos['clave'], PASSWORD_ARGON2ID), $d['rol']);
+        try {
+            UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON), $d['rol']);
+        } catch (\PDOException $e) {
+            throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
+        }
 
         return $d['usuario'];
     }
@@ -59,8 +70,17 @@ final class UsuarioServicio
         if ($id === $actor['id'] && $d['rol'] !== 1) {
             throw new ErrorValidacion(['rol' => 'No puede quitarse su propio rol de admin.']);
         }
-        $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID);
-        UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
+        $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON);
+        self::enTransaccion(function () use ($id, $d, $clave): void {
+            if ($d['rol'] !== 1) {
+                self::exigirOtroAdmin($id);
+            }
+            try {
+                UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
+            } catch (\PDOException $e) {
+                throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
+            }
+        });
 
         return $d['usuario'];
     }
@@ -72,8 +92,32 @@ final class UsuarioServicio
         if ($id === $actor['id']) {
             throw new ErrorValidacion(['general' => 'No puede eliminar su propia cuenta.']);
         }
-        if (!UsuarioModelo::eliminar($id)) {
-            throw new ErrorValidacion(['general' => 'Tiene casos, evidencias o formularios a su nombre: no se puede eliminar.']);
+        self::enTransaccion(function () use ($id): void {
+            self::exigirOtroAdmin($id);
+            if (!UsuarioModelo::eliminar($id)) {
+                throw new ErrorValidacion(['general' => 'Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar.']);
+            }
+        });
+    }
+
+    // El sistema no queda sin admin (#116). Cuenta con bloqueo: dos admins que se quitan el rol a la vez no pasan los dos.
+    private static function exigirOtroAdmin(int $id): void
+    {
+        if (UsuarioModelo::contarAdmins() < 2 && (UsuarioModelo::porId($id)['rol'] ?? null) === 1) {
+            throw new ErrorValidacion(['general' => 'Debe quedar al menos un admin.']);
+        }
+    }
+
+    private static function enTransaccion(callable $hacer): void
+    {
+        $pdo = Conexion::pdo();
+        $pdo->beginTransaction();
+        try {
+            $hacer();
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
         }
     }
 
@@ -88,7 +132,6 @@ final class UsuarioServicio
         $nombre = trim($datos['nombre']);
         $usuario = trim($datos['usuario']);
         $rol = trim($datos['rol'] ?? '0');
-        $otro = $usuario === '' ? null : UsuarioModelo::porUsuario($usuario);
         $nuevo = $id === null;
 
         (new Validador())
@@ -96,7 +139,6 @@ final class UsuarioServicio
             ->regla('nombre', mb_strlen($nombre) <= 100, 'Máximo 100 caracteres.')
             ->requerido('usuario', $usuario)
             ->regla('usuario', mb_strlen($usuario) <= 30, 'Máximo 30 caracteres.')
-            ->regla('usuario', $otro === null || $otro['id'] === $id, 'Ese usuario ya existe.')
             ->regla('clave', (!$nuevo && $datos['clave'] === '') || mb_strlen($datos['clave']) >= 8, 'Mínimo 8 caracteres.')
             ->requerido('rol', $rol)
             ->catalogo('rol', 'rol', $rol)

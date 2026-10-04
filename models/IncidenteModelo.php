@@ -9,36 +9,38 @@ use App\Core\Paginacion;
 
 final class IncidenteModelo
 {
-    // Tester: solo sus proyectos (RF-05).
-    private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = i.proyecto_id AND m.usuario_id = ?))';
-
-    public static function contar(int $usuarioId, bool $admin): int
+    /** @param list<int>|null $proyectos Permisos::proyectos() */
+    public static function contar(?array $proyectos): int
     {
-        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i WHERE ' . self::PERMITIDO);
-        $sql->execute([(int) $admin, $usuarioId]);
+        [$permiso, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i WHERE ' . $permiso);
+        $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }
 
     /**
-     * Abiertos primero; luego lo más grave.
+     * Por proyecto: abiertos primero, luego lo más grave. Orden del índice: sin filesort.
      *
+     * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
      */
-    public static function listar(int $usuarioId, bool $admin, int $offset): array
+    public static function listar(?array $proyectos, int $offset): array
     {
+        [$permiso, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        $orden = ' ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero';
+        // La subconsulta salta solo por el índice (#107).
         $sql = Conexion::pdo()->prepare(
             'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
-             FROM incidentes i
+             FROM (SELECT i.id FROM incidentes i WHERE ' . $permiso . $orden
+                . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
+             JOIN incidentes i ON i.id = k.id
              JOIN casos_prueba c ON c.id = i.caso_id
              JOIN proyectos p ON p.id = i.proyecto_id
-             LEFT JOIN usuarios a ON a.id = i.asignado_id
-             WHERE ' . self::PERMITIDO . '
-             ORDER BY i.estado = 2, i.severidad DESC, p.nombre, i.codigo
-             LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
+             LEFT JOIN usuarios a ON a.id = i.asignado_id' . $orden
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -76,11 +78,20 @@ final class IncidenteModelo
         return (int) $sql->fetchColumn();
     }
 
+    // Sin cerrar del caso: impiden marcarlo OK (BUG-048). FOR UPDATE dentro de la transacción del resultado.
+    public static function abiertosDeCaso(int $casoId): int
+    {
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM (SELECT id FROM incidentes WHERE caso_id = ? AND estado <> 2 FOR UPDATE) a');
+        $sql->execute([$casoId]);
+
+        return (int) $sql->fetchColumn();
+    }
+
     /** @return list<array<string, mixed>> */
     public static function deCaso(int $casoId): array
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT id, codigo, titulo, severidad, estado, es_stopper FROM incidentes WHERE caso_id = ? ORDER BY codigo'
+            'SELECT id, codigo, titulo, severidad, estado, es_stopper FROM incidentes WHERE caso_id = ? ORDER BY numero'
         );
         $sql->execute([$casoId]);
 
@@ -91,8 +102,7 @@ final class IncidenteModelo
     public static function siguienteNumero(int $proyectoId): int
     {
         $sql = Conexion::pdo()->prepare(
-            "SELECT COALESCE(MAX(CAST(SUBSTRING(codigo, 5) AS UNSIGNED)), 0) + 1
-             FROM incidentes WHERE proyecto_id = ? AND codigo LIKE 'BUG-%' FOR UPDATE"
+            'SELECT COALESCE(MAX(numero), 0) + 1 FROM incidentes WHERE proyecto_id = ? FOR UPDATE'
         );
         $sql->execute([$proyectoId]);
 

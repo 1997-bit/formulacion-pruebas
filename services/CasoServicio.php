@@ -11,6 +11,7 @@ use App\Core\Validador;
 use App\Helpers\Catalogo;
 use App\Models\CasoModelo;
 use App\Models\EvidenciaModelo;
+use App\Models\FilasModelo;
 use App\Models\IncidenteModelo;
 use App\Models\RequerimientoModelo;
 
@@ -32,7 +33,7 @@ final class CasoServicio
     public static function registrar(array $datos, array $marcadas, array $archivos, array $usuario): array
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1), null, 'id');
+        $requerimientos = array_column(RequerimientoModelo::todos(Permisos::proyectos($usuario)), null, 'id');
         $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
         $tipos = self::tipos($marcadas);
 
@@ -55,8 +56,8 @@ final class CasoServicio
                 'codigo' => $codigo,
                 ...self::campos($d),
                 'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] ?: null,
-                'observaciones' => $d['observaciones'] ?: null,
+                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
                 'creado_por' => $usuario['id'],
                 'anotado_por' => $anotado ? $usuario['id'] : null,
                 'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
@@ -78,7 +79,7 @@ final class CasoServicio
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
      */
-    public static function editar(int $id, array $datos, array $usuario): string
+    public static function editar(int $id, array $datos, string $huella, array $usuario): string
     {
         $caso = self::paraEditar($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
         $d = array_map('trim', $datos);
@@ -89,9 +90,12 @@ final class CasoServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
+            if (FilasModelo::huella(['casos_prueba'], 'id', $id) !== $huella) {
+                throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+            }
             $antes = CasoModelo::bloquear($id);
             CasoModelo::actualizar($id, $campos);
-            Historial::registrar($id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
+            Historial::registrar('casos_prueba', $id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
@@ -126,7 +130,7 @@ final class CasoServicio
      */
     public static function requerimientos(array $caso, array $usuario): array
     {
-        $todos = RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+        $todos = RequerimientoModelo::todos(Permisos::proyectos($usuario));
 
         return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
     }
@@ -156,11 +160,14 @@ final class CasoServicio
             $antes = CasoModelo::bloquear($id);
             $resultado = [
                 'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] ?: null,
-                'observaciones' => $d['observaciones'] ?: null,
+                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
             ];
+            if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
+                throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
+            }
             CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
-            Historial::registrar($id, $antes, $resultado, $usuario['id']);
+            Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
             self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             $pdo->commit();
         } catch (\Throwable $e) {
@@ -222,10 +229,10 @@ final class CasoServicio
      */
     public static function portafolio(array $usuario, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(EvidenciaModelo::contar($usuario['id'], $admin), $pagina);
+        $proyectos = Permisos::proyectos($usuario);
+        $paginacion = new Paginacion(EvidenciaModelo::contar($proyectos), $pagina);
 
-        return [EvidenciaModelo::portafolio($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [EvidenciaModelo::portafolio($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**
@@ -237,11 +244,11 @@ final class CasoServicio
      */
     public static function listar(array $usuario, array $filtros, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
+        $proyectos = Permisos::proyectos($usuario);
         $f = self::filtros($filtros);
-        $paginacion = new Paginacion(CasoModelo::contar($usuario['id'], $admin, $f), $pagina);
+        $paginacion = new Paginacion(CasoModelo::contar($proyectos, $f), $pagina);
 
-        return [CasoModelo::listar($usuario['id'], $admin, $f, $paginacion->offset()), $paginacion];
+        return [CasoModelo::listar($proyectos, $f, $paginacion->offset()), $paginacion];
     }
 
     /**
@@ -289,9 +296,9 @@ final class CasoServicio
             'subtecnica' => (int) $d['subtecnica'],
             'modulo' => $d['modulo'],
             'plataforma' => (int) $d['plataforma'],
-            'entorno' => $d['entorno'] ?: null,
+            'entorno' => $d['entorno'] === '' ? null : $d['entorno'],
             'objetivo' => $d['objetivo'],
-            'precondiciones' => $d['precondiciones'] ?: null,
+            'precondiciones' => $d['precondiciones'] === '' ? null : $d['precondiciones'],
             'entrada' => $d['entrada'],
             'pasos' => $d['pasos'],
             'resultado_esperado' => $d['resultado_esperado'],
@@ -322,7 +329,7 @@ final class CasoServicio
      */
     private static function tipos(array $marcadas): array
     {
-        return array_values(array_intersect(array_keys(self::EVIDENCIAS), array_map('intval', $marcadas)));
+        return array_values(array_intersect(array_keys(self::EVIDENCIAS), array_map(intval(...), $marcadas)));
     }
 
     /**
@@ -375,8 +382,10 @@ final class CasoServicio
                 continue;
             }
             $archivo = $archivos[$nombre];
-            $guardado = Subida::guardar($archivo);
-            $guardados[] = Subida::ruta($guardado);
+            $guardado = Subida::guardar($archivo, $nuevo);
+            if ($nuevo) {
+                $guardados[] = Subida::ruta($guardado); // si falla, se borra; uno que ya estaba lo usa otra evidencia
+            }
             EvidenciaModelo::crear($casoId, $tipo, $guardado, mb_substr($archivo['name'], 0, 255), null, $descripcion, $usuarioId);
         }
     }

@@ -9,40 +9,59 @@ use App\Core\Paginacion;
 
 final class CasoModelo
 {
-    // Tester: solo sus proyectos (RF-05).
-    private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
-
-    /** @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros */
-    public static function contar(int $usuarioId, bool $admin, array $filtros): int
+    /**
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     */
+    public static function contar(?array $proyectos, array $filtros): int
     {
-        [$donde, $valores] = self::donde($usuarioId, $admin, $filtros);
-        $sql = Conexion::pdo()->prepare(
-            'SELECT COUNT(*) FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id WHERE ' . $donde
-        );
+        [$donde, $valores] = self::donde($proyectos, $filtros);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM casos_prueba c' . $donde);
         $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }
 
     /**
-     * $offset null: todos.
+     * Una página. Orden del índice (proyecto_id, sigla, numero): sin filesort.
+     * La subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
      *
+     * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
      * @return list<array<string, mixed>>
      */
-    public static function listar(int $usuarioId, bool $admin, array $filtros, ?int $offset = null): array
+    public static function listar(?array $proyectos, array $filtros, int $offset): array
     {
-        [$donde, $valores] = self::donde($usuarioId, $admin, $filtros);
+        [$donde, $valores] = self::donde($proyectos, $filtros);
+        $orden = ' ORDER BY c.proyecto_id, c.sigla, c.numero';
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, c.tipo_prueba, c.estado, p.nombre AS proyecto, u.nombre AS autor
-             FROM casos_prueba c
+             FROM (SELECT c.id FROM casos_prueba c' . $donde . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
+             JOIN casos_prueba c ON c.id = k.id
              JOIN proyectos p ON p.id = c.proyecto_id
-             JOIN usuarios u ON u.id = c.creado_por
-             WHERE ' . $donde . '
-             ORDER BY p.nombre, c.codigo'
-             . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
+             JOIN usuarios u ON u.id = c.creado_por' . $orden
         );
         $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Por código exacto, en los proyectos permitidos. Varios si el código se repite entre proyectos (#111).
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function porCodigo(?array $proyectos, string $codigo): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, p.nombre AS proyecto
+             FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id
+             WHERE ' . $permiso . ' AND c.codigo = ?
+             ORDER BY c.proyecto_id LIMIT ' . Paginacion::POR_PAGINA
+        );
+        $sql->execute([...$valores, $codigo]);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -101,10 +120,9 @@ final class CasoModelo
     public static function siguienteNumero(int $proyectoId, string $sigla): int
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT COALESCE(MAX(CAST(SUBSTRING(codigo, ?) AS UNSIGNED)), 0) + 1
-             FROM casos_prueba WHERE proyecto_id = ? AND codigo LIKE ? FOR UPDATE'
+            'SELECT COALESCE(MAX(numero), 0) + 1 FROM casos_prueba WHERE proyecto_id = ? AND sigla = ? FOR UPDATE'
         );
-        $sql->execute([strlen($sigla) + 2, $proyectoId, $sigla . '-%']);
+        $sql->execute([$proyectoId, $sigla]);
 
         return (int) $sql->fetchColumn();
     }
@@ -126,6 +144,7 @@ final class CasoModelo
     {
         try {
             Conexion::pdo()->prepare('DELETE FROM casos_prueba WHERE id = ?')->execute([$id]);
+            Conexion::pdo()->prepare("DELETE FROM logs_cambios WHERE tabla = 'casos_prueba' AND registro_id = ?")->execute([$id]);
         } catch (\PDOException $e) {
             if ($e->getCode() === '23000') {
                 return false;
@@ -137,22 +156,23 @@ final class CasoModelo
     }
 
     /**
-     * RF-22: los filtros se suman al permiso.
+     * RF-22: los filtros se suman al permiso. Solo entran los filtros usados.
      *
+     * @param list<int>|null $proyectos
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
      * @return array{0: string, 1: list<int>}
      */
-    private static function donde(int $usuarioId, bool $admin, array $filtros): array
+    private static function donde(?array $proyectos, array $filtros): array
     {
-        $donde = self::PERMITIDO;
-        $valores = [(int) $admin, $usuarioId];
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $condiciones = [$permiso];
         foreach (['proyecto' => 'c.proyecto_id', 'requerimiento' => 'c.requerimiento_id', 'estado' => 'c.estado'] as $filtro => $columna) {
             if ($filtros[$filtro] !== null) {
-                $donde .= " AND {$columna} = ?";
+                $condiciones[] = "{$columna} = ?";
                 $valores[] = $filtros[$filtro];
             }
         }
 
-        return [$donde, $valores];
+        return [' WHERE ' . implode(' AND ', $condiciones), $valores];
     }
 }

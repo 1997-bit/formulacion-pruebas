@@ -6,12 +6,13 @@ namespace App\Services;
 
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
+use App\Models\FilasModelo;
 use App\Models\HistorialModelo;
 
 // RF-20
 final class Historial
 {
-    // Campo => etiqueta y catálogo. Solo estos campos dejan rastro.
+    // Campo del caso => etiqueta y catálogo. En el caso, solo estos campos dejan rastro.
     private const CAMPOS = [
         'requerimiento' => ['Requerimiento', null],
         'tipo_prueba' => ['Tipo de prueba', 'tipo_prueba'],
@@ -32,20 +33,23 @@ final class Historial
     ];
 
     /**
-     * Una fila por campo cambiado. Va en la transacción del UPDATE: si falla, el caso no cambia.
+     * Una fila por campo cambiado, en un INSERT. Va en la transacción del UPDATE: si falla, el registro no cambia.
+     * Casos: los campos de CAMPOS. Incidentes y plan: los que trae $despues.
      *
      * @param array<string, mixed> $antes
      * @param array<string, mixed> $despues
      */
-    public static function registrar(int $casoId, array $antes, array $despues, int $usuarioId): void
+    public static function registrar(string $tabla, int $id, array $antes, array $despues, int $usuarioId): void
     {
-        foreach (array_intersect_key($despues, self::CAMPOS) as $campo => $valor) {
+        $filas = [];
+        foreach (array_intersect_key($despues, $tabla === 'casos_prueba' ? self::CAMPOS : $antes) as $campo => $valor) {
             $a = $antes[$campo] === null ? null : (string) $antes[$campo];
             $b = $valor === null ? null : (string) $valor;
             if ($a !== $b) {
-                HistorialModelo::crear($casoId, $usuarioId, $campo, $a, $b);
+                $filas[] = [$tabla, $id, $usuarioId, $campo, $a, $b];
             }
         }
+        FilasModelo::insertar('logs_cambios', ['tabla', 'registro_id', 'usuario_id', 'campo', 'antes', 'despues'], $filas);
     }
 
     /**
@@ -65,6 +69,6 @@ final class Historial
             };
 
             return ['etiqueta' => $etiqueta, 'antes' => $texto($fila['antes']), 'despues' => $texto($fila['despues'])] + $fila;
-        }, HistorialModelo::deCaso($casoId));
+        }, HistorialModelo::de('casos_prueba', $casoId));
     }
 }

@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\FilasModelo;
 use App\Services\RequerimientoServicio;
 use App\Services\TablaDecisionServicio;
 
@@ -51,6 +52,7 @@ final class TablaDecisionControlador
             'requerimiento' => $requerimiento,
             'tabla' => Sesion::tomar('datos')['tabla'] ?? TablaDecisionServicio::tabla($requerimiento['id'], $usuario),
             'nueva' => TablaDecisionServicio::guardado($requerimiento['id'], $usuario) === null,
+            'huella' => FilasModelo::huella(TablaDecisionServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
             'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
         ]);
@@ -66,7 +68,7 @@ final class TablaDecisionControlador
             Respuesta::errores([], ['tabla' => TablaDecisionServicio::cambiar($tabla, $_POST['cambio'])], $editar);
         }
         try {
-            TablaDecisionServicio::guardar($id, $tabla, Sesion::usuario());
+            TablaDecisionServicio::guardar($id, $tabla, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, ['tabla' => $tabla], $editar);
         }

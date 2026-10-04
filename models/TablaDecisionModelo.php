@@ -19,15 +19,13 @@ final class TablaDecisionModelo
     }
 
     /**
-     * Dentro de una transacción, después de FilasModelo::reemplazar().
+     * Por diferencia. Dentro de una transacción, después de FilasModelo::guardar().
      *
      * @param list<array{0: int, 1: int, 2: int}> $celdas  [fila_orden, regla, valor]
      */
-    public static function insertarCeldas(int $requerimientoId, array $celdas): void
+    public static function guardarCeldas(int $requerimientoId, array $celdas): void
     {
-        $sql = Conexion::pdo()->prepare('INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES (?, ?, ?, ?)');
-        foreach ($celdas as $celda) {
-            $sql->execute([$requerimientoId, ...$celda]);
-        }
+        FilasModelo::sincronizar('decision_celdas', ['requerimiento_id' => $requerimientoId], ['fila_orden', 'regla'],
+            array_map(fn (array $c): array => ['fila_orden' => $c[0], 'regla' => $c[1], 'valor' => $c[2]], $celdas));
     }
 }

@@ -57,19 +57,12 @@ final class AutoevaluacionModelo
     }
 
     /**
-     * Borra lo del evaluador en el proyecto y lo vuelve a insertar. Dentro de una transacción.
+     * Lo del evaluador en el proyecto, por diferencia. Dentro de una transacción.
      *
      * @param list<array{evaluado_id: int, aspecto: int, puntos: int, comentario: ?string}> $filas
      */
-    public static function reemplazar(int $proyectoId, int $evaluadorId, array $filas): void
+    public static function guardar(int $proyectoId, int $evaluadorId, array $filas): void
     {
-        $pdo = Conexion::pdo();
-        $pdo->prepare('DELETE FROM autoevaluaciones WHERE proyecto_id = ? AND evaluador_id = ?')->execute([$proyectoId, $evaluadorId]);
-        $sql = $pdo->prepare(
-            'INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, puntos, comentario) VALUES (?, ?, ?, ?, ?, ?)'
-        );
-        foreach ($filas as $f) {
-            $sql->execute([$proyectoId, $evaluadorId, $f['evaluado_id'], $f['aspecto'], $f['puntos'], $f['comentario']]);
-        }
+        FilasModelo::sincronizar('autoevaluaciones', ['proyecto_id' => $proyectoId, 'evaluador_id' => $evaluadorId], ['evaluado_id', 'aspecto'], $filas);
     }
 }

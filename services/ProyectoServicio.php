@@ -59,17 +59,19 @@ final class ProyectoServicio
         $nombre = trim($datos['nombre']);
         $descripcion = trim($datos['descripcion']);
         $testers = array_column(self::testers($actor), 'id');
-        $miembros = array_map('intval', $datos['miembros']);
-        $otro = $nombre === '' ? null : ProyectoModelo::idPorNombre($nombre);
+        $miembros = array_map(intval(...), $datos['miembros']);
 
         (new Validador())
             ->requerido('nombre', $nombre)
             ->regla('nombre', mb_strlen($nombre) <= 100, 'Máximo 100 caracteres.')
-            ->regla('nombre', $otro === null || $otro === $id, 'Ese proyecto ya existe.')
             ->regla('miembros', array_diff($miembros, $testers) === [], 'Valor no válido.')
             ->comprobar();
 
-        ProyectoModelo::guardar($id, $nombre, $descripcion === '' ? null : $descripcion, array_values(array_unique($miembros)));
+        try {
+            ProyectoModelo::guardar($id, $nombre, $descripcion === '' ? null : $descripcion, array_values(array_unique($miembros)));
+        } catch (\PDOException $e) {
+            throw ErrorValidacion::siDuplicado($e, ['nombre' => 'Ese proyecto ya existe.']);
+        }
 
         return $nombre;
     }

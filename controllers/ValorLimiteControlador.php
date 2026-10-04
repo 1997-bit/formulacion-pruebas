@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\FilasModelo;
 use App\Services\ValorLimiteServicio;
 use App\Services\RequerimientoServicio;
 
@@ -49,6 +50,7 @@ final class ValorLimiteControlador
             'titulo' => 'Editar valor límite · ' . $requerimiento['codigo'],
             'requerimiento' => $requerimiento,
             'filas' => Sesion::tomar('datos')['filas'] ?? ValorLimiteServicio::filas($requerimiento['id'], $usuario),
+            'huella' => FilasModelo::huella(ValorLimiteServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
             'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
         ]);
@@ -59,7 +61,7 @@ final class ValorLimiteControlador
         $id = (int) ($_POST['requerimiento_id'] ?? 0);
         $filas = $this->filas(array_keys(ValorLimiteServicio::COLUMNAS));
         try {
-            ValorLimiteServicio::guardar($id, $filas, Sesion::usuario());
+            ValorLimiteServicio::guardar($id, $filas, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, ['filas' => $filas], '/formularios/valor_limite/editar?requerimiento=' . $id);
         }

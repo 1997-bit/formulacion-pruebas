@@ -13,32 +13,53 @@ final class RequerimientoModelo
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * $offset null: todos.
+     * Todos, para los selects. Orden del índice (proyecto_id, no_funcional, numero).
      *
+     * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
      */
-    public static function listar(int $usuarioId, bool $admin, ?int $offset = null): array
+    public static function todos(?array $proyectos): array
     {
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
         $sql = Conexion::pdo()->prepare(
-            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
-                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos
-             FROM requerimientos r
-             JOIN proyectos p ON p.id = r.proyecto_id
-             WHERE ' . self::PERMITIDO . '
-             ORDER BY p.nombre, r.no_funcional, CAST(SUBSTRING_INDEX(r.codigo, \'-\', -1) AS UNSIGNED)'
-             . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
+            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto
+             FROM requerimientos r JOIN proyectos p ON p.id = r.proyecto_id
+             WHERE ' . $permiso . ' ORDER BY r.proyecto_id, r.no_funcional, r.numero'
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public static function contar(int $usuarioId, bool $admin): int
+    /**
+     * Una página, con cuántos casos tiene cada uno: 20 conteos por índice (#108).
+     * La subconsulta salta solo por el índice (#107).
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function pagina(?array $proyectos, int $offset): array
     {
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $orden = ' ORDER BY r.proyecto_id, r.no_funcional, r.numero';
         $sql = Conexion::pdo()->prepare(
-            'SELECT COUNT(*) FROM requerimientos r JOIN proyectos p ON p.id = r.proyecto_id WHERE ' . self::PERMITIDO
+            'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
+                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos
+             FROM (SELECT r.id FROM requerimientos r WHERE ' . $permiso . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
+             JOIN requerimientos r ON r.id = k.id
+             JOIN proyectos p ON p.id = r.proyecto_id' . $orden
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** @param list<int>|null $proyectos Permisos::proyectos() */
+    public static function contar(?array $proyectos): int
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM requerimientos r WHERE ' . $permiso);
+        $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }
@@ -61,14 +82,6 @@ final class RequerimientoModelo
         $sql->execute([$id]);
 
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
-    }
-
-    public static function existe(int $proyectoId, string $codigo): bool
-    {
-        $sql = Conexion::pdo()->prepare('SELECT 1 FROM requerimientos WHERE proyecto_id = ? AND codigo = ?');
-        $sql->execute([$proyectoId, $codigo]);
-
-        return (bool) $sql->fetchColumn();
     }
 
     public static function crear(int $proyectoId, string $codigo, string $descripcion, int $noFuncional): int

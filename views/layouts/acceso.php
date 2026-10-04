@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Vista;
 use App\Helpers\Html;
 
 /**
@@ -14,10 +15,10 @@ use App\Helpers\Html;
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= Html::e($titulo) ?> · Casos de Prueba</title>
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/base.css">
-<link rel="stylesheet" href="/assets/css/componentes.css">
-<script src="/assets/js/tema.js"></script>
+<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/tokens.css') ?>">
+<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/base.css') ?>">
+<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">
+<script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
 </head>
 <body>
 <main class="acceso">

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
-use App\Core\ErrorPermiso;
+use App\Core\ErrorNoEncontrado;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
@@ -21,6 +22,9 @@ use App\Models\TablaDecisionModelo;
  */
 final class TablaDecisionServicio
 {
+    // Lo que resume la huella (#100).
+    public const TABLAS = ['decision_filas', 'decision_celdas'];
+
     private const TABLA = 'decision_filas';
 
     // 4 condiciones son 16 reglas: más ya no cabe en pantalla.
@@ -35,7 +39,7 @@ final class TablaDecisionServicio
      */
     public static function tabla(int $requerimientoId, array $usuario): array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         $filas = FilasModelo::deRequerimiento(self::TABLA, $requerimientoId);
         $condiciones = array_values(array_filter($filas, fn (array $f): bool => !$f['es_accion']));
@@ -94,7 +98,7 @@ final class TablaDecisionServicio
      */
     public static function guardado(int $requerimientoId, array $usuario): ?array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::guardado(self::TABLA, $requerimientoId);
     }
@@ -108,7 +112,7 @@ final class TablaDecisionServicio
     public static function pagina(array $usuario, int $pagina): array
     {
         [$requerimientos, $paginacion] = RequerimientoServicio::pagina($usuario, $pagina);
-        $filas = FilasModelo::contar(self::TABLA);
+        $filas = FilasModelo::contar(self::TABLA, array_column($requerimientos, 'id'));
         foreach ($requerimientos as &$r) {
             $r['filas'] = $filas[$r['id']] ?? 0;
         }
@@ -124,9 +128,9 @@ final class TablaDecisionServicio
      * @param Tabla $tabla
      * @param array{id: int, rol: int} $usuario
      */
-    public static function guardar(int $requerimientoId, array $tabla, array $usuario): void
+    public static function guardar(int $requerimientoId, array $tabla, string $huella, array $usuario): void
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         ['condiciones' => $condiciones, 'acciones' => $acciones] = $tabla;
         $reglas = 2 ** count($condiciones);
@@ -164,8 +168,11 @@ final class TablaDecisionServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            FilasModelo::reemplazar(self::TABLA, $requerimientoId, ['es_accion', 'texto'], $filas, $usuario['id']);
-            TablaDecisionModelo::insertarCeldas($requerimientoId, $celdas);
+            if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
+                throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+            }
+            FilasModelo::guardar(self::TABLA, $requerimientoId, ['es_accion', 'texto'], $filas, $usuario['id']);
+            TablaDecisionModelo::guardarCeldas($requerimientoId, $celdas);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

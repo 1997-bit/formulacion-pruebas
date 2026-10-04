@@ -31,22 +31,29 @@ final class ProyectoModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function idPorNombre(string $nombre): ?int
-    {
-        $sql = Conexion::pdo()->prepare('SELECT id FROM proyectos WHERE nombre = ?');
-        $sql->execute([$nombre]);
-        $id = $sql->fetchColumn();
-
-        return $id === false ? null : (int) $id;
-    }
-
     /** @return list<int> */
     public static function miembros(int $id): array
     {
         $sql = Conexion::pdo()->prepare('SELECT usuario_id FROM proyecto_miembros WHERE proyecto_id = ?');
         $sql->execute([$id]);
 
-        return array_map('intval', $sql->fetchAll(\PDO::FETCH_COLUMN));
+        return array_map(intval(...), $sql->fetchAll(\PDO::FETCH_COLUMN));
+    }
+
+    /**
+     * Condición del permiso de lista (RF-05). null es admin: TRUE, que el optimizador descarta.
+     * Una lista de ids da range sobre el índice; EXISTS o "? = 1 OR" obligan a leer toda la tabla.
+     *
+     * @param list<int>|null $proyectos
+     * @return array{0: string, 1: list<int>} condición y valores
+     */
+    public static function permitidos(string $columna, ?array $proyectos): array
+    {
+        return match (true) {
+            $proyectos === null => ['TRUE', []],
+            $proyectos === [] => ['FALSE', []],
+            default => [$columna . ' IN (' . implode(', ', array_fill(0, count($proyectos), '?')) . ')', $proyectos],
+        };
     }
 
     public static function esMiembro(int $id, int $usuarioId): bool
@@ -72,12 +79,10 @@ final class ProyectoModelo
                 $id = (int) $pdo->lastInsertId();
             } else {
                 $pdo->prepare('UPDATE proyectos SET nombre = ?, descripcion = ? WHERE id = ?')->execute([$nombre, $descripcion, $id]);
-                $pdo->prepare('DELETE FROM proyecto_miembros WHERE proyecto_id = ?')->execute([$id]);
             }
-            $sql = $pdo->prepare('INSERT INTO proyecto_miembros (proyecto_id, usuario_id) VALUES (?, ?)');
-            foreach ($miembros as $usuarioId) {
-                $sql->execute([$id, $usuarioId]);
-            }
+            // Por diferencia: solo sale quien se quitó, y con él su auto y coevaluación (BUG-007).
+            FilasModelo::sincronizar('proyecto_miembros', ['proyecto_id' => $id], ['usuario_id'],
+                array_map(fn (int $u): array => ['usuario_id' => $u], $miembros));
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

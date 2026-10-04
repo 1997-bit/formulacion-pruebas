@@ -12,10 +12,32 @@ final class UsuarioModelo
     /** @return array<string, mixed>|null */
     public static function porUsuario(string $usuario): ?array
     {
-        $sql = Conexion::pdo()->prepare('SELECT id, nombre, usuario, clave, rol FROM usuarios WHERE usuario = ?');
+        $sql = Conexion::pdo()->prepare('SELECT id, nombre, usuario, clave, rol, sesion_version FROM usuarios WHERE usuario = ?');
         $sql->execute([$usuario]);
 
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /**
+     * Una consulta por petición: el usuario y sus proyectos (#109, #110).
+     *
+     * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int, proyectos: list<int>}|null
+     */
+    public static function deSesion(int $id): ?array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT u.id, u.nombre, u.usuario, u.rol, u.sesion_version, GROUP_CONCAT(m.proyecto_id) AS proyectos
+             FROM usuarios u LEFT JOIN proyecto_miembros m ON m.usuario_id = u.id
+             WHERE u.id = ? GROUP BY u.id'
+        );
+        $sql->execute([$id]);
+        $fila = $sql->fetch(\PDO::FETCH_ASSOC);
+        if ($fila === false) {
+            return null;
+        }
+        $fila['proyectos'] = $fila['proyectos'] === null ? [] : array_map(intval(...), explode(',', $fila['proyectos']));
+
+        return $fila;
     }
 
     /** @return array<string, mixed>|null */
@@ -58,11 +80,25 @@ final class UsuarioModelo
         return (int) Conexion::pdo()->lastInsertId();
     }
 
-    // Clave null: no la cambia.
+    // Clave null: no la cambia. Una clave o un rol nuevo sube sesion_version; va primero porque compara el rol de antes.
     public static function actualizar(int $id, string $nombre, string $usuario, ?string $clave, int $rol): void
     {
-        $sql = Conexion::pdo()->prepare('UPDATE usuarios SET nombre = ?, usuario = ?, rol = ?, clave = COALESCE(?, clave) WHERE id = ?');
-        $sql->execute([$nombre, $usuario, $rol, $clave, $id]);
+        $sql = Conexion::pdo()->prepare(
+            'UPDATE usuarios SET sesion_version = sesion_version + (? IS NOT NULL OR rol <> ?),
+                nombre = ?, usuario = ?, rol = ?, clave = COALESCE(?, clave) WHERE id = ?'
+        );
+        $sql->execute([$clave, $rol, $nombre, $usuario, $rol, $clave, $id]);
+    }
+
+    public static function cambiarClave(int $id, string $clave): void
+    {
+        Conexion::pdo()->prepare('UPDATE usuarios SET clave = ? WHERE id = ?')->execute([$clave, $id]);
+    }
+
+    // FOR UPDATE: dentro de una transacción, otro cambio de rol espera a que esta termine.
+    public static function contarAdmins(): int
+    {
+        return (int) Conexion::pdo()->query('SELECT COUNT(*) FROM (SELECT id FROM usuarios WHERE rol = 1 FOR UPDATE) a')->fetchColumn();
     }
 
     // False si tiene casos, evidencias u otros registros a su nombre.

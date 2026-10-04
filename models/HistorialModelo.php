@@ -8,22 +8,15 @@ use App\Config\Conexion;
 
 final class HistorialModelo
 {
-    public static function crear(int $casoId, int $usuarioId, string $campo, ?string $antes, ?string $despues): void
-    {
-        Conexion::pdo()->prepare(
-            'INSERT INTO logs_cambios (caso_id, usuario_id, campo, antes, despues) VALUES (?, ?, ?, ?, ?)'
-        )->execute([$casoId, $usuarioId, $campo, $antes, $despues]);
-    }
-
     /** @return list<array<string, mixed>> */
-    public static function deCaso(int $casoId): array
+    public static function de(string $tabla, int $id): array
     {
         $sql = Conexion::pdo()->prepare(
             'SELECT l.campo, l.antes, l.despues, l.fecha, u.nombre AS usuario
              FROM logs_cambios l JOIN usuarios u ON u.id = l.usuario_id
-             WHERE l.caso_id = ? ORDER BY l.fecha DESC, l.id DESC'
+             WHERE l.tabla = ? AND l.registro_id = ? ORDER BY l.fecha DESC, l.id DESC'
         );
-        $sql->execute([$casoId]);
+        $sql->execute([$tabla, $id]);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }

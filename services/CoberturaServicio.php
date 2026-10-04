@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
-use App\Core\ErrorPermiso;
+use App\Core\ErrorNoEncontrado;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\CoberturaModelo;
@@ -14,6 +15,9 @@ use App\Models\FilasModelo;
 // RF-12. Formulario 5: una fila por métrica de caja blanca, de un requerimiento.
 final class CoberturaServicio
 {
+    // Lo que resume la huella (#100).
+    public const TABLAS = ['cobertura_blanca'];
+
     private const TABLA = 'cobertura_blanca';
 
     // Sub-técnicas del catálogo que se miden.
@@ -33,7 +37,7 @@ final class CoberturaServicio
      */
     public static function filas(int $requerimientoId, array $usuario): array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return CoberturaModelo::deRequerimiento($requerimientoId);
     }
@@ -44,7 +48,7 @@ final class CoberturaServicio
      */
     public static function guardado(int $requerimientoId, array $usuario): ?array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::guardado(self::TABLA, $requerimientoId);
     }
@@ -58,7 +62,7 @@ final class CoberturaServicio
     public static function pagina(array $usuario, int $pagina): array
     {
         [$requerimientos, $paginacion] = RequerimientoServicio::pagina($usuario, $pagina);
-        $filas = FilasModelo::contar(self::TABLA);
+        $filas = FilasModelo::contar(self::TABLA, array_column($requerimientos, 'id'));
         foreach ($requerimientos as &$r) {
             $r['filas'] = $filas[$r['id']] ?? 0;
         }
@@ -74,9 +78,9 @@ final class CoberturaServicio
      * @param array<int, array{total: string, cubiertos: string, herramienta: string}> $filas  metrica => fila
      * @param array{id: int, rol: int} $usuario
      */
-    public static function guardar(int $requerimientoId, array $filas, array $usuario): void
+    public static function guardar(int $requerimientoId, array $filas, string $huella, array $usuario): void
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         $v = new Validador();
         $guardar = [];
@@ -111,7 +115,10 @@ final class CoberturaServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            CoberturaModelo::reemplazar($requerimientoId, $guardar, $usuario['id']);
+            if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
+                throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+            }
+            CoberturaModelo::guardar($requerimientoId, $guardar, $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

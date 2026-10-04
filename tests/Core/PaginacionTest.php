@@ -24,6 +24,20 @@ final class PaginacionTest extends TestCase
         $this->assertSame(40, (new Paginacion(57, 3))->offset());
     }
 
+    public function testVentanaCorta(): void
+    {
+        $this->assertSame([1, 2, 3], (new Paginacion(57, 2))->ventana());
+        $this->assertSame([1, 2, 3, 4, 5, 6, 7], (new Paginacion(140, 7))->ventana());
+    }
+
+    public function testVentanaLarga(): void
+    {
+        $this->assertSame([1, 2, 3, 4, 5, 6, null, 1000], (new Paginacion(20000, 1))->ventana());
+        $this->assertSame([1, null, 48, 49, 50, 51, 52, null, 1000], (new Paginacion(20000, 50))->ventana());
+        $this->assertSame([1, null, 995, 996, 997, 998, 999, 1000], (new Paginacion(20000, 1000))->ventana());
+        $this->assertSame([1, 2, 3, 4, 5, 6, null, 8], (new Paginacion(160, 3))->ventana());
+    }
+
     public function testPaginaFueraDeRango(): void
     {
         $this->assertSame(1, (new Paginacion(57, 0))->pagina);

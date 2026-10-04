@@ -11,7 +11,8 @@ use App\Helpers\Icono;
  * Formulario 10 de la paleta. Sin caso, primero se elige uno.
  *
  * @var ?array<string, mixed> $caso
- * @var ?list<array<string, mixed>> $casos  solo sin caso
+ * @var ?string $codigo  solo sin caso: lo buscado
+ * @var ?list<array<string, mixed>> $casos  solo sin caso: los que tienen ese código
  * @var ?list<array<string, mixed>> $asignables
  * @var ?array<string, string> $errores
  * @var ?array<string, mixed> $datos
@@ -56,47 +57,36 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
 </header>
 
 <?php if ($caso === null): ?>
-  <?php
-  $porProyecto = [];
-  foreach ($casos as $c) {
-      $porProyecto[$c['proyecto']][] = $c;
-  }
-  ?>
-  <?php if (!$casos): ?>
-    <div class="vacio">
-      <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
-      <h2>Todavía no hay casos</h2>
-      <p>Un incidente sale de un caso de prueba. Registre un caso primero.</p>
-      <a class="btn btn-primario" href="/casos/registrar"><?= Icono::svg('plus') ?> Registrar caso</a>
+  <form class="tarjeta pila" method="get" action="/formularios/incidentes/registrar">
+    <div class="campo">
+      <label for="f-codigo">Código del caso <span class="requerido" aria-hidden="true">*</span></label>
+      <input class="control" id="f-codigo" name="codigo" value="<?= Html::e($codigo) ?>" required maxlength="10" placeholder="SIS-001"
+             aria-describedby="f-codigo-ayuda<?= $codigo !== '' && !$casos ? ' f-codigo-error' : '' ?>"<?= $codigo !== '' && !$casos ? ' aria-invalid="true"' : '' ?>>
+      <p class="campo-ayuda" id="f-codigo-ayuda">El incidente queda en el proyecto del caso.</p>
+      <?php if ($codigo !== '' && !$casos): ?>
+        <p class="campo-error" id="f-codigo-error"><?= Icono::svg('circle-x') ?>No hay un caso con ese código en sus proyectos.</p>
+      <?php endif; ?>
     </div>
-  <?php else: ?>
-    <form class="tarjeta pila" method="get" action="/formularios/incidentes/registrar">
-      <div class="campo">
-        <label for="f-caso">Caso de prueba <span class="requerido" aria-hidden="true">*</span></label>
-        <div class="select">
-          <select class="control" id="f-caso" name="caso" required aria-describedby="f-caso-ayuda">
-            <option value="">Elegir…</option>
-            <?php foreach ($porProyecto as $proyecto => $lista): ?>
-              <?= count($porProyecto) > 1 ? '<optgroup label="' . Html::e($proyecto) . '">' : '' ?>
-              <?php foreach ($lista as $c): ?>
-                <option value="<?= (int) $c['id'] ?>"><?= Html::e($c['codigo'] . ' · ' . $c['objetivo']) ?></option>
-              <?php endforeach; ?>
-              <?= count($porProyecto) > 1 ? '</optgroup>' : '' ?>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <p class="campo-ayuda" id="f-caso-ayuda">El incidente queda en el proyecto del caso.</p>
-      </div>
-      <div class="acciones">
-        <button class="btn btn-primario" type="submit">Continuar</button>
-      </div>
-    </form>
+    <div class="acciones">
+      <button class="btn btn-primario" type="submit">Continuar</button>
+    </div>
+  </form>
+  <?php if ($casos): ?>
+    <section class="tarjeta pila" aria-labelledby="t-varios">
+      <h2 id="t-varios">El código <?= Html::e($codigo) ?> está en varios proyectos</h2>
+      <ul class="pila">
+        <?php foreach ($casos as $c): ?>
+          <li><a href="/formularios/incidentes/registrar?caso=<?= (int) $c['id'] ?>"><?= Html::e($c['proyecto'] . ' · ' . $c['codigo'] . ' · ' . $c['objetivo']) ?></a></li>
+        <?php endforeach; ?>
+      </ul>
+    </section>
   <?php endif; ?>
 <?php else: ?>
   <div class="pila">
     <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
     <form class="tarjeta pila" method="post" action="/formularios/incidentes/registrar">
       <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+      <input type="hidden" name="envio" value="<?= Csrf::envio() ?>">
       <input type="hidden" name="caso_id" value="<?= (int) $caso['id'] ?>">
       <div class="campos">
         <div class="campo">

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
-use App\Models\ProyectoModelo;
 
 // Matriz 7.1 del IR.
 final class Permisos
@@ -18,12 +18,25 @@ final class Permisos
         }
     }
 
+    // 404 y no 403: así no se sabe qué ids existen en otros proyectos (BUG-026).
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
-        if ($usuario['rol'] !== 1 && !ProyectoModelo::esMiembro($proyectoId, $usuario['id'])) {
-            throw new ErrorPermiso();
+        if ($usuario['rol'] !== 1 && !in_array($proyectoId, $usuario['proyectos'], true)) {
+            throw new ErrorNoEncontrado();
         }
+    }
+
+    /**
+     * Proyectos que el usuario puede ver en una lista. null: admin, todos.
+     * Vienen con el usuario de la sesión, leído en cada petición (#109).
+     *
+     * @param array<string, mixed> $usuario
+     * @return list<int>|null
+     */
+    public static function proyectos(array $usuario): ?array
+    {
+        return $usuario['rol'] === 1 ? null : $usuario['proyectos'];
     }
 
     /**

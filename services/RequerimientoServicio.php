@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\RequerimientoModelo;
@@ -29,11 +30,14 @@ final class RequerimientoServicio
             ->regla('proyecto_id', $proyectoId === '' || isset($proyectos[$proyectoId]), 'Valor no válido.')
             ->requerido('codigo', $codigo)
             ->regla('codigo', $codigo === '' || $formato, 'Use RF-01 o RNF-01.')
-            ->regla('codigo', !$formato || !isset($proyectos[$proyectoId]) || !RequerimientoModelo::existe((int) $proyectoId, $codigo), 'Ese código ya existe en el proyecto.')
             ->requerido('descripcion', $descripcion)
             ->comprobar();
 
-        RequerimientoModelo::crear((int) $proyectoId, $codigo, $descripcion, str_starts_with($codigo, 'RNF') ? 1 : 0);
+        try {
+            RequerimientoModelo::crear((int) $proyectoId, $codigo, $descripcion, str_starts_with($codigo, 'RNF') ? 1 : 0);
+        } catch (\PDOException $e) {
+            throw ErrorValidacion::siDuplicado($e, ['codigo' => 'Ese código ya existe en el proyecto.']);
+        }
 
         return $codigo;
     }
@@ -44,7 +48,7 @@ final class RequerimientoServicio
      */
     public static function listar(array $usuario): array
     {
-        return RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+        return RequerimientoModelo::todos(Permisos::proyectos($usuario));
     }
 
     /**
@@ -55,10 +59,10 @@ final class RequerimientoServicio
      */
     public static function pagina(array $usuario, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(RequerimientoModelo::contar($usuario['id'], $admin), $pagina);
+        $proyectos = Permisos::proyectos($usuario);
+        $paginacion = new Paginacion(RequerimientoModelo::contar($proyectos), $pagina);
 
-        return [RequerimientoModelo::listar($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [RequerimientoModelo::pagina($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**

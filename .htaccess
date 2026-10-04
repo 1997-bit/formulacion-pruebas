@@ -1,0 +1,3 @@
+# Si la raíz web es el repositorio y no public/, Apache no sirve nada (.env, database/, storage/). BUG-054.
+# public/.htaccess vuelve a permitir su carpeta.
+Require all denied

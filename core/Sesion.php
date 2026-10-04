@@ -34,6 +34,13 @@ final class Sesion
         $_SESSION['usuario'] = $usuario;
     }
 
+    // Datos frescos de la base, sin regenerar el id (p. ej. un nombre cambiado).
+    /** @param array<string, mixed> $usuario */
+    public static function refrescar(array $usuario): void
+    {
+        $_SESSION['usuario'] = $usuario;
+    }
+
     public static function salir(): void
     {
         $_SESSION = [];
@@ -52,10 +59,12 @@ final class Sesion
         $_SESSION['flash'] = $mensaje;
     }
 
-    // Lee y borra: flash, errores y datos de Respuesta::errores().
+    // Lee y borra: flash, errores y datos de Respuesta::errores(). Errores y datos, solo en su ruta.
     public static function tomar(string $clave, mixed $defecto = null): mixed
     {
-        $valor = $_SESSION[$clave] ?? $defecto;
+        $valor = in_array($clave, ['errores', 'datos'], true)
+            ? $_SESSION[$clave][$_SERVER['REQUEST_URI'] ?? '/'] ?? $defecto
+            : $_SESSION[$clave] ?? $defecto;
         unset($_SESSION[$clave]);
 
         return $valor;

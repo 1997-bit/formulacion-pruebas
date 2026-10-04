@@ -10,3 +10,18 @@ Los crea `database/seed.sql`.
 | admin | `admin` | `admin1234` |
 | tester | `gloria` | `gloria1234` |
 | tester | `pan` | `pan12345` |
+
+## Producción
+
+En `php.ini` (#123):
+
+```ini
+opcache.enable=1
+opcache.validate_timestamps=0  ; PHP no revisa la fecha de cada archivo en cada petición
+opcache.preload=/ruta/al/proyecto/config/precarga.php  ; no funciona en Windows (XAMPP): omitir
+opcache.preload_user=www-data  ; el usuario del servidor web
+```
+
+Después de cada despliegue, reiniciar Apache o PHP-FPM para vaciar OPcache. Sin eso, PHP sigue usando el código anterior.
+
+Con Apache, `mod_headers` guarda los CSS y JS un año (`public/.htaccess`). Con `mod_xsendfile` y `XSendFilePath` apuntando a `storage/evidencias`, Apache envía las evidencias y PHP queda libre.

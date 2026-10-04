@@ -7,7 +7,7 @@ DROP VIEW IF EXISTS v_trazabilidad;
 DROP TABLE IF EXISTS portafolio, autoevaluaciones, rubrica_evaluaciones, plan_pruebas,
     cobertura_blanca, decision_celdas, decision_filas, valor_limite, clases_equivalencia,
     logs_cambios, incidentes, evidencias, casos_prueba,
-    requerimientos, proyecto_miembros, proyectos, usuarios;
+    requerimientos, proyecto_miembros, proyectos, usuarios, intentos_acceso;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Núcleo
@@ -18,6 +18,7 @@ CREATE TABLE usuarios (
     usuario VARCHAR(30) NOT NULL UNIQUE,
     clave VARCHAR(255) NOT NULL, -- Argon2id
     rol TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    sesion_version INT UNSIGNED NOT NULL DEFAULT 0, -- sube al cambiar clave o rol: cierra las sesiones abiertas
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -33,7 +34,7 @@ CREATE TABLE proyecto_miembros (
     usuario_id INT UNSIGNED NOT NULL,
     PRIMARY KEY (proyecto_id, usuario_id),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
+    FOREIGN KEY (usuario_id) REFERENCES usuarios (id) -- RESTRICT: borrar a un miembro no borra sus coevaluaciones (BUG-020)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE requerimientos (
@@ -42,14 +43,17 @@ CREATE TABLE requerimientos (
     codigo VARCHAR(10) NOT NULL,
     descripcion TEXT NOT NULL,
     no_funcional TINYINT NOT NULL DEFAULT 0,
+    numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- RF-01 -> 1
     UNIQUE (proyecto_id, codigo),
+    UNIQUE (id, proyecto_id), -- destino de la llave compuesta de casos_prueba
+    INDEX (proyecto_id, no_funcional, numero), -- orden de la lista
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- F1
 CREATE TABLE casos_prueba (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    proyecto_id INT UNSIGNED NOT NULL, -- igual al del requerimiento
+    proyecto_id INT UNSIGNED NOT NULL,
     requerimiento_id INT UNSIGNED NOT NULL,
     codigo VARCHAR(10) NOT NULL, -- SIS-001
     tipo_prueba TINYINT UNSIGNED NOT NULL,
@@ -71,11 +75,16 @@ CREATE TABLE casos_prueba (
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24
     anotado_en DATETIME NULL,
+    -- Para numerar y ordenar: SIS-1000 va después de SIS-999. codigo no cambia aunque cambie el tipo (RF-06).
+    sigla VARCHAR(3) AS (SUBSTRING_INDEX(codigo, '-', 1)) STORED,
+    numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED,
     UNIQUE (proyecto_id, codigo),
+    UNIQUE (proyecto_id, sigla, numero),
+    UNIQUE (id, proyecto_id), -- destino de la llave compuesta de incidentes
     INDEX (proyecto_id, estado),
     CHECK (fecha_fin >= fecha_inicio),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
-    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id),
+    FOREIGN KEY (requerimiento_id, proyecto_id) REFERENCES requerimientos (id, proyecto_id), -- mismo proyecto que el requerimiento
     FOREIGN KEY (creado_por) REFERENCES usuarios (id),
     FOREIGN KEY (anotado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -85,7 +94,7 @@ CREATE TABLE casos_prueba (
 -- F10
 CREATE TABLE incidentes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    proyecto_id INT UNSIGNED NOT NULL, -- igual al del caso
+    proyecto_id INT UNSIGNED NOT NULL,
     caso_id INT UNSIGNED NOT NULL,
     codigo VARCHAR(10) NOT NULL,
     titulo VARCHAR(150) NOT NULL,
@@ -101,9 +110,13 @@ CREATE TABLE incidentes (
     asignado_id INT UNSIGNED NULL,
     creado_por INT UNSIGNED NOT NULL,
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- BUG-001 -> 1
     UNIQUE (proyecto_id, codigo),
+    UNIQUE (proyecto_id, numero),
+    INDEX (proyecto_id, estado, severidad DESC, numero), -- orden de la lista
+    INDEX (proyecto_id, es_stopper, estado),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
-    FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
+    FOREIGN KEY (caso_id, proyecto_id) REFERENCES casos_prueba (id, proyecto_id) ON DELETE RESTRICT, -- mismo proyecto que el caso
     FOREIGN KEY (asignado_id) REFERENCES usuarios (id),
     FOREIGN KEY (creado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -111,31 +124,38 @@ CREATE TABLE incidentes (
 CREATE TABLE evidencias (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     caso_id INT UNSIGNED NOT NULL,
-    incidente_id INT UNSIGNED NULL,
     tipo TINYINT UNSIGNED NOT NULL,
-    archivo VARCHAR(50) NULL, -- en storage/evidencias/
+    archivo VARCHAR(80) NULL, -- en storage/evidencias/, con el sha256 del contenido
     nombre_original VARCHAR(255) NULL,
     enlace VARCHAR(500) NULL,
     descripcion VARCHAR(255) NOT NULL,
     subido_por INT UNSIGNED NOT NULL,
     subido_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX (subido_en), -- orden del portafolio
     CHECK ((tipo = 4) = (enlace IS NOT NULL) AND (tipo = 4) = (archivo IS NULL)),
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
-    FOREIGN KEY (incidente_id) REFERENCES incidentes (id) ON DELETE RESTRICT,
     FOREIGN KEY (subido_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- RF-20
 CREATE TABLE logs_cambios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    caso_id INT UNSIGNED NOT NULL,
+    tabla VARCHAR(30) NOT NULL, -- casos_prueba, incidentes o plan_pruebas
+    registro_id INT UNSIGNED NOT NULL, -- id del registro; en plan_pruebas, el proyecto
     usuario_id INT UNSIGNED NOT NULL,
     campo VARCHAR(50) NOT NULL,
     antes TEXT NULL,
     despues TEXT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE CASCADE,
+    INDEX (tabla, registro_id, fecha),
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- RNF-02. clave: 'u:<usuario>' en el login, 'ip:<ip>' en el registro.
+CREATE TABLE intentos_acceso (
+    clave VARCHAR(64) PRIMARY KEY,
+    fallos INT UNSIGNED NOT NULL DEFAULT 0,
+    bloqueado_hasta DATETIME(3) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- F2 a F5: de un requerimiento
@@ -263,19 +283,6 @@ CREATE TABLE autoevaluaciones (
     FOREIGN KEY (proyecto_id, evaluado_id) REFERENCES proyecto_miembros (proyecto_id, usuario_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- F9
-CREATE TABLE portafolio (
-    proyecto_id INT UNSIGNED NOT NULL,
-    usuario_id INT UNSIGNED NOT NULL,
-    orden TINYINT UNSIGNED NOT NULL,
-    semana TINYINT UNSIGNED NOT NULL,
-    evidencia VARCHAR(150) NOT NULL,
-    tipo TINYINT UNSIGNED NOT NULL,
-    fecha DATE NOT NULL,
-    observaciones TEXT NULL,
-    PRIMARY KEY (proyecto_id, usuario_id, orden),
-    FOREIGN KEY (proyecto_id, usuario_id) REFERENCES proyecto_miembros (proyecto_id, usuario_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Vista
 

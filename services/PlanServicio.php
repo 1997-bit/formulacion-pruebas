@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Config\Conexion;
 use App\Core\Validador;
 use App\Models\IncidenteModelo;
 use App\Models\PlanModelo;
@@ -84,7 +85,7 @@ final class PlanServicio
         Permisos::exigirMiembro($usuario, $proyectoId);
 
         $d = array_map('trim', $datos);
-        $miembros = array_map('intval', array_column(self::miembros($proyectoId), 'id'));
+        $miembros = array_map(intval(...), array_column(self::miembros($proyectoId), 'id'));
         $v = (new Validador())
             ->requerido('version', $d['version'])
             ->regla('version', mb_strlen($d['version']) <= 20, 'Máximo 20 caracteres.')
@@ -109,7 +110,7 @@ final class PlanServicio
         $v->comprobar();
 
         $opcional = fn (string $campo): ?string => $d[$campo] === '' ? null : $d[$campo];
-        PlanModelo::guardar($proyectoId, [
+        $plan = [
             'version' => $d['version'],
             'responsable_id' => (int) $d['responsable_id'],
             'fecha' => $d['fecha'],
@@ -121,6 +122,20 @@ final class PlanServicio
             'criterios_aceptacion' => $d['criterios_aceptacion'],
             'riesgos' => $opcional('riesgos'),
             'estado' => (int) $d['estado'],
-        ]);
+        ];
+        $pdo = Conexion::pdo();
+        $pdo->beginTransaction();
+        try {
+            // Al editar, deja rastro de lo cambiado (#115). Crear no deja rastro.
+            $antes = PlanModelo::deProyecto($proyectoId);
+            PlanModelo::guardar($proyectoId, $plan);
+            if ($antes !== null) {
+                Historial::registrar('plan_pruebas', $proyectoId, $antes, $plan, $usuario['id']);
+            }
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
     }
 }

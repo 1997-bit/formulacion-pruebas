@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
-use App\Core\ErrorPermiso;
+use App\Core\ErrorNoEncontrado;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
@@ -13,6 +14,9 @@ use App\Models\FilasModelo;
 // RF-10. Formulario 3: las filas pertenecen a un requerimiento.
 final class ValorLimiteServicio
 {
+    // Lo que resume la huella (#100).
+    public const TABLAS = ['valor_limite'];
+
     private const TABLA = 'valor_limite';
 
     // Columna => [etiqueta, largo máximo]; null es TEXT.
@@ -31,7 +35,7 @@ final class ValorLimiteServicio
      */
     public static function filas(int $requerimientoId, array $usuario): array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::deRequerimiento(self::TABLA, $requerimientoId);
     }
@@ -42,7 +46,7 @@ final class ValorLimiteServicio
      */
     public static function guardado(int $requerimientoId, array $usuario): ?array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::guardado(self::TABLA, $requerimientoId);
     }
@@ -56,7 +60,7 @@ final class ValorLimiteServicio
     public static function pagina(array $usuario, int $pagina): array
     {
         [$requerimientos, $paginacion] = RequerimientoServicio::pagina($usuario, $pagina);
-        $filas = FilasModelo::contar(self::TABLA);
+        $filas = FilasModelo::contar(self::TABLA, array_column($requerimientos, 'id'));
         foreach ($requerimientos as &$r) {
             $r['filas'] = $filas[$r['id']] ?? 0;
         }
@@ -72,9 +76,9 @@ final class ValorLimiteServicio
      * @param list<array<string, string>> $filas
      * @param array{id: int, rol: int} $usuario
      */
-    public static function guardar(int $requerimientoId, array $filas, array $usuario): void
+    public static function guardar(int $requerimientoId, array $filas, string $huella, array $usuario): void
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         $filas = array_map(fn (array $fila): array => array_map(trim(...), $fila), $filas);
         $v = (new Validador())
@@ -91,7 +95,10 @@ final class ValorLimiteServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            FilasModelo::reemplazar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
+            if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
+                throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+            }
+            FilasModelo::guardar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
