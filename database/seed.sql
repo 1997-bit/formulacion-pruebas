@@ -37,7 +37,8 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (20, 1, 'RF-07', 'Eliminar caso: solo admin, con confirmación. Un caso con evidencias o incidentes no se elimina.', 0),
     (21, 1, 'RF-11', 'Formulario 4: tabla de decisión. De 1 a 4 condiciones y de 1 a 20 acciones; cada regla lleva al menos una acción.', 0),
     (22, 1, 'RF-15', 'Formulario 8: auto y coevaluación. De 1 a 5 puntos por aspecto y comentario de hasta 500 caracteres.', 0),
-    (23, 1, 'RF-19', 'Incidentes: los defectos de un caso van al formulario 10. Cualquiera del proyecto cambia estado, asignado y stopper.', 0);
+    (23, 1, 'RF-19', 'Incidentes: los defectos de un caso van al formulario 10. Cualquiera del proyecto cambia estado, asignado y stopper.', 0),
+    (24, 1, 'RF-10', 'Formulario 3: análisis de valor límite. Las filas se guardan todas o ninguna.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
@@ -779,7 +780,40 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'No sale ninguna de las dos. Solo Set-Cookie.',
         'Otro sitio puede poner el sistema en un iframe y llevar el clic a Eliminar. Ver BUG-017.',
-        2, '2026-10-04 02:00:00', 2, '2026-10-04 02:05:00');
+        2, '2026-10-04 02:00:00', 2, '2026-10-04 02:05:00'),
+    (73, 1, 5, 'SIS-032', 3, 8, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB; dos navegadores',
+        'Verificar que dos personas editando el mismo caso no se pisan sin aviso.',
+        'Gloria creó SIS-001. Admin y Gloria abren su edición al mismo tiempo.',
+        'Gloria: Módulo "Acceso (gloria)"\nAdmin: Objetivo nuevo, sin tocar Módulo',
+        '1. Los dos abren /casos/editar?id=1.\n2. Gloria cambia Módulo y guarda.\n3. Admin cambia Objetivo y guarda.\n4. Ver el caso y su historial.',
+        'Al guardar, admin recibe un aviso de que el caso cambió, o queda el Módulo de Gloria.',
+        '2026-10-04', '2026-10-04',
+        2, 'Admin guarda sin aviso y Módulo vuelve a "Acceso". El historial muestra que admin lo cambió.',
+        'Se guardan todos los campos del formulario, no solo los que cambiaron, y no se revisa si el caso cambió. Ver BUG-018.',
+        1, '2026-10-04 02:10:00', 1, '2026-10-04 02:15:00'),
+    (74, 1, 24, 'SIS-033', 3, 8, 'Formularios', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB; dos navegadores',
+        'Verificar que dos personas editando la misma matriz no se pisan sin aviso.',
+        'RNF-03 tiene 3 filas de valor límite. Gloria y Pan abren su edición al mismo tiempo.',
+        'Gloria: una fila nueva, Nombre del archivo\nPan: guarda sin cambios',
+        '1. Los dos abren la edición del análisis de RNF-03.\n2. Gloria agrega la fila y guarda.\n3. Pan guarda.\n4. Ver el análisis.',
+        'Pan recibe un aviso de que el análisis cambió, o la fila de Gloria sigue.',
+        '2026-10-04', '2026-10-04',
+        2, 'Pan guarda sin aviso y quedan 3 filas: la de Gloria se borró.',
+        'Pasa igual en los formularios 2 y 4: se borran y reinsertan todas las filas. Ver BUG-019.',
+        3, '2026-10-04 02:20:00', 3, '2026-10-04 02:25:00'),
+    (75, 1, 22, 'SIS-034', 3, 8, 'Usuarios', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que borrar un usuario no borra lo que otros guardaron sobre él.',
+        'Existe el tester nuevo, miembro de Formulación de pruebas, sin casos. Gloria lo coevaluó.',
+        'Usuario: nuevo',
+        '1. Como admin, eliminar a nuevo.\n2. Como Gloria, abrir Auto y coevaluación del proyecto.',
+        'No deja eliminarlo porque tiene evaluaciones a su nombre, o Gloria conserva su coevaluación.',
+        '2026-10-04', '2026-10-04',
+        2, 'Lo elimina. Se borran las 6 coevaluaciones de Gloria y su página dice "Coevaluación de ." sin nombre.',
+        'autoevaluaciones se borra en cascada desde proyecto_miembros. Ver BUG-020.',
+        1, '2026-10-04 02:30:00', 1, '2026-10-04 02:35:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -800,7 +834,10 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (69, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/partials/resultado.php', 'Bloque de evidencias: sin aviso para volver a elegir el archivo.', 2, '2026-10-04 01:35:00'),
     (70, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/UsuarioServicio.php', 'validar(): "Ese usuario ya existe." también en el registro público.', 2, '2026-10-04 01:45:00'),
     (71, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/AccesoServicio.php', 'entrar(): sin contador de intentos.', 2, '2026-10-04 01:55:00'),
-    (72, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/index.php', 'Sin header() de X-Frame-Options ni CSP.', 2, '2026-10-04 02:05:00');
+    (72, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/index.php', 'Sin header() de X-Frame-Options ni CSP.', 2, '2026-10-04 02:05:00'),
+    (73, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'editar(): UPDATE de todos los campos sin comparar con lo que se abrió.', 1, '2026-10-04 02:15:00'),
+    (74, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/FilasModelo.php', 'reemplazar(): DELETE de todas las filas e INSERT de las enviadas.', 3, '2026-10-04 02:25:00'),
+    (75, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/database/schema.sql', 'autoevaluaciones: FK a proyecto_miembros con ON DELETE CASCADE.', 1, '2026-10-04 02:35:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -906,7 +943,25 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Pedir cualquier página con curl -D -.\n2. Revisar las cabeceras.',
         'X-Frame-Options: DENY o frame-ancestors ''none''.',
         'No hay ninguna de las dos.',
-        2, 2, 0, 0, NULL, 2, '2026-10-04 02:06:00');
+        2, 2, 0, 0, NULL, 2, '2026-10-04 02:06:00'),
+    (1, 73, 'BUG-018', 'Dos ediciones del mismo caso se pisan sin aviso', 'Casos',
+        'CasoServicio::editar guarda todos los campos del formulario. Si otro guardó mientras tanto, sus cambios se pierden y el historial los muestra como deshechos por quien guardó último.',
+        '1. Abrir la edición del mismo caso en dos sesiones.\n2. Guardar un cambio en cada una, en campos distintos.',
+        'El segundo recibe un aviso de que el caso cambió.',
+        'Gana el último y el cambio del primero se pierde.',
+        3, 2, 0, 0, NULL, 1, '2026-10-04 02:16:00'),
+    (1, 74, 'BUG-019', 'Dos ediciones de la misma matriz se pisan sin aviso', 'Formularios',
+        'Los formularios 2, 3 y 4 borran y vuelven a insertar todas las filas. Quien guarda último borra lo que el otro agregó.',
+        '1. Abrir la edición del mismo análisis en dos sesiones.\n2. Agregar una fila en una y guardar.\n3. Guardar la otra.',
+        'El segundo recibe un aviso de que la matriz cambió.',
+        'La fila nueva desaparece.',
+        2, 2, 0, 0, NULL, 3, '2026-10-04 02:26:00'),
+    (1, 75, 'BUG-020', 'Borrar un usuario borra las coevaluaciones que le hicieron', 'Usuarios',
+        'UsuarioModelo::eliminar solo frena con casos, evidencias o formularios. La cascada desde proyecto_miembros se lleva las coevaluaciones de otros, y la evaluación de Gloria queda a medias.',
+        '1. Coevaluar a un tester sin casos.\n2. Eliminarlo como admin.\n3. Abrir la auto y coevaluación de quien lo evaluó.',
+        'No deja eliminarlo, o la coevaluación se conserva.',
+        'Se borra y la página dice "Coevaluación de ." sin nombre.',
+        3, 2, 0, 0, NULL, 1, '2026-10-04 02:36:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
