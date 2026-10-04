@@ -1331,6 +1331,15 @@ INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, p
     (1, 2, 3, 5, 5, NULL),
     (1, 2, 3, 6, 4, NULL);
 
+-- RF-14: formulario 7, del admin. Total 25 / 30. Biblioteca sin evaluar, para ver "Llenar rúbrica".
+INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por, evaluado_en) VALUES
+    (1, 1, 5, 1, '2026-10-04 04:10:00'),
+    (1, 2, 4, 1, '2026-10-04 04:10:00'),
+    (1, 3, 4, 1, '2026-10-04 04:10:00'),
+    (1, 4, 3, 1, '2026-10-04 04:10:00'),
+    (1, 5, 5, 1, '2026-10-04 04:10:00'),
+    (1, 6, 4, 1, '2026-10-04 04:10:00');
+
 -- RF-11: formulario 4. Condiciones en V/F, acciones con X; una celda sin marcar no tiene fila.
 INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
     -- RF-01 Iniciar sesión: AccesoServicio
@@ -1441,3 +1450,30 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (20, 3, 2, 1),
     (20, 4, 1, 1),
     (20, 5, 3, 1), (20, 5, 4, 1);
+
+-- F5. Medido con XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage. Solo PaginacionTest cubre código.
+-- Sentencias = líneas, decisiones = ramas, caminos = caminos. Xdebug no mide condiciones ni bucles.
+INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porcentaje, herramienta, guardado_por, guardado_en) VALUES
+    -- RNF-09 Desempeño: Paginacion
+    (14, 11, 4, 4, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
+    (14, 12, 12, 9, 75, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
+    (14, 16, 7, 3, 43, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00');
+
+-- RF-13: formulario 6, un plan por proyecto. El 1 no se cierra mientras BUG-003 (stopper) siga abierto.
+INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, objetivos, estrategia, recursos, cronograma,
+    criterios_aceptacion, riesgos, estado, actualizado_en) VALUES
+    (1, '1.0', 2, '2026-10-01',
+        'Se prueban acceso, roles, casos, resultados con evidencia, incidentes y los 10 formularios. No se prueba la carga con muchos usuarios ni otros navegadores fuera de Chrome, Firefox y Edge.',
+        'Comprobar cada RF del IR con al menos un caso.\nEncontrar los defectos antes de la entrega y registrarlos en el formulario 10.\nDejar evidencia de cada caso OK o FAULT.',
+        3,
+        'Gloria y Pan como testers. PHPUnit, PHPStan, navegador con herramientas de desarrollo y lector de pantalla NVDA.',
+        'Semana 1: requerimientos y diseño de casos.\nSemana 2: técnicas de caja negra y blanca.\nSemana 3: ejecución y registro de incidentes.\nSemana 4: regresión y reporte de cierre.',
+        'Todos los RF de prioridad Alta con su caso en OK. Ningún incidente stopper abierto. Cada FAULT con su incidente.',
+        'Poco tiempo para la regresión: se prioriza por severidad.\nCambios del IR a última hora: los casos apuntan al requerimiento y se revisan al cambiarlo.',
+        1, '2026-10-02 18:20:00'),
+    (2, '0.1', 2, '2026-10-02',
+        'Préstamo y devolución de libros. No entra el inventario ni las multas en línea.',
+        'Validar los límites de préstamo y la regla de multas.',
+        1, NULL, NULL,
+        'Las reglas de préstamo de RF-01 cumplidas en todas sus particiones.',
+        NULL, 0, '2026-10-02 19:05:00');

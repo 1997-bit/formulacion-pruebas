@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Config\Conexion;
+
+// F7: una fila por (proyecto, criterio). El total es SUM(puntos).
+final class RubricaModelo
+{
+    /**
+     * Null si el proyecto no tiene rúbrica.
+     *
+     * @return array{puntos: array<int, int>, total: int, autor: string, guardado_en: string}|null
+     */
+    public static function deProyecto(int $proyectoId): ?array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT r.criterio, r.puntos, u.nombre AS autor, r.evaluado_en
+             FROM rubrica_evaluaciones r JOIN usuarios u ON u.id = r.evaluado_por
+             WHERE r.proyecto_id = ? ORDER BY r.criterio'
+        );
+        $sql->execute([$proyectoId]);
+        $filas = $sql->fetchAll(\PDO::FETCH_ASSOC);
+        if ($filas === []) {
+            return null;
+        }
+
+        $puntos = array_map(intval(...), array_column($filas, 'puntos', 'criterio'));
+
+        return ['puntos' => $puntos, 'total' => array_sum($puntos), 'autor' => $filas[0]['autor'], 'guardado_en' => $filas[0]['evaluado_en']];
+    }
+
+    /** @return array<int, int> proyecto_id => total */
+    public static function totales(): array
+    {
+        $sql = Conexion::pdo()->query('SELECT proyecto_id, SUM(puntos) FROM rubrica_evaluaciones GROUP BY proyecto_id');
+
+        return array_map(intval(...), $sql->fetchAll(\PDO::FETCH_KEY_PAIR));
+    }
+
+    /**
+     * Borra la rúbrica del proyecto y la vuelve a insertar. Dentro de una transacción.
+     *
+     * @param array<int, int> $puntos criterio => puntos
+     */
+    public static function reemplazar(int $proyectoId, int $usuarioId, array $puntos): void
+    {
+        $pdo = Conexion::pdo();
+        $pdo->prepare('DELETE FROM rubrica_evaluaciones WHERE proyecto_id = ?')->execute([$proyectoId]);
+        $sql = $pdo->prepare('INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por) VALUES (?, ?, ?, ?)');
+        foreach ($puntos as $criterio => $p) {
+            $sql->execute([$proyectoId, $criterio, $p, $usuarioId]);
+        }
+    }
+}

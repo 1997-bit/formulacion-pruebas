@@ -140,10 +140,12 @@
     });
     document.querySelectorAll('output[data-porcentaje]').forEach((salida) => {
       const fila = salida.closest('tr');
-      const total = Number(fila.querySelector('[data-parte="total"]')?.value);
-      const cubiertos = Number(fila.querySelector('[data-parte="cubiertos"]')?.value);
-      const porcentaje = total > 0 ? Math.min(100, Math.round((cubiertos / total) * 100)) : 0;
-      salida.textContent = total > 0 ? `${porcentaje} %` : '—';
+      const total = fila.querySelector('[data-parte="total"]')?.value ?? '';
+      const cubiertos = fila.querySelector('[data-parte="cubiertos"]')?.value ?? '';
+      // Mismo redondeo que CoberturaServicio::porcentaje(): multiplicar antes de dividir.
+      const valido = /^\d+$/.test(total) && /^\d+$/.test(cubiertos) && Number(total) > 0 && Number(cubiertos) <= Number(total);
+      const porcentaje = valido ? Math.round((Number(cubiertos) * 100) / Number(total)) : 0;
+      salida.textContent = valido ? `${porcentaje} %` : '—';
       const medidor = fila.querySelector('meter');
       if (medidor) medidor.value = porcentaje;
     });
