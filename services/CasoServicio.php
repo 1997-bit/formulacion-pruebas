@@ -55,8 +55,8 @@ final class CasoServicio
                 'codigo' => $codigo,
                 ...self::campos($d),
                 'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] ?: null,
-                'observaciones' => $d['observaciones'] ?: null,
+                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
                 'creado_por' => $usuario['id'],
                 'anotado_por' => $anotado ? $usuario['id'] : null,
                 'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
@@ -156,8 +156,8 @@ final class CasoServicio
             $antes = CasoModelo::bloquear($id);
             $resultado = [
                 'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] ?: null,
-                'observaciones' => $d['observaciones'] ?: null,
+                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
             ];
             CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
             Historial::registrar($id, $antes, $resultado, $usuario['id']);
@@ -289,9 +289,9 @@ final class CasoServicio
             'subtecnica' => (int) $d['subtecnica'],
             'modulo' => $d['modulo'],
             'plataforma' => (int) $d['plataforma'],
-            'entorno' => $d['entorno'] ?: null,
+            'entorno' => $d['entorno'] === '' ? null : $d['entorno'],
             'objetivo' => $d['objetivo'],
-            'precondiciones' => $d['precondiciones'] ?: null,
+            'precondiciones' => $d['precondiciones'] === '' ? null : $d['precondiciones'],
             'entrada' => $d['entrada'],
             'pasos' => $d['pasos'],
             'resultado_esperado' => $d['resultado_esperado'],
