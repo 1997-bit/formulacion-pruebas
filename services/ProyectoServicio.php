@@ -59,7 +59,7 @@ final class ProyectoServicio
         $nombre = trim($datos['nombre']);
         $descripcion = trim($datos['descripcion']);
         $testers = array_column(self::testers($actor), 'id');
-        $miembros = array_map('intval', $datos['miembros']);
+        $miembros = array_map(intval(...), $datos['miembros']);
 
         (new Validador())
             ->requerido('nombre', $nombre)

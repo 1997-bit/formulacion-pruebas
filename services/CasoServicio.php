@@ -329,7 +329,7 @@ final class CasoServicio
      */
     private static function tipos(array $marcadas): array
     {
-        return array_values(array_intersect(array_keys(self::EVIDENCIAS), array_map('intval', $marcadas)));
+        return array_values(array_intersect(array_keys(self::EVIDENCIAS), array_map(intval(...), $marcadas)));
     }
 
     /**

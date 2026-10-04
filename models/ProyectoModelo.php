@@ -37,7 +37,7 @@ final class ProyectoModelo
         $sql = Conexion::pdo()->prepare('SELECT usuario_id FROM proyecto_miembros WHERE proyecto_id = ?');
         $sql->execute([$id]);
 
-        return array_map('intval', $sql->fetchAll(\PDO::FETCH_COLUMN));
+        return array_map(intval(...), $sql->fetchAll(\PDO::FETCH_COLUMN));
     }
 
     /**
