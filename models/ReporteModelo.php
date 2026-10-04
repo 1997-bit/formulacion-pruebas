@@ -24,7 +24,8 @@ final class ReporteModelo
                     COALESCE(SUM(c.estado = 0), 0) AS pendientes,
                     COALESCE(SUM(c.estado = 1), 0) AS ok,
                     COALESCE(SUM(c.estado = 2), 0) AS fault,
-                    COALESCE(SUM(c.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)), 0) AS sin_evidencia,
+                    COALESCE(SUM(c.estado <> 0 AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)), 0) AS sin_evidencia,
+                    COALESCE(SUM(c.estado = 2 AND NOT EXISTS (SELECT 1 FROM incidentes i WHERE i.caso_id = c.id)), 0) AS fault_sin_incidente,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2) AS incidentes_abiertos,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2 AND i.es_stopper = 1) AS stoppers
              FROM proyectos p
@@ -38,7 +39,7 @@ final class ReporteModelo
         // SUM devuelve DECIMAL: PDO lo trae como texto.
         $filas = $sql->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($filas as &$f) {
-            foreach (['pendientes', 'ok', 'fault', 'sin_evidencia'] as $columna) {
+            foreach (['pendientes', 'ok', 'fault', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
                 $f[$columna] = (int) $f[$columna];
             }
         }
@@ -47,18 +48,24 @@ final class ReporteModelo
         return $filas;
     }
 
-    /** @return list<array<string, mixed>> */
+    /**
+     * Con resultado y sin evidencia: RF-24 no lo permite.
+     *
+     * @return list<array<string, mixed>>
+     */
     public static function casosSinEvidencia(int $proyectoId): array
     {
-        $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.objetivo, c.estado
-             FROM casos_prueba c
-             WHERE c.proyecto_id = ? AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)
-             ORDER BY c.codigo'
-        );
-        $sql->execute([$proyectoId]);
+        return self::casos($proyectoId, 'c.estado <> 0 AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)');
+    }
 
-        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    /**
+     * FAULT sin defecto registrado (RF-19).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function faultSinIncidente(int $proyectoId): array
+    {
+        return self::casos($proyectoId, 'c.estado = 2 AND NOT EXISTS (SELECT 1 FROM incidentes i WHERE i.caso_id = c.id)');
     }
 
     /** @return list<array<string, mixed>> */
@@ -70,6 +77,22 @@ final class ReporteModelo
              JOIN casos_prueba c ON c.id = i.caso_id
              WHERE i.proyecto_id = ? AND i.es_stopper = 1 AND i.estado <> 2
              ORDER BY i.severidad DESC, i.codigo'
+        );
+        $sql->execute([$proyectoId]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * $condicion es fija del modelo, nunca de la petición.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private static function casos(int $proyectoId, string $condicion): array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.estado FROM casos_prueba c
+             WHERE c.proyecto_id = ? AND ' . $condicion . ' ORDER BY c.codigo'
         );
         $sql->execute([$proyectoId]);
 

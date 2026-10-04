@@ -2,21 +2,29 @@
 declare(strict_types=1);
 
 use App\Helpers\Catalogo;
+use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
  * RF-23: cierre de un proyecto, imprimible.
  *
- * @var array<string, mixed> $proyecto  con criterios, go, casos_sin_evidencia y stoppers_abiertos
+ * @var array<string, mixed> $proyecto  con criterios, go, listas de casos y stoppers_abiertos
+ * @var array<string, mixed> $usuario
  */
 
 $p = $proyecto;
+$ahora = new DateTime();
+$listas = [
+    ['ci-evidencia', 'Casos con resultado sin evidencia', $p['casos_sin_evidencia']],
+    ['ci-fault', 'Casos FAULT sin incidente', $p['casos_fault_sin_incidente']],
+];
 ?>
 <header class="encabezado">
   <div>
     <p class="antetitulo"><?= Html::e($p['nombre']) ?></p>
     <h1>Reporte de cierre</h1>
+    <p class="campo-ayuda">Generado el <?= Fecha::legible($ahora) ?> a las <?= $ahora->format('H:i') ?> por <?= Html::e($usuario['nombre']) ?>.</p>
     <p class="fila">Decisión <?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></p>
   </div>
   <div class="acciones">
@@ -26,10 +34,10 @@ $p = $proyecto;
 
 <div class="pila">
   <div class="cifras">
-    <?php foreach ([['Casos', 'clipboard-list', 'casos'], ['OK', 'circle-check', 'ok'], ['FAULT', 'circle-x', 'fault'], ['Pendientes', 'circle-alert', 'pendientes']] as [$etiqueta, $icono, $clave]): ?>
+    <?php foreach ([['Casos', 'clipboard-list', 'casos', ''], ['OK', 'circle-check', 'ok', ''], ['FAULT', 'circle-x', 'fault', ''], ['Pendientes', 'circle-alert', 'pendientes', ''], ['Aprobación', 'chart-column', 'aprobacion', ' %']] as [$etiqueta, $icono, $clave, $unidad]): ?>
       <div class="tarjeta cifra">
         <p class="cifra-etiqueta"><?= $etiqueta ?> <?= Icono::svg($icono) ?></p>
-        <p class="cifra-valor"><?= (int) $p[$clave] ?></p>
+        <p class="cifra-valor"><?= (int) $p[$clave] . $unidad ?></p>
       </div>
     <?php endforeach; ?>
   </div>
@@ -56,29 +64,31 @@ $p = $proyecto;
     </div>
   </section>
 
-  <section class="tarjeta" aria-labelledby="ci-evidencia">
-    <header class="tarjeta-encabezado">
-      <h2 class="tarjeta-titulo" id="ci-evidencia">Casos sin evidencia</h2>
-      <p class="tarjeta-descripcion"><?= count($p['casos_sin_evidencia']) ?> caso(s).</p>
-    </header>
-    <?php if ($p['casos_sin_evidencia']): ?>
-      <div class="tabla-contenedor">
-        <table class="tabla tabla-tarjetas">
-          <caption class="solo-lector">Casos sin evidencia</caption>
-          <thead><tr><th scope="col">Código</th><th scope="col">Objetivo</th><th scope="col">Estado</th></tr></thead>
-          <tbody>
-            <?php foreach ($p['casos_sin_evidencia'] as $c): ?>
-              <tr>
-                <td data-columna="Código"><a class="codigo" href="/casos/resultado?id=<?= (int) $c['id'] ?>"><?= Html::e($c['codigo']) ?></a></td>
-                <td data-columna="Objetivo" class="celda-larga"><?= Html::e($c['objetivo']) ?></td>
-                <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $c['estado']) ?></td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-    <?php endif; ?>
-  </section>
+  <?php foreach ($listas as [$id, $titulo, $casos]): ?>
+    <section class="tarjeta" aria-labelledby="<?= $id ?>">
+      <header class="tarjeta-encabezado">
+        <h2 class="tarjeta-titulo" id="<?= $id ?>"><?= $titulo ?></h2>
+        <p class="tarjeta-descripcion"><?= count($casos) ?> caso(s).</p>
+      </header>
+      <?php if ($casos): ?>
+        <div class="tabla-contenedor">
+          <table class="tabla tabla-tarjetas">
+            <caption class="solo-lector"><?= $titulo ?></caption>
+            <thead><tr><th scope="col">Código</th><th scope="col">Objetivo</th><th scope="col">Estado</th></tr></thead>
+            <tbody>
+              <?php foreach ($casos as $c): ?>
+                <tr>
+                  <td data-columna="Código"><a class="codigo" href="/casos/resultado?id=<?= (int) $c['id'] ?>"><?= Html::e($c['codigo']) ?></a></td>
+                  <td data-columna="Objetivo" class="celda-larga"><?= Html::e($c['objetivo']) ?></td>
+                  <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $c['estado']) ?></td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php endif; ?>
+    </section>
+  <?php endforeach; ?>
 
   <section class="tarjeta" aria-labelledby="ci-stoppers">
     <header class="tarjeta-encabezado">
