@@ -8,13 +8,6 @@ use App\Config\Conexion;
 
 final class HistorialModelo
 {
-    public static function crear(int $casoId, int $usuarioId, string $campo, ?string $antes, ?string $despues): void
-    {
-        Conexion::pdo()->prepare(
-            'INSERT INTO logs_cambios (caso_id, usuario_id, campo, antes, despues) VALUES (?, ?, ?, ?, ?)'
-        )->execute([$casoId, $usuarioId, $campo, $antes, $despues]);
-    }
-
     /** @return list<array<string, mixed>> */
     public static function deCaso(int $casoId): array
     {
