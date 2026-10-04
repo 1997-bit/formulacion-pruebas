@@ -32,13 +32,12 @@ use App\Helpers\Icono;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Coberturas por requerimiento</caption>
         <thead>
-          <tr><th scope="col">Requerimiento</th><th scope="col">Descripción</th><th scope="col">Proyecto</th><th scope="col">Métricas</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+          <tr><th scope="col">Requerimiento</th><th scope="col">Proyecto</th><th scope="col">Métricas</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
         </thead>
         <tbody>
           <?php foreach ($requerimientos as $r): ?>
             <tr>
               <td data-columna="Requerimiento"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
-              <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
               <td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td>
               <td data-columna="Métricas"><?= $r['filas'] ? (int) $r['filas'] : '<span class="insignia insignia-borde">Sin cobertura</span>' ?></td>
               <td class="celda-acciones">
