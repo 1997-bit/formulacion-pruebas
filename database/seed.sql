@@ -1898,7 +1898,14 @@ INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
     ('BUG-026', 132, '2026-10-04 13:42:00', 'id=3, de otro proyecto, e id=9999 responden los dos 404.'),
     ('BUG-038', 132, '2026-10-04 13:42:00', 'La lista ordena SIS-100, SIS-101, SIS-999 y SIS-1000.'),
     ('BUG-049', 132, '2026-10-04 13:42:00', 'Con 20 000 casos la paginación muestra 8 enlaces: la primera, la última y 5 alrededor de la actual.'),
-    ('BUG-050', 132, '2026-10-04 13:42:00', 'Registrar incidente pide el código del caso y no carga un selector. Con 20 000 casos responde en 1,3 ms.');
+    ('BUG-050', 132, '2026-10-04 13:42:00', 'Registrar incidente pide el código del caso y no carga un selector. Con 20 000 casos responde en 1,3 ms.'),
+    -- Fase 2, escrituras
+    ('BUG-001', 133, '2026-10-04 14:23:00', 'Un 0 en Entorno y en Precondiciones se guarda como 0.'),
+    ('BUG-007', 133, '2026-10-04 14:23:00', 'Guardar el proyecto sin cambiar los miembros conserva las 12 filas de autoevaluación.'),
+    ('BUG-018', 133, '2026-10-04 14:23:00', 'La segunda edición recibe "Otro usuario guardó antes. Revise los datos y guarde de nuevo." y conserva lo escrito.'),
+    ('BUG-019', 133, '2026-10-04 14:23:00', 'La segunda edición de la matriz recibe "Otro usuario guardó antes." La fila nueva de la primera se conserva.'),
+    ('BUG-031', 133, '2026-10-04 14:23:00', 'Dos envíos seguidos crean un solo caso. Los dos llevan al caso creado.'),
+    ('BUG-033', 133, '2026-10-04 14:23:00', 'Después del eliminar rechazado, editar gloria y editar el proyecto muestran sus datos y responden 200.');
 
 -- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
