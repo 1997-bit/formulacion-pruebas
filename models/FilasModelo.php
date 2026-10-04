@@ -33,10 +33,22 @@ final class FilasModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    /** @return array<int, int> requerimiento_id => filas */
-    public static function contar(string $tabla): array
+    /**
+     * Solo los requerimientos de la página: a lo más 20 grupos (#108).
+     *
+     * @param list<int> $requerimientos
+     * @return array<int, int> requerimiento_id => filas
+     */
+    public static function contar(string $tabla, array $requerimientos): array
     {
-        $sql = Conexion::pdo()->query("SELECT requerimiento_id, COUNT(*) FROM {$tabla} GROUP BY requerimiento_id");
+        if ($requerimientos === []) {
+            return [];
+        }
+        $sql = Conexion::pdo()->prepare(
+            "SELECT requerimiento_id, COUNT(*) FROM {$tabla} WHERE requerimiento_id IN ("
+            . implode(', ', array_fill(0, count($requerimientos), '?')) . ') GROUP BY requerimiento_id'
+        );
+        $sql->execute($requerimientos);
 
         return array_map(intval(...), $sql->fetchAll(\PDO::FETCH_KEY_PAIR));
     }

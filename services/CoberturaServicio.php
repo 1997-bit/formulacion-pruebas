@@ -58,7 +58,7 @@ final class CoberturaServicio
     public static function pagina(array $usuario, int $pagina): array
     {
         [$requerimientos, $paginacion] = RequerimientoServicio::pagina($usuario, $pagina);
-        $filas = FilasModelo::contar(self::TABLA);
+        $filas = FilasModelo::contar(self::TABLA, array_column($requerimientos, 'id'));
         foreach ($requerimientos as &$r) {
             $r['filas'] = $filas[$r['id']] ?? 0;
         }
