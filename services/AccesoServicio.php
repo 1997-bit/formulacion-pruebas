@@ -41,21 +41,16 @@ final class AccesoServicio
     }
 
     /**
-     * Cada petición: null si el usuario ya no existe o cambió su clave o su rol (BUG-003, BUG-023).
+     * Cada petición: el usuario con sus proyectos, o null si ya no existe o cambió su clave o su rol (BUG-003, BUG-023).
      *
      * @param array<string, mixed> $sesion
-     * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int}|null
+     * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int, proyectos: list<int>}|null
      */
     public static function vigente(array $sesion): ?array
     {
         $fila = UsuarioModelo::deSesion((int) $sesion['id']);
-        if ($fila === null || $fila['sesion_version'] !== ($sesion['sesion_version'] ?? null)) {
-            return null;
-        }
-        Permisos::cargar($fila['id'], $fila['proyectos']);
-        unset($fila['proyectos']);
 
-        return $fila;
+        return $fila !== null && $fila['sesion_version'] === ($sesion['sesion_version'] ?? null) ? $fila : null;
     }
 
     private static function frenar(string $llave): void

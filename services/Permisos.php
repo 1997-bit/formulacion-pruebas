@@ -6,14 +6,10 @@ namespace App\Services;
 
 use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
-use App\Models\ProyectoModelo;
 
 // Matriz 7.1 del IR.
 final class Permisos
 {
-    /** @var array<int, array<int, true>> usuario => proyectos. Una consulta por petición (#109). */
-    private static array $proyectos = [];
-
     /** @param array<string, mixed> $usuario */
     public static function exigirAdmin(array $usuario): void
     {
@@ -26,32 +22,21 @@ final class Permisos
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
-        if ($usuario['rol'] !== 1 && !isset(self::de($usuario['id'])[$proyectoId])) {
+        if ($usuario['rol'] !== 1 && !in_array($proyectoId, $usuario['proyectos'], true)) {
             throw new ErrorNoEncontrado();
         }
     }
 
     /**
      * Proyectos que el usuario puede ver en una lista. null: admin, todos.
+     * Vienen con el usuario de la sesión, leído en cada petición (#109).
      *
      * @param array<string, mixed> $usuario
      * @return list<int>|null
      */
     public static function proyectos(array $usuario): ?array
     {
-        return $usuario['rol'] === 1 ? null : array_keys(self::de($usuario['id']));
-    }
-
-    /** @param list<int> $proyectos Ya leídos con el usuario de la sesión: ahorra la consulta. */
-    public static function cargar(int $usuarioId, array $proyectos): void
-    {
-        self::$proyectos[$usuarioId] = array_fill_keys($proyectos, true);
-    }
-
-    /** @return array<int, true> */
-    private static function de(int $usuarioId): array
-    {
-        return self::$proyectos[$usuarioId] ??= array_fill_keys(ProyectoModelo::deUsuario($usuarioId), true);
+        return $usuario['rol'] === 1 ? null : $usuario['proyectos'];
     }
 
     /**
