@@ -32,7 +32,7 @@ final class CasoServicio
     public static function registrar(array $datos, array $marcadas, array $archivos, array $usuario): array
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1), null, 'id');
+        $requerimientos = array_column(RequerimientoModelo::listar(Permisos::proyectos($usuario)), null, 'id');
         $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
         $tipos = self::tipos($marcadas);
 
@@ -126,7 +126,7 @@ final class CasoServicio
      */
     public static function requerimientos(array $caso, array $usuario): array
     {
-        $todos = RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+        $todos = RequerimientoModelo::listar(Permisos::proyectos($usuario));
 
         return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
     }

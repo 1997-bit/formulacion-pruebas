@@ -44,6 +44,7 @@ CREATE TABLE requerimientos (
     no_funcional TINYINT NOT NULL DEFAULT 0,
     numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- RF-01 -> 1
     UNIQUE (proyecto_id, codigo),
+    INDEX (proyecto_id, no_funcional, numero), -- orden de la lista
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

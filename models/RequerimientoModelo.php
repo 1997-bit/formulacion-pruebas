@@ -13,32 +13,39 @@ final class RequerimientoModelo
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * $offset null: todos.
+     * $offset null: todos. Orden del índice (proyecto_id, no_funcional, numero): sin filesort.
+     * Con $offset, la subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
      *
+     * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
      */
-    public static function listar(int $usuarioId, bool $admin, ?int $offset = null): array
+    public static function listar(?array $proyectos, ?int $offset = null): array
     {
+        [$condiciones, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $donde = $condiciones === [] ? '' : ' WHERE ' . $condiciones[0];
+        $orden = ' ORDER BY r.proyecto_id, r.no_funcional, r.numero';
+        if ($offset !== null) {
+            $desde = '(SELECT r.id FROM requerimientos r' . $donde . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ')
+                      k JOIN requerimientos r ON r.id = k.id';
+            $donde = '';
+        }
         $sql = Conexion::pdo()->prepare(
             'SELECT r.id, r.proyecto_id, r.codigo, r.descripcion, r.no_funcional, p.nombre AS proyecto,
                     (SELECT COUNT(*) FROM casos_prueba c WHERE c.requerimiento_id = r.id) AS casos
-             FROM requerimientos r
-             JOIN proyectos p ON p.id = r.proyecto_id
-             WHERE ' . self::PERMITIDO . '
-             ORDER BY p.nombre, r.no_funcional, r.numero'
-             . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
+             FROM ' . ($desde ?? 'requerimientos r') . '
+             JOIN proyectos p ON p.id = r.proyecto_id' . $donde . $orden
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public static function contar(int $usuarioId, bool $admin): int
+    /** @param list<int>|null $proyectos Permisos::proyectos() */
+    public static function contar(?array $proyectos): int
     {
-        $sql = Conexion::pdo()->prepare(
-            'SELECT COUNT(*) FROM requerimientos r JOIN proyectos p ON p.id = r.proyecto_id WHERE ' . self::PERMITIDO
-        );
-        $sql->execute([(int) $admin, $usuarioId]);
+        [$condiciones, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM requerimientos r' . ($condiciones === [] ? '' : ' WHERE ' . $condiciones[0]));
+        $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }

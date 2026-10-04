@@ -44,7 +44,7 @@ final class RequerimientoServicio
      */
     public static function listar(array $usuario): array
     {
-        return RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+        return RequerimientoModelo::listar(Permisos::proyectos($usuario));
     }
 
     /**
@@ -55,10 +55,10 @@ final class RequerimientoServicio
      */
     public static function pagina(array $usuario, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(RequerimientoModelo::contar($usuario['id'], $admin), $pagina);
+        $proyectos = Permisos::proyectos($usuario);
+        $paginacion = new Paginacion(RequerimientoModelo::contar($proyectos), $pagina);
 
-        return [RequerimientoModelo::listar($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [RequerimientoModelo::listar($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**
