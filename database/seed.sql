@@ -724,7 +724,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'El foco pasa por unos 10 elementos del menú cerrado, fuera de la pantalla, sin anillo visible, antes de llegar al botón Menú.',
         'En móvil el sidebar solo se mueve con translate: -100%; sigue en el orden de tabulación. Ver BUG-012.',
-        2, '2026-10-04 01:10:00', 2, '2026-10-04 01:15:00');
+        2, '2026-10-04 01:10:00', 2, '2026-10-04 01:15:00'),
+    (68, 1, 16, 'SIS-030', 3, 2, 'Interfaz', 1,
+        'Linux, Chrome, zoom 110 %',
+        'Verificar el menú en la frontera entre celular y escritorio.',
+        'Sesión iniciada como gloria.',
+        'Ancho del área visible: 767.8, 767.9 y 768 px CSS',
+        '1. Con zoom 110 %, ajustar la ventana hasta 767.9 px CSS (window.innerWidth con decimales).\n2. Pulsar el botón Menú.',
+        'En los tres anchos el menú se comporta como celular o como escritorio.',
+        '2026-10-04', '2026-10-04',
+        2, 'En 767.9 px no aplica ninguno de los dos estilos: el sidebar se queda abierto al lado del contenido y el botón Menú no lo cierra.',
+        'app.css usa max-width: 47.99rem (767.84 px) y min-width: 48rem; app.js usa min-width: 48rem. Ver BUG-013.',
+        2, '2026-10-04 01:20:00', 2, '2026-10-04 01:25:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -740,7 +751,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (64, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/CasoModelo.php', 'CasoModelo::anotar: anotado_por = ? sin mirar el estado.', 3, '2026-10-04 00:45:00'),
     (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-04 00:55:00'),
     (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-04 01:05:00'),
-    (67, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', '@media (max-width: 47.99rem): .sidebar con translate, sin visibility ni inert.', 2, '2026-10-04 01:15:00');
+    (67, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', '@media (max-width: 47.99rem): .sidebar con translate, sin visibility ni inert.', 2, '2026-10-04 01:15:00'),
+    (68, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', 'Media queries 48rem y 47.99rem: queda un hueco de 0.16 px.', 2, '2026-10-04 01:25:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -816,7 +828,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Abrir el sistema en ancho de celular.\n2. Tabular desde el inicio.',
         'El menú cerrado no recibe foco: visibility: hidden o inert mientras está cerrado.',
         'El foco recorre el menú invisible antes de llegar al contenido.',
-        2, 2, 0, 0, NULL, 2, '2026-10-04 01:16:00');
+        2, 2, 0, 0, NULL, 2, '2026-10-04 01:16:00'),
+    (1, 68, 'BUG-013', 'Entre 767.84 y 768 px el botón Menú no hace nada', 'Interfaz',
+        'Las media queries del sidebar son (min-width: 48rem) y (max-width: 47.99rem). Con zoom el ancho tiene decimales y puede caer en medio: no aplica ninguna, y app.js lo trata como celular.',
+        '1. Poner zoom 110 %.\n2. Ajustar la ventana a 767.9 px CSS.\n3. Pulsar Menú.',
+        'Siempre aplica un estilo: usar (width < 48rem) y (width >= 48rem).',
+        'El sidebar se queda abierto y el botón no lo cierra.',
+        1, 1, 0, 0, NULL, 2, '2026-10-04 01:26:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
