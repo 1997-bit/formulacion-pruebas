@@ -42,6 +42,12 @@ final class Permisos
         return $usuario['rol'] === 1 ? null : array_keys(self::de($usuario['id']));
     }
 
+    /** @param list<int> $proyectos Ya leídos con el usuario de la sesión: ahorra la consulta. */
+    public static function cargar(int $usuarioId, array $proyectos): void
+    {
+        self::$proyectos[$usuarioId] = array_fill_keys($proyectos, true);
+    }
+
     /** @return array<int, true> */
     private static function de(int $usuarioId): array
     {
