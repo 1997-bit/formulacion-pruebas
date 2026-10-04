@@ -28,8 +28,9 @@ final class Respuesta
      */
     public static function errores(array $errores, array $datos, string $ruta): never
     {
-        $_SESSION['errores'] = $errores;
-        $_SESSION['datos'] = $datos;
+        // Por ruta (#103): otro formulario no los toma.
+        $_SESSION['errores'] = [$ruta => $errores];
+        $_SESSION['datos'] = [$ruta => $datos];
         self::redirigir($ruta);
     }
 
