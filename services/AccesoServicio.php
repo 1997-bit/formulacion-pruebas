@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\ErrorValidacion;
+use App\Models\IntentoModelo;
 use App\Models\UsuarioModelo;
 
 // RF-01, RF-02
@@ -16,12 +17,27 @@ final class AccesoServicio
     /** @return array{id: int, nombre: string, usuario: string, rol: int} */
     public static function entrar(string $usuario, string $clave): array
     {
-        $fila = UsuarioModelo::porUsuario(trim($usuario));
+        $usuario = trim($usuario);
+        $llave = mb_substr('u:' . $usuario, 0, 64);
+        // Antes del hash: un intento bloqueado no gasta CPU.
+        self::frenar($llave);
+
+        $fila = UsuarioModelo::porUsuario($usuario);
         if ($fila === null || !password_verify($clave, $fila['clave'])) {
+            IntentoModelo::fallar($llave);
             throw new ErrorValidacion(['general' => self::ERROR_ENTRAR]);
         }
+        IntentoModelo::borrar($llave);
 
         return ['id' => $fila['id'], 'nombre' => $fila['nombre'], 'usuario' => $fila['usuario'], 'rol' => $fila['rol']];
+    }
+
+    private static function frenar(string $llave): void
+    {
+        $espera = IntentoModelo::espera($llave);
+        if ($espera > 0) {
+            throw new ErrorValidacion(['general' => "Demasiados intentos. Espere {$espera} s."]);
+        }
     }
 
     // Siempre tester. Un admin solo se crea en UsuarioServicio.
