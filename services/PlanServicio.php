@@ -85,7 +85,7 @@ final class PlanServicio
         Permisos::exigirMiembro($usuario, $proyectoId);
 
         $d = array_map('trim', $datos);
-        $miembros = array_map('intval', array_column(self::miembros($proyectoId), 'id'));
+        $miembros = array_map(intval(...), array_column(self::miembros($proyectoId), 'id'));
         $v = (new Validador())
             ->requerido('version', $d['version'])
             ->regla('version', mb_strlen($d['version']) <= 20, 'Máximo 20 caracteres.')

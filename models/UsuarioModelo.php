@@ -35,7 +35,7 @@ final class UsuarioModelo
         if ($fila === false) {
             return null;
         }
-        $fila['proyectos'] = $fila['proyectos'] === null ? [] : array_map('intval', explode(',', $fila['proyectos']));
+        $fila['proyectos'] = $fila['proyectos'] === null ? [] : array_map(intval(...), explode(',', $fila['proyectos']));
 
         return $fila;
     }
