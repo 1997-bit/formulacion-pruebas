@@ -1,5 +1,12 @@
 Options -Indexes
 Require all granted
+
+# CSS y JS con ?v= (Vista::estatico): el navegador los guarda un año y no vuelve a pedirlos (#122).
+<IfModule mod_headers.c>
+    <If "%{QUERY_STRING} =~ /^v=\d+$/">
+        Header set Cache-Control "max-age=31536000, immutable"
+    </If>
+</IfModule>
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -15,6 +15,12 @@ final class Vista
         echo self::capturar($layout, $datos);
     }
 
+    // CSS o JS con su versión en la URL: un cambio en el archivo cambia la URL (#122).
+    public static function estatico(string $ruta): string
+    {
+        return $ruta . '?v=' . filemtime(RAIZ . '/public' . $ruta);
+    }
+
     /** @param array<string, mixed> $datos */
     public static function capturar(string $vista, array $datos = []): string
     {
