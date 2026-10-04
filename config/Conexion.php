@@ -23,9 +23,9 @@ final class Conexion
             self::$pdo = new \PDO($dsn, Env::get('DB_USER'), Env::get('DB_PASS'), [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_EMULATE_PREPARES => false,
+                // Misma zona que PHP, al conectar: un viaje menos a la base (#124).
+                \PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . date('P') . "'",
             ]);
-            // Misma zona que PHP
-            self::$pdo->exec("SET time_zone = '" . date('P') . "'");
         }
 
         return self::$pdo;
