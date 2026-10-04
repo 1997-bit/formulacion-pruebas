@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
 use App\Models\ProyectoModelo;
 
@@ -21,11 +22,12 @@ final class Permisos
         }
     }
 
+    // 404 y no 403: así no se sabe qué ids existen en otros proyectos (BUG-026).
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
         if ($usuario['rol'] !== 1 && !isset(self::de($usuario['id'])[$proyectoId])) {
-            throw new ErrorPermiso();
+            throw new ErrorNoEncontrado();
         }
     }
 

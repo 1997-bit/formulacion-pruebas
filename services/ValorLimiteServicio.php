@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
-use App\Core\ErrorPermiso;
+use App\Core\ErrorNoEncontrado;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
@@ -31,7 +31,7 @@ final class ValorLimiteServicio
      */
     public static function filas(int $requerimientoId, array $usuario): array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::deRequerimiento(self::TABLA, $requerimientoId);
     }
@@ -42,7 +42,7 @@ final class ValorLimiteServicio
      */
     public static function guardado(int $requerimientoId, array $usuario): ?array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::guardado(self::TABLA, $requerimientoId);
     }
@@ -74,7 +74,7 @@ final class ValorLimiteServicio
      */
     public static function guardar(int $requerimientoId, array $filas, array $usuario): void
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         $filas = array_map(fn (array $fila): array => array_map(trim(...), $fila), $filas);
         $v = (new Validador())

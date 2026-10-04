@@ -7,6 +7,7 @@ define('RAIZ', dirname(__DIR__));
 require RAIZ . '/core/bootstrap.php';
 
 use App\Core\Csrf;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
 use App\Core\Respuesta;
 use App\Core\Ruteador;
@@ -34,4 +35,6 @@ try {
     (new $clase())->{$ruta['accion']}();
 } catch (ErrorPermiso) {
     Respuesta::error(403);
+} catch (ErrorNoEncontrado) {
+    Respuesta::error(404);
 }

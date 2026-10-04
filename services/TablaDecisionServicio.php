@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
-use App\Core\ErrorPermiso;
+use App\Core\ErrorNoEncontrado;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
@@ -35,7 +35,7 @@ final class TablaDecisionServicio
      */
     public static function tabla(int $requerimientoId, array $usuario): array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         $filas = FilasModelo::deRequerimiento(self::TABLA, $requerimientoId);
         $condiciones = array_values(array_filter($filas, fn (array $f): bool => !$f['es_accion']));
@@ -94,7 +94,7 @@ final class TablaDecisionServicio
      */
     public static function guardado(int $requerimientoId, array $usuario): ?array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::guardado(self::TABLA, $requerimientoId);
     }
@@ -126,7 +126,7 @@ final class TablaDecisionServicio
      */
     public static function guardar(int $requerimientoId, array $tabla, array $usuario): void
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         ['condiciones' => $condiciones, 'acciones' => $acciones] = $tabla;
         $reglas = 2 ** count($condiciones);
