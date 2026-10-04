@@ -702,7 +702,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'El select Asignado a sale en Sin asignar. Si se elige a Gloria a mano responde "Valor no válido."; si se deja así, guarda y la quita sin avisar.',
         'Asignado a solo ofrece miembros actuales. Ver BUG-010.',
-        1, '2026-10-04 00:50:00', 1, '2026-10-04 00:55:00');
+        1, '2026-10-04 00:50:00', 1, '2026-10-04 00:55:00'),
+    (66, 1, 13, 'SEG-014', 9, 8, 'Acceso', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que solo el botón Cerrar sesión cierra la sesión.',
+        'Pan tiene la sesión abierta. Otra página tiene un enlace a /salir del sistema.',
+        'URL: /salir, abierta desde un enlace de otro sitio',
+        '1. Con la sesión abierta, pulsar el enlace en la otra página.\n2. Volver a /dashboard.',
+        'La sesión sigue abierta: cerrar sesión pide un POST con el token CSRF.',
+        '2026-10-04', '2026-10-04',
+        2, 'La sesión se cierra y /dashboard manda al inicio de sesión.',
+        'GET /salir no lleva token. Con SameSite=Lax no pasa desde un <img>, sí desde un enlace. Ver BUG-011.',
+        3, '2026-10-04 01:00:00', 3, '2026-10-04 01:05:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -716,7 +727,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (62, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/ProyectoModelo.php', 'ProyectoModelo::guardar: DELETE FROM proyecto_miembros al editar.', 1, '2026-10-04 00:25:00'),
     (63, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'validarCaso(): objetivo, entrada, pasos y resultado esperado sin máximo.', 2, '2026-10-04 00:35:00'),
     (64, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/CasoModelo.php', 'CasoModelo::anotar: anotado_por = ? sin mirar el estado.', 3, '2026-10-04 00:45:00'),
-    (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-04 00:55:00');
+    (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-04 00:55:00'),
+    (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-04 01:05:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -780,7 +792,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Asignar un incidente a un tester.\n2. Quitarlo del proyecto.\n3. Abrir el incidente, cambiar solo el estado y guardar.',
         'Cambia el estado y avisa que el asignado ya no es miembro.',
         'Cambia el estado y deja el incidente sin asignar sin avisar.',
-        2, 2, 0, 0, NULL, 1, '2026-10-04 00:56:00');
+        2, 2, 0, 0, NULL, 1, '2026-10-04 00:56:00'),
+    (1, 66, 'BUG-011', 'Un enlace de otro sitio cierra la sesión', 'Acceso',
+        'Cerrar sesión es GET /salir y no revisa el token CSRF. Cualquier enlace a esa URL saca al usuario y pierde lo que tenga sin guardar.',
+        '1. Iniciar sesión.\n2. Abrir un enlace a /salir desde otra página.\n3. Volver al sistema.',
+        'La sesión sigue abierta.',
+        'La sesión se cierra.',
+        1, 1, 0, 0, NULL, 3, '2026-10-04 01:06:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
