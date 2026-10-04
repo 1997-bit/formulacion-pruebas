@@ -41,10 +41,16 @@ final class AccesoServicio
     }
 
     // Siempre tester. Un admin solo se crea en UsuarioServicio.
-    public static function registrar(string $nombre, string $usuario, string $clave): int
+    // Cada cuenta creada cuenta como un intento de la IP.
+    public static function registrar(string $nombre, string $usuario, string $clave, string $ip): int
     {
+        $llave = 'ip:' . $ip;
+        self::frenar($llave);
         $d = UsuarioServicio::validar(['nombre' => $nombre, 'usuario' => $usuario, 'clave' => $clave, 'rol' => '0'], null);
 
-        return UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($clave, PASSWORD_ARGON2ID), 0);
+        $id = UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($clave, PASSWORD_ARGON2ID), 0);
+        IntentoModelo::fallar($llave);
+
+        return $id;
     }
 }
