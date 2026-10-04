@@ -70,16 +70,19 @@ final class EvidenciaModelo
     public static function portafolio(?array $proyectos, int $offset): array
     {
         [$donde, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $orden = ' ORDER BY e.subido_en DESC, e.id DESC';
+        // La subconsulta salta solo por el índice (#107). El admin no necesita el caso para filtrar.
+        $ids = $donde === []
+            ? 'SELECT e.id FROM evidencias e'
+            : 'SELECT e.id FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $donde[0];
         $sql = Conexion::pdo()->prepare(
             'SELECT e.id, e.tipo, e.nombre_original, e.enlace, e.descripcion, e.subido_en,
                     u.nombre AS autor, c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto
-             FROM evidencias e
+             FROM (' . $ids . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
+             JOIN evidencias e ON e.id = k.id
              JOIN casos_prueba c ON c.id = e.caso_id
              JOIN proyectos p ON p.id = c.proyecto_id
-             JOIN usuarios u ON u.id = e.subido_por'
-             . ($donde === [] ? '' : ' WHERE ' . $donde[0]) . '
-             ORDER BY e.subido_en DESC, e.id DESC
-             LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
+             JOIN usuarios u ON u.id = e.subido_por' . $orden
         );
         $sql->execute($valores);
 
