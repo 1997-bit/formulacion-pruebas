@@ -1331,6 +1331,15 @@ INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, p
     (1, 2, 3, 5, 5, NULL),
     (1, 2, 3, 6, 4, NULL);
 
+-- RF-14: formulario 7, del admin. Total 25 / 30. Biblioteca sin evaluar, para ver "Llenar rúbrica".
+INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por, evaluado_en) VALUES
+    (1, 1, 5, 1, '2026-10-04 04:10:00'),
+    (1, 2, 4, 1, '2026-10-04 04:10:00'),
+    (1, 3, 4, 1, '2026-10-04 04:10:00'),
+    (1, 4, 3, 1, '2026-10-04 04:10:00'),
+    (1, 5, 5, 1, '2026-10-04 04:10:00'),
+    (1, 6, 4, 1, '2026-10-04 04:10:00');
+
 -- RF-11: formulario 4. Condiciones en V/F, acciones con X; una celda sin marcar no tiene fila.
 INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
     -- RF-01 Iniciar sesión: AccesoServicio

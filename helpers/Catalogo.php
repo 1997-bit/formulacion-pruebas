@@ -7,16 +7,16 @@ namespace App\Helpers;
 // Lee y pinta config/catalogos.php. Clave int (PDO) o string ($_POST).
 final class Catalogo
 {
-    /** @var array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string}>}>|null */
+    /** @var array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string, niveles?: list<string>}>}>|null */
     private static ?array $catalogos = null;
 
-    /** @return array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string}>}> */
+    /** @return array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string, niveles?: list<string>}>}> */
     public static function todos(): array
     {
         return self::$catalogos ??= require RAIZ . '/config/catalogos.php';
     }
 
-    /** @return array<int, array{texto: string, variante: string, sigla?: string}> */
+    /** @return array<int, array{texto: string, variante: string, sigla?: string, niveles?: list<string>}> */
     public static function valores(string $catalogo): array
     {
         return self::todos()[$catalogo]['valores']

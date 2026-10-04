@@ -99,15 +99,16 @@ return [
             2 => ['texto' => 'Cerrado', 'variante' => 'exito'],
         ],
     ],
+    // niveles: descriptor de 5, 4, 3 y 1-2.
     'criterio_rubrica' => [
         'nombre' => 'Criterio de la rúbrica',
         'valores' => [
-            1 => ['texto' => 'Diseño de casos', 'variante' => 'borde'],
-            2 => ['texto' => 'Aplicación de técnicas', 'variante' => 'borde'],
-            3 => ['texto' => 'Cobertura', 'variante' => 'borde'],
-            4 => ['texto' => 'Uso de herramientas', 'variante' => 'borde'],
-            5 => ['texto' => 'Documentación', 'variante' => 'borde'],
-            6 => ['texto' => 'Presentación', 'variante' => 'borde'],
+            1 => ['texto' => 'Diseño de casos', 'variante' => 'borde', 'niveles' => ['Todos los casos bien documentados y justificados', 'La mayoría bien documentados', 'Algunos casos documentados', 'Casos incompletos o ausentes']],
+            2 => ['texto' => 'Aplicación de técnicas', 'variante' => 'borde', 'niveles' => ['Aplica correctamente caja negra y blanca', 'Aplica la mayoría correctamente', 'Aplica parcialmente', 'No aplica correctamente']],
+            3 => ['texto' => 'Cobertura', 'variante' => 'borde', 'niveles' => ['Alcanza más de 90 %', 'Alcanza 70 a 90 %', 'Alcanza 50 a 70 %', 'Menos de 50 %']],
+            4 => ['texto' => 'Uso de herramientas', 'variante' => 'borde', 'niveles' => ['Domina Selenium, PHPUnit, JMeter, TestCover', 'Usa la mayoría', 'Usa algunas', 'No usa herramientas']],
+            5 => ['texto' => 'Documentación', 'variante' => 'borde', 'niveles' => ['Completa, clara y organizada', 'Completa pero poco clara', 'Incompleta', 'Ausente']],
+            6 => ['texto' => 'Presentación', 'variante' => 'borde', 'niveles' => ['Excelente comunicación', 'Buena comunicación', 'Comunicación regular', 'Deficiente']],
         ],
     ],
     'aspecto_evaluacion' => [
