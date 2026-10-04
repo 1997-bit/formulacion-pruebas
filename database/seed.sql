@@ -746,7 +746,40 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'Tras el paso 1 solo sale el error de Observaciones; Captura sigue marcada, sin archivo y sin aviso. En el paso 3 sale "Es obligatorio." en Archivo.',
         'El navegador no puede volver a llenar un input file y el servidor descarta la subida. Ver BUG-014.',
-        2, '2026-10-04 01:30:00', 2, '2026-10-04 01:35:00');
+        2, '2026-10-04 01:30:00', 2, '2026-10-04 01:35:00'),
+    (70, 1, 1, 'SEG-015', 9, 1, 'Acceso', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que ninguna pantalla pública dice si un usuario existe.',
+        'Sin sesión. Existe gloria.',
+        'Login: gloria con clave mala; noexiste con clave mala\nRegistro: usuario gloria; usuario noexiste',
+        '1. Entrar con cada par del login y anotar el mensaje.\n2. Crear cuenta con cada usuario del registro y anotar el mensaje.',
+        'Ninguna de las dos pantallas distingue a gloria de noexiste.',
+        '2026-10-04', '2026-10-04',
+        2, 'El login dice lo mismo en los dos casos. El registro dice "Ese usuario ya existe." con gloria.',
+        'El registro sirve para saber qué usuarios existen. Ver BUG-015.',
+        2, '2026-10-04 01:40:00', 2, '2026-10-04 01:45:00'),
+    (71, 1, 15, 'SEG-016', 9, 8, 'Acceso', 1,
+        'Linux, curl, PHP 8.5, MariaDB',
+        'Verificar que el login frena los intentos fallidos seguidos.',
+        'Sin sesión. Existe gloria.',
+        'Usuario: gloria\nClaves: mala1 a mala10, una tras otra',
+        '1. Enviar los 10 intentos seguidos.\n2. Ver si alguno espera o se bloquea.',
+        'Después de unos intentos el login espera o pide esperar antes de probar de nuevo.',
+        '2026-10-04', '2026-10-04',
+        2, 'Los 10 intentos responden igual y al instante. No hay límite.',
+        'Permite probar claves sin freno. Ver BUG-016.',
+        2, '2026-10-04 01:50:00', 2, '2026-10-04 01:55:00'),
+    (72, 1, 15, 'SEG-017', 9, 8, 'Acceso', 1,
+        'Linux, curl, PHP 8.5, MariaDB',
+        'Verificar que el sistema no se puede cargar dentro de un iframe de otro sitio.',
+        'Servidor levantado.',
+        'Cabeceras de la respuesta de /',
+        '1. Pedir / con curl -D -.\n2. Buscar X-Frame-Options y Content-Security-Policy.',
+        'Sale X-Frame-Options: DENY o frame-ancestors ''none''.',
+        '2026-10-04', '2026-10-04',
+        2, 'No sale ninguna de las dos. Solo Set-Cookie.',
+        'Otro sitio puede poner el sistema en un iframe y llevar el clic a Eliminar. Ver BUG-017.',
+        2, '2026-10-04 02:00:00', 2, '2026-10-04 02:05:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -764,7 +797,10 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-04 01:05:00'),
     (67, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', '@media (max-width: 47.99rem): .sidebar con translate, sin visibility ni inert.', 2, '2026-10-04 01:15:00'),
     (68, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', 'Media queries 48rem y 47.99rem: queda un hueco de 0.16 px.', 2, '2026-10-04 01:25:00'),
-    (69, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/partials/resultado.php', 'Bloque de evidencias: sin aviso para volver a elegir el archivo.', 2, '2026-10-04 01:35:00');
+    (69, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/partials/resultado.php', 'Bloque de evidencias: sin aviso para volver a elegir el archivo.', 2, '2026-10-04 01:35:00'),
+    (70, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/UsuarioServicio.php', 'validar(): "Ese usuario ya existe." también en el registro público.', 2, '2026-10-04 01:45:00'),
+    (71, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/AccesoServicio.php', 'entrar(): sin contador de intentos.', 2, '2026-10-04 01:55:00'),
+    (72, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/index.php', 'Sin header() de X-Frame-Options ni CSP.', 2, '2026-10-04 02:05:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -852,7 +888,25 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Anotar OK con una captura y sin observaciones.\n2. Guardar.\n3. Llenar observaciones y guardar.',
         'Junto al archivo sale "Vuelva a elegir el archivo" desde el primer error.',
         'No avisa; en el segundo envío dice "Es obligatorio." en Archivo.',
-        1, 2, 0, 0, NULL, 2, '2026-10-04 01:36:00');
+        1, 2, 0, 0, NULL, 2, '2026-10-04 01:36:00'),
+    (1, 70, 'BUG-015', 'El registro dice qué usuarios existen', 'Acceso',
+        'El login no dice si el usuario existe (RF-01), pero el registro responde "Ese usuario ya existe.". Cualquiera sin sesión puede probar nombres.',
+        '1. Abrir Crear cuenta sin sesión.\n2. Escribir el usuario gloria y guardar.',
+        'Un mensaje que no confirme que gloria existe.',
+        '"Ese usuario ya existe."',
+        2, 2, 0, 0, NULL, 2, '2026-10-04 01:46:00'),
+    (1, 71, 'BUG-016', 'El login no limita los intentos fallidos', 'Acceso',
+        'AccesoServicio::entrar no cuenta intentos. Se pueden probar claves sin espera ni bloqueo.',
+        '1. Enviar 10 claves malas seguidas para gloria.',
+        'Tras varios fallos, espera o bloqueo temporal.',
+        'Los 10 intentos se procesan igual.',
+        3, 2, 0, 0, NULL, 2, '2026-10-04 01:56:00'),
+    (1, 72, 'BUG-017', 'Las páginas se pueden cargar en un iframe ajeno', 'Acceso',
+        'No se envían X-Frame-Options ni Content-Security-Policy. Un sitio puede cubrir el sistema y hacer que el usuario pulse Eliminar sin verlo (clickjacking).',
+        '1. Pedir cualquier página con curl -D -.\n2. Revisar las cabeceras.',
+        'X-Frame-Options: DENY o frame-ancestors ''none''.',
+        'No hay ninguna de las dos.',
+        2, 2, 0, 0, NULL, 2, '2026-10-04 02:06:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
