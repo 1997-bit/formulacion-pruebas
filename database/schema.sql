@@ -128,6 +128,7 @@ CREATE TABLE evidencias (
     descripcion VARCHAR(255) NOT NULL,
     subido_por INT UNSIGNED NOT NULL,
     subido_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX (subido_en), -- orden del portafolio
     CHECK ((tipo = 4) = (enlace IS NOT NULL) AND (tipo = 4) = (archivo IS NULL)),
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
     FOREIGN KEY (incidente_id) REFERENCES incidentes (id) ON DELETE RESTRICT,

@@ -9,9 +9,6 @@ use App\Core\Paginacion;
 
 final class EvidenciaModelo
 {
-    // Tester: solo sus proyectos (RF-05).
-    private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = c.proyecto_id AND m.usuario_id = ?))';
-
     public static function crear(int $casoId, int $tipo, ?string $archivo, ?string $nombreOriginal, ?string $enlace, string $descripcion, int $usuarioId): int
     {
         $sql = Conexion::pdo()->prepare(
@@ -51,35 +48,40 @@ final class EvidenciaModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function contar(int $usuarioId, bool $admin): int
+    /** @param list<int>|null $proyectos Permisos::proyectos() */
+    public static function contar(?array $proyectos): int
     {
-        $sql = Conexion::pdo()->prepare(
-            'SELECT COUNT(*) FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . self::PERMITIDO
-        );
-        $sql->execute([(int) $admin, $usuarioId]);
+        if ($proyectos === null) {
+            return (int) Conexion::pdo()->query('SELECT COUNT(*) FROM evidencias')->fetchColumn();
+        }
+        [$donde, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $donde[0]);
+        $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }
 
     /**
-     * RF-16: por proyecto, de la más reciente a la más vieja.
+     * RF-16: de la más reciente a la más vieja. Orden del índice (subido_en): sin filesort.
      *
+     * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
      */
-    public static function portafolio(int $usuarioId, bool $admin, int $offset): array
+    public static function portafolio(?array $proyectos, int $offset): array
     {
+        [$donde, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $sql = Conexion::pdo()->prepare(
             'SELECT e.id, e.tipo, e.nombre_original, e.enlace, e.descripcion, e.subido_en,
                     u.nombre AS autor, c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto
              FROM evidencias e
              JOIN casos_prueba c ON c.id = e.caso_id
              JOIN proyectos p ON p.id = c.proyecto_id
-             JOIN usuarios u ON u.id = e.subido_por
-             WHERE ' . self::PERMITIDO . '
-             ORDER BY p.nombre, e.subido_en DESC, e.id DESC
+             JOIN usuarios u ON u.id = e.subido_por'
+             . ($donde === [] ? '' : ' WHERE ' . $donde[0]) . '
+             ORDER BY e.subido_en DESC, e.id DESC
              LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }

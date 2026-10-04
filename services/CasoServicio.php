@@ -222,10 +222,10 @@ final class CasoServicio
      */
     public static function portafolio(array $usuario, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(EvidenciaModelo::contar($usuario['id'], $admin), $pagina);
+        $proyectos = Permisos::proyectos($usuario);
+        $paginacion = new Paginacion(EvidenciaModelo::contar($proyectos), $pagina);
 
-        return [EvidenciaModelo::portafolio($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [EvidenciaModelo::portafolio($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**
