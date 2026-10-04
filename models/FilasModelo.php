@@ -54,6 +54,24 @@ final class FilasModelo
     }
 
     /**
+     * Resumen de lo guardado, como un ETag (#100). El formulario lo lleva oculto; al guardar,
+     * si ya no coincide, otro usuario guardó antes. FOR UPDATE: dentro de la transacción bloquea hasta el commit.
+     *
+     * @param list<string> $tablas
+     */
+    public static function huella(array $tablas, string $columna, int $id): string
+    {
+        $datos = [];
+        foreach ($tablas as $tabla) {
+            $sql = Conexion::pdo()->prepare("SELECT * FROM {$tabla} WHERE {$columna} = ? FOR UPDATE");
+            $sql->execute([$id]);
+            $datos[] = $sql->fetchAll(\PDO::FETCH_ASSOC);
+        }
+
+        return md5(json_encode($datos, JSON_THROW_ON_ERROR));
+    }
+
+    /**
      * Un solo INSERT para todas las filas (#97). Sin filas no ejecuta nada.
      *
      * @param list<string> $columnas

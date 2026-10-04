@@ -7,6 +7,9 @@ namespace App\Core;
 // Mensajes por campo.
 final class ErrorValidacion extends \RuntimeException
 {
+    // La huella del formulario no coincide (#100).
+    public const OTRO_GUARDO = ['general' => 'Otro usuario guardó antes. Revise los datos y guarde de nuevo.'];
+
     /** @param array<string, string> $errores */
     public function __construct(public readonly array $errores)
     {
