@@ -135,7 +135,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 
 | Grupo | Tablas |
 | --- | --- |
-| Núcleo | `usuarios`, `proyectos`, `proyecto_miembros`, `requerimientos`, `casos_prueba` |
+| Núcleo | `usuarios`, `intentos_acceso`, `proyectos`, `proyecto_miembros`, `requerimientos`, `casos_prueba` |
 | Seguimiento | `evidencias`, `incidentes`, `logs_cambios` |
 | Formularios | `clases_equivalencia`, `valor_limite`, `decision_filas`, `decision_celdas`, `cobertura_blanca`, `plan_pruebas`, `rubrica_evaluaciones`, `autoevaluaciones`, `portafolio` |
 | Vista | `v_trazabilidad` |
