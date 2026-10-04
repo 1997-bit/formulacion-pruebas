@@ -11,6 +11,7 @@ use App\Services\ClasesEquivalenciaServicio;
  * Formulario 2 (RF-09) para crear o editar. Se guardan todas las filas o ninguna.
  *
  * @var array<string, mixed> $requerimiento
+ * @var string $huella  lo leído, para avisar si otro guardó antes (#100)
  * @var list<array<string, mixed>> $filas
  * @var array<string, string> $errores
  */
@@ -29,6 +30,7 @@ $columnas = ClasesEquivalenciaServicio::COLUMNAS;
   <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <form class="tarjeta pila" method="post" action="/formularios/clases_equivalencia/editar">
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+    <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
     <input type="hidden" name="requerimiento_id" value="<?= (int) $requerimiento['id'] ?>">
     <p class="campo-ayuda" id="ce-ayuda">Una fila por campo de entrada. Un rango da 1 clase válida y 2 inválidas, por debajo y por encima; un conjunto de valores da 1 válida y 1 inválida. Anote un valor representativo de cada clase.</p>
     <div class="tabla-contenedor">

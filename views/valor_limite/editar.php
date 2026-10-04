@@ -11,6 +11,7 @@ use App\Services\ValorLimiteServicio;
  * Formulario 3 (RF-10) para crear o editar. Se guardan todas las filas o ninguna.
  *
  * @var array<string, mixed> $requerimiento
+ * @var string $huella  lo leído, para avisar si otro guardó antes (#100)
  * @var list<array<string, mixed>> $filas
  * @var array<string, string> $errores
  */
@@ -29,6 +30,7 @@ $columnas = ValorLimiteServicio::COLUMNAS;
   <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <form class="tarjeta pila" method="post" action="/formularios/valor_limite/editar">
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+    <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
     <input type="hidden" name="requerimiento_id" value="<?= (int) $requerimiento['id'] ?>">
     <p class="campo-ayuda" id="vl-ayuda">Una fila por campo con rango: números, fechas o largos. Pruebe cada frontera, el valor justo antes y el justo después: con 18 a 65, pruebe 17, 18, 19, 64, 65 y 66.</p>
     <div class="tabla-contenedor">

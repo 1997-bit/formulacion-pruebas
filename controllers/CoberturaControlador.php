@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\FilasModelo;
 use App\Services\CoberturaServicio;
 use App\Services\RequerimientoServicio;
 
@@ -51,6 +52,7 @@ final class CoberturaControlador
             'requerimiento' => $requerimiento,
             'filas' => Sesion::tomar('datos')['filas'] ?? $guardadas,
             'nueva' => $guardadas === [],
+            'huella' => FilasModelo::huella(CoberturaServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
             'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
         ]);
@@ -61,7 +63,7 @@ final class CoberturaControlador
         $id = (int) ($_POST['requerimiento_id'] ?? 0);
         $filas = $this->filas();
         try {
-            CoberturaServicio::guardar($id, $filas, Sesion::usuario());
+            CoberturaServicio::guardar($id, $filas, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, ['filas' => $filas], '/formularios/cobertura_blanca/editar?requerimiento=' . $id);
         }

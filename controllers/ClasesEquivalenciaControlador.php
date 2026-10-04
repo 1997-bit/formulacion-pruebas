@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\FilasModelo;
 use App\Services\ClasesEquivalenciaServicio;
 use App\Services\RequerimientoServicio;
 
@@ -49,6 +50,7 @@ final class ClasesEquivalenciaControlador
             'titulo' => 'Editar clases de equivalencia · ' . $requerimiento['codigo'],
             'requerimiento' => $requerimiento,
             'filas' => Sesion::tomar('datos')['filas'] ?? ClasesEquivalenciaServicio::filas($requerimiento['id'], $usuario),
+            'huella' => FilasModelo::huella(ClasesEquivalenciaServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
             'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
         ]);
@@ -59,7 +61,7 @@ final class ClasesEquivalenciaControlador
         $id = (int) ($_POST['requerimiento_id'] ?? 0);
         $filas = $this->filas(array_keys(ClasesEquivalenciaServicio::COLUMNAS));
         try {
-            ClasesEquivalenciaServicio::guardar($id, $filas, Sesion::usuario());
+            ClasesEquivalenciaServicio::guardar($id, $filas, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, ['filas' => $filas], '/formularios/clases_equivalencia/editar?requerimiento=' . $id);
         }

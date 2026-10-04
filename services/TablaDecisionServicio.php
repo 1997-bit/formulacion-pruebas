@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Config\Conexion;
 use App\Core\ErrorNoEncontrado;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
@@ -21,6 +22,9 @@ use App\Models\TablaDecisionModelo;
  */
 final class TablaDecisionServicio
 {
+    // Lo que resume la huella (#100).
+    public const TABLAS = ['decision_filas', 'decision_celdas'];
+
     private const TABLA = 'decision_filas';
 
     // 4 condiciones son 16 reglas: más ya no cabe en pantalla.
@@ -124,7 +128,7 @@ final class TablaDecisionServicio
      * @param Tabla $tabla
      * @param array{id: int, rol: int} $usuario
      */
-    public static function guardar(int $requerimientoId, array $tabla, array $usuario): void
+    public static function guardar(int $requerimientoId, array $tabla, string $huella, array $usuario): void
     {
         RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
@@ -164,6 +168,9 @@ final class TablaDecisionServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
+            if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
+                throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+            }
             FilasModelo::guardar(self::TABLA, $requerimientoId, ['es_accion', 'texto'], $filas, $usuario['id']);
             TablaDecisionModelo::guardarCeldas($requerimientoId, $celdas);
             $pdo->commit();

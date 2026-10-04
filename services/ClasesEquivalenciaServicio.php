@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Config\Conexion;
 use App\Core\ErrorNoEncontrado;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
@@ -13,6 +14,9 @@ use App\Models\FilasModelo;
 // RF-09. Formulario 2: las filas pertenecen a un requerimiento.
 final class ClasesEquivalenciaServicio
 {
+    // Lo que resume la huella (#100).
+    public const TABLAS = ['clases_equivalencia'];
+
     private const TABLA = 'clases_equivalencia';
 
     // Columna => [etiqueta, largo máximo]; null es TEXT.
@@ -71,7 +75,7 @@ final class ClasesEquivalenciaServicio
      * @param list<array<string, string>> $filas
      * @param array{id: int, rol: int} $usuario
      */
-    public static function guardar(int $requerimientoId, array $filas, array $usuario): void
+    public static function guardar(int $requerimientoId, array $filas, string $huella, array $usuario): void
     {
         RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
@@ -90,6 +94,9 @@ final class ClasesEquivalenciaServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
+            if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
+                throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+            }
             FilasModelo::guardar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
