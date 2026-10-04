@@ -10,6 +10,9 @@ use App\Models\ProyectoModelo;
 // Matriz 7.1 del IR.
 final class Permisos
 {
+    /** @var array<int, array<int, true>> usuario => proyectos. Una consulta por petición (#109). */
+    private static array $proyectos = [];
+
     /** @param array<string, mixed> $usuario */
     public static function exigirAdmin(array $usuario): void
     {
@@ -21,7 +24,7 @@ final class Permisos
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
-        if ($usuario['rol'] !== 1 && !ProyectoModelo::esMiembro($proyectoId, $usuario['id'])) {
+        if ($usuario['rol'] !== 1 && !isset(self::de($usuario['id'])[$proyectoId])) {
             throw new ErrorPermiso();
         }
     }
@@ -34,7 +37,13 @@ final class Permisos
      */
     public static function proyectos(array $usuario): ?array
     {
-        return $usuario['rol'] === 1 ? null : ProyectoModelo::deUsuario($usuario['id']);
+        return $usuario['rol'] === 1 ? null : array_keys(self::de($usuario['id']));
+    }
+
+    /** @return array<int, true> */
+    private static function de(int $usuarioId): array
+    {
+        return self::$proyectos[$usuarioId] ??= array_fill_keys(ProyectoModelo::deUsuario($usuarioId), true);
     }
 
     /**
