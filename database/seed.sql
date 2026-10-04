@@ -1891,7 +1891,14 @@ INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
     -- Fase 1, login
     ('BUG-016', 131, '2026-10-04 12:41:00', 'Tras 3 fallos seguidos, el login responde "Demasiados intentos. Espere un momento." y la clave correcta no entra durante el bloqueo.'),
     ('BUG-024', 131, '2026-10-04 12:41:00', 'Con gloria y con noexiste el login tarda unos 20 ms. La diferencia es menor que la variación entre intentos.'),
-    ('BUG-025', 131, '2026-10-04 12:41:00', 'De 30 registros seguidos desde la misma IP se crean 3. Los demás piden esperar.');
+    ('BUG-025', 131, '2026-10-04 12:41:00', 'De 30 registros seguidos desde la misma IP se crean 3. Los demás piden esperar.'),
+    -- Fase 3, lecturas
+    ('BUG-003', 132, '2026-10-04 13:42:00', 'Al quitar el rol admin, la siguiente petición cierra la sesión y pide entrar de nuevo.'),
+    ('BUG-023', 132, '2026-10-04 13:42:00', 'Al cambiar la clave, la siguiente petición de la sesión abierta vuelve al login.'),
+    ('BUG-026', 132, '2026-10-04 13:42:00', 'id=3, de otro proyecto, e id=9999 responden los dos 404.'),
+    ('BUG-038', 132, '2026-10-04 13:42:00', 'La lista ordena SIS-100, SIS-101, SIS-999 y SIS-1000.'),
+    ('BUG-049', 132, '2026-10-04 13:42:00', 'Con 20 000 casos la paginación muestra 8 enlaces: la primera, la última y 5 alrededor de la actual.'),
+    ('BUG-050', 132, '2026-10-04 13:42:00', 'Registrar incidente pide el código del caso y no carga un selector. Con 20 000 casos responde en 1,3 ms.');
 
 -- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
