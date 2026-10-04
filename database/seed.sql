@@ -657,7 +657,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-03', '2026-10-04',
         2, 'Rechaza el archivo con "Solo TXT, LOG.", aunque es .txt.',
         'finfo lo reporta como application/x-empty. Ver BUG-006.',
-        3, '2026-10-04 00:10:00', 3, '2026-10-04 00:15:00');
+        3, '2026-10-04 00:10:00', 3, '2026-10-04 00:15:00'),
+    (62, 1, 22, 'SIS-025', 3, 8, 'Proyectos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que editar un proyecto conserva la auto y coevaluación de sus miembros.',
+        'Sesión iniciada como admin. Formulación de pruebas tiene 12 filas de autoevaluación.',
+        'Proyecto: Formulación de pruebas, sin cambiar nombre, descripción ni miembros',
+        '1. Abrir Administración, Proyectos y editar Formulación de pruebas.\n2. Guardar sin cambiar nada.\n3. Abrir Auto y coevaluación del proyecto.',
+        'Siguen las 12 filas y los promedios de gloria y pan.',
+        '2026-10-04', '2026-10-04',
+        2, 'Quedan 0 filas. Gloria y pan salen sin promedios.',
+        'ProyectoModelo::guardar borra y vuelve a insertar los miembros; el borrado se lleva en cascada la autoevaluación y el portafolio. Ver BUG-007.',
+        1, '2026-10-04 00:20:00', 1, '2026-10-04 00:25:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -667,7 +678,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (58, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Sesion.php', 'Sesion::usuario() devuelve el rol guardado al entrar.', 2, '2026-10-03 20:40:00'),
     (59, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/componentes.css', 'Bloque @media print: .vista-detalle sigue en grid al imprimir.', 2, '2026-10-03 21:10:00'),
     (60, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Validador.php', 'Validador::fecha() revisa el formato, no el rango de DATE.', 2, '2026-10-04 00:05:00'),
-    (61, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/Subida.php', 'Subida::error(): un archivo de 0 bytes no empieza con text/.', 3, '2026-10-04 00:15:00');
+    (61, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/Subida.php', 'Subida::error(): un archivo de 0 bytes no empieza con text/.', 3, '2026-10-04 00:15:00'),
+    (62, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/ProyectoModelo.php', 'ProyectoModelo::guardar: DELETE FROM proyecto_miembros al editar.', 1, '2026-10-04 00:25:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -707,7 +719,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Abrir un caso Pendiente y elegir OK.\n2. Adjuntar como log un vacio.txt de 0 bytes.\n3. Guardar.',
         'Rechaza el archivo y dice que está vacío.',
         'Rechaza el archivo con "Solo TXT, LOG.", aunque es .txt.',
-        1, 1, 0, 0, NULL, 3, '2026-10-04 00:16:00');
+        1, 1, 0, 0, NULL, 3, '2026-10-04 00:16:00'),
+    (1, 62, 'BUG-007', 'Guardar un proyecto borra su auto y coevaluación', 'Proyectos',
+        'Al editar, ProyectoModelo::guardar borra todos los miembros y los vuelve a insertar. autoevaluaciones y portafolio apuntan a proyecto_miembros con ON DELETE CASCADE, así que se borran aunque los miembros no cambien.',
+        '1. Como admin, editar Formulación de pruebas.\n2. Guardar sin cambiar nada.\n3. Abrir Auto y coevaluación del proyecto.',
+        'Las evaluaciones siguen; solo se pierden las de quien deja el proyecto.',
+        'Se borran las 12 filas del proyecto.',
+        4, 3, 0, 1, NULL, 1, '2026-10-04 00:26:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
