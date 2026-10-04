@@ -67,6 +67,15 @@ final class IncidenteModelo
             ->execute([$estado, $asignadoId, $stopper, $id]);
     }
 
+    // Stoppers sin cerrar: impiden cerrar el plan.
+    public static function stoppersAbiertos(int $proyectoId): int
+    {
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes WHERE proyecto_id = ? AND es_stopper = 1 AND estado <> 2');
+        $sql->execute([$proyectoId]);
+
+        return (int) $sql->fetchColumn();
+    }
+
     /** @return list<array<string, mixed>> */
     public static function deCaso(int $casoId): array
     {

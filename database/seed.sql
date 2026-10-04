@@ -1458,3 +1458,22 @@ INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porce
     (14, 11, 4, 4, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
     (14, 12, 12, 9, 75, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
     (14, 16, 7, 3, 43, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00');
+
+-- RF-13: formulario 6, un plan por proyecto. El 1 no se cierra mientras BUG-003 (stopper) siga abierto.
+INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, objetivos, estrategia, recursos, cronograma,
+    criterios_aceptacion, riesgos, estado, actualizado_en) VALUES
+    (1, '1.0', 2, '2026-10-01',
+        'Se prueban acceso, roles, casos, resultados con evidencia, incidentes y los 10 formularios. No se prueba la carga con muchos usuarios ni otros navegadores fuera de Chrome, Firefox y Edge.',
+        'Comprobar cada RF del IR con al menos un caso.\nEncontrar los defectos antes de la entrega y registrarlos en el formulario 10.\nDejar evidencia de cada caso OK o FAULT.',
+        3,
+        'Gloria y Pan como testers. PHPUnit, PHPStan, navegador con herramientas de desarrollo y lector de pantalla NVDA.',
+        'Semana 1: requerimientos y diseño de casos.\nSemana 2: técnicas de caja negra y blanca.\nSemana 3: ejecución y registro de incidentes.\nSemana 4: regresión y reporte de cierre.',
+        'Todos los RF de prioridad Alta con su caso en OK. Ningún incidente stopper abierto. Cada FAULT con su incidente.',
+        'Poco tiempo para la regresión: se prioriza por severidad.\nCambios del IR a última hora: los casos apuntan al requerimiento y se revisan al cambiarlo.',
+        1, '2026-10-02 18:20:00'),
+    (2, '0.1', 2, '2026-10-02',
+        'Préstamo y devolución de libros. No entra el inventario ni las multas en línea.',
+        'Validar los límites de préstamo y la regla de multas.',
+        1, NULL, NULL,
+        'Las reglas de préstamo de RF-01 cumplidas en todas sus particiones.',
+        NULL, 0, '2026-10-02 19:05:00');
