@@ -26,7 +26,7 @@ final class FilasModelo
     public static function guardado(string $tabla, int $requerimientoId): ?array
     {
         $sql = Conexion::pdo()->prepare(
-            "SELECT u.nombre AS autor, f.guardado_en FROM {$tabla} f JOIN usuarios u ON u.id = f.guardado_por WHERE f.requerimiento_id = ? LIMIT 1"
+            "SELECT u.nombre AS autor, f.guardado_en FROM {$tabla} f JOIN usuarios u ON u.id = f.guardado_por WHERE f.requerimiento_id = ? ORDER BY f.guardado_en DESC LIMIT 1"
         );
         $sql->execute([$requerimientoId]);
 
@@ -68,6 +68,64 @@ final class FilasModelo
         Conexion::pdo()->prepare(
             "INSERT INTO {$tabla} (" . implode(', ', $columnas) . ') VALUES ' . implode(', ', array_fill(0, count($filas), $fila))
         )->execute(array_merge(...$filas));
+    }
+
+    /**
+     * Guarda por diferencia (#98). Dentro de una transacción.
+     * Inserta las filas nuevas, borra las quitadas y actualiza las cambiadas. Sin cambios no escribe nada.
+     *
+     * @param array<string, int> $dueno  p. ej. ['requerimiento_id' => 5]
+     * @param list<string> $llave  columnas que distinguen la fila dentro del dueño, p. ej. ['orden']
+     * @param list<array<string, mixed>> $filas  la llave y los datos; todas con las mismas columnas
+     * @param array<string, mixed> $autor  solo en filas nuevas o cambiadas, p. ej. guardado_por
+     */
+    public static function sincronizar(string $tabla, array $dueno, array $llave, array $filas, array $autor = []): void
+    {
+        $pdo = Conexion::pdo();
+        $igual = fn (array $columnas): string => implode(' AND ', array_map(fn (string $c): string => "{$c} = ?", $columnas));
+        $deLlave = fn (array $f): array => array_map(fn (string $c): mixed => $f[$c], $llave);
+        $id = fn (array $f): string => implode('|', $deLlave($f));
+        $texto = fn (mixed $v): ?string => $v === null ? null : (string) $v;
+        $deDueno = $igual(array_keys($dueno));
+
+        $sql = $pdo->prepare("SELECT * FROM {$tabla} WHERE {$deDueno}");
+        $sql->execute(array_values($dueno));
+        $antes = [];
+        foreach ($sql->fetchAll(\PDO::FETCH_ASSOC) as $f) {
+            $antes[$id($f)] = $f;
+        }
+
+        $nuevas = [];
+        foreach ($filas as $f) {
+            $vieja = $antes[$id($f)] ?? null;
+            unset($antes[$id($f)]);
+            if ($vieja === null) {
+                $nuevas[] = array_values($dueno + $f + $autor);
+                continue;
+            }
+            $cambios = [];
+            foreach (array_diff_key($f, array_flip($llave)) as $c => $v) {
+                if ($texto($v) !== $texto($vieja[$c])) {
+                    $cambios[$c] = $v;
+                }
+            }
+            if ($cambios !== []) {
+                $set = $cambios + $autor;
+                $pdo->prepare('UPDATE ' . $tabla . ' SET ' . implode(', ', array_map(fn (string $c): string => "{$c} = ?", array_keys($set)))
+                    . " WHERE {$deDueno} AND " . $igual($llave))
+                    ->execute([...array_values($set), ...array_values($dueno), ...$deLlave($f)]);
+            }
+        }
+        if ($nuevas !== []) {
+            self::insertar($tabla, array_keys($dueno + $filas[0] + $autor), $nuevas);
+        }
+        // Las que quedaron en $antes ya no vienen: se borran en un DELETE.
+        if ($antes !== []) {
+            $tupla = '(' . implode(', ', array_fill(0, count($llave), '?')) . ')';
+            $pdo->prepare("DELETE FROM {$tabla} WHERE {$deDueno} AND (" . implode(', ', $llave) . ') IN ('
+                . implode(', ', array_fill(0, count($antes), $tupla)) . ')')
+                ->execute([...array_values($dueno), ...array_merge(...array_map($deLlave, array_values($antes)))]);
+        }
     }
 
     /**
