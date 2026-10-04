@@ -1876,3 +1876,71 @@ INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, 
         1, NULL, NULL,
         'Las reglas de préstamo de RF-01 cumplidas en todas sus particiones.',
         NULL, 0, '2026-10-02 19:05:00');
+
+-- Bugs corregidos: procedimiento de docs/bugs_corregidos.md. El caso FAULT y el incidente no se borran.
+-- Tabla normal y no TEMPORARY: MySQL no deja usar una temporal dos veces en la misma consulta. Se borra al final.
+DROP TABLE IF EXISTS corregidos;
+CREATE TABLE corregidos (
+    bug VARCHAR(10) PRIMARY KEY,
+    pr SMALLINT UNSIGNED NOT NULL,
+    fecha DATETIME NOT NULL,
+    obtenido TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
+    -- Fase 1, login
+    ('BUG-016', 131, '2026-10-04 12:41:00', 'Tras 3 fallos seguidos, el login responde "Demasiados intentos. Espere un momento." y la clave correcta no entra durante el bloqueo.'),
+    ('BUG-024', 131, '2026-10-04 12:41:00', 'Con gloria y con noexiste el login tarda unos 20 ms. La diferencia es menor que la variación entre intentos.'),
+    ('BUG-025', 131, '2026-10-04 12:41:00', 'De 30 registros seguidos desde la misma IP se crean 3. Los demás piden esperar.'),
+    -- Fase 3, lecturas
+    ('BUG-003', 132, '2026-10-04 13:42:00', 'Al quitar el rol admin, la siguiente petición cierra la sesión y pide entrar de nuevo.'),
+    ('BUG-023', 132, '2026-10-04 13:42:00', 'Al cambiar la clave, la siguiente petición de la sesión abierta vuelve al login.'),
+    ('BUG-026', 132, '2026-10-04 13:42:00', 'id=3, de otro proyecto, e id=9999 responden los dos 404.'),
+    ('BUG-038', 132, '2026-10-04 13:42:00', 'La lista ordena SIS-100, SIS-101, SIS-999 y SIS-1000.'),
+    ('BUG-049', 132, '2026-10-04 13:42:00', 'Con 20 000 casos la paginación muestra 8 enlaces: la primera, la última y 5 alrededor de la actual.'),
+    ('BUG-050', 132, '2026-10-04 13:42:00', 'Registrar incidente pide el código del caso y no carga un selector. Con 20 000 casos responde en 1,3 ms.'),
+    -- Fase 2, escrituras
+    ('BUG-001', 133, '2026-10-04 14:23:00', 'Un 0 en Entorno y en Precondiciones se guarda como 0.'),
+    ('BUG-007', 133, '2026-10-04 14:23:00', 'Guardar el proyecto sin cambiar los miembros conserva las 12 filas de autoevaluación.'),
+    ('BUG-018', 133, '2026-10-04 14:23:00', 'La segunda edición recibe "Otro usuario guardó antes. Revise los datos y guarde de nuevo." y conserva lo escrito.'),
+    ('BUG-019', 133, '2026-10-04 14:23:00', 'La segunda edición de la matriz recibe "Otro usuario guardó antes." La fila nueva de la primera se conserva.'),
+    ('BUG-031', 133, '2026-10-04 14:23:00', 'Dos envíos seguidos crean un solo caso. Los dos llevan al caso creado.'),
+    ('BUG-033', 133, '2026-10-04 14:23:00', 'Después del eliminar rechazado, editar gloria y editar el proyecto muestran sus datos y responden 200.'),
+    -- Fase 4, integridad
+    ('BUG-020', 134, '2026-10-04 15:16:00', 'Eliminar a un tester con proyecto responde "Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar." Las coevaluaciones se conservan.'),
+    ('BUG-035', 134, '2026-10-04 15:16:00', 'Con el plan cerrado, registrar un stopper responde "El plan del proyecto está cerrado: reábralo para registrar un stopper."'),
+    ('BUG-048', 134, '2026-10-04 15:16:00', 'Anotar OK en un caso con un incidente abierto responde "No pasa a OK: tiene incidentes sin cerrar."'),
+    -- Fase 5, servidor
+    ('BUG-017', 135, '2026-10-04 15:16:00', 'Cada respuesta trae X-Frame-Options: DENY. La página no carga dentro de un iframe ajeno.'),
+    ('BUG-053', 135, '2026-10-04 15:16:00', 'Con display_errors=1, un error muestra la página 500 con un código. La pila y las rutas quedan solo en storage/logs/errores.log.'),
+    ('BUG-054', 135, '2026-10-04 15:16:00', 'Con Apache y la raíz web en el repositorio, /.env y /database/seed.sql responden 403.');
+
+-- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
+INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
+SELECT 'incidentes', i.id, 2, 'estado', i.estado, '2', k.fecha
+FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+UPDATE incidentes i JOIN corregidos k ON k.bug = i.codigo SET i.estado = 2 WHERE i.proyecto_id = 1;
+
+-- 5. Rastro del caso, antes de cambiarlo: estado, resultado obtenido y observaciones.
+INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
+SELECT 'casos_prueba', c.id, 2, 'estado', c.estado, '1', k.fecha
+FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1
+UNION ALL
+SELECT 'casos_prueba', c.id, 2, 'resultado_obtenido', c.resultado_obtenido, k.obtenido, k.fecha
+FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1
+UNION ALL
+SELECT 'casos_prueba', c.id, 2, 'observaciones', c.observaciones, CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'), k.fecha
+FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+
+-- 2 y 3. La prueba de regresión pasa: el caso queda OK. 6. El PR en las observaciones.
+UPDATE casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo
+SET c.estado = 1, c.resultado_obtenido = k.obtenido, c.observaciones = CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'),
+    c.anotado_por = 2, c.anotado_en = k.fecha
+WHERE i.proyecto_id = 1;
+
+-- 4. Evidencia con el enlace al PR.
+INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en)
+SELECT i.caso_id, 4, CONCAT('https://github.com/1997-bit/formulacion-pruebas/pull/', k.pr), CONCAT('PR de la corrección de ', k.bug), 2, k.fecha
+FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+
+DROP TABLE corregidos;
