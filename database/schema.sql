@@ -179,8 +179,11 @@ CREATE TABLE decision_filas (
     orden TINYINT UNSIGNED NOT NULL,
     es_accion TINYINT NOT NULL DEFAULT 0,
     texto VARCHAR(255) NOT NULL,
+    guardado_por INT UNSIGNED NOT NULL,
+    guardado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (requerimiento_id, orden),
-    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE
+    FOREIGN KEY (requerimiento_id) REFERENCES requerimientos (id) ON DELETE CASCADE,
+    FOREIGN KEY (guardado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Solo celdas marcadas: sin fila es "—".
