@@ -18,7 +18,7 @@ final class AccesoServicio
     // hash: la respuesta tarda lo mismo y el tiempo no dice si existe.
     private const HASH_FALSO = '$argon2id$v=19$m=19456,t=2,p=1$bWNzL3R6ZksvY0hJejJ1VA$PRg4SvgQEEZ1uei56DJDKihodqvTtRg5/1TkrmdqpZo';
 
-    /** @return array{id: int, nombre: string, usuario: string, rol: int} */
+    /** @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int} */
     public static function entrar(string $usuario, string $clave): array
     {
         $usuario = trim($usuario);
@@ -37,14 +37,27 @@ final class AccesoServicio
             UsuarioModelo::cambiarClave($fila['id'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON));
         }
 
-        return ['id' => $fila['id'], 'nombre' => $fila['nombre'], 'usuario' => $fila['usuario'], 'rol' => $fila['rol']];
+        return ['id' => $fila['id'], 'nombre' => $fila['nombre'], 'usuario' => $fila['usuario'], 'rol' => $fila['rol'], 'sesion_version' => $fila['sesion_version']];
     }
 
+    /**
+     * Cada petición: el usuario con sus proyectos, o null si ya no existe o cambió su clave o su rol (BUG-003, BUG-023).
+     *
+     * @param array<string, mixed> $sesion
+     * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int, proyectos: list<int>}|null
+     */
+    public static function vigente(array $sesion): ?array
+    {
+        $fila = UsuarioModelo::deSesion((int) $sesion['id']);
+
+        return $fila !== null && $fila['sesion_version'] === ($sesion['sesion_version'] ?? null) ? $fila : null;
+    }
+
+    // Mensaje genérico: no dice cuánto falta.
     private static function frenar(string $llave): void
     {
-        $espera = IntentoModelo::espera($llave);
-        if ($espera > 0) {
-            throw new ErrorValidacion(['general' => "Demasiados intentos. Espere {$espera} s."]);
+        if (IntentoModelo::bloqueado($llave)) {
+            throw new ErrorValidacion(['general' => 'Demasiados intentos. Espere un momento.']);
         }
     }
 

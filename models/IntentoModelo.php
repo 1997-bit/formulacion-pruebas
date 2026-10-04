@@ -12,15 +12,13 @@ final class IntentoModelo
     // Los primeros fallos no bloquean. Después: 1 s, 2 s, 4 s… hasta 2^12 s.
     private const LIBRES = 3;
 
-    // Segundos que faltan, o 0 si no está bloqueado. Con milisegundos: en DATETIME, 1 s podía durar 1 ms.
-    public static function espera(string $clave): int
+    // Con milisegundos: en DATETIME, un bloqueo de 1 s podía durar 1 ms.
+    public static function bloqueado(string $clave): bool
     {
-        $sql = Conexion::pdo()->prepare(
-            'SELECT CEIL(TIMESTAMPDIFF(MICROSECOND, NOW(3), bloqueado_hasta) / 1000000) FROM intentos_acceso WHERE clave = ? AND bloqueado_hasta > NOW(3)'
-        );
+        $sql = Conexion::pdo()->prepare('SELECT 1 FROM intentos_acceso WHERE clave = ? AND bloqueado_hasta > NOW(3)');
         $sql->execute([$clave]);
 
-        return (int) $sql->fetchColumn();
+        return (bool) $sql->fetchColumn();
     }
 
     // En MySQL y MariaDB, el UPDATE asigna de izquierda a derecha: fallos ya es el valor nuevo.

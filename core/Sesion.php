@@ -34,6 +34,13 @@ final class Sesion
         $_SESSION['usuario'] = $usuario;
     }
 
+    // Datos frescos de la base, sin regenerar el id (p. ej. un nombre cambiado).
+    /** @param array<string, mixed> $usuario */
+    public static function refrescar(array $usuario): void
+    {
+        $_SESSION['usuario'] = $usuario;
+    }
+
     public static function salir(): void
     {
         $_SESSION = [];

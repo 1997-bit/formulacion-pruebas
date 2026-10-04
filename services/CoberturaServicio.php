@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
-use App\Core\ErrorPermiso;
+use App\Core\ErrorNoEncontrado;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\CoberturaModelo;
@@ -33,7 +33,7 @@ final class CoberturaServicio
      */
     public static function filas(int $requerimientoId, array $usuario): array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return CoberturaModelo::deRequerimiento($requerimientoId);
     }
@@ -44,7 +44,7 @@ final class CoberturaServicio
      */
     public static function guardado(int $requerimientoId, array $usuario): ?array
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         return FilasModelo::guardado(self::TABLA, $requerimientoId);
     }
@@ -58,7 +58,7 @@ final class CoberturaServicio
     public static function pagina(array $usuario, int $pagina): array
     {
         [$requerimientos, $paginacion] = RequerimientoServicio::pagina($usuario, $pagina);
-        $filas = FilasModelo::contar(self::TABLA);
+        $filas = FilasModelo::contar(self::TABLA, array_column($requerimientos, 'id'));
         foreach ($requerimientos as &$r) {
             $r['filas'] = $filas[$r['id']] ?? 0;
         }
@@ -76,7 +76,7 @@ final class CoberturaServicio
      */
     public static function guardar(int $requerimientoId, array $filas, array $usuario): void
     {
-        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorPermiso();
+        RequerimientoServicio::ver($requerimientoId, $usuario) ?? throw new ErrorNoEncontrado();
 
         $v = new Validador();
         $guardar = [];

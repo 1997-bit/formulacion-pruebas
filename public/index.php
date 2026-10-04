@@ -7,16 +7,27 @@ define('RAIZ', dirname(__DIR__));
 require RAIZ . '/core/bootstrap.php';
 
 use App\Core\Csrf;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
 use App\Core\Respuesta;
 use App\Core\Ruteador;
 use App\Core\Sesion;
+use App\Services\AccesoServicio;
 
 Sesion::iniciar();
 
 $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $ruta = Ruteador::buscar($metodo, $_SERVER['REQUEST_URI'] ?? '/') ?? Respuesta::error(404);
 $usuario = Sesion::usuario();
+// RNF-02: la clave o el rol cambió, o el usuario ya no existe: la sesión se cierra.
+if ($usuario !== null) {
+    $usuario = AccesoServicio::vigente($usuario);
+    if ($usuario === null) {
+        Sesion::salir();
+        Respuesta::redirigir('/');
+    }
+    Sesion::refrescar($usuario);
+}
 
 // RF-21, RNF-02
 if ($ruta['rol'] !== null && $usuario === null) {
@@ -34,4 +45,6 @@ try {
     (new $clase())->{$ruta['accion']}();
 } catch (ErrorPermiso) {
     Respuesta::error(403);
+} catch (ErrorNoEncontrado) {
+    Respuesta::error(404);
 }

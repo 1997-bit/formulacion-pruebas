@@ -18,6 +18,7 @@ CREATE TABLE usuarios (
     usuario VARCHAR(30) NOT NULL UNIQUE,
     clave VARCHAR(255) NOT NULL, -- Argon2id
     rol TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    sesion_version INT UNSIGNED NOT NULL DEFAULT 0, -- sube al cambiar clave o rol: cierra las sesiones abiertas
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -42,7 +43,9 @@ CREATE TABLE requerimientos (
     codigo VARCHAR(10) NOT NULL,
     descripcion TEXT NOT NULL,
     no_funcional TINYINT NOT NULL DEFAULT 0,
+    numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- RF-01 -> 1
     UNIQUE (proyecto_id, codigo),
+    INDEX (proyecto_id, no_funcional, numero), -- orden de la lista
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -71,7 +74,11 @@ CREATE TABLE casos_prueba (
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24
     anotado_en DATETIME NULL,
+    -- Para numerar y ordenar: SIS-1000 va después de SIS-999. codigo no cambia aunque cambie el tipo (RF-06).
+    sigla VARCHAR(3) AS (SUBSTRING_INDEX(codigo, '-', 1)) STORED,
+    numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED,
     UNIQUE (proyecto_id, codigo),
+    UNIQUE (proyecto_id, sigla, numero),
     INDEX (proyecto_id, estado),
     CHECK (fecha_fin >= fecha_inicio),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
@@ -101,7 +108,11 @@ CREATE TABLE incidentes (
     asignado_id INT UNSIGNED NULL,
     creado_por INT UNSIGNED NOT NULL,
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- BUG-001 -> 1
     UNIQUE (proyecto_id, codigo),
+    UNIQUE (proyecto_id, numero),
+    INDEX (proyecto_id, estado, severidad DESC, numero), -- orden de la lista
+    INDEX (proyecto_id, es_stopper, estado),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
     FOREIGN KEY (asignado_id) REFERENCES usuarios (id),
@@ -119,6 +130,7 @@ CREATE TABLE evidencias (
     descripcion VARCHAR(255) NOT NULL,
     subido_por INT UNSIGNED NOT NULL,
     subido_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX (subido_en), -- orden del portafolio
     CHECK ((tipo = 4) = (enlace IS NOT NULL) AND (tipo = 4) = (archivo IS NULL)),
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
     FOREIGN KEY (incidente_id) REFERENCES incidentes (id) ON DELETE RESTRICT,

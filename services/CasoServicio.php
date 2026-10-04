@@ -32,7 +32,7 @@ final class CasoServicio
     public static function registrar(array $datos, array $marcadas, array $archivos, array $usuario): array
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1), null, 'id');
+        $requerimientos = array_column(RequerimientoModelo::todos(Permisos::proyectos($usuario)), null, 'id');
         $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
         $tipos = self::tipos($marcadas);
 
@@ -126,7 +126,7 @@ final class CasoServicio
      */
     public static function requerimientos(array $caso, array $usuario): array
     {
-        $todos = RequerimientoModelo::listar($usuario['id'], $usuario['rol'] === 1);
+        $todos = RequerimientoModelo::todos(Permisos::proyectos($usuario));
 
         return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
     }
@@ -222,10 +222,10 @@ final class CasoServicio
      */
     public static function portafolio(array $usuario, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(EvidenciaModelo::contar($usuario['id'], $admin), $pagina);
+        $proyectos = Permisos::proyectos($usuario);
+        $paginacion = new Paginacion(EvidenciaModelo::contar($proyectos), $pagina);
 
-        return [EvidenciaModelo::portafolio($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [EvidenciaModelo::portafolio($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**
@@ -237,11 +237,11 @@ final class CasoServicio
      */
     public static function listar(array $usuario, array $filtros, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
+        $proyectos = Permisos::proyectos($usuario);
         $f = self::filtros($filtros);
-        $paginacion = new Paginacion(CasoModelo::contar($usuario['id'], $admin, $f), $pagina);
+        $paginacion = new Paginacion(CasoModelo::contar($proyectos, $f), $pagina);
 
-        return [CasoModelo::listar($usuario['id'], $admin, $f, $paginacion->offset()), $paginacion];
+        return [CasoModelo::listar($proyectos, $f, $paginacion->offset()), $paginacion];
     }
 
     /**
