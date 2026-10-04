@@ -31,15 +31,6 @@ final class ProyectoModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function idPorNombre(string $nombre): ?int
-    {
-        $sql = Conexion::pdo()->prepare('SELECT id FROM proyectos WHERE nombre = ?');
-        $sql->execute([$nombre]);
-        $id = $sql->fetchColumn();
-
-        return $id === false ? null : (int) $id;
-    }
-
     /** @return list<int> */
     public static function miembros(int $id): array
     {

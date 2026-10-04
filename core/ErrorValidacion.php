@@ -12,4 +12,14 @@ final class ErrorValidacion extends \RuntimeException
     {
         parent::__construct('Datos inválidos.');
     }
+
+    /**
+     * Un UNIQUE repetido (1062) se muestra como error del campo, no como 500 (#101). Lo demás sigue igual.
+     *
+     * @param array<string, string> $errores
+     */
+    public static function siDuplicado(\PDOException $e, array $errores): \Throwable
+    {
+        return ($e->errorInfo[1] ?? null) === 1062 ? new self($errores) : $e;
+    }
 }

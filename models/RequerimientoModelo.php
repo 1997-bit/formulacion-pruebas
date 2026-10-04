@@ -84,14 +84,6 @@ final class RequerimientoModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function existe(int $proyectoId, string $codigo): bool
-    {
-        $sql = Conexion::pdo()->prepare('SELECT 1 FROM requerimientos WHERE proyecto_id = ? AND codigo = ?');
-        $sql->execute([$proyectoId, $codigo]);
-
-        return (bool) $sql->fetchColumn();
-    }
-
     public static function crear(int $proyectoId, string $codigo, string $descripcion, int $noFuncional): int
     {
         $sql = Conexion::pdo()->prepare(
