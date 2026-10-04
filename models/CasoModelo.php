@@ -24,6 +24,7 @@ final class CasoModelo
 
     /**
      * $offset null: todos. Orden del índice (proyecto_id, sigla, numero): sin filesort.
+     * Con $offset, la subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
@@ -32,14 +33,17 @@ final class CasoModelo
     public static function listar(?array $proyectos, array $filtros, ?int $offset = null): array
     {
         [$donde, $valores] = self::donde($proyectos, $filtros);
+        $orden = ' ORDER BY c.proyecto_id, c.sigla, c.numero';
+        if ($offset !== null) {
+            $desde = '(SELECT c.id FROM casos_prueba c' . $donde . $orden . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ')
+                      k JOIN casos_prueba c ON c.id = k.id';
+            $donde = '';
+        }
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, c.tipo_prueba, c.estado, p.nombre AS proyecto, u.nombre AS autor
-             FROM casos_prueba c
+             FROM ' . ($desde ?? 'casos_prueba c') . '
              JOIN proyectos p ON p.id = c.proyecto_id
-             JOIN usuarios u ON u.id = c.creado_por'
-             . $donde . '
-             ORDER BY c.proyecto_id, c.sigla, c.numero'
-             . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
+             JOIN usuarios u ON u.id = c.creado_por' . $donde . $orden
         );
         $sql->execute($valores);
 
