@@ -713,7 +713,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'La sesión se cierra y /dashboard manda al inicio de sesión.',
         'GET /salir no lleva token. Con SameSite=Lax no pasa desde un <img>, sí desde un enlace. Ver BUG-011.',
-        3, '2026-10-04 01:00:00', 3, '2026-10-04 01:05:00');
+        3, '2026-10-04 01:00:00', 3, '2026-10-04 01:05:00'),
+    (67, 1, 16, 'SIS-029', 3, 8, 'Interfaz', 1,
+        'Android, Chrome, ancho 390 px; o escritorio con la ventana a menos de 768 px',
+        'Verificar que con el menú cerrado en el celular el foco no entra a enlaces que no se ven.',
+        'Sesión iniciada como gloria. Menú lateral cerrado.',
+        'Teclado: Tab desde el inicio de la página',
+        '1. Abrir /dashboard en ancho de celular.\n2. Pulsar Tab varias veces desde arriba.\n3. Ver dónde queda el foco.',
+        'Después de "Saltar al contenido" el foco va al botón Menú. El menú cerrado no recibe foco.',
+        '2026-10-04', '2026-10-04',
+        2, 'El foco pasa por unos 10 elementos del menú cerrado, fuera de la pantalla, sin anillo visible, antes de llegar al botón Menú.',
+        'En móvil el sidebar solo se mueve con translate: -100%; sigue en el orden de tabulación. Ver BUG-012.',
+        2, '2026-10-04 01:10:00', 2, '2026-10-04 01:15:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -728,7 +739,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (63, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'validarCaso(): objetivo, entrada, pasos y resultado esperado sin máximo.', 2, '2026-10-04 00:35:00'),
     (64, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/CasoModelo.php', 'CasoModelo::anotar: anotado_por = ? sin mirar el estado.', 3, '2026-10-04 00:45:00'),
     (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-04 00:55:00'),
-    (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-04 01:05:00');
+    (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-04 01:05:00'),
+    (67, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', '@media (max-width: 47.99rem): .sidebar con translate, sin visibility ni inert.', 2, '2026-10-04 01:15:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -798,7 +810,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Iniciar sesión.\n2. Abrir un enlace a /salir desde otra página.\n3. Volver al sistema.',
         'La sesión sigue abierta.',
         'La sesión se cierra.',
-        1, 1, 0, 0, NULL, 3, '2026-10-04 01:06:00');
+        1, 1, 0, 0, NULL, 3, '2026-10-04 01:06:00'),
+    (1, 67, 'BUG-012', 'El menú cerrado del celular recibe el foco', 'Interfaz',
+        'En móvil el sidebar se esconde con translate: -100%, pero sus enlaces y grupos siguen en el orden de tabulación. Con teclado el foco desaparece fuera de la pantalla (WCAG 2.4.7 y 2.4.11, RNF-07).',
+        '1. Abrir el sistema en ancho de celular.\n2. Tabular desde el inicio.',
+        'El menú cerrado no recibe foco: visibility: hidden o inert mientras está cerrado.',
+        'El foco recorre el menú invisible antes de llegar al contenido.',
+        2, 2, 0, 0, NULL, 2, '2026-10-04 01:16:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
