@@ -668,7 +668,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'Quedan 0 filas. Gloria y pan salen sin promedios.',
         'ProyectoModelo::guardar borra y vuelve a insertar los miembros; el borrado se lleva en cascada la autoevaluación y el portafolio. Ver BUG-007.',
-        1, '2026-10-04 00:20:00', 1, '2026-10-04 00:25:00');
+        1, '2026-10-04 00:20:00', 1, '2026-10-04 00:25:00'),
+    (63, 1, 4, 'SIS-026', 3, 2, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar el límite de los campos de texto largo del formulario 1.',
+        'Sesión iniciada como gloria.',
+        'Objetivo de 65 535 y de 70 000 caracteres, enviado a mano',
+        '1. Registrar un caso con el objetivo de 65 535 caracteres.\n2. Registrar otro con el de 70 000.',
+        'Guarda el primero. El segundo vuelve al formulario con un error junto a Objetivo.',
+        '2026-10-04', '2026-10-04',
+        2, 'Guarda el primero. El segundo responde 500 con la página en blanco y se pierde lo escrito.',
+        'TEXT guarda 65 535 bytes y ningún campo TEXT tiene tope en la validación. Pasa igual en incidentes, requerimientos y los formularios 2 y 3. Ver BUG-008.',
+        2, '2026-10-04 00:30:00', 2, '2026-10-04 00:35:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -679,7 +690,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (59, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/componentes.css', 'Bloque @media print: .vista-detalle sigue en grid al imprimir.', 2, '2026-10-03 21:10:00'),
     (60, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Validador.php', 'Validador::fecha() revisa el formato, no el rango de DATE.', 2, '2026-10-04 00:05:00'),
     (61, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/Subida.php', 'Subida::error(): un archivo de 0 bytes no empieza con text/.', 3, '2026-10-04 00:15:00'),
-    (62, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/ProyectoModelo.php', 'ProyectoModelo::guardar: DELETE FROM proyecto_miembros al editar.', 1, '2026-10-04 00:25:00');
+    (62, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/ProyectoModelo.php', 'ProyectoModelo::guardar: DELETE FROM proyecto_miembros al editar.', 1, '2026-10-04 00:25:00'),
+    (63, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'validarCaso(): objetivo, entrada, pasos y resultado esperado sin máximo.', 2, '2026-10-04 00:35:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -725,7 +737,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Como admin, editar Formulación de pruebas.\n2. Guardar sin cambiar nada.\n3. Abrir Auto y coevaluación del proyecto.',
         'Las evaluaciones siguen; solo se pierden las de quien deja el proyecto.',
         'Se borran las 12 filas del proyecto.',
-        4, 3, 0, 1, NULL, 1, '2026-10-04 00:26:00');
+        4, 3, 0, 1, NULL, 1, '2026-10-04 00:26:00'),
+    (1, 63, 'BUG-008', 'Un texto de más de 64 KB responde 500', 'Casos',
+        'Los campos TEXT no tienen máximo en la validación. Con más de 65 535 bytes, MariaDB rechaza el INSERT y la excepción llega sin atrapar.',
+        '1. Registrar un caso con un objetivo de 70 000 caracteres, enviado a mano.\n2. Guardar.',
+        'Vuelve al formulario con un error junto a Objetivo y conserva lo escrito.',
+        'Responde 500 con la página en blanco.',
+        2, 2, 0, 0, 2, 2, '2026-10-04 00:36:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
