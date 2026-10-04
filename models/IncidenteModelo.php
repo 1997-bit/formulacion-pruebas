@@ -91,8 +91,7 @@ final class IncidenteModelo
     public static function siguienteNumero(int $proyectoId): int
     {
         $sql = Conexion::pdo()->prepare(
-            "SELECT COALESCE(MAX(CAST(SUBSTRING(codigo, 5) AS UNSIGNED)), 0) + 1
-             FROM incidentes WHERE proyecto_id = ? AND codigo LIKE 'BUG-%' FOR UPDATE"
+            'SELECT COALESCE(MAX(numero), 0) + 1 FROM incidentes WHERE proyecto_id = ? FOR UPDATE'
         );
         $sql->execute([$proyectoId]);
 

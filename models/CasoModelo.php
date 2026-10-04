@@ -101,10 +101,9 @@ final class CasoModelo
     public static function siguienteNumero(int $proyectoId, string $sigla): int
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT COALESCE(MAX(CAST(SUBSTRING(codigo, ?) AS UNSIGNED)), 0) + 1
-             FROM casos_prueba WHERE proyecto_id = ? AND codigo LIKE ? FOR UPDATE'
+            'SELECT COALESCE(MAX(numero), 0) + 1 FROM casos_prueba WHERE proyecto_id = ? AND sigla = ? FOR UPDATE'
         );
-        $sql->execute([strlen($sigla) + 2, $proyectoId, $sigla . '-%']);
+        $sql->execute([$proyectoId, $sigla]);
 
         return (int) $sql->fetchColumn();
     }
