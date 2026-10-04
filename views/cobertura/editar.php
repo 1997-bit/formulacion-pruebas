@@ -29,7 +29,6 @@ $invalido = fn (string $clave): string => isset($errores[$clave]) ? ' aria-inval
   <div>
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1><?= $nueva ? 'Crear' : 'Editar' ?> cobertura de caja blanca</h1>
-    <p><?= Html::e($requerimiento['descripcion']) ?></p>
   </div>
 </header>
 

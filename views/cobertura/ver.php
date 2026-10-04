@@ -22,7 +22,6 @@ $editar = '/formularios/cobertura_blanca/editar?requerimiento=' . (int) $requeri
   <div>
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Cobertura de caja blanca</h1>
-    <p><?= Html::e($requerimiento['descripcion']) ?></p>
     <p class="solo-impresion">Formulario 5 · Cobertura de caja blanca</p>
   </div>
   <?php if ($filas): ?>
@@ -68,7 +67,6 @@ $editar = '/formularios/cobertura_blanca/editar?requerimiento=' . (int) $requeri
         </tbody>
       </table>
     </div>
-    <p class="campo-ayuda">Verde desde 90 %, amarillo de 70 a 89 %, rojo bajo 70 %: los cortes de la rúbrica.</p>
     <?php if ($guardado !== null): ?>
       <?php $fecha = new DateTime($guardado['guardado_en']); ?>
       <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
