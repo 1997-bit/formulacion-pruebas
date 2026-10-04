@@ -4,7 +4,10 @@ declare(strict_types=1);
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
-/** @var int $codigo */
+/**
+ * @var int $codigo
+ * @var ?string $referencia  código corto del error, el mismo de storage/logs/errores.log
+ */
 
 [$icono, $titulo, $texto] = match ($codigo) {
     403 => ['lock', 'No tiene permiso para ver esta página', 'Pida acceso al administrador del proyecto.'],
@@ -28,6 +31,9 @@ use App\Helpers\Icono;
   <span class="vacio-icono"><?= Icono::svg($icono) ?></span>
   <h1><?= Html::e($titulo) ?></h1>
   <p><?= Html::e($texto) ?></p>
+  <?php if ($referencia !== null): ?>
+    <p>Código del error: <span class="codigo"><?= Html::e($referencia) ?></span>. Compártalo con el administrador.</p>
+  <?php endif; ?>
   <a class="btn btn-secundario" href="/dashboard">Volver al panel</a>
 </main>
 </body>

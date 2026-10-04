@@ -45,10 +45,11 @@ final class Respuesta
         exit;
     }
 
-    public static function error(int $codigo): never
+    // $referencia: el código del error en storage/logs (solo 500).
+    public static function error(int $codigo, ?string $referencia = null): never
     {
         http_response_code($codigo);
-        echo Vista::capturar('error', ['codigo' => $codigo]);
+        echo Vista::capturar('error', ['codigo' => $codigo, 'referencia' => $referencia]);
         exit;
     }
 }
