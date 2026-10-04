@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Config\Conexion;
 use App\Core\ErrorValidacion;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
@@ -70,11 +71,16 @@ final class UsuarioServicio
             throw new ErrorValidacion(['rol' => 'No puede quitarse su propio rol de admin.']);
         }
         $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON);
-        try {
-            UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
-        } catch (\PDOException $e) {
-            throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
-        }
+        self::enTransaccion(function () use ($id, $d, $clave): void {
+            if ($d['rol'] !== 1) {
+                self::exigirOtroAdmin($id);
+            }
+            try {
+                UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
+            } catch (\PDOException $e) {
+                throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
+            }
+        });
 
         return $d['usuario'];
     }
@@ -86,8 +92,32 @@ final class UsuarioServicio
         if ($id === $actor['id']) {
             throw new ErrorValidacion(['general' => 'No puede eliminar su propia cuenta.']);
         }
-        if (!UsuarioModelo::eliminar($id)) {
-            throw new ErrorValidacion(['general' => 'Tiene casos, evidencias o formularios a su nombre: no se puede eliminar.']);
+        self::enTransaccion(function () use ($id): void {
+            self::exigirOtroAdmin($id);
+            if (!UsuarioModelo::eliminar($id)) {
+                throw new ErrorValidacion(['general' => 'Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar.']);
+            }
+        });
+    }
+
+    // El sistema no queda sin admin (#116). Cuenta con bloqueo: dos admins que se quitan el rol a la vez no pasan los dos.
+    private static function exigirOtroAdmin(int $id): void
+    {
+        if (UsuarioModelo::contarAdmins() < 2 && (UsuarioModelo::porId($id)['rol'] ?? null) === 1) {
+            throw new ErrorValidacion(['general' => 'Debe quedar al menos un admin.']);
+        }
+    }
+
+    private static function enTransaccion(callable $hacer): void
+    {
+        $pdo = Conexion::pdo();
+        $pdo->beginTransaction();
+        try {
+            $hacer();
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
         }
     }
 

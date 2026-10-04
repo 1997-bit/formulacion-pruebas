@@ -95,6 +95,12 @@ final class UsuarioModelo
         Conexion::pdo()->prepare('UPDATE usuarios SET clave = ? WHERE id = ?')->execute([$clave, $id]);
     }
 
+    // FOR UPDATE: dentro de una transacción, otro cambio de rol espera a que esta termine.
+    public static function contarAdmins(): int
+    {
+        return (int) Conexion::pdo()->query('SELECT COUNT(*) FROM (SELECT id FROM usuarios WHERE rol = 1 FOR UPDATE) a')->fetchColumn();
+    }
+
     // False si tiene casos, evidencias u otros registros a su nombre.
     public static function eliminar(int $id): bool
     {

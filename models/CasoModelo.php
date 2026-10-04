@@ -144,6 +144,7 @@ final class CasoModelo
     {
         try {
             Conexion::pdo()->prepare('DELETE FROM casos_prueba WHERE id = ?')->execute([$id]);
+            Conexion::pdo()->prepare("DELETE FROM logs_cambios WHERE tabla = 'casos_prueba' AND registro_id = ?")->execute([$id]);
         } catch (\PDOException $e) {
             if ($e->getCode() === '23000') {
                 return false;

@@ -95,7 +95,7 @@ final class CasoServicio
             }
             $antes = CasoModelo::bloquear($id);
             CasoModelo::actualizar($id, $campos);
-            Historial::registrar($id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
+            Historial::registrar('casos_prueba', $id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
@@ -163,8 +163,11 @@ final class CasoServicio
                 'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
                 'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
             ];
+            if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
+                throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
+            }
             CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
-            Historial::registrar($id, $antes, $resultado, $usuario['id']);
+            Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
             self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             $pdo->commit();
         } catch (\Throwable $e) {
@@ -379,8 +382,10 @@ final class CasoServicio
                 continue;
             }
             $archivo = $archivos[$nombre];
-            $guardado = Subida::guardar($archivo);
-            $guardados[] = Subida::ruta($guardado);
+            $guardado = Subida::guardar($archivo, $nuevo);
+            if ($nuevo) {
+                $guardados[] = Subida::ruta($guardado); // si falla, se borra; uno que ya estaba lo usa otra evidencia
+            }
             EvidenciaModelo::crear($casoId, $tipo, $guardado, mb_substr($archivo['name'], 0, 255), null, $descripcion, $usuarioId);
         }
     }

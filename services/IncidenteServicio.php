@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\IncidenteModelo;
+use App\Models\PlanModelo;
 use App\Models\UsuarioModelo;
 
 // RF-17, RF-19
@@ -46,6 +48,7 @@ final class IncidenteServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
+            self::exigirPlanAbierto($caso['proyecto_id'], $d);
             $codigo = sprintf('BUG-%03d', IncidenteModelo::siguienteNumero($caso['proyecto_id']));
             $id = IncidenteModelo::crear([
                 'proyecto_id' => $caso['proyecto_id'],
@@ -86,13 +89,23 @@ final class IncidenteServicio
         $v = new Validador();
         self::validarSeguimiento($v, $d, array_column(self::asignables($incidente), 'id'));
         $v->comprobar();
+        self::exigirPlanAbierto($incidente['proyecto_id'], $d);
 
-        IncidenteModelo::actualizar(
-            $id,
-            (int) $d['estado'],
-            $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
-            (int) ($d['es_stopper'] === '1'),
-        );
+        $despues = [
+            'estado' => (int) $d['estado'],
+            'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
+            'es_stopper' => (int) ($d['es_stopper'] === '1'),
+        ];
+        $pdo = Conexion::pdo();
+        $pdo->beginTransaction();
+        try {
+            IncidenteModelo::actualizar($id, $despues['estado'], $despues['asignado_id'], $despues['es_stopper']);
+            Historial::registrar('incidentes', $id, $incidente, $despues, $usuario['id']);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
 
         return $incidente['codigo'];
     }
@@ -136,6 +149,18 @@ final class IncidenteServicio
     public static function asignables(array $registro): array
     {
         return UsuarioModelo::deProyecto($registro['proyecto_id']);
+    }
+
+    /**
+     * Un stopper abierto no entra en un plan cerrado (BUG-035).
+     *
+     * @param array<string, string> $d
+     */
+    private static function exigirPlanAbierto(int $proyectoId, array $d): void
+    {
+        if ($d['es_stopper'] === '1' && $d['estado'] !== '2' && PlanModelo::cerrado($proyectoId)) {
+            throw new ErrorValidacion(['es_stopper' => 'El plan del proyecto está cerrado: reábralo para registrar un stopper.']);
+        }
     }
 
     /**

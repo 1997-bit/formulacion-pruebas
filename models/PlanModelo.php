@@ -22,6 +22,15 @@ final class PlanModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
+    // Plan en estado Cerrado (2): no admite stoppers abiertos (BUG-035).
+    public static function cerrado(int $proyectoId): bool
+    {
+        $sql = Conexion::pdo()->prepare('SELECT 1 FROM plan_pruebas WHERE proyecto_id = ? AND estado = 2 FOR UPDATE');
+        $sql->execute([$proyectoId]);
+
+        return (bool) $sql->fetchColumn();
+    }
+
     /** @return array<int, int> proyecto_id => estado */
     public static function estados(): array
     {
