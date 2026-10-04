@@ -8,4 +8,13 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
+    <source>
+        <include>
+            <directory>controllers</directory>
+            <directory>core</directory>
+            <directory>helpers</directory>
+            <directory>models</directory>
+            <directory>services</directory>
+        </include>
+    </source>
 </phpunit>

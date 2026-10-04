@@ -1450,3 +1450,11 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (20, 3, 2, 1),
     (20, 4, 1, 1),
     (20, 5, 3, 1), (20, 5, 4, 1);
+
+-- F5. Medido con XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage. Solo PaginacionTest cubre código.
+-- Sentencias = líneas, decisiones = ramas, caminos = caminos. Xdebug no mide condiciones ni bucles.
+INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porcentaje, herramienta, guardado_por, guardado_en) VALUES
+    -- RNF-09 Desempeño: Paginacion
+    (14, 11, 4, 4, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
+    (14, 12, 12, 9, 75, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
+    (14, 16, 7, 3, 43, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00');
