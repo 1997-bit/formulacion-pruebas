@@ -76,7 +76,7 @@ final class ReporteModelo
              FROM incidentes i
              JOIN casos_prueba c ON c.id = i.caso_id
              WHERE i.proyecto_id = ? AND i.es_stopper = 1 AND i.estado <> 2
-             ORDER BY i.severidad DESC, i.codigo'
+             ORDER BY i.severidad DESC, i.numero'
         );
         $sql->execute([$proyectoId]);
 
@@ -92,7 +92,7 @@ final class ReporteModelo
     {
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, c.estado FROM casos_prueba c
-             WHERE c.proyecto_id = ? AND ' . $condicion . ' ORDER BY c.codigo'
+             WHERE c.proyecto_id = ? AND ' . $condicion . ' ORDER BY c.sigla, c.numero'
         );
         $sql->execute([$proyectoId]);
 

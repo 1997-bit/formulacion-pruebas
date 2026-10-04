@@ -35,7 +35,7 @@ final class IncidenteModelo
              JOIN proyectos p ON p.id = i.proyecto_id
              LEFT JOIN usuarios a ON a.id = i.asignado_id
              WHERE ' . self::PERMITIDO . '
-             ORDER BY i.estado = 2, i.severidad DESC, p.nombre, i.codigo
+             ORDER BY i.estado = 2, i.severidad DESC, p.nombre, i.numero
              LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
         );
         $sql->execute([(int) $admin, $usuarioId]);
@@ -80,7 +80,7 @@ final class IncidenteModelo
     public static function deCaso(int $casoId): array
     {
         $sql = Conexion::pdo()->prepare(
-            'SELECT id, codigo, titulo, severidad, estado, es_stopper FROM incidentes WHERE caso_id = ? ORDER BY codigo'
+            'SELECT id, codigo, titulo, severidad, estado, es_stopper FROM incidentes WHERE caso_id = ? ORDER BY numero'
         );
         $sql->execute([$casoId]);
 

@@ -25,7 +25,7 @@ final class RequerimientoModelo
              FROM requerimientos r
              JOIN proyectos p ON p.id = r.proyecto_id
              WHERE ' . self::PERMITIDO . '
-             ORDER BY p.nombre, r.no_funcional, CAST(SUBSTRING_INDEX(r.codigo, \'-\', -1) AS UNSIGNED)'
+             ORDER BY p.nombre, r.no_funcional, r.numero'
              . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
         );
         $sql->execute([(int) $admin, $usuarioId]);

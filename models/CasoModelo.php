@@ -39,7 +39,7 @@ final class CasoModelo
              JOIN proyectos p ON p.id = c.proyecto_id
              JOIN usuarios u ON u.id = c.creado_por
              WHERE ' . $donde . '
-             ORDER BY p.nombre, c.codigo'
+             ORDER BY p.nombre, c.sigla, c.numero'
              . ($offset === null ? '' : ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset)
         );
         $sql->execute($valores);
