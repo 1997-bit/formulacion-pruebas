@@ -727,7 +727,35 @@ INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, c
     (3, 1, 'Préstamos activos', 'De 0 a 2.', '3 o más.', '0, 2, 3',
         'Presta con 0 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 21:45:00'),
     (3, 2, 'Multa', 'Sin multa pendiente.', 'Multa sin pagar.', 'RD$0, RD$50',
-        'Presta sin multa. Con RD$50 no presta y dice "Tiene una multa sin pagar".', 2, '2026-10-03 21:45:00');
+        'Presta sin multa. Con RD$50 no presta y dice "Tiene una multa sin pagar".', 2, '2026-10-03 21:45:00'),
+    -- RF-05 Listar casos: Permisos::exigirMiembro
+    (8, 1, 'Usuario que lista', 'Admin: todos los casos. Tester: los de sus proyectos.', 'Tester que no es miembro del proyecto del caso.',
+        'admin; gloria (los dos proyectos); pan (solo Formulación)',
+        'admin y gloria ven INT-001 de Biblioteca. pan no lo ve en la lista y abrirlo responde 403.', 2, '2026-10-03 23:45:00'),
+    -- RNF-02 Acceso: public/index.php y Csrf
+    (13, 1, 'Sesión', 'Sesión iniciada.', 'Sin cookie; cookie inventada.',
+        'gloria con sesión; sin cookie; casos_sesion=abc',
+        'Con sesión muestra /dashboard. Sin cookie o con una inventada manda a /.', 3, '2026-10-03 23:50:00'),
+    (13, 2, 'Rol en una ruta de admin', 'Admin.', 'Tester.',
+        'admin y pan en /admin/usuarios',
+        'admin ve Usuarios. pan recibe 403.', 3, '2026-10-03 23:50:00'),
+    (13, 3, 'Token CSRF en un POST', 'El de la sesión.', 'Sin token; el token de otra sesión.',
+        'token correcto; sin csrf; token de gloria en la sesión de pan',
+        'Con el correcto guarda. Sin token o con el de otra sesión responde 403.', 3, '2026-10-03 23:50:00'),
+    -- RF-20 Historial: Historial::registrar
+    (6, 1, 'Campo editado', 'Un campo con otro valor.', 'Guardar sin cambios.',
+        'Módulo: Casos a Casos y filtros; guardar sin tocar nada',
+        'Con el cambio sale la fila Módulo, antes "Casos" y después "Casos y filtros". Sin cambios no sale ninguna fila.', 2, '2026-10-03 23:55:00'),
+    (6, 2, 'Estado al anotar', 'Pendiente a OK o FAULT.', 'Volver a anotar el mismo estado y los mismos textos.',
+        'Pendiente a OK; OK a OK sin cambios',
+        'Pendiente a OK deja filas de Estado (antes Pendiente, después OK), Resultado obtenido y Observaciones. Repetir lo mismo no deja filas.', 2, '2026-10-03 23:55:00'),
+    -- RF-03 Gestionar roles: UsuarioServicio
+    (11, 1, 'Rol', 'tester (0) o admin (1).', 'Vacío; 2; texto.',
+        '0, 1, (vacío), 2, abc',
+        'Guarda 0 y 1. Vacío: "Es obligatorio." 2 y abc: "Valor no válido."', 3, '2026-10-03 23:58:00'),
+    (11, 2, 'Quién cambia el rol', 'Admin, en otra cuenta.', 'Admin quitándose su propio rol; tester.',
+        'admin edita a pan; admin se pone tester; pan abre /admin/usuarios/editar',
+        'admin cambia el rol de pan. Al quitarse el suyo: "No puede quitarse su propio rol de admin." pan recibe 403.', 3, '2026-10-03 23:58:00');
 
 -- RF-10: formulario 3. Fronteras de las mismas reglas del formulario 2; cada límite con el valor de antes y el de después.
 INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, maximo, valores_limite, resultado_esperado, guardado_por, guardado_en) VALUES
