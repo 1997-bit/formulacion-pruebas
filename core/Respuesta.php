@@ -14,6 +14,10 @@ final class Respuesta
 
     public static function exito(string $mensaje, string $ruta): never
     {
+        // Envío de un solo uso (#102): un segundo envío igual vuelve aquí sin repetir el guardado.
+        if (is_string($_POST['envio'] ?? null)) {
+            $_SESSION['envios'] = array_slice([$_POST['envio'] => $ruta] + ($_SESSION['envios'] ?? []), 0, 20, true);
+        }
         Sesion::flash($mensaje);
         self::redirigir($ruta);
     }
