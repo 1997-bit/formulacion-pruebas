@@ -382,8 +382,10 @@ final class CasoServicio
                 continue;
             }
             $archivo = $archivos[$nombre];
-            $guardado = Subida::guardar($archivo);
-            $guardados[] = Subida::ruta($guardado);
+            $guardado = Subida::guardar($archivo, $nuevo);
+            if ($nuevo) {
+                $guardados[] = Subida::ruta($guardado); // si falla, se borra; uno que ya estaba lo usa otra evidencia
+            }
             EvidenciaModelo::crear($casoId, $tipo, $guardado, mb_substr($archivo['name'], 0, 255), null, $descripcion, $usuarioId);
         }
     }

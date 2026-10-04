@@ -37,14 +37,17 @@ final class Subida
     }
 
     /**
-     * Ya revisado con error(). Devuelve el nombre guardado.
+     * Ya revisado con error(). Devuelve el nombre guardado: el sha256 del contenido,
+     * así un archivo idéntico se guarda una sola vez (#118). $nuevo es false si ya estaba.
      *
      * @param array{name: string, tmp_name: string, size: int, error: int} $archivo
+     * @param-out bool $nuevo
      */
-    public static function guardar(array $archivo): string
+    public static function guardar(array $archivo, ?bool &$nuevo = null): string
     {
-        $guardado = bin2hex(random_bytes(16)) . '.' . strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
-        if (!move_uploaded_file($archivo['tmp_name'], self::ruta($guardado))) {
+        $guardado = hash_file('sha256', $archivo['tmp_name']) . '.' . strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+        $nuevo = !is_file(self::ruta($guardado));
+        if ($nuevo && !move_uploaded_file($archivo['tmp_name'], self::ruta($guardado))) {
             throw new \RuntimeException('No se pudo guardar la evidencia.');
         }
 

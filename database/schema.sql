@@ -125,7 +125,7 @@ CREATE TABLE evidencias (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     caso_id INT UNSIGNED NOT NULL,
     tipo TINYINT UNSIGNED NOT NULL,
-    archivo VARCHAR(50) NULL, -- en storage/evidencias/
+    archivo VARCHAR(80) NULL, -- en storage/evidencias/, con el sha256 del contenido
     nombre_original VARCHAR(255) NULL,
     enlace VARCHAR(500) NULL,
     descripcion VARCHAR(255) NOT NULL,
