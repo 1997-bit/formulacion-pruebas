@@ -1905,7 +1905,11 @@ INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
     ('BUG-018', 133, '2026-10-04 14:23:00', 'La segunda edición recibe "Otro usuario guardó antes. Revise los datos y guarde de nuevo." y conserva lo escrito.'),
     ('BUG-019', 133, '2026-10-04 14:23:00', 'La segunda edición de la matriz recibe "Otro usuario guardó antes." La fila nueva de la primera se conserva.'),
     ('BUG-031', 133, '2026-10-04 14:23:00', 'Dos envíos seguidos crean un solo caso. Los dos llevan al caso creado.'),
-    ('BUG-033', 133, '2026-10-04 14:23:00', 'Después del eliminar rechazado, editar gloria y editar el proyecto muestran sus datos y responden 200.');
+    ('BUG-033', 133, '2026-10-04 14:23:00', 'Después del eliminar rechazado, editar gloria y editar el proyecto muestran sus datos y responden 200.'),
+    -- Fase 4, integridad
+    ('BUG-020', 134, '2026-10-04 15:16:00', 'Eliminar a un tester con proyecto responde "Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar." Las coevaluaciones se conservan.'),
+    ('BUG-035', 134, '2026-10-04 15:16:00', 'Con el plan cerrado, registrar un stopper responde "El plan del proyecto está cerrado: reábralo para registrar un stopper."'),
+    ('BUG-048', 134, '2026-10-04 15:16:00', 'Anotar OK en un caso con un incidente abierto responde "No pasa a OK: tiene incidentes sin cerrar."');
 
 -- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
