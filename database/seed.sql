@@ -1,9 +1,9 @@
 -- Datos de prueba, después de schema.sql. Usuarios y claves en el README.
 
 INSERT INTO usuarios (id, nombre, usuario, clave, rol) VALUES
-    (1, 'Administrador', 'admin', '$argon2id$v=19$m=65536,t=4,p=1$QmNMQXRHMkduenhXdmY5Lw$UYbZvbEjII90V3ZvyIJ2G2MBDb73EkeMiLvtTQQZpWU', 1),
-    (2, 'Gloria', 'gloria', '$argon2id$v=19$m=65536,t=4,p=1$UWtlRVhPTU0uL1dtVFBMeg$yDi0W7fj0U7wOxKDuHt4XrPuHtDLecTjastnlkufpOY', 0),
-    (3, 'Pan', 'pan', '$argon2id$v=19$m=65536,t=4,p=1$RFk1SnJOQ0czNXJtUGp4dg$29iQIAs7lw03/d1mb+NQLIAXbsuo+mglME9r94ynecc', 0);
+    (1, 'Administrador', 'admin', '$argon2id$v=19$m=19456,t=2,p=1$d09NYS5LaURCNlk5Lm9Zdg$jkID5L8R9fqmximrtTmhsOawXNyqoEEWQyawMkYGyBw', 1),
+    (2, 'Gloria', 'gloria', '$argon2id$v=19$m=19456,t=2,p=1$bmY4WlFmZW8yNGpOVUdpTw$OpU3uuLI/Q/+0mjEPOX+wI98Rp+hlHt4jTap2qdL2D8', 0),
+    (3, 'Pan', 'pan', '$argon2id$v=19$m=19456,t=2,p=1$UE02Y2pnTHg3R29TN2JDbg$ISFnKVHqnWwIohGc7DJhw08gWXFpe5DZk55CMAgMkfw', 0);
 
 -- El primero es este sistema; sus requerimientos salen del IR.
 INSERT INTO proyectos (id, nombre, descripcion) VALUES
