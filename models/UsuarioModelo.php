@@ -58,11 +58,14 @@ final class UsuarioModelo
         return (int) Conexion::pdo()->lastInsertId();
     }
 
-    // Clave null: no la cambia.
+    // Clave null: no la cambia. Una clave o un rol nuevo sube sesion_version; va primero porque compara el rol de antes.
     public static function actualizar(int $id, string $nombre, string $usuario, ?string $clave, int $rol): void
     {
-        $sql = Conexion::pdo()->prepare('UPDATE usuarios SET nombre = ?, usuario = ?, rol = ?, clave = COALESCE(?, clave) WHERE id = ?');
-        $sql->execute([$nombre, $usuario, $rol, $clave, $id]);
+        $sql = Conexion::pdo()->prepare(
+            'UPDATE usuarios SET sesion_version = sesion_version + (? IS NOT NULL OR rol <> ?),
+                nombre = ?, usuario = ?, rol = ?, clave = COALESCE(?, clave) WHERE id = ?'
+        );
+        $sql->execute([$clave, $rol, $nombre, $usuario, $rol, $clave, $id]);
     }
 
     public static function cambiarClave(int $id, string $clave): void

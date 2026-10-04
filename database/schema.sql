@@ -18,6 +18,7 @@ CREATE TABLE usuarios (
     usuario VARCHAR(30) NOT NULL UNIQUE,
     clave VARCHAR(255) NOT NULL, -- Argon2id
     rol TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    sesion_version INT UNSIGNED NOT NULL DEFAULT 0, -- sube al cambiar clave o rol: cierra las sesiones abiertas
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
