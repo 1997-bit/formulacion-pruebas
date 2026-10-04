@@ -735,7 +735,18 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'En 767.9 px no aplica ninguno de los dos estilos: el sidebar se queda abierto al lado del contenido y el botón Menú no lo cierra.',
         'app.css usa max-width: 47.99rem (767.84 px) y min-width: 48rem; app.js usa min-width: 48rem. Ver BUG-013.',
-        2, '2026-10-04 01:20:00', 2, '2026-10-04 01:25:00');
+        2, '2026-10-04 01:20:00', 2, '2026-10-04 01:25:00'),
+    (69, 1, 9, 'SIS-031', 3, 8, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que un error en otro campo no hace perder la captura sin avisar.',
+        'Sesión iniciada como gloria. El caso está Pendiente y sin evidencias.',
+        'Estado: OK\nResultado obtenido: ok\nObservaciones: (vacío)\nCaptura: captura.png con descripción',
+        '1. Anotar el resultado con los datos de entrada y guardar.\n2. Ver el bloque Captura.\n3. Escribir las observaciones y guardar otra vez.',
+        'Tras el paso 1 la página avisa que hay que volver a elegir la captura, o la conserva.',
+        '2026-10-04', '2026-10-04',
+        2, 'Tras el paso 1 solo sale el error de Observaciones; Captura sigue marcada, sin archivo y sin aviso. En el paso 3 sale "Es obligatorio." en Archivo.',
+        'El navegador no puede volver a llenar un input file y el servidor descarta la subida. Ver BUG-014.',
+        2, '2026-10-04 01:30:00', 2, '2026-10-04 01:35:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -752,7 +763,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-04 00:55:00'),
     (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-04 01:05:00'),
     (67, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', '@media (max-width: 47.99rem): .sidebar con translate, sin visibility ni inert.', 2, '2026-10-04 01:15:00'),
-    (68, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', 'Media queries 48rem y 47.99rem: queda un hueco de 0.16 px.', 2, '2026-10-04 01:25:00');
+    (68, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/app.css', 'Media queries 48rem y 47.99rem: queda un hueco de 0.16 px.', 2, '2026-10-04 01:25:00'),
+    (69, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/partials/resultado.php', 'Bloque de evidencias: sin aviso para volver a elegir el archivo.', 2, '2026-10-04 01:35:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -834,7 +846,13 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Poner zoom 110 %.\n2. Ajustar la ventana a 767.9 px CSS.\n3. Pulsar Menú.',
         'Siempre aplica un estilo: usar (width < 48rem) y (width >= 48rem).',
         'El sidebar se queda abierto y el botón no lo cierra.',
-        1, 1, 0, 0, NULL, 2, '2026-10-04 01:26:00');
+        1, 1, 0, 0, NULL, 2, '2026-10-04 01:26:00'),
+    (1, 69, 'BUG-014', 'Un error en otro campo borra la captura sin avisar', 'Casos',
+        'Si el resultado vuelve con errores, el input file queda vacío y el bloque sigue marcado. Nada dice que hay que elegir el archivo otra vez; el error recién sale en el siguiente envío.',
+        '1. Anotar OK con una captura y sin observaciones.\n2. Guardar.\n3. Llenar observaciones y guardar.',
+        'Junto al archivo sale "Vuelva a elegir el archivo" desde el primer error.',
+        'No avisa; en el segundo envío dice "Es obligatorio." en Archivo.',
+        1, 2, 0, 0, NULL, 2, '2026-10-04 01:36:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
