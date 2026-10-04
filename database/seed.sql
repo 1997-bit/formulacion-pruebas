@@ -33,7 +33,10 @@ INSERT INTO requerimientos (id, proyecto_id, codigo, descripcion, no_funcional) 
     (16, 1, 'RNF-07', 'Accesibilidad: WCAG 2.2 AA, todo con teclado y errores junto al campo.', 1),
     (17, 1, 'RNF-06', 'Fechas: ISO en la base y dd/mm/aaaa en pantalla.', 1),
     (18, 1, 'RF-18', 'Recrear ambiente: schema.sql, seed.sql, .env.example y docs/recrear_ambiente.md.', 0),
-    (19, 1, 'RF-08', 'Formulario 1: vista imprimible del caso.', 0);
+    (19, 1, 'RF-08', 'Formulario 1: vista imprimible del caso.', 0),
+    (20, 1, 'RF-07', 'Eliminar caso: solo admin, con confirmación. Un caso con evidencias o incidentes no se elimina.', 0),
+    (21, 1, 'RF-11', 'Formulario 4: tabla de decisión. De 1 a 4 condiciones y de 1 a 20 acciones; cada regla lleva al menos una acción.', 0),
+    (22, 1, 'RF-15', 'Formulario 8: auto y coevaluación. De 1 a 5 puntos por aspecto y comentario de hasta 500 caracteres.', 0);
 
 INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba, subtecnica, modulo, plataforma,
     entorno, objetivo, precondiciones, entrada, pasos, resultado_esperado, fecha_inicio, fecha_fin,
