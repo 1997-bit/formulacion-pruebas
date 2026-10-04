@@ -124,7 +124,6 @@ CREATE TABLE incidentes (
 CREATE TABLE evidencias (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     caso_id INT UNSIGNED NOT NULL,
-    incidente_id INT UNSIGNED NULL,
     tipo TINYINT UNSIGNED NOT NULL,
     archivo VARCHAR(50) NULL, -- en storage/evidencias/
     nombre_original VARCHAR(255) NULL,
@@ -135,7 +134,6 @@ CREATE TABLE evidencias (
     INDEX (subido_en), -- orden del portafolio
     CHECK ((tipo = 4) = (enlace IS NOT NULL) AND (tipo = 4) = (archivo IS NULL)),
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
-    FOREIGN KEY (incidente_id) REFERENCES incidentes (id) ON DELETE RESTRICT,
     FOREIGN KEY (subido_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -285,19 +283,6 @@ CREATE TABLE autoevaluaciones (
     FOREIGN KEY (proyecto_id, evaluado_id) REFERENCES proyecto_miembros (proyecto_id, usuario_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- F9
-CREATE TABLE portafolio (
-    proyecto_id INT UNSIGNED NOT NULL,
-    usuario_id INT UNSIGNED NOT NULL,
-    orden TINYINT UNSIGNED NOT NULL,
-    semana TINYINT UNSIGNED NOT NULL,
-    evidencia VARCHAR(150) NOT NULL,
-    tipo TINYINT UNSIGNED NOT NULL,
-    fecha DATE NOT NULL,
-    observaciones TEXT NULL,
-    PRIMARY KEY (proyecto_id, usuario_id, orden),
-    FOREIGN KEY (proyecto_id, usuario_id) REFERENCES proyecto_miembros (proyecto_id, usuario_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Vista
 
