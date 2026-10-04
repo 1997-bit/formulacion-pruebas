@@ -757,3 +757,18 @@ INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, 
     -- RF-01 de Biblioteca escolar: caso INT-001
     (3, 1, 'Préstamos activos', '0 a 2', '0', '2', '0, 1, 2, 3',
         'Presta con 0, 1 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 22:30:00');
+
+-- RF-15: formulario 8. Gloria ya se evaluó y evaluó a Pan; Pan no, para ver "Llenar evaluación". El comentario va en la fila de la autoevaluación.
+INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, puntos, comentario) VALUES
+    (1, 2, 2, 1, 4, NULL),
+    (1, 2, 2, 2, 5, 'Usé partición de equivalencia y valor límite en los formularios 2 y 3.'),
+    (1, 2, 2, 3, 5, NULL),
+    (1, 2, 2, 4, 3, 'Me falta practicar PHPUnit.'),
+    (1, 2, 2, 5, 4, NULL),
+    (1, 2, 2, 6, 3, 'Entregué el plan de pruebas un día tarde.'),
+    (1, 2, 3, 1, 5, NULL),
+    (1, 2, 3, 2, 4, NULL),
+    (1, 2, 3, 3, 4, NULL),
+    (1, 2, 3, 4, 4, NULL),
+    (1, 2, 3, 5, 5, NULL),
+    (1, 2, 3, 6, 4, NULL);
