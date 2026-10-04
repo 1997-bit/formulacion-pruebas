@@ -834,8 +834,8 @@ INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, 
     (17, 4, 'Año', '1000 a 9999, el rango de DATE', '1000', '9999', '0000-01-01, 0999-12-31, 1000-01-01, 9999-12-31, 10000-01-01',
         'Acepta 1000 y 9999. Con 0000, 0999 y 10000: "Fecha inválida."', 2, '2026-10-03 23:30:00'),
     -- RF-15 Auto y coevaluación: AutoevaluacionServicio
-    (22, 1, 'Puntos por aspecto', '1 a 5, o sin calificar', '1', '5', '0, 1, 5, 6',
-        'Acepta 1 y 5. Con 0 y 6, enviados a mano: "Entre 1 y 5."', 3, '2026-10-03 23:35:00'),
+    (22, 1, 'Puntos por aspecto', '1 a 5', '1', '5', '(vacío), 0, 1, 5, 6',
+        'Acepta 1 y 5. Vacío: "Es obligatorio." 0 y 6, enviados a mano: "Entre 1 y 5."', 3, '2026-10-03 23:35:00'),
     (22, 2, 'Comentario por aspecto', '0 a 500 caracteres', '0', '500', '0, 499, 500, 501 caracteres',
         'Acepta vacío, 499 y 500. Con 501: "Máximo 500 caracteres."', 3, '2026-10-03 23:35:00'),
     -- RF-11 Tabla de decisión: TablaDecisionServicio
