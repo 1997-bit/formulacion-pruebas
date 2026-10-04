@@ -164,8 +164,8 @@ final class TablaDecisionServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            FilasModelo::reemplazar(self::TABLA, $requerimientoId, ['es_accion', 'texto'], $filas, $usuario['id']);
-            TablaDecisionModelo::insertarCeldas($requerimientoId, $celdas);
+            FilasModelo::guardar(self::TABLA, $requerimientoId, ['es_accion', 'texto'], $filas, $usuario['id']);
+            TablaDecisionModelo::guardarCeldas($requerimientoId, $celdas);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

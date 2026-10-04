@@ -91,7 +91,7 @@ final class ValorLimiteServicio
         $pdo = Conexion::pdo();
         $pdo->beginTransaction();
         try {
-            FilasModelo::reemplazar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
+            FilasModelo::guardar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();

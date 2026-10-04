@@ -129,25 +129,18 @@ final class FilasModelo
     }
 
     /**
-     * Borra y vuelve a insertar con orden 1, 2, 3… Dentro de una transacción.
+     * Filas de F2 a F4 con orden 1, 2, 3…, por diferencia. Dentro de una transacción.
      *
      * @param list<string> $columnas
      * @param list<array<string, string>> $filas
      */
-    public static function reemplazar(string $tabla, int $requerimientoId, array $columnas, array $filas, int $usuarioId): void
+    public static function guardar(string $tabla, int $requerimientoId, array $columnas, array $filas, int $usuarioId): void
     {
-        $pdo = Conexion::pdo();
-        $pdo->prepare("DELETE FROM {$tabla} WHERE requerimiento_id = ?")->execute([$requerimientoId]);
-        $sql = $pdo->prepare(
-            "INSERT INTO {$tabla} (requerimiento_id, orden, guardado_por, " . implode(', ', $columnas) . ')
-             VALUES (?, ?, ?' . str_repeat(', ?', count($columnas)) . ')'
-        );
+        $datos = [];
         foreach ($filas as $i => $fila) {
-            $valores = [$requerimientoId, $i + 1, $usuarioId];
-            foreach ($columnas as $columna) {
-                $valores[] = $fila[$columna];
-            }
-            $sql->execute($valores);
+            $datos[] = ['orden' => $i + 1] + array_intersect_key($fila, array_flip($columnas));
         }
+        self::sincronizar($tabla, ['requerimiento_id' => $requerimientoId], ['orden'], $datos,
+            ['guardado_por' => $usuarioId, 'guardado_en' => date('Y-m-d H:i:s')]);
     }
 }
