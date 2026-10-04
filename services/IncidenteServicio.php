@@ -91,12 +91,21 @@ final class IncidenteServicio
         $v->comprobar();
         self::exigirPlanAbierto($incidente['proyecto_id'], $d);
 
-        IncidenteModelo::actualizar(
-            $id,
-            (int) $d['estado'],
-            $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
-            (int) ($d['es_stopper'] === '1'),
-        );
+        $despues = [
+            'estado' => (int) $d['estado'],
+            'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
+            'es_stopper' => (int) ($d['es_stopper'] === '1'),
+        ];
+        $pdo = Conexion::pdo();
+        $pdo->beginTransaction();
+        try {
+            IncidenteModelo::actualizar($id, $despues['estado'], $despues['asignado_id'], $despues['es_stopper']);
+            Historial::registrar('incidentes', $id, $incidente, $despues, $usuario['id']);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
 
         return $incidente['codigo'];
     }

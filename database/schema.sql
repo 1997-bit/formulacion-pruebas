@@ -142,13 +142,14 @@ CREATE TABLE evidencias (
 -- RF-20
 CREATE TABLE logs_cambios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    caso_id INT UNSIGNED NOT NULL,
+    tabla VARCHAR(30) NOT NULL, -- casos_prueba, incidentes o plan_pruebas
+    registro_id INT UNSIGNED NOT NULL, -- id del registro; en plan_pruebas, el proyecto
     usuario_id INT UNSIGNED NOT NULL,
     campo VARCHAR(50) NOT NULL,
     antes TEXT NULL,
     despues TEXT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE CASCADE,
+    INDEX (tabla, registro_id, fecha),
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

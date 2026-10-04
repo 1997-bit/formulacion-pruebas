@@ -95,7 +95,7 @@ final class CasoServicio
             }
             $antes = CasoModelo::bloquear($id);
             CasoModelo::actualizar($id, $campos);
-            Historial::registrar($id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
+            Historial::registrar('casos_prueba', $id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
             $pdo->commit();
         } catch (\Throwable $e) {
             $pdo->rollBack();
@@ -167,7 +167,7 @@ final class CasoServicio
                 throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
             }
             CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
-            Historial::registrar($id, $antes, $resultado, $usuario['id']);
+            Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
             self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             $pdo->commit();
         } catch (\Throwable $e) {
