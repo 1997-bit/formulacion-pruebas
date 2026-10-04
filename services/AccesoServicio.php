@@ -53,11 +53,11 @@ final class AccesoServicio
         return $fila !== null && $fila['sesion_version'] === ($sesion['sesion_version'] ?? null) ? $fila : null;
     }
 
+    // Mensaje genérico: no dice cuánto falta.
     private static function frenar(string $llave): void
     {
-        $espera = IntentoModelo::espera($llave);
-        if ($espera > 0) {
-            throw new ErrorValidacion(['general' => "Demasiados intentos. Espere {$espera} s."]);
+        if (IntentoModelo::bloqueado($llave)) {
+            throw new ErrorValidacion(['general' => 'Demasiados intentos. Espere un momento.']);
         }
     }
 
