@@ -28,16 +28,17 @@ final class IncidenteModelo
     public static function listar(?array $proyectos, int $offset): array
     {
         [$donde, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        $orden = ' ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero';
+        // La subconsulta salta solo por el índice (#107).
         $sql = Conexion::pdo()->prepare(
             'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
-             FROM incidentes i
+             FROM (SELECT i.id FROM incidentes i' . ($donde === [] ? '' : ' WHERE ' . $donde[0]) . $orden
+                . ' LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset . ') k
+             JOIN incidentes i ON i.id = k.id
              JOIN casos_prueba c ON c.id = i.caso_id
              JOIN proyectos p ON p.id = i.proyecto_id
-             LEFT JOIN usuarios a ON a.id = i.asignado_id'
-             . ($donde === [] ? '' : ' WHERE ' . $donde[0]) . '
-             ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero
-             LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
+             LEFT JOIN usuarios a ON a.id = i.asignado_id' . $orden
         );
         $sql->execute($valores);
 
