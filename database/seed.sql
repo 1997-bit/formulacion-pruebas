@@ -759,7 +759,28 @@ INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, 
         '1, 2 y la última muestran su página. 0 muestra la primera; última + 1, la última.', 2, '2026-10-03 22:25:00'),
     -- RF-01 de Biblioteca escolar: caso INT-001
     (3, 1, 'Préstamos activos', '0 a 2', '0', '2', '0, 1, 2, 3',
-        'Presta con 0, 1 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 22:30:00');
+        'Presta con 0, 1 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-03 22:30:00'),
+    -- RNF-06 Fechas: Validador::fecha. Los valores fuera del calendario se envían a mano.
+    (17, 1, 'Día del mes', '1 al último día del mes', '1', '31 en enero', '2026-01-00, 2026-01-01, 2026-01-31, 2026-01-32',
+        'Acepta 01 y 31 y los muestra 01/01/2026 y 31/01/2026. Con 00 y 32: "Fecha inválida."', 2, '2026-10-03 23:30:00'),
+    (17, 2, 'Febrero', '1 a 28; 29 en año bisiesto', '1', '28 o 29', '2026-02-28, 2026-02-29, 2028-02-29, 2028-02-30',
+        'Acepta 2026-02-28 y 2028-02-29. Con 2026-02-29 y 2028-02-30: "Fecha inválida."', 2, '2026-10-03 23:30:00'),
+    (17, 3, 'Mes', '1 a 12', '1', '12', '2026-00-15, 2026-01-15, 2026-12-15, 2026-13-15',
+        'Acepta 01 y 12. Con 00 y 13: "Fecha inválida."', 2, '2026-10-03 23:30:00'),
+    (17, 4, 'Año', '1000 a 9999, el rango de DATE', '1000', '9999', '0000-01-01, 0999-12-31, 1000-01-01, 9999-12-31, 10000-01-01',
+        'Acepta 1000 y 9999. Con 0000, 0999 y 10000: "Fecha inválida."', 2, '2026-10-03 23:30:00'),
+    -- RF-15 Auto y coevaluación: AutoevaluacionServicio
+    (22, 1, 'Puntos por aspecto', '1 a 5, o sin calificar', '1', '5', '0, 1, 5, 6',
+        'Acepta 1 y 5. Con 0 y 6, enviados a mano: "Entre 1 y 5."', 3, '2026-10-03 23:35:00'),
+    (22, 2, 'Comentario por aspecto', '0 a 500 caracteres', '0', '500', '0, 499, 500, 501 caracteres',
+        'Acepta vacío, 499 y 500. Con 501: "Máximo 500 caracteres."', 3, '2026-10-03 23:35:00'),
+    -- RF-11 Tabla de decisión: TablaDecisionServicio
+    (21, 1, 'Condiciones', '1 a 4', '1', '4', '0, 1, 4, 5',
+        'Acepta 1 (2 reglas) y 4 (16 reglas). Con 4, Agregar condición queda deshabilitado. 0 o 5, enviadas a mano: "De 1 a 4 condiciones."', 2, '2026-10-03 23:40:00'),
+    (21, 2, 'Acciones', '1 a 20', '1', '20', '0, 1, 20, 21',
+        'Acepta 1 y 20. Con 20, Agregar acción queda deshabilitado. 0 o 21, enviadas a mano: "De 1 a 20 acciones."', 2, '2026-10-03 23:40:00'),
+    (21, 3, 'Texto de condición o acción', '1 a 255 caracteres', '1', '255', '0, 1, 255, 256 caracteres',
+        'Acepta 1 y 255. Con 0: "Es obligatorio." Con 256: "Máximo 255 caracteres."', 2, '2026-10-03 23:40:00');
 
 -- RF-15: formulario 8. Gloria ya se evaluó y evaluó a Pan; Pan no, para ver "Llenar evaluación". El comentario va en la fila de la autoevaluación.
 INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, puntos, comentario) VALUES
