@@ -121,10 +121,10 @@ final class IncidenteServicio
      */
     public static function pagina(array $usuario, int $pagina): array
     {
-        $admin = $usuario['rol'] === 1;
-        $paginacion = new Paginacion(IncidenteModelo::contar($usuario['id'], $admin), $pagina);
+        $proyectos = Permisos::proyectos($usuario);
+        $paginacion = new Paginacion(IncidenteModelo::contar($proyectos), $pagina);
 
-        return [IncidenteModelo::listar($usuario['id'], $admin, $paginacion->offset()), $paginacion];
+        return [IncidenteModelo::listar($proyectos, $paginacion->offset()), $paginacion];
     }
 
     /**

@@ -9,36 +9,37 @@ use App\Core\Paginacion;
 
 final class IncidenteModelo
 {
-    // Tester: solo sus proyectos (RF-05).
-    private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = i.proyecto_id AND m.usuario_id = ?))';
-
-    public static function contar(int $usuarioId, bool $admin): int
+    /** @param list<int>|null $proyectos Permisos::proyectos() */
+    public static function contar(?array $proyectos): int
     {
-        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i WHERE ' . self::PERMITIDO);
-        $sql->execute([(int) $admin, $usuarioId]);
+        [$donde, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes i' . ($donde === [] ? '' : ' WHERE ' . $donde[0]));
+        $sql->execute($valores);
 
         return (int) $sql->fetchColumn();
     }
 
     /**
-     * Abiertos primero; luego lo más grave.
+     * Por proyecto: abiertos primero, luego lo más grave. Orden del índice: sin filesort.
      *
+     * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
      */
-    public static function listar(int $usuarioId, bool $admin, int $offset): array
+    public static function listar(?array $proyectos, int $offset): array
     {
+        [$donde, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
         $sql = Conexion::pdo()->prepare(
             'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
              FROM incidentes i
              JOIN casos_prueba c ON c.id = i.caso_id
              JOIN proyectos p ON p.id = i.proyecto_id
-             LEFT JOIN usuarios a ON a.id = i.asignado_id
-             WHERE ' . self::PERMITIDO . '
-             ORDER BY i.estado = 2, i.severidad DESC, p.nombre, i.numero
+             LEFT JOIN usuarios a ON a.id = i.asignado_id'
+             . ($donde === [] ? '' : ' WHERE ' . $donde[0]) . '
+             ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero
              LIMIT ' . Paginacion::POR_PAGINA . ' OFFSET ' . $offset
         );
-        $sql->execute([(int) $admin, $usuarioId]);
+        $sql->execute($valores);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }

@@ -109,7 +109,7 @@ CREATE TABLE incidentes (
     numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED, -- BUG-001 -> 1
     UNIQUE (proyecto_id, codigo),
     UNIQUE (proyecto_id, numero),
-    INDEX (proyecto_id, estado, severidad, numero),
+    INDEX (proyecto_id, estado, severidad DESC, numero), -- orden de la lista
     INDEX (proyecto_id, es_stopper, estado),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE RESTRICT,
