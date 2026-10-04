@@ -14,7 +14,7 @@ $t = $avance['total'];
 $porcentaje = fn (int $n, int $de): int => $de === 0 ? 0 : (int) round($n / $de * 100);
 $cifras = [
     ['Casos', 'clipboard-list', $t['casos'], count($avance['proyectos']) . ' proyecto(s)'],
-    ['OK', 'circle-check', $t['ok'], $porcentaje($t['ok'], $t['casos']) . ' % del total'],
+    ['OK', 'circle-check', $t['ok'], $t['aprobacion'] . ' % de aprobación'],
     ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)'],
     ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía'],
 ];
