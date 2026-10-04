@@ -813,7 +813,29 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-04', '2026-10-04',
         2, 'Lo elimina. Se borran las 6 coevaluaciones de Gloria y su página dice "Coevaluación de ." sin nombre.',
         'autoevaluaciones se borra en cascada desde proyecto_miembros. Ver BUG-020.',
-        1, '2026-10-04 02:30:00', 1, '2026-10-04 02:35:00');
+        1, '2026-10-04 02:30:00', 1, '2026-10-04 02:35:00'),
+    (76, 1, 16, 'SIS-035', 3, 2, 'Interfaz', 1,
+        'tokens.css, fórmula de contraste de WCAG 2.2',
+        'Verificar el contraste de textos y bordes en los dos temas.',
+        'Colores de tokens.css pasados de oklch a sRGB.',
+        'Textos: mínimo 4.5:1\nBordes de controles y anillo de foco: mínimo 3:1 (WCAG 1.4.11)',
+        '1. Calcular el contraste de cada par texto/fondo y borde/fondo en claro y oscuro.\n2. Comparar con el mínimo.',
+        'Todos los pares llegan al mínimo.',
+        '2026-10-04', '2026-10-04',
+        2, 'Todos los textos y el anillo de foco cumplen. El borde de los campos (--entrada) da 1.44:1 en claro y 1.70:1 en oscuro.',
+        'Un campo vacío casi no se distingue del fondo. Ver BUG-021.',
+        2, '2026-10-04 02:40:00', 2, '2026-10-04 02:45:00'),
+    (77, 1, 18, 'SMK-003', 7, 7, 'Ambiente', 1,
+        'Repositorio en staging',
+        'Verificar que están todos los archivos de RF-18.',
+        'Repositorio clonado.',
+        'database/schema.sql, database/seed.sql, .env.example, docs/recrear_ambiente.md',
+        '1. Buscar cada archivo en el repositorio.',
+        'Están los cuatro.',
+        '2026-10-04', '2026-10-04',
+        2, 'Están schema.sql, seed.sql y .env.example. Falta docs/recrear_ambiente.md; el README no explica cómo cargar la base.',
+        'Ver BUG-022.',
+        3, '2026-10-04 02:50:00', 3, '2026-10-04 02:55:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -837,7 +859,9 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (72, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/index.php', 'Sin header() de X-Frame-Options ni CSP.', 2, '2026-10-04 02:05:00'),
     (73, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'editar(): UPDATE de todos los campos sin comparar con lo que se abrió.', 1, '2026-10-04 02:15:00'),
     (74, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/models/FilasModelo.php', 'reemplazar(): DELETE de todas las filas e INSERT de las enviadas.', 3, '2026-10-04 02:25:00'),
-    (75, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/database/schema.sql', 'autoevaluaciones: FK a proyecto_miembros con ON DELETE CASCADE.', 1, '2026-10-04 02:35:00');
+    (75, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/database/schema.sql', 'autoevaluaciones: FK a proyecto_miembros con ON DELETE CASCADE.', 1, '2026-10-04 02:35:00'),
+    (76, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/tokens.css', '--entrada: oklch(88% 0 0) en claro y blanco al 18 % en oscuro.', 2, '2026-10-04 02:45:00'),
+    (77, 4, 'https://github.com/1997-bit/formulacion-pruebas/tree/staging/docs', 'Carpeta docs: IR.md, arquitectura.md y enunciado.md.', 3, '2026-10-04 02:55:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -961,7 +985,19 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Coevaluar a un tester sin casos.\n2. Eliminarlo como admin.\n3. Abrir la auto y coevaluación de quien lo evaluó.',
         'No deja eliminarlo, o la coevaluación se conserva.',
         'Se borra y la página dice "Coevaluación de ." sin nombre.',
-        3, 2, 0, 0, NULL, 1, '2026-10-04 02:36:00');
+        3, 2, 0, 0, NULL, 1, '2026-10-04 02:36:00'),
+    (1, 76, 'BUG-021', 'El borde de los campos no llega a 3:1', 'Interfaz',
+        'El borde de .control usa --entrada: 1.44:1 sobre el fondo claro y 1.70:1 sobre el oscuro. WCAG 1.4.11 pide 3:1 para ver dónde está el campo (RNF-07).',
+        '1. Abrir cualquier formulario.\n2. Mirar un campo vacío sin foco.',
+        'El borde del campo contrasta 3:1 o más con el fondo.',
+        '1.44:1 en claro y 1.70:1 en oscuro.',
+        1, 1, 0, 0, NULL, 2, '2026-10-04 02:46:00'),
+    (1, 77, 'BUG-022', 'Falta docs/recrear_ambiente.md', 'Ambiente',
+        'RF-18 pide schema.sql, seed.sql, .env.example y docs/recrear_ambiente.md. El último no existe.',
+        '1. Abrir la carpeta docs del repositorio.',
+        'Está docs/recrear_ambiente.md con los pasos para levantar el sistema.',
+        'No está.',
+        2, 3, 0, 0, NULL, 3, '2026-10-04 02:56:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
