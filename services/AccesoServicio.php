@@ -14,6 +14,10 @@ final class AccesoServicio
     // No dice si el usuario existe (RNF-02).
     private const ERROR_ENTRAR = 'Usuario o contraseña incorrectos.';
 
+    // Clave al azar con UsuarioServicio::ARGON. Si el usuario no existe, se verifica contra este
+    // hash: la respuesta tarda lo mismo y el tiempo no dice si existe.
+    private const HASH_FALSO = '$argon2id$v=19$m=19456,t=2,p=1$bWNzL3R6ZksvY0hJejJ1VA$PRg4SvgQEEZ1uei56DJDKihodqvTtRg5/1TkrmdqpZo';
+
     /** @return array{id: int, nombre: string, usuario: string, rol: int} */
     public static function entrar(string $usuario, string $clave): array
     {
@@ -23,7 +27,7 @@ final class AccesoServicio
         self::frenar($llave);
 
         $fila = UsuarioModelo::porUsuario($usuario);
-        if ($fila === null || !password_verify($clave, $fila['clave'])) {
+        if (!password_verify($clave, $fila['clave'] ?? self::HASH_FALSO) || $fila === null) {
             IntentoModelo::fallar($llave);
             throw new ErrorValidacion(['general' => self::ERROR_ENTRAR]);
         }
