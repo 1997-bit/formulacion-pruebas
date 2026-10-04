@@ -28,6 +28,10 @@ final class AccesoServicio
             throw new ErrorValidacion(['general' => self::ERROR_ENTRAR]);
         }
         IntentoModelo::borrar($llave);
+        // Las claves con parámetros viejos se actualizan al entrar.
+        if (password_needs_rehash($fila['clave'], PASSWORD_ARGON2ID, UsuarioServicio::ARGON)) {
+            UsuarioModelo::cambiarClave($fila['id'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON));
+        }
 
         return ['id' => $fila['id'], 'nombre' => $fila['nombre'], 'usuario' => $fila['usuario'], 'rol' => $fila['rol']];
     }
