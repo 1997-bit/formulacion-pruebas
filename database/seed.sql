@@ -635,7 +635,29 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         '2026-10-03', '2026-10-03',
         2, 'Los datos del caso pasan a la hoja 2 y "Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
         'En una sola hoja no pasa. Ver BUG-004.',
-        2, '2026-10-03 21:00:00', 2, '2026-10-03 21:10:00');
+        2, '2026-10-03 21:00:00', 2, '2026-10-03 21:10:00'),
+    (60, 1, 17, 'SIS-023', 3, 2, 'Casos', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar que se rechazan las fechas del caso fuera del rango de DATE.',
+        'Sesión iniciada como gloria.',
+        'Fecha de inicio y final: 0999-12-31, escrita a mano\nFecha de inicio y final: 1000-01-01',
+        '1. Registrar un caso con la primera entrada.\n2. Registrar otro con la segunda.\n3. Abrir los dos.',
+        'Con 0999-12-31: "Fecha inválida." en las dos fechas. Con 1000-01-01 guarda y muestra 01/01/1000.',
+        '2026-10-03', '2026-10-04',
+        2, 'Guarda los dos casos. El primero muestra 31/12/0999.',
+        'Pasa igual con 0000-01-01. Ver BUG-005.',
+        2, '2026-10-04 00:00:00', 2, '2026-10-04 00:05:00'),
+    (61, 1, 2, 'SIS-024', 3, 2, 'Evidencias', 1,
+        'Linux, Firefox, PHP 8.5, MariaDB',
+        'Verificar el mensaje al adjuntar un log vacío.',
+        'Sesión iniciada como pan. El caso está Pendiente.',
+        'Archivo: vacio.txt, 0 bytes',
+        '1. Abrir el caso y elegir OK.\n2. Escribir resultado y observaciones.\n3. Adjuntar vacio.txt como log y guardar.',
+        'Rechaza el archivo y dice que está vacío.',
+        '2026-10-03', '2026-10-04',
+        2, 'Rechaza el archivo con "Solo TXT, LOG.", aunque es .txt.',
+        'finfo lo reporta como application/x-empty. Ver BUG-006.',
+        3, '2026-10-04 00:10:00', 3, '2026-10-04 00:15:00');
 
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
@@ -643,7 +665,9 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (7, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/CasoServicio.php', 'Línea de campos(): entorno y precondiciones con ?: null, que trata "0" como vacío.', 2, '2026-10-03 20:10:00'),
     (8, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/views/casos/resultado.php', 'Vista del detalle: no incluye el historial.', 3, '2026-10-03 20:20:00'),
     (58, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Sesion.php', 'Sesion::usuario() devuelve el rol guardado al entrar.', 2, '2026-10-03 20:40:00'),
-    (59, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/componentes.css', 'Bloque @media print: .vista-detalle sigue en grid al imprimir.', 2, '2026-10-03 21:10:00');
+    (59, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/public/assets/css/componentes.css', 'Bloque @media print: .vista-detalle sigue en grid al imprimir.', 2, '2026-10-03 21:10:00'),
+    (60, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/core/Validador.php', 'Validador::fecha() revisa el formato, no el rango de DATE.', 2, '2026-10-04 00:05:00'),
+    (61, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/staging/services/Subida.php', 'Subida::error(): un archivo de 0 bytes no empieza con text/.', 3, '2026-10-04 00:15:00');
 
 -- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
@@ -671,7 +695,19 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Abrir INT-001 de Biblioteca escolar.\n2. Pulsar Imprimir.\n3. Ver la hoja 2 en la vista previa.',
         '"Impreso el" sale al final, debajo de los datos del caso.',
         '"Impreso el 03/10/2026 desde Casos de Prueba." sale encima de Proyecto y Requerimiento.',
-        2, 2, 0, 0, NULL, 2, '2026-10-03 21:12:00');
+        2, 2, 0, 0, NULL, 2, '2026-10-03 21:12:00'),
+    (1, 60, 'BUG-005', 'Acepta fechas antes del año 1000', 'Casos',
+        'Validador::fecha() solo revisa el formato AAAA-MM-DD. MariaDB guarda 0999-12-31 y 0000-01-01 en DATE y el caso las muestra así.',
+        '1. Registrar un caso con fecha de inicio y final 0999-12-31, escrita a mano.\n2. Abrir el caso.',
+        '"Fecha inválida." en las dos fechas.',
+        'Guarda el caso y muestra 31/12/0999.',
+        2, 1, 0, 0, 3, 2, '2026-10-04 00:06:00'),
+    (1, 61, 'BUG-006', 'Un .txt vacío dice "Solo TXT, LOG."', 'Evidencias',
+        'finfo da application/x-empty para 0 bytes y Subida::error() lo toma como tipo no permitido. El mensaje no dice que el archivo está vacío.',
+        '1. Abrir un caso Pendiente y elegir OK.\n2. Adjuntar como log un vacio.txt de 0 bytes.\n3. Guardar.',
+        'Rechaza el archivo y dice que está vacío.',
+        'Rechaza el archivo con "Solo TXT, LOG.", aunque es .txt.',
+        1, 1, 0, 0, NULL, 3, '2026-10-04 00:16:00');
 
 -- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
 -- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
