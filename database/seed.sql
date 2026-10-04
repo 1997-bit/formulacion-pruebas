@@ -1876,3 +1876,49 @@ INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, 
         1, NULL, NULL,
         'Las reglas de préstamo de RF-01 cumplidas en todas sus particiones.',
         NULL, 0, '2026-10-02 19:05:00');
+
+-- Bugs corregidos: procedimiento de docs/bugs_corregidos.md. El caso FAULT y el incidente no se borran.
+-- Tabla normal y no TEMPORARY: MySQL no deja usar una temporal dos veces en la misma consulta. Se borra al final.
+DROP TABLE IF EXISTS corregidos;
+CREATE TABLE corregidos (
+    bug VARCHAR(10) PRIMARY KEY,
+    pr SMALLINT UNSIGNED NOT NULL,
+    fecha DATETIME NOT NULL,
+    obtenido TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
+    -- Fase 1, login
+    ('BUG-016', 131, '2026-10-04 12:41:00', 'Tras 3 fallos seguidos, el login responde "Demasiados intentos. Espere un momento." y la clave correcta no entra durante el bloqueo.'),
+    ('BUG-024', 131, '2026-10-04 12:41:00', 'Con gloria y con noexiste el login tarda unos 20 ms. La diferencia es menor que la variación entre intentos.'),
+    ('BUG-025', 131, '2026-10-04 12:41:00', 'De 30 registros seguidos desde la misma IP se crean 3. Los demás piden esperar.');
+
+-- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
+INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
+SELECT 'incidentes', i.id, 2, 'estado', i.estado, '2', k.fecha
+FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+UPDATE incidentes i JOIN corregidos k ON k.bug = i.codigo SET i.estado = 2 WHERE i.proyecto_id = 1;
+
+-- 5. Rastro del caso, antes de cambiarlo: estado, resultado obtenido y observaciones.
+INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
+SELECT 'casos_prueba', c.id, 2, 'estado', c.estado, '1', k.fecha
+FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1
+UNION ALL
+SELECT 'casos_prueba', c.id, 2, 'resultado_obtenido', c.resultado_obtenido, k.obtenido, k.fecha
+FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1
+UNION ALL
+SELECT 'casos_prueba', c.id, 2, 'observaciones', c.observaciones, CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'), k.fecha
+FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+
+-- 2 y 3. La prueba de regresión pasa: el caso queda OK. 6. El PR en las observaciones.
+UPDATE casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo
+SET c.estado = 1, c.resultado_obtenido = k.obtenido, c.observaciones = CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'),
+    c.anotado_por = 2, c.anotado_en = k.fecha
+WHERE i.proyecto_id = 1;
+
+-- 4. Evidencia con el enlace al PR.
+INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en)
+SELECT i.caso_id, 4, CONCAT('https://github.com/1997-bit/formulacion-pruebas/pull/', k.pr), CONCAT('PR de la corrección de ', k.bug), 2, k.fecha
+FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+
+DROP TABLE corregidos;
