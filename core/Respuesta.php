@@ -37,6 +37,8 @@ final class Respuesta
     // nosniff: el navegador no adivina otro tipo (RNF-03).
     public static function archivo(string $ruta, string $tipo, string $nombre): never
     {
+        // La descarga ya no toca la sesión: se libera y otra pestaña no espera a que termine (#120).
+        session_write_close();
         header('Content-Type: ' . $tipo);
         header('Content-Length: ' . filesize($ruta));
         header('X-Content-Type-Options: nosniff');
