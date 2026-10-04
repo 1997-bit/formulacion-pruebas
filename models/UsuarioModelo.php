@@ -65,6 +65,11 @@ final class UsuarioModelo
         $sql->execute([$nombre, $usuario, $rol, $clave, $id]);
     }
 
+    public static function cambiarClave(int $id, string $clave): void
+    {
+        Conexion::pdo()->prepare('UPDATE usuarios SET clave = ? WHERE id = ?')->execute([$clave, $id]);
+    }
+
     // False si tiene casos, evidencias u otros registros a su nombre.
     public static function eliminar(int $id): bool
     {

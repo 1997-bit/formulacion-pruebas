@@ -43,6 +43,7 @@ final class AccesoControlador
                 (string) ($_POST['nombre'] ?? ''),
                 (string) ($_POST['usuario'] ?? ''),
                 (string) ($_POST['clave'] ?? ''),
+                (string) $_SERVER['REMOTE_ADDR'],
             );
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, ['nombre' => $_POST['nombre'] ?? '', 'usuario' => $_POST['usuario'] ?? ''], '/registro');

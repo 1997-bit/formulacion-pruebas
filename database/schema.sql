@@ -7,7 +7,7 @@ DROP VIEW IF EXISTS v_trazabilidad;
 DROP TABLE IF EXISTS portafolio, autoevaluaciones, rubrica_evaluaciones, plan_pruebas,
     cobertura_blanca, decision_celdas, decision_filas, valor_limite, clases_equivalencia,
     logs_cambios, incidentes, evidencias, casos_prueba,
-    requerimientos, proyecto_miembros, proyectos, usuarios;
+    requerimientos, proyecto_miembros, proyectos, usuarios, intentos_acceso;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Núcleo
@@ -136,6 +136,13 @@ CREATE TABLE logs_cambios (
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (caso_id) REFERENCES casos_prueba (id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- RNF-02. clave: 'u:<usuario>' en el login, 'ip:<ip>' en el registro.
+CREATE TABLE intentos_acceso (
+    clave VARCHAR(64) PRIMARY KEY,
+    fallos INT UNSIGNED NOT NULL DEFAULT 0,
+    bloqueado_hasta DATETIME(3) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- F2 a F5: de un requerimiento
