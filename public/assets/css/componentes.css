@@ -76,8 +76,7 @@
   font-family: var(--fuente-mono);
   font-size: 0.8125rem;
   letter-spacing: 0;
-  white-space: normal;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 /* Tooltip: solo visual, el nombre va en aria-label. No sirve en <input> ni <img> (WCAG 1.4.13) */
@@ -375,7 +374,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 
 .tabla-contenedor {
   overflow-x: auto;
-  contain: paint;
+  contain: paint; /* frena el desborde de la tabla (#39); recorta lo position: fixed de adentro */
   background: var(--fondo);
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
@@ -740,6 +739,8 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 .archivo-icono img { width: 100%; height: 100%; object-fit: cover; }
 .archivo-nombre { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-sm); font-weight: 500; overflow-wrap: anywhere; }
 .archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* La URL de una evidencia se parte; los códigos de las tablas no (#39) */
+.archivo-detalle span.codigo { white-space: normal; overflow-wrap: anywhere; }
 .archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: 4px; }
 
 /* Vista previa de la captura */
