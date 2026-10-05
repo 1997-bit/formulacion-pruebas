@@ -65,7 +65,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
     }
 }
 $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, $elegido): string {
-    $html = '<option value=""' . (((string) ($datos[$campo] ?? '')) === '' ? ' selected' : '') . '>Sin definir</option>';
+    $html = '';
     foreach ($proyectosConMiembros as $proyecto => $lista) {
         $html .= count($proyectosConMiembros) > 1 ? '<optgroup label="' . Html::e($proyecto) . '">' : '';
         foreach ($lista as $m) {
