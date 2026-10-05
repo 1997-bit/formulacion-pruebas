@@ -38,7 +38,7 @@ final class CasoServicio
         $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
         $tipos = self::tipos($marcadas);
 
-        $v = self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento));
+        $v = self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), null);
         self::validarResultado($v, $d, $tipos, $archivos, 0);
         $v->comprobar();
 
@@ -85,7 +85,7 @@ final class CasoServicio
         $caso = self::paraEditar($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
         $d = array_map('trim', $datos);
         $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
-        self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento))->comprobar();
+        self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
 
         $campos = self::campos($d);
         $pdo = Conexion::pdo();
@@ -294,12 +294,15 @@ final class CasoServicio
      * @param array<string, string> $d
      * @param array<string, mixed>|null $requerimiento null si no es válido
      * @param list<int> $miembros ids de los miembros del proyecto del requerimiento
+     * @param array<string, mixed>|null $caso null al registrar
      */
-    private static function validarCaso(array $d, ?array $requerimiento, array $miembros = []): Validador
+    private static function validarCaso(array $d, ?array $requerimiento, array $miembros, ?array $caso): Validador
     {
         // Solo los miembros del proyecto del requerimiento: un tester de otro proyecto no va.
+        // El valor que ya tiene el caso se acepta aunque esa persona haya salido del proyecto.
         $esMiembro = static fn (string $campo): bool => ($d[$campo] ?? '') === ''
-            || in_array((int) $d[$campo], $miembros, true);
+            || in_array((int) $d[$campo], $miembros, true)
+            || $d[$campo] === (string) ($caso[$campo] ?? '');
 
         return (new Validador())
             ->requerido('requerimiento_id', $d['requerimiento_id'])

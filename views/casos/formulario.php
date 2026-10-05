@@ -64,8 +64,18 @@ foreach ($porProyecto as $proyecto => $reqs) {
         $proyectosConMiembros[$proyecto] = $lista;
     }
 }
-$opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, $elegido): string {
+// Quien ya no es miembro sigue como opción mientras el caso lo tenga: guardar no lo borra.
+$nombreActual = ['solicitado_por' => $caso['solicitante'] ?? null, 'aprobado_por' => $caso['aprobador'] ?? null];
+$opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, $elegido, $caso, $nombreActual): string {
     $html = '';
+    $actual = (int) ($caso[$campo] ?? 0);
+    $ids = [];
+    foreach ($proyectosConMiembros as $lista) {
+        $ids = [...$ids, ...array_map('intval', array_column($lista, 'id'))];
+    }
+    if ($actual !== 0 && !in_array($actual, $ids, true)) {
+        $html .= '<option value="' . $actual . '"' . $elegido($campo, $actual) . '>' . Html::e($nombreActual[$campo] . ' (ya no es miembro)') . '</option>';
+    }
     foreach ($proyectosConMiembros as $proyecto => $lista) {
         $html .= count($proyectosConMiembros) > 1 ? '<optgroup label="' . Html::e($proyecto) . '">' : '';
         foreach ($lista as $m) {
