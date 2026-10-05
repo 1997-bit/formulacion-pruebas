@@ -59,7 +59,7 @@ $editar = '/formularios/tabla_decision/editar?requerimiento=' . (int) $requerimi
               <tr>
                 <th scope="row" class="multilinea"><?= Html::e($fila['texto']) ?></th>
                 <?php foreach ($fila['reglas'] as $valor): ?>
-                  <td class="celda-centro"><?= $valor === '-' ? '—' : $valor ?></td>
+                  <td class="celda-centro"><?= $valor === '-' ? '—' : Html::e($valor) ?></td>
                 <?php endforeach; ?>
               </tr>
             <?php endforeach; ?>

@@ -4,7 +4,7 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP VIEW IF EXISTS v_trazabilidad;
-DROP TABLE IF EXISTS portafolio, autoevaluaciones, rubrica_evaluaciones, plan_pruebas,
+DROP TABLE IF EXISTS autoevaluaciones, rubrica_evaluaciones, plan_pruebas,
     cobertura_blanca, decision_celdas, decision_filas, valor_limite, clases_equivalencia,
     logs_cambios, incidentes, evidencias, casos_prueba,
     requerimientos, proyecto_miembros, proyectos, usuarios, intentos_acceso;
