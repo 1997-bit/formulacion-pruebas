@@ -374,7 +374,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 
 .tabla-contenedor {
   overflow-x: auto;
-  contain: paint;
+  contain: paint; /* frena el desborde de la tabla (#39); recorta lo position: fixed de adentro */
   background: var(--fondo);
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
