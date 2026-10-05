@@ -76,7 +76,8 @@
   font-family: var(--fuente-mono);
   font-size: 0.8125rem;
   letter-spacing: 0;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* Tooltip: solo visual, el nombre va en aria-label. No sirve en <input> ni <img> (WCAG 1.4.13) */
@@ -374,6 +375,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 
 .tabla-contenedor {
   overflow-x: auto;
+  contain: paint;
   background: var(--fondo);
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
