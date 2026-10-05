@@ -27,6 +27,14 @@ use App\Helpers\Icono;
       <p class="alerta-titulo"><?= Html::e($errores['general']) ?></p>
     </div>
   <?php endif; ?>
+  <?php if (!$proyectos): ?>
+    <div class="vacio">
+      <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
+      <h2>Todavía no hay proyectos</h2>
+      <p>Cree el primer proyecto y agregue testers como miembros para que puedan trabajar en él.</p>
+      <a class="btn btn-primario" href="/admin/proyectos/crear"><?= Icono::svg('plus') ?> Crear proyecto</a>
+    </div>
+  <?php else: ?>
   <div class="tabla-contenedor">
     <table class="tabla tabla-tarjetas">
       <caption class="solo-lector">Proyectos</caption>
@@ -60,4 +68,5 @@ use App\Helpers\Icono;
       </tbody>
     </table>
   </div>
+  <?php endif; ?>
 </div>

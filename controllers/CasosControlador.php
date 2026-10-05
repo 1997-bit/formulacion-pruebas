@@ -20,6 +20,7 @@ final class CasosControlador
     private const CAMPOS = [
         'requerimiento_id', 'tipo_prueba', 'subtecnica', 'modulo', 'plataforma', 'entorno', 'objetivo',
         'precondiciones', 'entrada', 'pasos', 'resultado_esperado', 'fecha_inicio', 'fecha_fin',
+        'solicitado_por', 'aprobado_por',
     ];
     private const CAMPOS_RESULTADO = [
         'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace',
@@ -47,11 +48,13 @@ final class CasosControlador
 
     public function registrar(): void
     {
+        $requerimientos = RequerimientoServicio::listar(Sesion::usuario());
         Vista::pagina('casos/formulario', [
             'titulo' => 'Registrar caso',
             'caso' => null,
             'historial' => [],
-            'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
+            'requerimientos' => $requerimientos,
+            'miembros' => CasoServicio::miembrosPorProyecto($requerimientos),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => []]),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
@@ -73,12 +76,14 @@ final class CasosControlador
     public function editar(): void
     {
         $caso = CasoServicio::paraEditar((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
+        $requerimientos = array_values(CasoServicio::requerimientos($caso, Sesion::usuario()));
         Vista::pagina('casos/formulario', [
             'titulo' => 'Editar ' . $caso['codigo'],
             'caso' => $caso,
             'historial' => Historial::deCaso($caso['id']),
             'huella' => FilasModelo::huella(['casos_prueba'], 'id', $caso['id']),
-            'requerimientos' => array_values(CasoServicio::requerimientos($caso, Sesion::usuario())),
+            'requerimientos' => $requerimientos,
+            'miembros' => CasoServicio::miembrosPorProyecto($requerimientos),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? array_map('strval', array_intersect_key($caso, array_flip(self::CAMPOS))),
             'migas' => [

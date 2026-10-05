@@ -14,6 +14,7 @@ use App\Models\EvidenciaModelo;
 use App\Models\FilasModelo;
 use App\Models\IncidenteModelo;
 use App\Models\RequerimientoModelo;
+use App\Models\UsuarioModelo;
 
 // RF-04, RF-05, RF-07, RF-16, RF-24
 final class CasoServicio
@@ -37,7 +38,7 @@ final class CasoServicio
         $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
         $tipos = self::tipos($marcadas);
 
-        $v = self::validarCaso($d, $requerimiento);
+        $v = self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), null);
         self::validarResultado($v, $d, $tipos, $archivos, 0);
         $v->comprobar();
 
@@ -84,7 +85,7 @@ final class CasoServicio
         $caso = self::paraEditar($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
         $d = array_map('trim', $datos);
         $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
-        self::validarCaso($d, $requerimiento)->comprobar();
+        self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
 
         $campos = self::campos($d);
         $pdo = Conexion::pdo();
@@ -133,6 +134,42 @@ final class CasoServicio
         $todos = RequerimientoModelo::todos(Permisos::proyectos($usuario));
 
         return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
+    }
+
+    /**
+     * Ids de los miembros del proyecto del requerimiento, para validar los dos campos de aprobacion.
+     *
+     * @param array<string, mixed>|null $requerimiento
+     * @return list<int>
+     */
+    private static function idsMiembros(?array $requerimiento): array
+    {
+        if ($requerimiento === null) {
+            return [];
+        }
+
+        return array_map('intval', array_column(UsuarioModelo::deProyecto((int) $requerimiento['proyecto_id']), 'id'));
+    }
+
+    /**
+     * Miembros de cada proyecto de los requerimientos, por id de proyecto. Para los selects del formulario.
+     *
+     * @param list<array<string, mixed>> $requerimientos
+     * @return array<int, list<array<string, mixed>>>
+     */
+    public static function miembrosPorProyecto(array $requerimientos): array
+    {
+        $ids = [];
+        foreach ($requerimientos as $r) {
+            $ids[(int) $r['proyecto_id']] = true;
+        }
+
+        $salida = [];
+        foreach (array_keys($ids) as $proyectoId) {
+            $salida[$proyectoId] = UsuarioModelo::deProyecto($proyectoId);
+        }
+
+        return $salida;
     }
 
     /**
@@ -256,9 +293,17 @@ final class CasoServicio
      *
      * @param array<string, string> $d
      * @param array<string, mixed>|null $requerimiento null si no es válido
+     * @param list<int> $miembros ids de los miembros del proyecto del requerimiento
+     * @param array<string, mixed>|null $caso null al registrar
      */
-    private static function validarCaso(array $d, ?array $requerimiento): Validador
+    private static function validarCaso(array $d, ?array $requerimiento, array $miembros, ?array $caso): Validador
     {
+        // Solo los miembros del proyecto del requerimiento: un tester de otro proyecto no va.
+        // El valor que ya tiene el caso se acepta aunque esa persona haya salido del proyecto.
+        $esMiembro = static fn (string $campo): bool => ($d[$campo] ?? '') === ''
+            || in_array((int) $d[$campo], $miembros, true)
+            || $d[$campo] === (string) ($caso[$campo] ?? '');
+
         return (new Validador())
             ->requerido('requerimiento_id', $d['requerimiento_id'])
             ->regla('requerimiento_id', $d['requerimiento_id'] === '' || $requerimiento !== null, 'Valor no válido.')
@@ -279,7 +324,9 @@ final class CasoServicio
             ->fecha('fecha_inicio', $d['fecha_inicio'])
             ->requerido('fecha_fin', $d['fecha_fin'])
             ->fecha('fecha_fin', $d['fecha_fin'])
-            ->regla('fecha_fin', $d['fecha_fin'] >= $d['fecha_inicio'], 'No puede ser anterior a la fecha de inicio.');
+            ->regla('fecha_fin', $d['fecha_fin'] >= $d['fecha_inicio'], 'No puede ser anterior a la fecha de inicio.')
+            ->regla('solicitado_por', $esMiembro('solicitado_por'), 'No es miembro del proyecto.')
+            ->regla('aprobado_por', $esMiembro('aprobado_por'), 'No es miembro del proyecto.');
     }
 
     /**
@@ -304,6 +351,8 @@ final class CasoServicio
             'resultado_esperado' => $d['resultado_esperado'],
             'fecha_inicio' => $d['fecha_inicio'],
             'fecha_fin' => $d['fecha_fin'],
+            'solicitado_por' => ($d['solicitado_por'] ?? '') === '' ? null : (int) $d['solicitado_por'],
+            'aprobado_por' => ($d['aprobado_por'] ?? '') === '' ? null : (int) $d['aprobado_por'],
         ];
     }
 
