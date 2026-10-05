@@ -120,6 +120,8 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
           <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
         <?php endif; ?>
         <dt>Creado por</dt><dd><?= Html::e($caso['autor']) ?> · <?= $hora($caso['creado_en']) ?></dd>
+        <dt>Solicitado por</dt><dd><?= $caso['solicitante'] === null ? '—' : Html::e($caso['solicitante']) ?></dd>
+        <dt>Aprobado por</dt><dd><?= $caso['aprobador'] === null ? '—' : Html::e($caso['aprobador']) ?></dd>
         <?php if ($caso['incidentes']): ?>
           <dt>Incidentes</dt>
           <?php foreach ($caso['incidentes'] as $i): ?>

@@ -71,12 +71,14 @@ final class CasoModelo
     {
         $sql = Conexion::pdo()->prepare(
             'SELECT c.*, p.nombre AS proyecto, r.codigo AS requerimiento, r.descripcion AS requerimiento_descripcion,
-                    u.nombre AS autor, a.nombre AS anotador
+                    u.nombre AS autor, a.nombre AS anotador, s.nombre AS solicitante, b.nombre AS aprobador
              FROM casos_prueba c
              JOIN proyectos p ON p.id = c.proyecto_id
              JOIN requerimientos r ON r.id = c.requerimiento_id
              JOIN usuarios u ON u.id = c.creado_por
              LEFT JOIN usuarios a ON a.id = c.anotado_por
+             LEFT JOIN usuarios s ON s.id = c.solicitado_por
+             LEFT JOIN usuarios b ON b.id = c.aprobado_por
              WHERE c.id = ?'
         );
         $sql->execute([$id]);

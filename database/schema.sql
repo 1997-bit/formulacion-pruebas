@@ -75,6 +75,8 @@ CREATE TABLE casos_prueba (
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24
     anotado_en DATETIME NULL,
+    solicitado_por INT UNSIGNED NULL, -- quién pide el caso; informativo, no gobierna el estado
+    aprobado_por INT UNSIGNED NULL, -- quién lo aprueba; informativo, no gobierna el estado
     -- Para numerar y ordenar: SIS-1000 va después de SIS-999. codigo no cambia aunque cambie el tipo (RF-06).
     sigla VARCHAR(3) AS (SUBSTRING_INDEX(codigo, '-', 1)) STORED,
     numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED,
@@ -86,7 +88,9 @@ CREATE TABLE casos_prueba (
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
     FOREIGN KEY (requerimiento_id, proyecto_id) REFERENCES requerimientos (id, proyecto_id), -- mismo proyecto que el requerimiento
     FOREIGN KEY (creado_por) REFERENCES usuarios (id),
-    FOREIGN KEY (anotado_por) REFERENCES usuarios (id)
+    FOREIGN KEY (anotado_por) REFERENCES usuarios (id),
+    FOREIGN KEY (solicitado_por) REFERENCES usuarios (id) ON DELETE SET NULL, -- el usuario borrado no bloquea el caso
+    FOREIGN KEY (aprobado_por) REFERENCES usuarios (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Seguimiento

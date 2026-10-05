@@ -1192,6 +1192,31 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'Solo storage/ tiene .htaccess. Falta uno en la raíz y la guía que diga que la raíz es public/ (BUG-022). Ver BUG-054.',
         3, '2026-10-04 05:55:00', 3, '2026-10-04 05:55:05');
 
+-- Solicitado y aprobado. Los dos son miembros del proyecto: lo pide quien registró el caso (o, si
+-- quien lo registró es el admin, que no es miembro de ningún proyecto, el primer miembro) y lo aprueba
+-- otro miembro del mismo proyecto. Mientras el caso sigue Pendiente no hay aprobación, así se ve
+-- también el estado vacío del panel derecho.
+UPDATE casos_prueba c SET c.solicitado_por = COALESCE((
+    SELECT m.usuario_id
+    FROM proyecto_miembros m
+    WHERE m.proyecto_id = c.proyecto_id AND m.usuario_id = c.creado_por
+    LIMIT 1
+), (
+    SELECT m.usuario_id
+    FROM proyecto_miembros m
+    WHERE m.proyecto_id = c.proyecto_id
+    ORDER BY m.usuario_id
+    LIMIT 1
+));
+UPDATE casos_prueba c SET c.aprobado_por = COALESCE((
+    SELECT m.usuario_id
+    FROM proyecto_miembros m
+    WHERE m.proyecto_id = c.proyecto_id AND m.usuario_id <> c.solicitado_por
+    ORDER BY m.usuario_id
+    LIMIT 1
+), c.solicitado_por)
+WHERE c.estado <> 0;
+
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
     (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00'),

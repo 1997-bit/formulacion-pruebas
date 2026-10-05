@@ -15,6 +15,7 @@ use App\Helpers\Icono;
  * @var list<array<string, mixed>> $historial
  * @var ?string $huella  solo al editar (#100)
  * @var list<array<string, mixed>> $requerimientos
+ * @var array<int, list<array<string, mixed>>> $miembros  por proyecto, para los dos selects de aprobacion
  * @var array<string, string> $errores
  * @var array<string, mixed> $datos  evidencias: tipos marcados
  */
@@ -54,6 +55,27 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
     }
     $opcionesSub .= '</optgroup>';
 }
+// Solicitado y aprobado: los miembros del proyecto, en el mismo orden que los requerimientos.
+// Un option por campo, porque cada select marca su propia selección.
+$proyectosConMiembros = [];
+foreach ($porProyecto as $proyecto => $reqs) {
+    $lista = $miembros[(int) $reqs[0]['proyecto_id']] ?? [];
+    if ($lista !== []) {
+        $proyectosConMiembros[$proyecto] = $lista;
+    }
+}
+$opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, $elegido): string {
+    $html = '<option value=""' . (((string) ($datos[$campo] ?? '')) === '' ? ' selected' : '') . '>Sin definir</option>';
+    foreach ($proyectosConMiembros as $proyecto => $lista) {
+        $html .= count($proyectosConMiembros) > 1 ? '<optgroup label="' . Html::e($proyecto) . '">' : '';
+        foreach ($lista as $m) {
+            $html .= '<option value="' . (int) $m['id'] . '"' . $elegido($campo, (int) $m['id']) . '>' . Html::e($m['nombre']) . '</option>';
+        }
+        $html .= count($proyectosConMiembros) > 1 ? '</optgroup>' : '';
+    }
+
+    return $html;
+};
 ?>
 <header class="encabezado">
   <div>
@@ -101,6 +123,8 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
       <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>
       <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
       <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
+      <?= $campo('solicitado_por', 'Solicitado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('solicitado_por'), 'ayuda' => 'Quién pidió el caso. Solo informativo.']) ?>
+      <?= $campo('aprobado_por', 'Aprobado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('aprobado_por'), 'ayuda' => 'Quién lo aprueba. Solo informativo: no bloquea anotar OK ni FAULT.']) ?>
     </div>
 
     <?= $campo('objetivo', 'Objetivo', ['tipo' => 'textarea']) ?>
