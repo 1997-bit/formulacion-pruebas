@@ -29,6 +29,14 @@ use App\Helpers\Icono;
       <p class="alerta-titulo"><?= Html::e($errores['general']) ?></p>
     </div>
   <?php endif; ?>
+  <?php if (!$usuarios): ?>
+    <div class="vacio">
+      <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
+      <h2>Todavía no hay usuarios</h2>
+      <p>Cree la primera cuenta para que pueda entrar al sistema.</p>
+      <a class="btn btn-primario" href="/admin/usuarios/crear"><?= Icono::svg('plus') ?> Crear usuario</a>
+    </div>
+  <?php else: ?>
   <div class="tabla-contenedor">
     <table class="tabla tabla-tarjetas">
       <caption class="solo-lector">Usuarios</caption>
@@ -65,4 +73,5 @@ use App\Helpers\Icono;
       </tbody>
     </table>
   </div>
+  <?php endif; ?>
 </div>

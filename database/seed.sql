@@ -1192,6 +1192,31 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'Solo storage/ tiene .htaccess. Falta uno en la raíz y la guía que diga que la raíz es public/ (BUG-022). Ver BUG-054.',
         3, '2026-10-04 05:55:00', 3, '2026-10-04 05:55:05');
 
+-- Solicitado y aprobado. Los dos son miembros del proyecto: lo pide quien registró el caso (o, si
+-- quien lo registró es el admin, que no es miembro de ningún proyecto, el primer miembro) y lo aprueba
+-- otro miembro del mismo proyecto. Mientras el caso sigue Pendiente no hay aprobación, así se ve
+-- también el estado vacío del panel derecho.
+UPDATE casos_prueba c SET c.solicitado_por = COALESCE((
+    SELECT m.usuario_id
+    FROM proyecto_miembros m
+    WHERE m.proyecto_id = c.proyecto_id AND m.usuario_id = c.creado_por
+    LIMIT 1
+), (
+    SELECT m.usuario_id
+    FROM proyecto_miembros m
+    WHERE m.proyecto_id = c.proyecto_id
+    ORDER BY m.usuario_id
+    LIMIT 1
+));
+UPDATE casos_prueba c SET c.aprobado_por = COALESCE((
+    SELECT m.usuario_id
+    FROM proyecto_miembros m
+    WHERE m.proyecto_id = c.proyecto_id AND m.usuario_id <> c.solicitado_por
+    ORDER BY m.usuario_id
+    LIMIT 1
+), c.solicitado_por)
+WHERE c.estado <> 0;
+
 -- RF-24: un caso OK lleva al menos una evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
     (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-02 10:40:00'),
@@ -1250,7 +1275,8 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (108, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/bootstrap.php', 'Sin manejador de errores ni configuración de display_errors.', 2, '2026-10-04 05:50:05'),
     (109, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/storage/.htaccess', 'Único .htaccess fuera de public/: la raíz no niega nada.', 3, '2026-10-04 05:55:05');
 
--- RF-19: los FAULT de arriba con su incidente. BUG-003 es stopper.
+-- RF-19: los FAULT de arriba con su incidente. BUG-008 es stopper y sigue abierto;
+-- BUG-041 está En progreso. BUG-003 es stopper, pero el bloque de corregidos lo cierra.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
     severidad, prioridad, estado, es_stopper, asignado_id, creado_por, creado_en) VALUES
     (1, 7, 'BUG-001', 'Un 0 en Entorno o Precondiciones se guarda vacío', 'Casos',
@@ -1300,7 +1326,7 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Registrar un caso con un objetivo de 70 000 caracteres, enviado a mano.\n2. Guardar.',
         'Vuelve al formulario con un error junto a Objetivo y conserva lo escrito.',
         'Responde 500 con la página en blanco.',
-        2, 2, 0, 0, 2, 2, '2026-10-04 00:36:00'),
+        2, 2, 0, 1, 2, 2, '2026-10-04 00:36:00'),
     (1, 64, 'BUG-009', 'Un caso que vuelve a Pendiente sigue "anotado por"', 'Casos',
         'Al volver a Pendiente, CasoModelo::anotar guarda quién y cuándo como si fuera un resultado. Al registrar en Pendiente esos campos quedan vacíos.',
         '1. Abrir un caso en OK o FAULT.\n2. Cambiarlo a Pendiente y guardar.\n3. Ver el detalle.',
@@ -1498,7 +1524,7 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '1. Llenar un formulario.\n2. Cerrar sesión en otra pestaña.\n3. Guardar.',
         'Avisa y conserva lo escrito.',
         'Se pierde todo.',
-        3, 2, 0, 0, NULL, 2, '2026-10-04 04:50:06'),
+        3, 2, 1, 0, NULL, 2, '2026-10-04 04:50:06'),
     (1, 97, 'BUG-042', 'Con el navegador en inglés las fechas se escriben en mm/dd/aaaa', 'Casos',
         'Los campos de fecha muestran el formato del idioma del navegador, no dd/mm/aaaa como pide RNF-06.',
         '1. Chrome en inglés.\n2. Elegir una fecha en Registrar caso.',

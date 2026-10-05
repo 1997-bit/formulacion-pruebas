@@ -8,6 +8,7 @@ use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Models\FilasModelo;
 use App\Models\HistorialModelo;
+use App\Models\UsuarioModelo;
 
 // RF-20
 final class Historial
@@ -28,6 +29,8 @@ final class Historial
         'fecha_inicio' => ['Fecha de inicio', null],
         'fecha_fin' => ['Fecha final', null],
         'estado' => ['Estado', 'estado_caso'],
+        'solicitado_por' => ['Solicitado por', 'usuario'],
+        'aprobado_por' => ['Aprobado por', 'usuario'],
         'resultado_obtenido' => ['Resultado obtenido', null],
         'observaciones' => ['Observaciones', null],
     ];
@@ -59,10 +62,22 @@ final class Historial
      */
     public static function deCaso(int $casoId): array
     {
-        return array_map(static function (array $fila): array {
+        // 'usuario' no es un catálogo: guarda el id y el historial muestra el nombre.
+        $nombres = [];
+        $nombreUsuario = static function (?string $valor) use (&$nombres): string {
+            if ($valor === null) {
+                return '';
+            }
+            $id = (int) $valor;
+
+            return $nombres[$id] ??= (string) (UsuarioModelo::porId($id)['nombre'] ?? '');
+        };
+
+        return array_map(static function (array $fila) use ($nombreUsuario): array {
             [$etiqueta, $catalogo] = self::CAMPOS[$fila['campo']] ?? [$fila['campo'], null];
             $texto = static fn (?string $valor): string => match (true) {
                 $valor === null => '',
+                $catalogo === 'usuario' => $nombreUsuario($valor),
                 $catalogo !== null => Catalogo::texto($catalogo, (int) $valor),
                 str_starts_with($fila['campo'], 'fecha_') => Fecha::legible(new \DateTime($valor)),
                 default => $valor,
