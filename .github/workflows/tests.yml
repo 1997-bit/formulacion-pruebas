@@ -79,5 +79,8 @@ jobs:
           sed -i 's/^DB_USER=.*/DB_USER=ci/' .env
           sed -i 's/^DB_PASS=.*/DB_PASS=ci/' .env
 
+      - name: Cargar esquema
+        run: mysql -h 127.0.0.1 -uci -pci casos_prueba_ci < database/schema.sql
+
       - name: Ejecutar pruebas
         run: composer test

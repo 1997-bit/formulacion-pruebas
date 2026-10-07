@@ -29,7 +29,12 @@ final class CoberturaModelo
         foreach ($filas as $metrica => $f) {
             $datos[] = ['metrica' => $metrica] + $f;
         }
-        FilasModelo::sincronizar('cobertura_blanca', ['requerimiento_id' => $requerimientoId], ['metrica'], $datos,
-            ['guardado_por' => $usuarioId, 'guardado_en' => date('Y-m-d H:i:s')]);
+        FilasModelo::sincronizar(
+            'cobertura_blanca',
+            ['requerimiento_id' => $requerimientoId],
+            ['metrica'],
+            $datos,
+            ['guardado_por' => $usuarioId, 'guardado_en' => date('Y-m-d H:i:s')]
+        );
     }
 }
