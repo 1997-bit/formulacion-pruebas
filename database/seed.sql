@@ -2271,13 +2271,33 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (20, 4, 1, 1),
     (20, 5, 3, 1), (20, 5, 4, 1);
 
--- F5. Medido con XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage. Solo PaginacionTest cubre código.
+-- F5. Medido con XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage, con las 497 pruebas. Una clase por requerimiento.
 -- Sentencias = líneas, decisiones = ramas, caminos = caminos. Xdebug no mide condiciones ni bucles.
 INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porcentaje, herramienta, guardado_por, guardado_en) VALUES
+    -- RF-01 Acceso: AccesoServicio
+    (1, 11, 23, 23, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (1, 12, 23, 22, 96, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (1, 16, 20, 10, 50, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    -- RNF-03 Evidencias: Subida
+    (2, 11, 22, 20, 91, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (2, 12, 35, 21, 60, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (2, 16, 35, 11, 31, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    -- RF-04 Registrar caso: CasoServicio
+    (4, 11, 189, 179, 95, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (4, 12, 101, 90, 89, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (4, 16, 293, 29, 10, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    -- RF-20 Historial: Historial
+    (6, 11, 24, 23, 96, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (6, 12, 16, 15, 94, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (6, 16, 21, 5, 24, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    -- RF-21 Permisos: Permisos
+    (12, 11, 9, 9, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (12, 12, 21, 19, 90, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (12, 16, 14, 10, 71, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
     -- RNF-09 Desempeño: Paginacion
-    (14, 11, 4, 4, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
-    (14, 12, 12, 9, 75, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00'),
-    (14, 16, 7, 3, 43, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-03 22:15:00');
+    (14, 11, 11, 11, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (14, 12, 24, 20, 83, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
+    (14, 16, 16, 7, 44, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00');
 
 -- RF-13: formulario 6, un plan por proyecto. El 1 no se cierra mientras BUG-003 (stopper) siga abierto.
 INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, objetivos, estrategia, recursos, cronograma,
