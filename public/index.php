@@ -21,8 +21,17 @@ header('X-Frame-Options: DENY');
 ini_set('display_errors', '0');
 set_exception_handler(function (\Throwable $e): void {
     $codigo = bin2hex(random_bytes(4));
-    $linea = sprintf('[%s] %s %s %s %s: %s en %s:%d', date('Y-m-d H:i:s'), $codigo, $_SERVER['REQUEST_METHOD'] ?? '-',
-        $_SERVER['REQUEST_URI'] ?? '-', $e::class, $e->getMessage(), $e->getFile(), $e->getLine());
+    $linea = sprintf(
+        '[%s] %s %s %s %s: %s en %s:%d',
+        date('Y-m-d H:i:s'),
+        $codigo,
+        $_SERVER['REQUEST_METHOD'] ?? '-',
+        $_SERVER['REQUEST_URI'] ?? '-',
+        $e::class,
+        $e->getMessage(),
+        $e->getFile(),
+        $e->getLine()
+    );
     error_log(str_replace(["\r", "\n"], ' ', $linea) . "\n", 3, RAIZ . '/storage/logs/errores.log');
     while (ob_get_level() > 0) {
         ob_end_clean();

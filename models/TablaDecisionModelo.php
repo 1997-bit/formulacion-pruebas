@@ -25,7 +25,11 @@ final class TablaDecisionModelo
      */
     public static function guardarCeldas(int $requerimientoId, array $celdas): void
     {
-        FilasModelo::sincronizar('decision_celdas', ['requerimiento_id' => $requerimientoId], ['fila_orden', 'regla'],
-            array_map(fn (array $c): array => ['fila_orden' => $c[0], 'regla' => $c[1], 'valor' => $c[2]], $celdas));
+        FilasModelo::sincronizar(
+            'decision_celdas',
+            ['requerimiento_id' => $requerimientoId],
+            ['fila_orden', 'regla'],
+            array_map(fn (array $c): array => ['fila_orden' => $c[0], 'regla' => $c[1], 'valor' => $c[2]], $celdas)
+        );
     }
 }

@@ -67,8 +67,13 @@ final class FilasModeloTest extends BaseDatos
     {
         $this->sincInicial();
 
-        FilasModelo::sincronizar('t_sinc', ['dueno' => 7], ['orden'],
-            [['orden' => 1, 'texto' => 'a'], ['orden' => 2, 'texto' => 'b'], ['orden' => 3, 'texto' => 'c']], ['autor' => 2]);
+        FilasModelo::sincronizar(
+            't_sinc',
+            ['dueno' => 7],
+            ['orden'],
+            [['orden' => 1, 'texto' => 'a'], ['orden' => 2, 'texto' => 'b'], ['orden' => 3, 'texto' => 'c']],
+            ['autor' => 2]
+        );
 
         $this->assertSame([1, 1, 1, 1], array_column($this->sinc(), 'autor'));
     }
@@ -77,8 +82,13 @@ final class FilasModeloTest extends BaseDatos
     {
         $this->sincInicial();
 
-        FilasModelo::sincronizar('t_sinc', ['dueno' => 7], ['orden'],
-            [['orden' => 1, 'texto' => 'a'], ['orden' => 2, 'texto' => 'B'], ['orden' => 4, 'texto' => '0']], ['autor' => 3]);
+        FilasModelo::sincronizar(
+            't_sinc',
+            ['dueno' => 7],
+            ['orden'],
+            [['orden' => 1, 'texto' => 'a'], ['orden' => 2, 'texto' => 'B'], ['orden' => 4, 'texto' => '0']],
+            ['autor' => 3]
+        );
 
         $this->assertSame([
             ['dueno' => 7, 'orden' => 1, 'texto' => 'a', 'autor' => 1],
@@ -137,10 +147,20 @@ final class FilasModeloTest extends BaseDatos
         $proyecto = $this->proyecto();
         $pedido = $this->requerimiento($proyecto);
         $otro = $this->requerimiento($this->proyecto());
-        FilasModelo::guardar('clases_equivalencia', $pedido, ['campo', 'clase_valida', 'clases_invalidas', 'valores_representativos', 'resultado_esperado'],
-            [self::clase(), self::clase()], $usuario);
-        FilasModelo::guardar('clases_equivalencia', $otro, ['campo', 'clase_valida', 'clases_invalidas', 'valores_representativos', 'resultado_esperado'],
-            [self::clase()], $usuario);
+        FilasModelo::guardar(
+            'clases_equivalencia',
+            $pedido,
+            ['campo', 'clase_valida', 'clases_invalidas', 'valores_representativos', 'resultado_esperado'],
+            [self::clase(), self::clase()],
+            $usuario
+        );
+        FilasModelo::guardar(
+            'clases_equivalencia',
+            $otro,
+            ['campo', 'clase_valida', 'clases_invalidas', 'valores_representativos', 'resultado_esperado'],
+            [self::clase()],
+            $usuario
+        );
 
         $cuenta = FilasModelo::contar('clases_equivalencia', [$pedido]);
 
