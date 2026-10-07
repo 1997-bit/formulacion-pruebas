@@ -158,7 +158,12 @@ final class FilasModelo
         foreach ($filas as $i => $fila) {
             $datos[] = ['orden' => $i + 1] + array_intersect_key($fila, array_flip($columnas));
         }
-        self::sincronizar($tabla, ['requerimiento_id' => $requerimientoId], ['orden'], $datos,
-            ['guardado_por' => $usuarioId, 'guardado_en' => date('Y-m-d H:i:s')]);
+        self::sincronizar(
+            $tabla,
+            ['requerimiento_id' => $requerimientoId],
+            ['orden'],
+            $datos,
+            ['guardado_por' => $usuarioId, 'guardado_en' => date('Y-m-d H:i:s')]
+        );
     }
 }
