@@ -7,6 +7,8 @@ namespace Tests\Apoyo;
 use App\Config\Conexion;
 use App\Core\Env;
 use App\Core\ErrorValidacion;
+use App\Models\CasoModelo;
+use App\Models\IncidenteModelo;
 use App\Models\UsuarioModelo;
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 abstract class BaseDatos extends TestCase
 {
     private static ?PdoPruebas $pdo = null;
+
+    private static int $incidentes = 0;
 
     protected function setUp(): void
     {
@@ -64,6 +68,26 @@ abstract class BaseDatos extends TestCase
             ->execute([$proyectoId, 'RF-01', 'Requerimiento']);
 
         return (int) Conexion::pdo()->lastInsertId();
+    }
+
+    protected function caso(int $proyectoId, int $requerimientoId, int $autor, string $codigo = 'SIS-001'): int
+    {
+        return CasoModelo::crear([
+            'proyecto_id' => $proyectoId, 'requerimiento_id' => $requerimientoId, 'codigo' => $codigo,
+            'tipo_prueba' => 1, 'subtecnica' => 1, 'modulo' => 'Módulo', 'plataforma' => 1,
+            'objetivo' => 'Objetivo', 'entrada' => 'Entrada', 'pasos' => 'Pasos', 'resultado_esperado' => 'Resultado',
+            'fecha_inicio' => '2026-10-06', 'fecha_fin' => '2026-10-06', 'creado_por' => $autor,
+        ]);
+    }
+
+    protected function incidente(int $proyectoId, int $casoId, int $autor, int $estado = 0, int $stopper = 0): int
+    {
+        return IncidenteModelo::crear([
+            'proyecto_id' => $proyectoId, 'caso_id' => $casoId, 'codigo' => 'BUG-' . ++self::$incidentes,
+            'titulo' => 'Título', 'modulo' => 'Módulo', 'descripcion' => 'Descripción', 'pasos' => 'Pasos',
+            'resultado_esperado' => 'Esperado', 'resultado_obtenido' => 'Obtenido',
+            'severidad' => 1, 'prioridad' => 1, 'estado' => $estado, 'es_stopper' => $stopper, 'creado_por' => $autor,
+        ]);
     }
 
     /**
