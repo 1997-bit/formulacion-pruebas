@@ -62,10 +62,10 @@ abstract class BaseDatos extends TestCase
         return $id;
     }
 
-    protected function requerimiento(int $proyectoId): int
+    protected function requerimiento(int $proyectoId, string $codigo = 'RF-01'): int
     {
         Conexion::pdo()->prepare('INSERT INTO requerimientos (proyecto_id, codigo, descripcion) VALUES (?, ?, ?)')
-            ->execute([$proyectoId, 'RF-01', 'Requerimiento']);
+            ->execute([$proyectoId, $codigo, 'Requerimiento']);
 
         return (int) Conexion::pdo()->lastInsertId();
     }
