@@ -1,0 +1,83 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# Un nuevo commit en el PR reemplaza la ejecución anterior.
+concurrency:
+  group: tests-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  phpunit:
+    name: PHPUnit (PHP 8.2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: casos_prueba_ci
+          MYSQL_USER: ci
+          MYSQL_PASSWORD: ci
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Obtener el código
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          # El job no escribe en el repositorio.
+          persist-credentials: false
+
+      - name: Configurar PHP
+        # 2.37.2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_mysql
+          tools: composer:v2
+          coverage: none
+        env:
+          fail-fast: true
+
+      - name: Restaurar caché de Composer
+        # v6.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/composer/files
+          key: ${{ runner.os }}-php-8.2-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.2-composer-
+
+      - name: Validar manifiesto de Composer
+        run: composer validate --no-check-publish
+
+      - name: Auditar dependencias
+        run: composer audit --locked
+
+      - name: Instalar dependencias
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Crear configuración de base de datos para CI
+        run: |
+          cp .env.example .env
+          sed -i 's/^DB_NAME=.*/DB_NAME=casos_prueba_ci/' .env
+          sed -i 's/^DB_USER=.*/DB_USER=ci/' .env
+          sed -i 's/^DB_PASS=.*/DB_PASS=ci/' .env
+
+      - name: Ejecutar pruebas
+        run: composer test
