@@ -80,6 +80,9 @@
     'k': { texto: 'Fila anterior', si: hayFilas, accion: () => marcarFila(-1) },
     'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
+  // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
+  const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
+  const verTecla = (k) => k.replace('Mod+', MAC ? '⌘' : 'Ctrl+').replace(/(^|\+|⌘)(\p{Ll})$/u, (_, a, b) => a + b.toUpperCase());
   // Título de la pista según la primera tecla.
   const GRUPOS = { 'g': 'Ir a' };
 
@@ -155,7 +158,7 @@
     const lista = document.createElement('dl');
     siguientes.forEach((texto, k) => {
       const dt = document.createElement('dt');
-      dt.append(Object.assign(document.createElement('kbd'), { textContent: k }));
+      dt.append(Object.assign(document.createElement('kbd'), { textContent: verTecla(k) }));
       lista.append(dt, Object.assign(document.createElement('dd'), { textContent: texto }));
     });
     pista.replaceChildren(titulo, lista);
@@ -214,7 +217,7 @@
       const dt = document.createElement('dt');
       teclas.split(' ').forEach((k) => {
         const kbd = document.createElement('kbd');
-        kbd.textContent = k.replace('Mod+', 'Ctrl+');
+        kbd.textContent = verTecla(k);
         dt.append(kbd);
       });
       const dd = document.createElement('dd');
