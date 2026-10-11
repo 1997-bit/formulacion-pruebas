@@ -970,3 +970,13 @@ kbd {
   margin: 8px 0 0;
 }
 .atajos-pista dd { margin: 0; }
+
+/* Ajustes */
+
+.ajuste { padding: 16px 20px; border: 1px solid var(--borde); }
+.ajuste > legend { float: left; width: 100%; font-weight: 600; }
+.ajuste .opcion { align-items: start; }
+.ajuste .opcion input { margin-top: 2px; }
+.ajuste small { display: block; color: var(--tenue-texto); font-size: var(--letra-xs); }
+.ajuste-estado:empty { display: none; }
+.ajuste-estado { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
