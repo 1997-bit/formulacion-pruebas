@@ -123,7 +123,11 @@
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     })));
   const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
-  const todosAtajos = () => [...deElementos(), ...deObjeto(ATAJOS)];
+  // <html data-atajos="no"> (Ajustes): sin atajos de una tecla, solo los de Ctrl (WCAG 2.1.4: dictado por voz).
+  const todosAtajos = () => {
+    const lista = [...deElementos(), ...deObjeto(ATAJOS)];
+    return raiz.dataset.atajos === 'no' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
+  };
 
   // Letras en minúscula: con Bloq Mayús, g c sigue siendo g c.
   const tecla = (e) => {
@@ -199,6 +203,7 @@
   // y en el sidebar con un <kbd> al pasar el mouse. Así se aprenden sin abrir ?.
   document.querySelectorAll('[data-atajo]').forEach((el) => {
     const teclas = el.dataset.atajo.split(',')[0].trim();
+    if (raiz.dataset.atajos === 'no' && !teclas.startsWith('Mod+')) return;
     const visto = teclas.split(' ').map(verTecla).join(' ');
     if (!teclas.includes(' ')) el.setAttribute('aria-keyshortcuts', teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+').replace(/\p{Ll}$/u, (l) => l.toUpperCase()));
     if (el.closest('.sidebar')) {
@@ -366,7 +371,7 @@
     });
   });
 
-  // Tema y pista: localStorage, igual en todas las pestañas. tema.js aplica el tema antes de pintar.
+  // Tema y atajos: localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
   const botonTema = document.getElementById('tema');
   const pintarTema = () => {
     if (!botonTema) return;
@@ -379,9 +384,10 @@
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
   // El valor por defecto no se guarda.
-  const POR_DEFECTO = { tema: 'sistema', pista: 'si' };
+  const POR_DEFECTO = { tema: 'sistema', atajos: 'si', pista: 'si' };
   const aplicarAjustes = () => {
     raiz.dataset.tema = leer('tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    raiz.dataset.atajos = leer('atajos') || POR_DEFECTO.atajos;
     raiz.dataset.pista = leer('pista') || POR_DEFECTO.pista;
     pintarTema();
     // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.

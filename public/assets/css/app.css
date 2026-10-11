@@ -416,3 +416,4 @@
 }
 :is(.sidebar-boton, .sidebar-subboton):is(:hover, :focus-visible) .sidebar-atajo { opacity: 1; }
 [data-sidebar="colapsado"] .sidebar-atajo { display: none; }
+[data-atajos="no"] .sidebar-atajo { display: none; }

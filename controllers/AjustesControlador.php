@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Vista;
 
-// RNF-07: tema y pista de atajos. Se guardan en el navegador (app.js).
+// RNF-07: tema y atajos (WCAG 2.1.4). Se guardan en el navegador (app.js).
 final class AjustesControlador
 {
     public function ver(): void
