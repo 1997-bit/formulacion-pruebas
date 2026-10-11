@@ -8,9 +8,9 @@
   const filtro = () => document.querySelector('.filtros .control');
   const enFormulario = () => document.activeElement?.form;
   const ATAJOS = {
-    '?': { texto: 'Ayuda de atajos', grupo: 'General', accion: () => ayudaAtajos() },
-    '/': { texto: 'Ir al filtro', grupo: 'Esta página', si: filtro, accion: () => filtro().focus() },
-    'Mod+Enter': { texto: 'Enviar el formulario', grupo: 'Esta página', si: enFormulario, accion: () => enFormulario().requestSubmit() },
+    '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
+    '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
+    'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
   // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
@@ -104,13 +104,13 @@
     const titulo = document.createElement('h2');
     titulo.id = 'atajos-titulo';
     titulo.textContent = 'Atajos de teclado';
-    // Grupos: Ir a (g + letra), Esta página (botones de la vista y acciones de lista) y General.
+    // Grupos por la tecla: Ir a (g + letra), General (? y Ctrl) y Esta página (el resto).
     const grupos = { 'Ir a': [], 'Esta página': [], 'General': [] };
     const vistos = new Set();
     todosAtajos().forEach((a) => {
       if (vistos.has(a.teclas)) return;
       vistos.add(a.teclas);
-      const grupo = a.grupo ?? (a.teclas.startsWith('g ') ? 'Ir a' : a.teclas.startsWith('Mod+') ? 'General' : 'Esta página');
+      const grupo = a.teclas.startsWith('g ') ? 'Ir a' : a.teclas === '?' || a.teclas.startsWith('Mod+') ? 'General' : 'Esta página';
       grupos[grupo].push(a);
     });
     const secciones = Object.entries(grupos).filter(([, atajos]) => atajos.length).flatMap(([nombre, atajos]) => {
