@@ -76,7 +76,10 @@
     'k': { texto: 'Fila anterior', accion: () => marcarFila(-1) },
     'Enter': { texto: 'Abrir la fila marcada', accion: () => document.querySelector('tr[data-marcada] a')?.click() },
     'Mod+Enter': { texto: 'Enviar el formulario', accion: () => document.activeElement?.form?.requestSubmit() },
+    'Space f': { texto: 'Ir al filtro', accion: () => document.querySelector('.filtros .control')?.focus() },
   };
+  // Nombre de cada grupo en la pista (estilo which-key de LazyVim).
+  const GRUPOS = { 'g': 'Ir a', 'space': 'Líder', 'space u': 'Interfaz' };
 
   // J/K: marca una fila de la primera tabla con enlaces.
   function marcarFila(paso) {
@@ -108,11 +111,34 @@
 
   let pendiente = [];
   let espera;
-  const reiniciar = () => { pendiente = []; clearTimeout(espera); };
+  const reiniciar = () => { pendiente = []; clearTimeout(espera); pista?.remove(); };
+
+  // Pista: qué teclas siguen después de una tecla de grupo.
+  let pista;
+  function mostrarPista(secuencia, atajos) {
+    const siguientes = new Map();
+    atajos.forEach(({ teclas, texto }) => {
+      const resto = teclas.toLowerCase().startsWith(secuencia + ' ') && teclas.slice(secuencia.length + 1).split(' ');
+      if (!resto || siguientes.has(resto[0])) return;
+      siguientes.set(resto[0], resto.length > 1 ? `+${GRUPOS[`${secuencia} ${resto[0]}`] ?? 'grupo'}` : texto);
+    });
+    pista ??= Object.assign(document.createElement('div'), { className: 'atajos-pista' });
+    const titulo = document.createElement('strong');
+    titulo.textContent = GRUPOS[secuencia] ?? secuencia;
+    const lista = document.createElement('dl');
+    siguientes.forEach((texto, k) => {
+      const dt = document.createElement('dt');
+      dt.append(Object.assign(document.createElement('kbd'), { textContent: k }));
+      lista.append(dt, Object.assign(document.createElement('dd'), { textContent: texto }));
+    });
+    pista.replaceChildren(titulo, lista);
+    document.body.append(pista);
+  }
 
   document.addEventListener('keydown', (e) => {
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
+    if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
     const enCampo = esCampo(e.target);
     // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
     if (enCampo && !t.startsWith('Mod+')) return;
@@ -130,7 +156,9 @@
     if (atajos.some((a) => a.teclas.toLowerCase().startsWith(secuencia + ' '))) {
       e.preventDefault();
       clearTimeout(espera);
-      espera = setTimeout(reiniciar, 1000);
+      // Con pista a la vista, espera más: el usuario la está leyendo.
+      espera = setTimeout(reiniciar, 3000);
+      mostrarPista(secuencia, atajos);
       return;
     }
     reiniciar();
