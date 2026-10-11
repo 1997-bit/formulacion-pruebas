@@ -13,8 +13,7 @@ $opciones = [
 // Switch (role="switch"): marcado = 'si'. Van al final de la tarjeta indicada. Salen marcados (el valor por defecto): así no se animan al cargar.
 $interruptores = [
     'atajos' => [
-        'atajos' => ['Atajos de una tecla', '? ayuda, / filtro, J/K filas, C crear, G + letra ir a (como GitHub, Jira y Linear). Apáguelos si usa dictado por voz (WCAG 2.1.4); quedan Ctrl+B, Ctrl+Enter y Esc.'],
-        'pista' => ['Pista de teclas', 'Después de G, una ventana dice qué teclas siguen.'],
+        'pista' => ['Pista de teclas', 'Para aprender los atajos: después de G, una ventana dice qué teclas siguen. Todos los atajos: ? o Ver atajos.'],
     ],
 ];
 ?>

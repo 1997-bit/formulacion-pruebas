@@ -69,7 +69,6 @@
 
   // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas, "," = alternativas. Mod = Ctrl o Cmd.
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
-  // <html data-atajos="no"> (Ajustes): sin atajos de una tecla, solo con Ctrl (WCAG 2.1.4).
   // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
   const filtro = () => document.querySelector('.filtros .control');
   const hayFilas = () => document.querySelector('.tabla tbody a');
@@ -121,10 +120,7 @@
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     })));
   const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
-  const todosAtajos = () => {
-    const lista = [...deElementos(), ...deObjeto(ATAJOS)];
-    return raiz.dataset.atajos === 'no' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
-  };
+  const todosAtajos = () => [...deElementos(), ...deObjeto(ATAJOS)];
 
   // Letras en minúscula: con Bloq Mayús, g c sigue siendo g c.
   const tecla = (e) => {
@@ -349,7 +345,7 @@
     });
   });
 
-  // Tema y atajos: localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
+  // Tema y pista: localStorage, igual en todas las pestañas. tema.js aplica el tema antes de pintar.
   const botonTema = document.getElementById('tema');
   const pintarTema = () => {
     if (!botonTema) return;
@@ -362,10 +358,9 @@
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
   // El valor por defecto no se guarda.
-  const POR_DEFECTO = { tema: 'sistema', atajos: 'si', pista: 'si' };
+  const POR_DEFECTO = { tema: 'sistema', pista: 'si' };
   const aplicarAjustes = () => {
     raiz.dataset.tema = leer('tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    raiz.dataset.atajos = leer('atajos') || POR_DEFECTO.atajos;
     raiz.dataset.pista = leer('pista') || POR_DEFECTO.pista;
     pintarTema();
     // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
