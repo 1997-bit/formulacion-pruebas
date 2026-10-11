@@ -216,9 +216,7 @@
     const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
     guardar(name, value === POR_DEFECTO[name] ? null : value);
     aplicarAjustes();
-    const estado = document.getElementById('ajuste-estado');
-    const texto = e.target.closest('label').querySelector('span').firstChild.textContent.trim();
-    if (estado) estado.textContent = `Guardado: ${texto}${type === 'checkbox' ? (checked ? ' activada' : ' desactivada') : ''}.`;
+    document.getElementById('ajuste-estado').textContent = 'Guardado.';
   });
   window.addEventListener('storage', aplicarAjustes);
   // Tema "Sistema": sigue al sistema operativo sin recargar.
