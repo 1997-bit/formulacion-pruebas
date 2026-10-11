@@ -17,7 +17,7 @@ use App\Helpers\Icono;
     <h1>Requerimientos</h1>
     <p>Los requerimientos de sus proyectos. Cada caso de prueba valida uno.</p>
   </div>
-  <div class="acciones"><a class="btn btn-primario" href="/requerimientos/registrar"><?= Icono::svg('plus') ?> Registrar requerimiento</a></div>
+  <div class="acciones"><a class="btn btn-primario" href="/requerimientos/registrar" data-atajo="c"><?= Icono::svg('plus') ?> Registrar requerimiento</a></div>
 </header>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>

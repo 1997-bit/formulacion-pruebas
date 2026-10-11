@@ -9,6 +9,7 @@ return [
     'GET /registro' => ['controlador' => 'Acceso', 'accion' => 'registro', 'rol' => null, 'rf' => 'RF-02'],
     'POST /registro' => ['controlador' => 'Acceso', 'accion' => 'registrar', 'rol' => null, 'rf' => 'RF-02'],
     'GET /salir' => ['controlador' => 'Acceso', 'accion' => 'salir', 'rol' => 0, 'rf' => 'RF-01'],
+    'GET /ajustes' => ['controlador' => 'Ajustes', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RNF-07'],
     'GET /dashboard' => ['controlador' => 'Panel', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RF-23'],
     'GET /requerimientos/listar' => ['controlador' => 'Requerimientos', 'accion' => 'listar', 'rol' => 0, 'rf' => 'RF-04'],
     'GET /requerimientos/registrar' => ['controlador' => 'Requerimientos', 'accion' => 'registrar', 'rol' => 0, 'rf' => 'RF-04'],
