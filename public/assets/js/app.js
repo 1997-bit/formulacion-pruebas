@@ -160,6 +160,8 @@
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
     if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
+    // Tecla sostenida a mitad de secuencia: la repetición no es otra tecla (g sostenida no es gg).
+    if (e.repeat && pendiente.length) { e.preventDefault(); return; }
     // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
     if (esCampo(e.target) && !t.startsWith('Mod+')) return;
     if (!pendiente.length && ['Space', 'Enter'].includes(t) && e.target.closest('a, button, summary')) return;
