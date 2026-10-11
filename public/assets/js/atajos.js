@@ -53,7 +53,7 @@
   const deElementos = () => [...document.querySelectorAll('[data-atajo]')]
     .filter((el) => !el.disabled && !el.closest('[hidden], [inert]')).map((el) => ({
       teclas: el.dataset.atajo,
-      texto: el.dataset.atajoTexto || el.dataset.etiqueta || el.getAttribute('aria-label') || el.textContent.trim(),
+      texto: el.dataset.atajoTexto || el.textContent.trim(),
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     }));
   const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
