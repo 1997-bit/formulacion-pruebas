@@ -94,9 +94,11 @@
   function marcarFila(paso) {
     const filas = [...(document.querySelector('.tabla tbody')?.rows ?? [])].filter((f) => f.querySelector('a'));
     if (!filas.length) return;
-    const actual = filas.findIndex((f) => f.hasAttribute('data-marcada'));
+    // Parte de la fila con foco (llegó con Tab o clic); si no hay, de la marcada.
+    const conFoco = filas.findIndex((f) => f.contains(document.activeElement));
+    const actual = conFoco >= 0 ? conFoco : filas.findIndex((f) => f.hasAttribute('data-marcada'));
+    filas.forEach((f) => f.removeAttribute('data-marcada'));
     const siguiente = filas[Math.min(Math.max(actual + paso, 0), filas.length - 1)];
-    filas[actual]?.removeAttribute('data-marcada');
     siguiente.setAttribute('data-marcada', '');
     siguiente.querySelector('a').focus();
   }
