@@ -407,3 +407,12 @@
   .app { display: block; min-height: 0; }
   .app-principal { padding: 0; }
 }
+
+/* Atajo del enlace (app.js): se ve al pasar el mouse o con foco; colapsado va en la etiqueta */
+.sidebar-atajo {
+  margin-left: auto;
+  opacity: 0;
+  font-size: 0.6875rem;
+}
+:is(.sidebar-boton, .sidebar-subboton):is(:hover, :focus-visible) .sidebar-atajo { opacity: 1; }
+[data-sidebar="colapsado"] .sidebar-atajo { display: none; }

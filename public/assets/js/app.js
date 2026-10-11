@@ -195,6 +195,21 @@
   });
   document.addEventListener('pointerdown', () => { if (pendiente.length) reiniciar(); });
 
+  // Cada elemento con atajo lo muestra: en el tooltip, en aria-keyshortcuts (ARIA no describe secuencias como g c)
+  // y en el sidebar con un <kbd> al pasar el mouse. Así se aprenden sin abrir ?.
+  document.querySelectorAll('[data-atajo]').forEach((el) => {
+    const teclas = el.dataset.atajo.split(',')[0].trim();
+    const visto = teclas.split(' ').map(verTecla).join(' ');
+    if (!teclas.includes(' ')) el.setAttribute('aria-keyshortcuts', teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+').replace(/\p{Ll}$/u, (l) => l.toUpperCase()));
+    if (el.closest('.sidebar')) {
+      el.append(Object.assign(document.createElement('kbd'), { className: 'sidebar-atajo', textContent: visto }));
+      el.lastChild.setAttribute('aria-hidden', 'true');
+      if (el.dataset.etiqueta) el.dataset.etiqueta += ` (${visto})`;
+    } else {
+      el.dataset.tooltip = el.dataset.tooltip ? `${el.dataset.tooltip} (${visto})` : `Atajo: ${visto}`;
+    }
+  });
+
   // ?: lista de atajos de la página, armada al abrir.
   let dialogoAtajos;
   function ayudaAtajos() {
