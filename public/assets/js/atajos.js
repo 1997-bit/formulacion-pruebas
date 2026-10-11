@@ -79,15 +79,14 @@
 
   // Cada elemento con atajo lo muestra: en el tooltip, en aria-keyshortcuts (ARIA no describe secuencias como g c)
   // y en el sidebar con un <kbd> al pasar el mouse. Así se aprenden sin abrir ?.
+  // Con data-atajos="no", el CSS esconde el <kbd> y el tooltip, aunque se apaguen en otra pestaña.
   document.querySelectorAll('[data-atajo]').forEach((el) => {
     const teclas = el.dataset.atajo;
-    if (raiz.dataset.atajos === 'no' && !teclas.startsWith('Mod+')) return;
     const visto = teclas.split(' ').map(verTecla).join(' ');
-    if (!teclas.includes(' ')) el.setAttribute('aria-keyshortcuts', mayus(teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+')));
+    if (!teclas.includes(' ') && (raiz.dataset.atajos !== 'no' || teclas.startsWith('Mod+'))) el.setAttribute('aria-keyshortcuts', mayus(teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+')));
     if (el.closest('.sidebar')) {
       el.append(Object.assign(document.createElement('kbd'), { className: 'sidebar-atajo', textContent: visto }));
       el.lastChild.setAttribute('aria-hidden', 'true');
-      if (el.dataset.etiqueta) el.dataset.etiqueta += ` (${visto})`;
     } else {
       el.dataset.tooltip = el.dataset.tooltip ? `${el.dataset.tooltip} (${visto})` : `Atajo: ${visto}`;
     }

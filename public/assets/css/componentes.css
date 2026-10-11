@@ -130,6 +130,8 @@
 [data-tooltip-alinear="fin"]::after { left: auto; right: 0; translate: none; }
 /* Escape los esconde (app.js) */
 [data-tooltips-ocultos] [data-tooltip]::after { display: none; }
+/* Atajos de una tecla apagados (Ajustes): el tooltip solo decía el atajo */
+[data-atajos="no"] [data-tooltip][data-atajo]:not([data-atajo^="Mod+"])::after { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   [data-tooltip]::after { transition: none; }
