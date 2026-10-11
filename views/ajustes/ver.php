@@ -13,6 +13,10 @@ $opciones = [
         'avanzado' => ['Avanzados', 'Estándar más los de LazyVim: líder Space, H/L páginas, gg/G primera y última fila.'],
         'ninguno' => ['Solo con Ctrl', 'Apaga los atajos de una tecla (WCAG 2.1.4). Quedan Ctrl+B, Ctrl+Enter y Esc.'],
     ]],
+    'pista' => ['Pista de teclas', [
+        'si' => ['Mostrar', 'Después de G o Space, una ventana dice qué teclas siguen (which-key de LazyVim).'],
+        'no' => ['Ocultar', 'La secuencia vence a 1 s, como en Vim.'],
+    ]],
 ];
 ?>
 <header class="encabezado">

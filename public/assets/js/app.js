@@ -127,9 +127,13 @@
     return (mod ? 'Mod+' : '') + k;
   };
 
+  // Como Vim y which-key: la pista sale a los 300 ms (escribir rápido no la hace parpadear) y espera sin límite
+  // hasta otra tecla, Esc o un clic. Sin pista (Ajustes), la secuencia vence a 1 s (timeoutlen de Vim).
   let pendiente = [];
   let espera;
-  const reiniciar = () => { pendiente = []; clearTimeout(espera); pista.replaceChildren(); };
+  let esperaPista;
+  const reiniciar = () => { pendiente = []; clearTimeout(espera); clearTimeout(esperaPista); pista.replaceChildren(); };
+  const conPista = () => raiz.dataset.pista !== 'no';
 
   // Pista: qué teclas siguen después de una tecla de grupo.
   // Vive siempre en la página: una región role="status" anuncia solo los cambios. Vacía no se ve.
@@ -169,22 +173,29 @@
     const secuencia = pendiente.join(' ');
     const atajos = todosAtajos();
     const exacto = atajos.find((a) => a.teclas === secuencia);
-    if (exacto) {
+    const prefijo = atajos.some((a) => a.teclas.startsWith(secuencia + ' '));
+    if (exacto && !prefijo) {
       e.preventDefault();
       reiniciar();
       exacto.accion();
       return;
     }
-    if (atajos.some((a) => a.teclas.startsWith(secuencia + ' '))) {
+    if (prefijo) {
       e.preventDefault();
       clearTimeout(espera);
-      // Con pista a la vista, espera más: el usuario la está leyendo.
-      espera = setTimeout(reiniciar, 3000);
-      mostrarPista(secuencia, atajos);
+      clearTimeout(esperaPista);
+      // Atajo que también empieza otro más largo: como Vim, si no llega otra tecla en 1 s, corre el corto.
+      if (exacto) espera = setTimeout(() => { reiniciar(); exacto.accion(); }, 1000);
+      else if (!conPista()) espera = setTimeout(reiniciar, 1000);
+      if (conPista()) {
+        if (pista.hasChildNodes()) mostrarPista(secuencia, atajos);
+        else esperaPista = setTimeout(() => mostrarPista(secuencia, atajos), 300);
+      }
       return;
     }
     reiniciar();
   });
+  document.addEventListener('pointerdown', () => { if (pendiente.length) reiniciar(); });
 
   // ?: lista de atajos de la página, armada al abrir.
   let dialogoAtajos;
@@ -351,12 +362,15 @@
   const guardar = (clave, valor) => {
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
+  // El valor por defecto no se guarda.
+  const POR_DEFECTO = { tema: 'sistema', atajos: 'estandar', pista: 'si' };
   const aplicarAjustes = () => {
     raiz.dataset.tema = leer('tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    raiz.dataset.atajos = leer('atajos') || 'estandar';
+    raiz.dataset.atajos = leer('atajos') || POR_DEFECTO.atajos;
+    raiz.dataset.pista = leer('pista') || POR_DEFECTO.pista;
     pintarTema();
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
-      r.checked = r.value === (leer(r.name) || (r.name === 'tema' ? 'sistema' : 'estandar'));
+      r.checked = r.value === (leer(r.name) || POR_DEFECTO[r.name]);
     });
   };
   botonTema?.addEventListener('click', () => {
@@ -367,7 +381,7 @@
   document.addEventListener('change', (e) => {
     if (!e.target.matches('input[data-ajuste]')) return;
     const { name, value } = e.target;
-    guardar(name, ['sistema', 'estandar'].includes(value) ? null : value);
+    guardar(name, value === POR_DEFECTO[name] ? null : value);
     aplicarAjustes();
     const estado = document.getElementById('ajuste-estado');
     if (estado) estado.textContent = `Guardado: ${e.target.closest('label').querySelector('span').firstChild.textContent.trim()}.`;
