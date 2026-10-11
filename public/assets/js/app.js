@@ -153,6 +153,8 @@
   }
 
   document.addEventListener('keydown', (e) => {
+    // IME o tecla muerta (´ + a): la tecla es parte de un carácter, no un atajo.
+    if (e.isComposing || e.key === 'Dead') return;
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
     if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
