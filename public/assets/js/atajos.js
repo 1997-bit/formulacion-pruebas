@@ -14,7 +14,9 @@
   };
   // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
-  const verTecla = (k) => k.replace('Mod+', MAC ? '⌘' : 'Ctrl+').replace(/(^|\+|⌘)(\p{Ll})$/u, (_, a, b) => a + b.toUpperCase());
+  // Letra sola al final en mayúscula: b → B, pero Enter queda igual.
+  const mayus = (k) => k.replace(/(^|\+|⌘)(\p{Ll})$/u, (_, a, b) => a + b.toUpperCase());
+  const verTecla = (k) => mayus(k.replace('Mod+', MAC ? '⌘' : 'Ctrl+'));
 
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   // Sin elementos deshabilitados ni escondidos con hidden o inert.
@@ -81,7 +83,7 @@
     const teclas = el.dataset.atajo;
     if (raiz.dataset.atajos === 'no' && !teclas.startsWith('Mod+')) return;
     const visto = teclas.split(' ').map(verTecla).join(' ');
-    if (!teclas.includes(' ')) el.setAttribute('aria-keyshortcuts', teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+').replace(/\p{Ll}$/u, (l) => l.toUpperCase()));
+    if (!teclas.includes(' ')) el.setAttribute('aria-keyshortcuts', mayus(teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+')));
     if (el.closest('.sidebar')) {
       el.append(Object.assign(document.createElement('kbd'), { className: 'sidebar-atajo', textContent: visto }));
       el.lastChild.setAttribute('aria-hidden', 'true');
