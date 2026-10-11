@@ -18,7 +18,7 @@ use App\Helpers\Icono;
     <h1>Proyectos</h1>
     <p>Un tester solo ve los proyectos donde es miembro.</p>
   </div>
-  <div class="acciones"><a class="btn btn-primario" href="/admin/proyectos/crear"><?= Icono::svg('plus') ?> Crear proyecto</a></div>
+  <div class="acciones"><a class="btn btn-primario" href="/admin/proyectos/crear" data-atajo="c"><?= Icono::svg('plus') ?> Crear proyecto</a></div>
 </header>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>

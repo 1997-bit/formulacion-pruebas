@@ -23,7 +23,7 @@ $hasta = min($p->offset() + Paginacion::POR_PAGINA, $p->total);
     <ul>
       <li>
         <?php if ($p->pagina > 1): ?>
-          <a href="<?= $enlace($p->pagina - 1) ?>"><?= Icono::svg('chevron-left') ?><span class="solo-lector">Anterior</span></a>
+          <a href="<?= $enlace($p->pagina - 1) ?>" data-atajo="[" data-atajo-texto="Página anterior"><?= Icono::svg('chevron-left') ?><span class="solo-lector">Anterior</span></a>
         <?php else: ?>
           <span aria-disabled="true"><?= Icono::svg('chevron-left') ?><span class="solo-lector">Anterior</span></span>
         <?php endif; ?>
@@ -37,7 +37,7 @@ $hasta = min($p->offset() + Paginacion::POR_PAGINA, $p->total);
       <?php endforeach; ?>
       <li>
         <?php if ($p->pagina < $p->paginas()): ?>
-          <a href="<?= $enlace($p->pagina + 1) ?>"><?= Icono::svg('chevron-right') ?><span class="solo-lector">Siguiente</span></a>
+          <a href="<?= $enlace($p->pagina + 1) ?>" data-atajo="]" data-atajo-texto="Página siguiente"><?= Icono::svg('chevron-right') ?><span class="solo-lector">Siguiente</span></a>
         <?php else: ?>
           <span aria-disabled="true"><?= Icono::svg('chevron-right') ?><span class="solo-lector">Siguiente</span></span>
         <?php endif; ?>

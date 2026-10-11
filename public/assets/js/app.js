@@ -71,7 +71,23 @@
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
+    '/': { texto: 'Ir al filtro', accion: () => document.querySelector('.filtros .control')?.focus() },
+    'j': { texto: 'Fila siguiente', accion: () => marcarFila(1) },
+    'k': { texto: 'Fila anterior', accion: () => marcarFila(-1) },
+    'Enter': { texto: 'Abrir la fila marcada', accion: () => document.querySelector('tr[data-marcada] a')?.click() },
+    'Mod+Enter': { texto: 'Enviar el formulario', accion: () => document.activeElement?.form?.requestSubmit() },
   };
+
+  // J/K: marca una fila de la primera tabla con enlaces.
+  function marcarFila(paso) {
+    const filas = [...(document.querySelector('.tabla tbody')?.rows ?? [])].filter((f) => f.querySelector('a'));
+    if (!filas.length) return;
+    const actual = filas.findIndex((f) => f.hasAttribute('data-marcada'));
+    const siguiente = filas[Math.min(Math.max(actual + paso, 0), filas.length - 1)];
+    filas[actual]?.removeAttribute('data-marcada');
+    siguiente.setAttribute('data-marcada', '');
+    siguiente.scrollIntoView({ block: 'nearest' });
+  }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   const conAtajo = () => [...document.querySelectorAll('[data-atajo]')].flatMap((el) =>
     el.dataset.atajo.split(',').map((teclas) => ({

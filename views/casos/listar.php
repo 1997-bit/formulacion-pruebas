@@ -38,7 +38,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
     <h1>Casos de prueba</h1>
     <p>Todos los casos de sus proyectos, ordenados por código.</p>
   </div>
-  <div class="acciones"><a class="btn btn-primario" href="/casos/registrar"><?= Icono::svg('plus') ?> Registrar caso</a></div>
+  <div class="acciones"><a class="btn btn-primario" href="/casos/registrar" data-atajo="c"><?= Icono::svg('plus') ?> Registrar caso</a></div>
 </header>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
