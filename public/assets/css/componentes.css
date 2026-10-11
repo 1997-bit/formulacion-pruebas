@@ -970,6 +970,7 @@ kbd {
   margin: 8px 0 0;
 }
 .atajos-pista dd { margin: 0; }
+.atajos-pista:empty { display: none; }
 
 /* Ajustes */
 

@@ -122,10 +122,13 @@
 
   let pendiente = [];
   let espera;
-  const reiniciar = () => { pendiente = []; clearTimeout(espera); pista?.remove(); };
+  const reiniciar = () => { pendiente = []; clearTimeout(espera); pista.replaceChildren(); };
 
   // Pista: qué teclas siguen después de una tecla de grupo.
-  let pista;
+  // Vive siempre en la página: una región role="status" anuncia solo los cambios. Vacía no se ve.
+  const pista = Object.assign(document.createElement('div'), { className: 'atajos-pista' });
+  pista.setAttribute('role', 'status');
+  document.body.append(pista);
   function mostrarPista(secuencia, atajos) {
     const siguientes = new Map();
     atajos.forEach(({ teclas, texto }) => {
@@ -133,7 +136,6 @@
       if (!resto || siguientes.has(resto[0])) return;
       siguientes.set(resto[0], resto.length > 1 ? `+${GRUPOS[`${secuencia} ${resto[0]}`] ?? 'grupo'}` : texto);
     });
-    pista ??= Object.assign(document.createElement('div'), { className: 'atajos-pista' });
     const titulo = document.createElement('strong');
     titulo.textContent = GRUPOS[secuencia] ?? secuencia;
     const lista = document.createElement('dl');
@@ -143,7 +145,6 @@
       lista.append(dt, Object.assign(document.createElement('dd'), { textContent: texto }));
     });
     pista.replaceChildren(titulo, lista);
-    document.body.append(pista);
   }
 
   document.addEventListener('keydown', (e) => {
