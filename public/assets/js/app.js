@@ -100,6 +100,21 @@
     siguiente.setAttribute('data-marcada', '');
     siguiente.querySelector('a').focus();
   }
+  // Al volver con Atrás, el foco regresa a la última fila (como Gmail). sessionStorage: solo esta pestaña.
+  const claveFila = () => `fila:${location.pathname}${location.search}`;
+  document.addEventListener('focusin', (e) => {
+    const enlace = e.target.closest('.tabla tbody a');
+    if (enlace) try { sessionStorage.setItem(claveFila(), enlace.getAttribute('href')); } catch (err) {}
+  });
+  if (performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
+    let href = null;
+    try { href = sessionStorage.getItem(claveFila()); } catch (err) {}
+    const enlace = href && document.querySelector(`.tabla tbody a[href="${CSS.escape(href)}"]`);
+    if (enlace) {
+      enlace.closest('tr').setAttribute('data-marcada', '');
+      enlace.focus();
+    }
+  }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   // Sin elementos deshabilitados ni escondidos con hidden o inert.
   const deElementos = (atributo) => [...document.querySelectorAll(`[data-${atributo}]`)]
