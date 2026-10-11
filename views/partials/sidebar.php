@@ -13,6 +13,9 @@ use App\Helpers\Icono;
 $menu = require RAIZ . '/config/menu.php';
 $rol = $usuario['rol'];
 $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
+$atajo = fn (array $x, string $texto): string => isset($x['atajo'])
+    ? ' data-atajo="' . Html::e($x['atajo']) . '" data-atajo-texto="Ir a ' . Html::e(mb_strtolower($texto)) . '"'
+    : '';
 ?>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-cabecera">
@@ -55,7 +58,7 @@ $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
                   <ul class="sidebar-submenu">
                     <?php foreach ($hijos as $hijo): ?>
                       <li>
-                        <a class="sidebar-subboton" href="<?= Html::e($hijo['ruta']) ?>"<?= $hijo['ruta'] === $rutaActual ? ' aria-current="page"' : '' ?>>
+                        <a class="sidebar-subboton" href="<?= Html::e($hijo['ruta']) ?>"<?= $hijo['ruta'] === $rutaActual ? ' aria-current="page"' : '' ?><?= $atajo($hijo, $el['texto']) ?>>
                           <?= Html::e($hijo['texto']) ?>
                         </a>
                       </li>
@@ -65,7 +68,7 @@ $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
               </li>
             <?php else: ?>
               <li>
-                <a class="sidebar-boton" href="<?= Html::e($el['ruta']) ?>" data-etiqueta="<?= Html::e($el['texto']) ?>"<?= $el['ruta'] === $rutaActual ? ' aria-current="page"' : '' ?>>
+                <a class="sidebar-boton" href="<?= Html::e($el['ruta']) ?>" data-etiqueta="<?= Html::e($el['texto']) ?>"<?= $el['ruta'] === $rutaActual ? ' aria-current="page"' : '' ?><?= $atajo($el, $el['texto']) ?>>
                   <?= Icono::svg($el['icono']) ?>
                   <span class="sidebar-texto"><?= Html::e($el['texto']) ?></span>
                 </a>
