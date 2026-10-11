@@ -91,7 +91,11 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
         <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
       </summary>
       <div class="usuario-flotante">
-        <a class="sidebar-boton" href="/salir" data-atajo="Space q">
+        <a class="sidebar-boton" href="/ajustes" data-atajo="g s" data-atajo-texto="Ir a ajustes">
+          <?= Icono::svg('settings') ?>
+          <span>Ajustes</span>
+        </a>
+        <a class="sidebar-boton" href="/salir" data-atajo-avanzado="Space q q">
           <?= Icono::svg('log-out') ?>
           <span>Cerrar sesión</span>
         </a>

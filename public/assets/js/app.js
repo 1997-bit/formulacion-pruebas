@@ -69,17 +69,24 @@
 
   // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas, "," = alternativas. Mod = Ctrl o Cmd.
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
+  // Modo en <html data-atajos> (Ajustes): estandar, avanzado (más data-atajo-avanzado, estilo LazyVim) o ninguno (solo con Ctrl).
+  const filtro = () => document.querySelector('.filtros .control')?.focus();
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
-    '/': { texto: 'Ir al filtro', accion: () => document.querySelector('.filtros .control')?.focus() },
+    '/': { texto: 'Ir al filtro', accion: filtro },
     'j': { texto: 'Fila siguiente', accion: () => marcarFila(1) },
     'k': { texto: 'Fila anterior', accion: () => marcarFila(-1) },
     'Enter': { texto: 'Abrir la fila marcada', accion: () => document.querySelector('tr[data-marcada] a')?.click() },
     'Mod+Enter': { texto: 'Enviar el formulario', accion: () => document.activeElement?.form?.requestSubmit() },
-    'Space f': { texto: 'Ir al filtro', accion: () => document.querySelector('.filtros .control')?.focus() },
+  };
+  const AVANZADOS = {
+    'g g': { texto: 'Primera fila', accion: () => marcarFila(-Infinity) },
+    'G': { texto: 'Última fila', accion: () => marcarFila(Infinity) },
+    'Space /': { texto: 'Ir al filtro', accion: filtro },
+    'Space s k': { texto: 'Buscar atajos', accion: () => ayudaAtajos() },
   };
   // Nombre de cada grupo en la pista (estilo which-key de LazyVim).
-  const GRUPOS = { 'g': 'Ir a', 'space': 'Líder', 'space u': 'Interfaz' };
+  const GRUPOS = { 'g': 'Ir a', 'Space': 'Líder', 'Space u': 'Interfaz', 'Space q': 'Sesión', 'Space s': 'Buscar' };
 
   // J/K: marca una fila de la primera tabla con enlaces.
   function marcarFila(paso) {
@@ -92,20 +99,25 @@
     siguiente.scrollIntoView({ block: 'nearest' });
   }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
-  const conAtajo = () => [...document.querySelectorAll('[data-atajo]')].flatMap((el) =>
-    el.dataset.atajo.split(',').map((teclas) => ({
+  const deElementos = (atributo) => [...document.querySelectorAll(`[data-${atributo}]`)].flatMap((el) =>
+    el.getAttribute(`data-${atributo}`).split(',').map((teclas) => ({
       teclas: teclas.trim(),
       texto: el.dataset.atajoTexto || el.dataset.etiqueta || el.getAttribute('aria-label') || el.textContent.trim(),
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     })));
-  const todosAtajos = () => [
-    ...conAtajo(),
-    ...Object.entries(ATAJOS).map(([teclas, a]) => ({ teclas, ...a })),
-  ];
+  const deObjeto = (objeto) => Object.entries(objeto).map(([teclas, a]) => ({ teclas, ...a }));
+  const todosAtajos = () => {
+    const modo = raiz.dataset.atajos;
+    const lista = [...deElementos('atajo'), ...deObjeto(ATAJOS)];
+    if (modo === 'avanzado') lista.push(...deElementos('atajo-avanzado'), ...deObjeto(AVANZADOS));
+    // WCAG 2.1.4: sin atajos de una tecla.
+    return modo === 'ninguno' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
+  };
 
+  // Letras con su mayúscula: G no es g.
   const tecla = (e) => {
     if (['Shift', 'Control', 'Meta', 'Alt'].includes(e.key) || e.altKey) return null;
-    const k = e.key === ' ' ? 'Space' : e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    const k = e.key === ' ' ? 'Space' : e.key.length === 1 && (e.ctrlKey || e.metaKey) ? e.key.toLowerCase() : e.key;
     return (e.ctrlKey || e.metaKey ? 'Mod+' : '') + k;
   };
 
@@ -118,7 +130,7 @@
   function mostrarPista(secuencia, atajos) {
     const siguientes = new Map();
     atajos.forEach(({ teclas, texto }) => {
-      const resto = teclas.toLowerCase().startsWith(secuencia + ' ') && teclas.slice(secuencia.length + 1).split(' ');
+      const resto = teclas.startsWith(secuencia + ' ') && teclas.slice(secuencia.length + 1).split(' ');
       if (!resto || siguientes.has(resto[0])) return;
       siguientes.set(resto[0], resto.length > 1 ? `+${GRUPOS[`${secuencia} ${resto[0]}`] ?? 'grupo'}` : texto);
     });
@@ -139,21 +151,20 @@
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
     if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
-    const enCampo = esCampo(e.target);
     // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
-    if (enCampo && !t.startsWith('Mod+')) return;
-    if (!pendiente.length && ['Space', 'enter'].includes(t.toLowerCase()) && e.target.closest('a, button, summary')) return;
+    if (esCampo(e.target) && !t.startsWith('Mod+')) return;
+    if (!pendiente.length && ['Space', 'Enter'].includes(t) && e.target.closest('a, button, summary')) return;
     pendiente.push(t);
-    const secuencia = pendiente.join(' ').toLowerCase();
+    const secuencia = pendiente.join(' ');
     const atajos = todosAtajos();
-    const exacto = atajos.find((a) => a.teclas.toLowerCase() === secuencia);
+    const exacto = atajos.find((a) => a.teclas === secuencia);
     if (exacto) {
       e.preventDefault();
       reiniciar();
       exacto.accion();
       return;
     }
-    if (atajos.some((a) => a.teclas.toLowerCase().startsWith(secuencia + ' '))) {
+    if (atajos.some((a) => a.teclas.startsWith(secuencia + ' '))) {
       e.preventDefault();
       clearTimeout(espera);
       // Con pista a la vista, espera más: el usuario la está leyendo.
@@ -314,19 +325,40 @@
     });
   });
 
-  // Tema claro u oscuro, recordado.
+  // Tema y atajos: localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
   const botonTema = document.getElementById('tema');
-  if (botonTema) {
-    const pintar = () => {
-      const oscuro = raiz.dataset.tema === 'dark';
-      botonTema.setAttribute('aria-pressed', String(oscuro));
-      botonTema.dataset.tooltip = oscuro ? 'Cambiar a claro' : 'Cambiar a oscuro';
-    };
-    botonTema.addEventListener('click', () => {
-      raiz.dataset.tema = raiz.dataset.tema === 'dark' ? 'light' : 'dark';
-      try { localStorage.setItem('tema', raiz.dataset.tema); } catch (e) {}
-      pintar();
+  const pintarTema = () => {
+    if (!botonTema) return;
+    const oscuro = raiz.dataset.tema === 'dark';
+    botonTema.setAttribute('aria-pressed', String(oscuro));
+    botonTema.dataset.tooltip = oscuro ? 'Cambiar a claro' : 'Cambiar a oscuro';
+  };
+  const leer = (clave) => { try { return localStorage.getItem(clave); } catch (e) { return null; } };
+  const guardar = (clave, valor) => {
+    try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
+  };
+  const aplicarAjustes = () => {
+    raiz.dataset.tema = leer('tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    raiz.dataset.atajos = leer('atajos') || 'estandar';
+    pintarTema();
+    document.querySelectorAll('input[data-ajuste]').forEach((r) => {
+      r.checked = r.value === (leer(r.name) || (r.name === 'tema' ? 'sistema' : 'estandar'));
     });
-    pintar();
-  }
+  };
+  botonTema?.addEventListener('click', () => {
+    guardar('tema', raiz.dataset.tema === 'dark' ? 'light' : 'dark');
+    aplicarAjustes();
+  });
+  // Página de Ajustes: cada opción se guarda al marcarla.
+  document.addEventListener('change', (e) => {
+    if (!e.target.matches('input[data-ajuste]')) return;
+    const { name, value } = e.target;
+    guardar(name, ['sistema', 'estandar'].includes(value) ? null : value);
+    aplicarAjustes();
+    const estado = document.getElementById('ajuste-estado');
+    if (estado) estado.textContent = `Guardado: ${e.target.closest('label').querySelector('span').firstChild.textContent.trim()}.`;
+  });
+  document.querySelector('[data-ver-atajos]')?.addEventListener('click', () => ayudaAtajos());
+  window.addEventListener('storage', aplicarAjustes);
+  aplicarAjustes();
 })();
