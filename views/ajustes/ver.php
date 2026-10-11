@@ -10,7 +10,7 @@ $opciones = [
     ]],
     'atajos' => ['Atajos de teclado', [
         'estandar' => ['Estándar', 'Los de GitHub, Jira y Linear: ? ayuda, / filtro, J/K filas, C crear, G + letra ir a.'],
-        'avanzado' => ['Avanzados', 'Estándar más los de LazyVim: líder Space, H/L páginas, gg/G primera y última fila.'],
+        'avanzado' => ['Avanzados', 'Estándar más los de LazyVim: líder Space, H/L páginas, gg/G primera y última fila, 5j baja 5 filas.'],
         'ninguno' => ['Solo con Ctrl', 'Apaga los atajos de una tecla (WCAG 2.1.4). Quedan Ctrl+B, Ctrl+Enter y Esc.'],
     ]],
     'pista' => ['Pista de teclas', [

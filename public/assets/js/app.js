@@ -77,8 +77,8 @@
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
     '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
-    'j': { texto: 'Fila siguiente (Enter la abre)', si: hayFilas, accion: () => marcarFila(1) },
-    'k': { texto: 'Fila anterior', si: hayFilas, accion: () => marcarFila(-1) },
+    'j': { texto: 'Fila siguiente (Enter la abre)', si: hayFilas, accion: (n) => marcarFila(n) },
+    'k': { texto: 'Fila anterior', si: hayFilas, accion: (n) => marcarFila(-n) },
     'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
   const AVANZADOS = {
@@ -130,9 +130,10 @@
   // Como Vim y which-key: la pista sale a los 300 ms (escribir rápido no la hace parpadear) y espera sin límite
   // hasta otra tecla, Esc o un clic. Sin pista (Ajustes), la secuencia vence a 1 s (timeoutlen de Vim).
   let pendiente = [];
+  let cuenta = ''; // Avanzado: 5j baja 5 filas, como Vim.
   let espera;
   let esperaPista;
-  const reiniciar = () => { pendiente = []; clearTimeout(espera); clearTimeout(esperaPista); pista.replaceChildren(); };
+  const reiniciar = () => { pendiente = []; cuenta = ''; clearTimeout(espera); clearTimeout(esperaPista); pista.replaceChildren(); };
   const conPista = () => raiz.dataset.pista !== 'no';
 
   // Pista: qué teclas siguen después de una tecla de grupo.
@@ -163,12 +164,18 @@
     if (e.isComposing || e.key === 'Dead') return;
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
-    if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
+    if (t === 'Escape' && (pendiente.length || cuenta)) { reiniciar(); return; }
     // Tecla sostenida a mitad de secuencia: la repetición no es otra tecla (g sostenida no es gg).
     if (e.repeat && pendiente.length) { e.preventDefault(); return; }
     // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
     if (esCampo(e.target) && !t.startsWith('Mod+')) return;
     if (!pendiente.length && ['Space', 'Enter'].includes(t) && e.target.closest('a, button, summary')) return;
+    if (raiz.dataset.atajos === 'avanzado' && !pendiente.length && /^[0-9]$/.test(t) && (cuenta || t !== '0')) {
+      e.preventDefault();
+      cuenta += t;
+      return;
+    }
+    const n = Number(cuenta) || 1;
     pendiente.push(t);
     const secuencia = pendiente.join(' ');
     const atajos = todosAtajos();
@@ -177,7 +184,7 @@
     if (exacto && !prefijo) {
       e.preventDefault();
       reiniciar();
-      exacto.accion();
+      exacto.accion(n);
       return;
     }
     if (prefijo) {
@@ -185,7 +192,7 @@
       clearTimeout(espera);
       clearTimeout(esperaPista);
       // Atajo que también empieza otro más largo: como Vim, si no llega otra tecla en 1 s, corre el corto.
-      if (exacto) espera = setTimeout(() => { reiniciar(); exacto.accion(); }, 1000);
+      if (exacto) espera = setTimeout(() => { reiniciar(); exacto.accion(n); }, 1000);
       else if (!conPista()) espera = setTimeout(reiniciar, 1000);
       if (conPista()) {
         if (pista.hasChildNodes()) mostrarPista(secuencia, atajos);
