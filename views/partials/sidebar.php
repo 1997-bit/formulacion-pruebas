@@ -95,7 +95,7 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
           <?= Icono::svg('settings') ?>
           <span>Ajustes</span>
         </a>
-        <a class="sidebar-boton" href="/salir" data-atajo-avanzado="Space q q">
+        <a class="sidebar-boton" href="/salir">
           <?= Icono::svg('log-out') ?>
           <span>Cerrar sesión</span>
         </a>

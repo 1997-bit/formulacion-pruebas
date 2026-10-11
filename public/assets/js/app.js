@@ -69,7 +69,7 @@
 
   // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas, "," = alternativas. Mod = Ctrl o Cmd.
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
-  // Modo en <html data-atajos> (Ajustes): estandar, avanzado (más data-atajo-avanzado, estilo LazyVim) o ninguno (solo con Ctrl).
+  // <html data-atajos="no"> (Ajustes): sin atajos de una tecla, solo con Ctrl (WCAG 2.1.4).
   // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
   const filtro = () => document.querySelector('.filtros .control');
   const hayFilas = () => document.querySelector('.tabla tbody a');
@@ -77,18 +77,12 @@
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
     '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
-    'j': { texto: 'Fila siguiente (Enter la abre)', si: hayFilas, accion: (n) => marcarFila(n) },
-    'k': { texto: 'Fila anterior', si: hayFilas, accion: (n) => marcarFila(-n) },
+    'j': { texto: 'Fila siguiente (Enter la abre)', si: hayFilas, accion: () => marcarFila(1) },
+    'k': { texto: 'Fila anterior', si: hayFilas, accion: () => marcarFila(-1) },
     'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
-  const AVANZADOS = {
-    'g g': { texto: 'Primera fila', si: hayFilas, accion: () => marcarFila(-Infinity) },
-    'G': { texto: 'Última fila', si: hayFilas, accion: () => marcarFila(Infinity) },
-    'Space /': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
-    'Space s k': { texto: 'Buscar atajos', accion: () => ayudaAtajos() },
-  };
-  // Nombre de cada grupo en la pista (estilo which-key de LazyVim).
-  const GRUPOS = { 'g': 'Ir a', 'Space': 'Líder', 'Space u': 'Interfaz', 'Space q': 'Sesión', 'Space s': 'Buscar' };
+  // Título de la pista según la primera tecla.
+  const GRUPOS = { 'g': 'Ir a' };
 
   // J/K: foco en el enlace de la fila (el lector de pantalla la anuncia; Enter la abre). data-marcada solo pinta.
   function marcarFila(paso) {
@@ -119,38 +113,34 @@
   }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   // Sin elementos deshabilitados ni escondidos con hidden o inert.
-  const deElementos = (atributo) => [...document.querySelectorAll(`[data-${atributo}]`)]
+  const deElementos = () => [...document.querySelectorAll('[data-atajo]')]
     .filter((el) => !el.disabled && !el.closest('[hidden], [inert]')).flatMap((el) =>
-    el.getAttribute(`data-${atributo}`).split(',').map((teclas) => ({
+    el.dataset.atajo.split(',').map((teclas) => ({
       teclas: teclas.trim(),
       texto: el.dataset.atajoTexto || el.dataset.etiqueta || el.getAttribute('aria-label') || el.textContent.trim(),
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     })));
   const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
   const todosAtajos = () => {
-    const modo = raiz.dataset.atajos;
-    const lista = [...deElementos('atajo'), ...deObjeto(ATAJOS)];
-    if (modo === 'avanzado') lista.push(...deElementos('atajo-avanzado'), ...deObjeto(AVANZADOS));
-    // WCAG 2.1.4: sin atajos de una tecla.
-    return modo === 'ninguno' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
+    const lista = [...deElementos(), ...deObjeto(ATAJOS)];
+    return raiz.dataset.atajos === 'no' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
   };
 
-  // Letras: mayúscula solo con Shift (G no es g). Bloq Mayús no cuenta: con él, g c seguiría siendo g c.
+  // Letras en minúscula: con Bloq Mayús, g c sigue siendo g c.
   const tecla = (e) => {
     if (['Shift', 'Control', 'Meta', 'Alt', 'CapsLock'].includes(e.key) || e.altKey) return null;
     const mod = e.ctrlKey || e.metaKey;
     let k = e.key === ' ' ? 'Space' : e.key;
-    if (/^\p{L}$/u.test(k)) k = e.shiftKey && !mod ? k.toUpperCase() : k.toLowerCase();
+    if (/^\p{L}$/u.test(k)) k = k.toLowerCase();
     return (mod ? 'Mod+' : '') + k;
   };
 
-  // Como Vim y which-key: la pista sale a los 300 ms (escribir rápido no la hace parpadear) y espera sin límite
-  // hasta otra tecla, Esc o un clic. Sin pista (Ajustes), la secuencia vence a 1 s (timeoutlen de Vim).
+  // La pista sale a los 300 ms (escribir rápido no la hace parpadear) y espera hasta otra tecla, Esc o un clic.
+  // Sin pista (Ajustes), la secuencia vence a 1 s.
   let pendiente = [];
-  let cuenta = ''; // Avanzado: 5j baja 5 filas, como Vim.
   let espera;
   let esperaPista;
-  const reiniciar = () => { pendiente = []; cuenta = ''; clearTimeout(espera); clearTimeout(esperaPista); pista.replaceChildren(); };
+  const reiniciar = () => { pendiente = []; clearTimeout(espera); clearTimeout(esperaPista); pista.replaceChildren(); };
   const conPista = () => raiz.dataset.pista !== 'no';
 
   // Pista: qué teclas siguen después de una tecla de grupo.
@@ -162,8 +152,7 @@
     const siguientes = new Map();
     atajos.forEach(({ teclas, texto }) => {
       const resto = teclas.startsWith(secuencia + ' ') && teclas.slice(secuencia.length + 1).split(' ');
-      if (!resto || siguientes.has(resto[0])) return;
-      siguientes.set(resto[0], resto.length > 1 ? `+${GRUPOS[`${secuencia} ${resto[0]}`] ?? 'grupo'}` : texto);
+      if (resto && !siguientes.has(resto[0])) siguientes.set(resto[0], texto);
     });
     const titulo = document.createElement('strong');
     titulo.textContent = GRUPOS[secuencia] ?? secuencia;
@@ -181,40 +170,26 @@
     if (e.isComposing || e.key === 'Dead') return;
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
-    if (t === 'Escape' && (pendiente.length || cuenta)) { reiniciar(); return; }
-    // Tecla sostenida a mitad de secuencia: la repetición no es otra tecla (g sostenida no es gg).
+    if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
+    // Tecla sostenida a mitad de secuencia: la repetición no es otra tecla.
     if (e.repeat && pendiente.length) { e.preventDefault(); return; }
     // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
     if (esCampo(e.target) && !t.startsWith('Mod+')) return;
     if (!pendiente.length && ['Space', 'Enter'].includes(t) && e.target.closest('a, button, summary')) return;
-    if (raiz.dataset.atajos === 'avanzado' && !pendiente.length && /^[0-9]$/.test(t) && (cuenta || t !== '0')) {
-      e.preventDefault();
-      cuenta += t;
-      return;
-    }
-    const n = Number(cuenta) || 1;
     pendiente.push(t);
     const secuencia = pendiente.join(' ');
     const atajos = todosAtajos();
     const exacto = atajos.find((a) => a.teclas === secuencia);
-    const prefijo = atajos.some((a) => a.teclas.startsWith(secuencia + ' '));
-    if (exacto && !prefijo) {
+    if (exacto) {
       e.preventDefault();
       reiniciar();
-      exacto.accion(n);
+      exacto.accion();
       return;
     }
-    if (prefijo) {
+    if (atajos.some((a) => a.teclas.startsWith(secuencia + ' '))) {
       e.preventDefault();
-      clearTimeout(espera);
-      clearTimeout(esperaPista);
-      // Atajo que también empieza otro más largo: como Vim, si no llega otra tecla en 1 s, corre el corto.
-      if (exacto) espera = setTimeout(() => { reiniciar(); exacto.accion(n); }, 1000);
-      else if (!conPista()) espera = setTimeout(reiniciar, 1000);
-      if (conPista()) {
-        if (pista.hasChildNodes()) mostrarPista(secuencia, atajos);
-        else esperaPista = setTimeout(() => mostrarPista(secuencia, atajos), 300);
-      }
+      if (conPista()) esperaPista = setTimeout(() => mostrarPista(secuencia, atajos), 300);
+      else espera = setTimeout(reiniciar, 1000);
       return;
     }
     reiniciar();
@@ -387,13 +362,13 @@
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
   // El valor por defecto no se guarda.
-  const POR_DEFECTO = { tema: 'sistema', atajos: 'estandar', pista: 'si' };
+  const POR_DEFECTO = { tema: 'sistema', atajos: 'si', pista: 'si' };
   const aplicarAjustes = () => {
     raiz.dataset.tema = leer('tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     raiz.dataset.atajos = leer('atajos') || POR_DEFECTO.atajos;
     raiz.dataset.pista = leer('pista') || POR_DEFECTO.pista;
     pintarTema();
-    // Radio: marcado si es el valor guardado. Switch: marcado si vale 'si'.
+    // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
       r.checked = r.value === (leer(r.name) || POR_DEFECTO[r.name]);
     });

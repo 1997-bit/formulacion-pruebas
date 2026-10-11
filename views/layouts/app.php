@@ -41,7 +41,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
     <button class="barra-boton" id="sidebar-alternar" type="button"
             aria-controls="sidebar" aria-expanded="<?= $colapsado ? 'false' : 'true' ?>"
             aria-label="Mostrar u ocultar menú"
-            data-atajo="Mod+b" data-atajo-avanzado="Space e" aria-keyshortcuts="Control+B"
+            data-atajo="Mod+b" aria-keyshortcuts="Control+B"
             data-tooltip="Menú (Ctrl+B)" data-tooltip-lado="abajo" data-tooltip-alinear="inicio">
       <?= Icono::svg('panel-left') ?>
     </button>
@@ -63,7 +63,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
         <?php endforeach; ?>
       </ol>
     </nav>
-    <button class="btn btn-fantasma btn-icono barra-fin" id="tema" type="button" data-atajo-avanzado="Space u b" aria-pressed="false" aria-label="Modo oscuro"
+    <button class="btn btn-fantasma btn-icono barra-fin" id="tema" type="button" aria-pressed="false" aria-label="Modo oscuro"
             data-tooltip="Cambiar a oscuro" data-tooltip-lado="abajo" data-tooltip-alinear="fin">
       <?= Icono::svg('moon', 'icono tema-luna') ?><?= Icono::svg('sun', 'icono tema-sol') ?>
     </button>

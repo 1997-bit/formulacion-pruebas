@@ -4,5 +4,5 @@
   let a = null;
   try { t = localStorage.getItem('tema'); a = localStorage.getItem('atajos'); } catch (e) {}
   document.documentElement.dataset.tema = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.dataset.atajos = a || 'estandar';
+  document.documentElement.dataset.atajos = a || 'si';
 })();
