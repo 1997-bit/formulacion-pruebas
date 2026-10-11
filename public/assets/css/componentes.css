@@ -921,3 +921,27 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 
   @page { margin: 1.5cm; }
 }
+
+/* Atajos: ayuda con ? (app.js) */
+
+kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 1px 6px;
+  border: 1px solid var(--entrada);
+  border-bottom-width: 2px;
+  border-radius: var(--radio-sm);
+  font-family: var(--fuente-mono);
+  font-size: var(--letra-xs);
+  text-align: center;
+}
+.atajos-lista {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin: 12px 0 0;
+  font-size: var(--letra-sm);
+}
+.atajos-lista dt { display: flex; gap: 4px; }
+.atajos-lista dd { margin: 0; }

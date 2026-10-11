@@ -41,6 +41,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
     <button class="barra-boton" id="sidebar-alternar" type="button"
             aria-controls="sidebar" aria-expanded="<?= $colapsado ? 'false' : 'true' ?>"
             aria-label="Mostrar u ocultar menú"
+            data-atajo="Mod+b" aria-keyshortcuts="Control+B"
             data-tooltip="Menú (Ctrl+B)" data-tooltip-lado="abajo" data-tooltip-alinear="inicio">
       <?= Icono::svg('panel-left') ?>
     </button>

@@ -1,4 +1,4 @@
-// Interfaz: sidebar, menús, diálogos, tooltips, tablas editables, totales y tema.
+// Interfaz: sidebar, atajos, menús, diálogos, tooltips, tablas editables, totales y tema.
 (() => {
   const raiz = document.documentElement;
   const sidebar = document.getElementById('sidebar');
@@ -44,11 +44,8 @@
     alternar.addEventListener('click', conmutar);
     fondo.addEventListener('click', () => cerrarMovil());
 
+    // Ctrl+B: data-atajo en el botón.
     document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        conmutar();
-      }
       if (e.key === 'Escape' && movilAbierto()) cerrarMovil();
     });
 
@@ -68,6 +65,92 @@
       sincronizarAria();
     });
     sincronizarAria();
+  }
+
+  // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas, "," = alternativas. Mod = Ctrl o Cmd.
+  // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
+  const ATAJOS = {
+    '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
+  };
+  const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
+  const conAtajo = () => [...document.querySelectorAll('[data-atajo]')].flatMap((el) =>
+    el.dataset.atajo.split(',').map((teclas) => ({
+      teclas: teclas.trim(),
+      texto: el.dataset.atajoTexto || el.dataset.etiqueta || el.getAttribute('aria-label') || el.textContent.trim(),
+      accion: () => (esCampo(el) ? el.focus() : el.click()),
+    })));
+  const todosAtajos = () => [
+    ...conAtajo(),
+    ...Object.entries(ATAJOS).map(([teclas, a]) => ({ teclas, ...a })),
+  ];
+
+  const tecla = (e) => {
+    if (['Shift', 'Control', 'Meta', 'Alt'].includes(e.key) || e.altKey) return null;
+    const k = e.key === ' ' ? 'Space' : e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    return (e.ctrlKey || e.metaKey ? 'Mod+' : '') + k;
+  };
+
+  let pendiente = [];
+  let espera;
+  const reiniciar = () => { pendiente = []; clearTimeout(espera); };
+
+  document.addEventListener('keydown', (e) => {
+    const t = tecla(e);
+    if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
+    const enCampo = esCampo(e.target);
+    // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
+    if (enCampo && !t.startsWith('Mod+')) return;
+    if (!pendiente.length && ['Space', 'enter'].includes(t.toLowerCase()) && e.target.closest('a, button, summary')) return;
+    pendiente.push(t);
+    const secuencia = pendiente.join(' ').toLowerCase();
+    const atajos = todosAtajos();
+    const exacto = atajos.find((a) => a.teclas.toLowerCase() === secuencia);
+    if (exacto) {
+      e.preventDefault();
+      reiniciar();
+      exacto.accion();
+      return;
+    }
+    if (atajos.some((a) => a.teclas.toLowerCase().startsWith(secuencia + ' '))) {
+      e.preventDefault();
+      clearTimeout(espera);
+      espera = setTimeout(reiniciar, 1000);
+      return;
+    }
+    reiniciar();
+  });
+
+  // ?: lista de atajos de la página, armada al abrir.
+  let dialogoAtajos;
+  function ayudaAtajos() {
+    if (!dialogoAtajos) {
+      dialogoAtajos = document.createElement('dialog');
+      dialogoAtajos.className = 'dialogo dialogo-atajos';
+      dialogoAtajos.setAttribute('aria-labelledby', 'atajos-titulo');
+      document.body.append(dialogoAtajos);
+      dialogoAtajos.addEventListener('click', (e) => { if (e.target === dialogoAtajos) dialogoAtajos.close(); });
+    }
+    const titulo = document.createElement('h2');
+    titulo.id = 'atajos-titulo';
+    titulo.textContent = 'Atajos de teclado';
+    const lista = document.createElement('dl');
+    lista.className = 'atajos-lista';
+    const vistos = new Set();
+    todosAtajos().forEach(({ teclas, texto }) => {
+      if (vistos.has(teclas)) return;
+      vistos.add(teclas);
+      const dt = document.createElement('dt');
+      teclas.split(' ').forEach((k) => {
+        const kbd = document.createElement('kbd');
+        kbd.textContent = k.replace('Mod+', 'Ctrl+');
+        dt.append(kbd);
+      });
+      const dd = document.createElement('dd');
+      dd.textContent = texto;
+      lista.append(dt, dd);
+    });
+    dialogoAtajos.replaceChildren(titulo, lista);
+    dialogoAtajos.showModal();
   }
 
   // Menú del usuario: cierra con clic fuera o Escape.
