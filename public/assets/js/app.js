@@ -74,9 +74,8 @@
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
     '/': { texto: 'Ir al filtro', accion: filtro },
-    'j': { texto: 'Fila siguiente', accion: () => marcarFila(1) },
+    'j': { texto: 'Fila siguiente (Enter la abre)', accion: () => marcarFila(1) },
     'k': { texto: 'Fila anterior', accion: () => marcarFila(-1) },
-    'Enter': { texto: 'Abrir la fila marcada', accion: () => document.querySelector('tr[data-marcada] a')?.click() },
     'Mod+Enter': { texto: 'Enviar el formulario', accion: () => document.activeElement?.form?.requestSubmit() },
   };
   const AVANZADOS = {
@@ -88,7 +87,7 @@
   // Nombre de cada grupo en la pista (estilo which-key de LazyVim).
   const GRUPOS = { 'g': 'Ir a', 'Space': 'Líder', 'Space u': 'Interfaz', 'Space q': 'Sesión', 'Space s': 'Buscar' };
 
-  // J/K: marca una fila de la primera tabla con enlaces.
+  // J/K: foco en el enlace de la fila (el lector de pantalla la anuncia; Enter la abre). data-marcada solo pinta.
   function marcarFila(paso) {
     const filas = [...(document.querySelector('.tabla tbody')?.rows ?? [])].filter((f) => f.querySelector('a'));
     if (!filas.length) return;
@@ -96,7 +95,7 @@
     const siguiente = filas[Math.min(Math.max(actual + paso, 0), filas.length - 1)];
     filas[actual]?.removeAttribute('data-marcada');
     siguiente.setAttribute('data-marcada', '');
-    siguiente.scrollIntoView({ block: 'nearest' });
+    siguiente.querySelector('a').focus();
   }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   const deElementos = (atributo) => [...document.querySelectorAll(`[data-${atributo}]`)].flatMap((el) =>
