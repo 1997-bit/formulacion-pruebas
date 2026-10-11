@@ -6,46 +6,16 @@
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
   // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
   const filtro = () => document.querySelector('.filtros .control');
-  const hayFilas = () => document.querySelector('.tabla tbody a');
   const enFormulario = () => document.activeElement?.form;
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', grupo: 'General', accion: () => ayudaAtajos() },
     '/': { texto: 'Ir al filtro', grupo: 'Esta página', si: filtro, accion: () => filtro().focus() },
-    'j': { texto: 'Fila siguiente (Enter la abre)', grupo: 'Esta página', si: hayFilas, accion: () => marcarFila(1) },
-    'k': { texto: 'Fila anterior', grupo: 'Esta página', si: hayFilas, accion: () => marcarFila(-1) },
     'Mod+Enter': { texto: 'Enviar el formulario', grupo: 'Esta página', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
   // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
   const verTecla = (k) => k.replace('Mod+', MAC ? '⌘' : 'Ctrl+').replace(/(^|\+|⌘)(\p{Ll})$/u, (_, a, b) => a + b.toUpperCase());
 
-  // J/K: foco en el enlace de la fila (el lector de pantalla la anuncia; Enter la abre). data-marcada solo pinta.
-  function marcarFila(paso) {
-    const filas = [...(document.querySelector('.tabla tbody')?.rows ?? [])].filter((f) => f.querySelector('a'));
-    if (!filas.length) return;
-    // Parte de la fila con foco (llegó con Tab o clic); si no hay, de la marcada.
-    const conFoco = filas.findIndex((f) => f.contains(document.activeElement));
-    const actual = conFoco >= 0 ? conFoco : filas.findIndex((f) => f.hasAttribute('data-marcada'));
-    filas.forEach((f) => f.removeAttribute('data-marcada'));
-    const siguiente = filas[Math.min(Math.max(actual + paso, 0), filas.length - 1)];
-    siguiente.setAttribute('data-marcada', '');
-    siguiente.querySelector('a').focus();
-  }
-  // Al volver con Atrás, el foco regresa a la última fila (como Gmail). sessionStorage: solo esta pestaña.
-  const claveFila = () => `fila:${location.pathname}${location.search}`;
-  document.addEventListener('focusin', (e) => {
-    const enlace = e.target.closest('.tabla tbody a');
-    if (enlace) try { sessionStorage.setItem(claveFila(), enlace.getAttribute('href')); } catch (err) {}
-  });
-  if (performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
-    let href = null;
-    try { href = sessionStorage.getItem(claveFila()); } catch (err) {}
-    const enlace = href && document.querySelector(`.tabla tbody a[href="${CSS.escape(href)}"]`);
-    if (enlace) {
-      enlace.closest('tr').setAttribute('data-marcada', '');
-      enlace.focus();
-    }
-  }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   // Sin elementos deshabilitados ni escondidos con hidden o inert.
   const deElementos = () => [...document.querySelectorAll('[data-atajo]')]

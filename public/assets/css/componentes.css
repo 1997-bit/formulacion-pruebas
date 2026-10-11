@@ -948,7 +948,6 @@ kbd {
 .atajos-grupo { margin: 16px 0 0; font-size: var(--letra-xs); font-weight: 600; color: var(--tenue-texto); text-transform: uppercase; letter-spacing: 0.04em; }
 .dialogo-atajos { max-height: calc(100dvh - 32px); overflow-y: auto; }
 .dialogo-atajos .acciones { margin-top: 20px; justify-content: flex-end; }
-.tabla tbody tr[data-marcada] { background: var(--acento); box-shadow: inset 3px 0 0 var(--anillo); }
 
 /* Ajustes */
 
