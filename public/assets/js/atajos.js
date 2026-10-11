@@ -2,7 +2,7 @@
 (() => {
   const raiz = document.documentElement;
 
-  // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas, "," = alternativas. Mod = Ctrl o Cmd.
+  // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas. Mod = Ctrl o Cmd.
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
   // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
   const filtro = () => document.querySelector('.filtros .control');
@@ -51,12 +51,11 @@
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
   // Sin elementos deshabilitados ni escondidos con hidden o inert.
   const deElementos = () => [...document.querySelectorAll('[data-atajo]')]
-    .filter((el) => !el.disabled && !el.closest('[hidden], [inert]')).flatMap((el) =>
-    el.dataset.atajo.split(',').map((teclas) => ({
-      teclas: teclas.trim(),
+    .filter((el) => !el.disabled && !el.closest('[hidden], [inert]')).map((el) => ({
+      teclas: el.dataset.atajo,
       texto: el.dataset.atajoTexto || el.dataset.etiqueta || el.getAttribute('aria-label') || el.textContent.trim(),
       accion: () => (esCampo(el) ? el.focus() : el.click()),
-    })));
+    }));
   const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
   // <html data-atajos="no"> (Ajustes): sin atajos de una tecla, solo los de Ctrl (WCAG 2.1.4: dictado por voz).
   const todosAtajos = () => {
@@ -137,7 +136,7 @@
   // Cada elemento con atajo lo muestra: en el tooltip, en aria-keyshortcuts (ARIA no describe secuencias como g c)
   // y en el sidebar con un <kbd> al pasar el mouse. Así se aprenden sin abrir ?.
   document.querySelectorAll('[data-atajo]').forEach((el) => {
-    const teclas = el.dataset.atajo.split(',')[0].trim();
+    const teclas = el.dataset.atajo;
     if (raiz.dataset.atajos === 'no' && !teclas.startsWith('Mod+')) return;
     const visto = teclas.split(' ').map(verTecla).join(' ');
     if (!teclas.includes(' ')) el.setAttribute('aria-keyshortcuts', teclas.replace('Mod+', MAC ? 'Meta+' : 'Control+').replace(/\p{Ll}$/u, (l) => l.toUpperCase()));
