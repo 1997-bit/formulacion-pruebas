@@ -393,6 +393,7 @@
     raiz.dataset.atajos = leer('atajos') || POR_DEFECTO.atajos;
     raiz.dataset.pista = leer('pista') || POR_DEFECTO.pista;
     pintarTema();
+    // Radio: marcado si es el valor guardado. Switch: marcado si vale 'si'.
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
       r.checked = r.value === (leer(r.name) || POR_DEFECTO[r.name]);
     });
@@ -404,11 +405,13 @@
   // Página de Ajustes: cada opción se guarda al marcarla.
   document.addEventListener('change', (e) => {
     if (!e.target.matches('input[data-ajuste]')) return;
-    const { name, value } = e.target;
+    const { name, type, checked } = e.target;
+    const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
     guardar(name, value === POR_DEFECTO[name] ? null : value);
     aplicarAjustes();
     const estado = document.getElementById('ajuste-estado');
-    if (estado) estado.textContent = `Guardado: ${e.target.closest('label').querySelector('span').firstChild.textContent.trim()}.`;
+    const texto = e.target.closest('label').querySelector('span').firstChild.textContent.trim();
+    if (estado) estado.textContent = `Guardado: ${texto}${type === 'checkbox' ? (checked ? ' activada' : ' desactivada') : ''}.`;
   });
   document.querySelector('[data-ver-atajos]')?.addEventListener('click', () => ayudaAtajos());
   window.addEventListener('storage', aplicarAjustes);

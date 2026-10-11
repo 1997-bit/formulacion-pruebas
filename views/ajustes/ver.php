@@ -13,10 +13,12 @@ $opciones = [
         'avanzado' => ['Avanzados', 'Estándar más los de LazyVim: líder Space, H/L páginas, gg/G primera y última fila, 5j baja 5 filas.'],
         'ninguno' => ['Solo con Ctrl', 'Apaga los atajos de una tecla (WCAG 2.1.4). Quedan Ctrl+B, Ctrl+Enter y Esc.'],
     ]],
-    'pista' => ['Pista de teclas', [
-        'si' => ['Mostrar', 'Después de G o Space, una ventana dice qué teclas siguen (which-key de LazyVim).'],
-        'no' => ['Ocultar', 'La secuencia vence a 1 s, como en Vim.'],
-    ]],
+];
+// Switch (role="switch"): marcado = 'si'. Van al final de la tarjeta indicada.
+$interruptores = [
+    'atajos' => [
+        'pista' => ['Pista de teclas', 'Después de G o Space, una ventana dice qué teclas siguen (which-key de LazyVim). Apagada, la secuencia vence a 1 s, como en Vim.'],
+    ],
 ];
 ?>
 <header class="encabezado">
@@ -34,6 +36,12 @@ $opciones = [
         <label class="opcion">
           <input type="radio" name="<?= $nombre ?>" value="<?= $valor ?>" data-ajuste>
           <span><?= $texto ?><?php if ($ayuda !== ''): ?><small><?= $ayuda ?></small><?php endif; ?></span>
+        </label>
+      <?php endforeach; ?>
+      <?php foreach ($interruptores[$nombre] ?? [] as $clave => [$texto, $ayuda]): ?>
+        <label class="ajuste-switch">
+          <span><?= $texto ?><small><?= $ayuda ?></small></span>
+          <input class="switch" type="checkbox" role="switch" name="<?= $clave ?>" value="si" data-ajuste>
         </label>
       <?php endforeach; ?>
     </fieldset>
