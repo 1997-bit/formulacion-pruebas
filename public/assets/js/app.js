@@ -370,5 +370,7 @@
   });
   document.querySelector('[data-ver-atajos]')?.addEventListener('click', () => ayudaAtajos());
   window.addEventListener('storage', aplicarAjustes);
+  // Tema "Sistema": sigue al sistema operativo sin recargar.
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarAjustes);
   aplicarAjustes();
 })();
