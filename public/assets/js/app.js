@@ -70,18 +70,21 @@
   // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas, "," = alternativas. Mod = Ctrl o Cmd.
   // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
   // Modo en <html data-atajos> (Ajustes): estandar, avanzado (más data-atajo-avanzado, estilo LazyVim) o ninguno (solo con Ctrl).
-  const filtro = () => document.querySelector('.filtros .control')?.focus();
+  // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
+  const filtro = () => document.querySelector('.filtros .control');
+  const hayFilas = () => document.querySelector('.tabla tbody a');
+  const enFormulario = () => document.activeElement?.form;
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
-    '/': { texto: 'Ir al filtro', accion: filtro },
-    'j': { texto: 'Fila siguiente (Enter la abre)', accion: () => marcarFila(1) },
-    'k': { texto: 'Fila anterior', accion: () => marcarFila(-1) },
-    'Mod+Enter': { texto: 'Enviar el formulario', accion: () => document.activeElement?.form?.requestSubmit() },
+    '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
+    'j': { texto: 'Fila siguiente (Enter la abre)', si: hayFilas, accion: () => marcarFila(1) },
+    'k': { texto: 'Fila anterior', si: hayFilas, accion: () => marcarFila(-1) },
+    'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
   const AVANZADOS = {
-    'g g': { texto: 'Primera fila', accion: () => marcarFila(-Infinity) },
-    'G': { texto: 'Última fila', accion: () => marcarFila(Infinity) },
-    'Space /': { texto: 'Ir al filtro', accion: filtro },
+    'g g': { texto: 'Primera fila', si: hayFilas, accion: () => marcarFila(-Infinity) },
+    'G': { texto: 'Última fila', si: hayFilas, accion: () => marcarFila(Infinity) },
+    'Space /': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
     'Space s k': { texto: 'Buscar atajos', accion: () => ayudaAtajos() },
   };
   // Nombre de cada grupo en la pista (estilo which-key de LazyVim).
@@ -98,13 +101,15 @@
     siguiente.querySelector('a').focus();
   }
   const esCampo = (el) => el.matches('input, textarea, select, [contenteditable]');
-  const deElementos = (atributo) => [...document.querySelectorAll(`[data-${atributo}]`)].flatMap((el) =>
+  // Sin elementos deshabilitados ni escondidos con hidden o inert.
+  const deElementos = (atributo) => [...document.querySelectorAll(`[data-${atributo}]`)]
+    .filter((el) => !el.disabled && !el.closest('[hidden], [inert]')).flatMap((el) =>
     el.getAttribute(`data-${atributo}`).split(',').map((teclas) => ({
       teclas: teclas.trim(),
       texto: el.dataset.atajoTexto || el.dataset.etiqueta || el.getAttribute('aria-label') || el.textContent.trim(),
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     })));
-  const deObjeto = (objeto) => Object.entries(objeto).map(([teclas, a]) => ({ teclas, ...a }));
+  const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
   const todosAtajos = () => {
     const modo = raiz.dataset.atajos;
     const lista = [...deElementos('atajo'), ...deObjeto(ATAJOS)];
