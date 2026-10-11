@@ -945,6 +945,7 @@ kbd {
 }
 .atajos-lista dt { display: flex; gap: 4px; }
 .atajos-lista dd { margin: 0; }
+.dialogo-atajos .acciones { margin-top: 20px; justify-content: flex-end; }
 .tabla tbody tr[data-marcada] { background: var(--acento); box-shadow: inset 3px 0 0 var(--anillo); }
 
 /* Pista de teclas después de G o Space (app.js) */

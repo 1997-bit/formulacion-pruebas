@@ -204,7 +204,10 @@
       dd.textContent = texto;
       lista.append(dt, dd);
     });
-    dialogoAtajos.replaceChildren(titulo, lista);
+    // Botón visible para cerrar; method="dialog" cierra sin JS.
+    const cerrar = Object.assign(document.createElement('form'), { method: 'dialog', className: 'acciones' });
+    cerrar.append(Object.assign(document.createElement('button'), { className: 'btn btn-secundario', textContent: 'Cerrar', autofocus: true }));
+    dialogoAtajos.replaceChildren(titulo, lista, cerrar);
     dialogoAtajos.showModal();
   }
 
