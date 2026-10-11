@@ -118,11 +118,13 @@
     return modo === 'ninguno' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
   };
 
-  // Letras con su mayúscula: G no es g.
+  // Letras: mayúscula solo con Shift (G no es g). Bloq Mayús no cuenta: con él, g c seguiría siendo g c.
   const tecla = (e) => {
-    if (['Shift', 'Control', 'Meta', 'Alt'].includes(e.key) || e.altKey) return null;
-    const k = e.key === ' ' ? 'Space' : e.key.length === 1 && (e.ctrlKey || e.metaKey) ? e.key.toLowerCase() : e.key;
-    return (e.ctrlKey || e.metaKey ? 'Mod+' : '') + k;
+    if (['Shift', 'Control', 'Meta', 'Alt', 'CapsLock'].includes(e.key) || e.altKey) return null;
+    const mod = e.ctrlKey || e.metaKey;
+    let k = e.key === ' ' ? 'Space' : e.key;
+    if (/^\p{L}$/u.test(k)) k = e.shiftKey && !mod ? k.toUpperCase() : k.toLowerCase();
+    return (mod ? 'Mod+' : '') + k;
   };
 
   let pendiente = [];
