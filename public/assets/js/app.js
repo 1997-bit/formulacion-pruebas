@@ -74,11 +74,11 @@
   const hayFilas = () => document.querySelector('.tabla tbody a');
   const enFormulario = () => document.activeElement?.form;
   const ATAJOS = {
-    '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
-    '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
-    'j': { texto: 'Fila siguiente (Enter la abre)', si: hayFilas, accion: () => marcarFila(1) },
-    'k': { texto: 'Fila anterior', si: hayFilas, accion: () => marcarFila(-1) },
-    'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
+    '?': { texto: 'Ayuda de atajos', grupo: 'General', accion: () => ayudaAtajos() },
+    '/': { texto: 'Ir al filtro', grupo: 'Esta página', si: filtro, accion: () => filtro().focus() },
+    'j': { texto: 'Fila siguiente (Enter la abre)', grupo: 'Esta página', si: hayFilas, accion: () => marcarFila(1) },
+    'k': { texto: 'Fila anterior', grupo: 'Esta página', si: hayFilas, accion: () => marcarFila(-1) },
+    'Mod+Enter': { texto: 'Enviar el formulario', grupo: 'Esta página', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
   // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
@@ -223,26 +223,29 @@
     const titulo = document.createElement('h2');
     titulo.id = 'atajos-titulo';
     titulo.textContent = 'Atajos de teclado';
-    const lista = document.createElement('dl');
-    lista.className = 'atajos-lista';
+    // Grupos: Ir a (g + letra), Esta página (botones de la vista y acciones de lista) y General.
+    const grupos = { 'Ir a': [], 'Esta página': [], 'General': [] };
     const vistos = new Set();
-    todosAtajos().forEach(({ teclas, texto }) => {
-      if (vistos.has(teclas)) return;
-      vistos.add(teclas);
-      const dt = document.createElement('dt');
-      teclas.split(' ').forEach((k) => {
-        const kbd = document.createElement('kbd');
-        kbd.textContent = verTecla(k);
-        dt.append(kbd);
+    todosAtajos().forEach((a) => {
+      if (vistos.has(a.teclas)) return;
+      vistos.add(a.teclas);
+      const grupo = a.grupo ?? (a.teclas.startsWith('g ') ? 'Ir a' : a.teclas.startsWith('Mod+') ? 'General' : 'Esta página');
+      grupos[grupo].push(a);
+    });
+    const secciones = Object.entries(grupos).filter(([, atajos]) => atajos.length).flatMap(([nombre, atajos]) => {
+      const subtitulo = Object.assign(document.createElement('h3'), { className: 'atajos-grupo', textContent: nombre });
+      const lista = Object.assign(document.createElement('dl'), { className: 'atajos-lista' });
+      atajos.forEach(({ teclas, texto }) => {
+        const dt = document.createElement('dt');
+        teclas.split(' ').forEach((k) => dt.append(Object.assign(document.createElement('kbd'), { textContent: verTecla(k) })));
+        lista.append(dt, Object.assign(document.createElement('dd'), { textContent: texto }));
       });
-      const dd = document.createElement('dd');
-      dd.textContent = texto;
-      lista.append(dt, dd);
+      return [subtitulo, lista];
     });
     // Botón visible para cerrar; method="dialog" cierra sin JS.
     const cerrar = Object.assign(document.createElement('form'), { method: 'dialog', className: 'acciones' });
     cerrar.append(Object.assign(document.createElement('button'), { className: 'btn btn-secundario', textContent: 'Cerrar', autofocus: true }));
-    dialogoAtajos.replaceChildren(titulo, lista, cerrar);
+    dialogoAtajos.replaceChildren(titulo, ...secciones, cerrar);
     dialogoAtajos.showModal();
   }
 
