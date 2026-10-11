@@ -14,7 +14,6 @@ $opciones = [
 $interruptores = [
     'atajos' => [
         'atajos' => ['Atajos de una tecla', '? ayuda, / filtro, J/K filas, C crear, G + letra ir a. Apáguelos si usa dictado por voz (WCAG 2.1.4); quedan Ctrl+B y Ctrl+Enter.'],
-        'pista' => ['Pista de teclas', 'Para aprender los atajos: después de G, una ventana dice qué teclas siguen. Todos los atajos: ? o Ver atajos.'],
     ],
 ];
 ?>

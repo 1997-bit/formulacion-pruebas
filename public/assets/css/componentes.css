@@ -950,31 +950,6 @@ kbd {
 .dialogo-atajos .acciones { margin-top: 20px; justify-content: flex-end; }
 .tabla tbody tr[data-marcada] { background: var(--acento); box-shadow: inset 3px 0 0 var(--anillo); }
 
-/* Pista de teclas después de G o Space (app.js) */
-
-.atajos-pista {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 70;
-  min-width: 14rem;
-  padding: 12px 14px;
-  background: var(--flotante);
-  color: var(--flotante-texto);
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-xl);
-  box-shadow: var(--sombra-lg);
-  font-size: var(--letra-sm);
-}
-.atajos-pista dl {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 6px 12px;
-  margin: 8px 0 0;
-}
-.atajos-pista dd { margin: 0; }
-.atajos-pista:empty { display: none; }
-
 /* Ajustes */
 
 .ajuste { padding: 16px 20px; border: 1px solid var(--borde); }

@@ -18,8 +18,6 @@
   // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
   const verTecla = (k) => k.replace('Mod+', MAC ? '⌘' : 'Ctrl+').replace(/(^|\+|⌘)(\p{Ll})$/u, (_, a, b) => a + b.toUpperCase());
-  // Título de la pista según la primera tecla.
-  const GRUPOS = { 'g': 'Ir a' };
 
   // J/K: foco en el enlace de la fila (el lector de pantalla la anuncia; Enter la abre). data-marcada solo pinta.
   function marcarFila(paso) {
@@ -72,35 +70,10 @@
     return (mod ? 'Mod+' : '') + k;
   };
 
-  // La pista sale a los 300 ms (escribir rápido no la hace parpadear) y espera hasta otra tecla, Esc o un clic.
-  // Sin pista (Ajustes), la secuencia vence a 1 s.
+  // Una secuencia (g c) vence a 1 s.
   let pendiente = [];
   let espera;
-  let esperaPista;
-  const reiniciar = () => { pendiente = []; clearTimeout(espera); clearTimeout(esperaPista); pista.replaceChildren(); };
-  const conPista = () => raiz.dataset.pista !== 'no';
-
-  // Pista: qué teclas siguen después de una tecla de grupo.
-  // Vive siempre en la página: una región role="status" anuncia solo los cambios. Vacía no se ve.
-  const pista = Object.assign(document.createElement('div'), { className: 'atajos-pista' });
-  pista.setAttribute('role', 'status');
-  document.body.append(pista);
-  function mostrarPista(secuencia, atajos) {
-    const siguientes = new Map();
-    atajos.forEach(({ teclas, texto }) => {
-      const resto = teclas.startsWith(secuencia + ' ') && teclas.slice(secuencia.length + 1).split(' ');
-      if (resto && !siguientes.has(resto[0])) siguientes.set(resto[0], texto);
-    });
-    const titulo = document.createElement('strong');
-    titulo.textContent = GRUPOS[secuencia] ?? secuencia;
-    const lista = document.createElement('dl');
-    siguientes.forEach((texto, k) => {
-      const dt = document.createElement('dt');
-      dt.append(Object.assign(document.createElement('kbd'), { textContent: verTecla(k) }));
-      lista.append(dt, Object.assign(document.createElement('dd'), { textContent: texto }));
-    });
-    pista.replaceChildren(titulo, lista);
-  }
+  const reiniciar = () => { pendiente = []; clearTimeout(espera); };
 
   document.addEventListener('keydown', (e) => {
     // IME o tecla muerta (´ + a): la tecla es parte de un carácter, no un atajo.
@@ -125,8 +98,7 @@
     }
     if (atajos.some((a) => a.teclas.startsWith(secuencia + ' '))) {
       e.preventDefault();
-      if (conPista()) esperaPista = setTimeout(() => mostrarPista(secuencia, atajos), 300);
-      else espera = setTimeout(reiniciar, 1000);
+      espera = setTimeout(reiniciar, 1000);
       return;
     }
     reiniciar();

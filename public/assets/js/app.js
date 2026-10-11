@@ -196,11 +196,10 @@
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
   // El valor por defecto no se guarda.
-  const POR_DEFECTO = { tema: 'sistema', atajos: 'si', pista: 'si' };
+  const POR_DEFECTO = { tema: 'sistema', atajos: 'si' };
   const aplicarAjustes = () => {
     raiz.dataset.tema = leer('tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     raiz.dataset.atajos = leer('atajos') || POR_DEFECTO.atajos;
-    raiz.dataset.pista = leer('pista') || POR_DEFECTO.pista;
     pintarTema();
     // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
