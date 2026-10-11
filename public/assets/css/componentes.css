@@ -1028,3 +1028,4 @@ kbd {
   font-size: var(--letra-sm);
   cursor: pointer;
 }
+.ajuste > legend + .ajuste-switch { margin-top: 0; padding-top: 0; border-top: 0; }

@@ -8,16 +8,13 @@ $opciones = [
         'light' => ['Claro', ''],
         'dark' => ['Oscuro', ''],
     ]],
-    'atajos' => ['Atajos de teclado', [
-        'estandar' => ['Estándar', 'Los de GitHub, Jira y Linear: ? ayuda, / filtro, J/K filas, C crear, G + letra ir a.'],
-        'avanzado' => ['Avanzados', 'Estándar más los de LazyVim: líder Space, H/L páginas, gg/G primera y última fila, 5j baja 5 filas.'],
-        'ninguno' => ['Solo con Ctrl', 'Apaga los atajos de una tecla (WCAG 2.1.4). Quedan Ctrl+B, Ctrl+Enter y Esc.'],
-    ]],
+    'atajos' => ['Atajos de teclado', []],
 ];
-// Switch (role="switch"): marcado = 'si'. Van al final de la tarjeta indicada.
+// Switch (role="switch"): marcado = 'si'. Van al final de la tarjeta indicada. Salen marcados (el valor por defecto): así no se animan al cargar.
 $interruptores = [
     'atajos' => [
-        'pista' => ['Pista de teclas', 'Después de G o Space, una ventana dice qué teclas siguen (which-key de LazyVim). Apagada, la secuencia vence a 1 s, como en Vim.'],
+        'atajos' => ['Atajos de una tecla', '? ayuda, / filtro, J/K filas, C crear, G + letra ir a (como GitHub, Jira y Linear). Apáguelos si usa dictado por voz (WCAG 2.1.4); quedan Ctrl+B, Ctrl+Enter y Esc.'],
+        'pista' => ['Pista de teclas', 'Después de G, una ventana dice qué teclas siguen.'],
     ],
 ];
 ?>
@@ -41,7 +38,7 @@ $interruptores = [
       <?php foreach ($interruptores[$nombre] ?? [] as $clave => [$texto, $ayuda]): ?>
         <label class="ajuste-switch">
           <span><?= $texto ?><small><?= $ayuda ?></small></span>
-          <input class="switch" type="checkbox" role="switch" name="<?= $clave ?>" value="si" data-ajuste>
+          <input class="switch" type="checkbox" role="switch" name="<?= $clave ?>" value="si" data-ajuste checked>
         </label>
       <?php endforeach; ?>
     </fieldset>
