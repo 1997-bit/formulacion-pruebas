@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
@@ -24,7 +25,7 @@ final class IncidenteServicio
      */
     public static function registrar(int $casoId, array $datos, array $usuario): array
     {
-        $caso = CasoServicio::ver($casoId, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $caso = CasoServicio::ver($casoId, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $asignables = array_column(self::asignables($caso), 'id');
 
@@ -84,7 +85,7 @@ final class IncidenteServicio
      */
     public static function seguimiento(int $id, array $datos, array $usuario): string
     {
-        $incidente = self::ver($id, $usuario) ?? throw new \DomainException('Incidente no encontrado.');
+        $incidente = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $v = new Validador();
         self::validarSeguimiento($v, $d, array_column(self::asignables($incidente), 'id'));

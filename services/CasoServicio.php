@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
@@ -82,7 +83,7 @@ final class CasoServicio
      */
     public static function editar(int $id, array $datos, string $huella, array $usuario): string
     {
-        $caso = self::paraEditar($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $caso = self::paraEditar($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
         self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
@@ -182,7 +183,7 @@ final class CasoServicio
      */
     public static function registrarResultado(int $id, array $datos, array $marcadas, array $archivos, array $usuario): string
     {
-        $caso = self::ver($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $caso = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $tipos = self::tipos($marcadas);
 
