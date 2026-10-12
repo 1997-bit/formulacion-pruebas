@@ -46,9 +46,7 @@ final class IncidenteServicio
         $v->comprobar();
 
         // El bloqueo evita dos códigos iguales; UNIQUE (proyecto_id, codigo) lo respalda.
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        return Conexion::transaccion(function () use ($caso, $casoId, $d, $usuario): array {
             self::exigirPlanAbierto($caso['proyecto_id'], $d);
             $codigo = sprintf('BUG-%03d', IncidenteModelo::siguienteNumero($caso['proyecto_id']));
             $id = IncidenteModelo::crear([
@@ -68,13 +66,9 @@ final class IncidenteServicio
                 'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
                 'creado_por' => $usuario['id'],
             ]);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
 
-        return [$id, $codigo];
+            return [$id, $codigo];
+        });
     }
 
     /**
@@ -97,16 +91,10 @@ final class IncidenteServicio
             'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
             'es_stopper' => (int) ($d['es_stopper'] === '1'),
         ];
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($id, $incidente, $despues, $usuario): void {
             IncidenteModelo::actualizar($id, $despues['estado'], $despues['asignado_id'], $despues['es_stopper']);
             Historial::registrar('incidentes', $id, $incidente, $despues, $usuario['id']);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
 
         return $incidente['codigo'];
     }
