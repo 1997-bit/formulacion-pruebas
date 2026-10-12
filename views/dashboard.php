@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * RF-23. Sin proyecto activo: "Mi trabajo", con una tarjeta por proyecto. Con proyecto activo: su resumen.
+ * RF-23. Sin proyecto activo: "Mi trabajo", una tarjeta por proyecto. Con proyecto activo: su resumen.
  *
  * @var array{total: array<string, int>, proyectos: list<array<string, mixed>>} $avance
  * @var list<array<string, mixed>> $asignados  incidentes abiertos asignados al usuario
@@ -27,7 +27,7 @@ $cifras = [
     ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2'],
     ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0'],
 ];
-// Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre del proyecto. Los stoppers van en la alerta de arriba.
+// Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre. Stoppers en la alerta de arriba.
 $tareas = [];
 foreach ($avance['proyectos'] as $p) {
     foreach ([

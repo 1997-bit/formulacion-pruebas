@@ -15,7 +15,7 @@ use App\Services\RequerimientoServicio;
 // RF-09
 final class ClasesEquivalenciaControlador
 {
-    // Sin requerimiento: la lista de matrices. Con requerimiento: la matriz de solo lectura.
+    // Sin requerimiento: lista de matrices. Con requerimiento: matriz de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
@@ -83,7 +83,7 @@ final class ClasesEquivalenciaControlador
     }
 
     /**
-     * Columnas name="columna[]" a filas, en el orden de la pantalla.
+     * name="columna[]" → filas, en el orden de la pantalla.
      *
      * @param list<string> $columnas
      * @return list<array<string, string>>

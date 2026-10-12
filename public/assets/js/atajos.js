@@ -2,12 +2,12 @@
 (() => {
   const raiz = document.documentElement;
 
-  // Atajos. data-atajo="g c": espacio = secuencia, "+" = juntas. Mod = Ctrl o Cmd.
-  // Elemento con data-atajo: click(), o focus() si es campo. Sin elemento: ATAJOS.
-  // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
+  // data-atajo="g c". Espacio = secuencia, "+" = juntas, Mod = Ctrl o Cmd.
+  // Con elemento: click(), o focus() si es campo. Sin elemento: ATAJOS.
+  // si: el atajo existe solo si hay dónde actuar. Sin si, preventDefault roba la tecla sin hacer nada, como / en Firefox.
   const filtro = () => document.querySelector('.filtros .control');
   const enFormulario = () => document.activeElement?.form;
-  // j / k: fila siguiente o anterior de una tabla, tablero o lista del panel; o abre la fila. Como en Jira y Gmail.
+  // j / k: fila siguiente o anterior en tabla, tablero o panel. o abre la fila. Como Jira y Gmail.
   const filas = () => [...document.querySelectorAll('.tabla tbody tr, .tablero-lista > li, .tareas li')].filter((f) => f.querySelector('a'));
   const filaActual = () => filas().find((f) => f.contains(document.activeElement));
   const mover = (paso) => {
@@ -24,9 +24,9 @@
     '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
     'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
-  // Cómo se ven las teclas: Mod+b → Ctrl+B, o ⌘B en Mac; g → G.
+  // Formato: Mod+b → Ctrl+B, o ⌘B en Mac. g → G.
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
-  // Letra sola al final en mayúscula: b → B, pero Enter queda igual.
+  // Letra sola final en mayúscula: b → B. Enter igual.
   const mayus = (k) => k.replace(/(^|\+|⌘)(\p{Ll})$/u, (_, a, b) => a + b.toUpperCase());
   const verTecla = (k) => mayus(k.replace('Mod+', MAC ? '⌘' : 'Ctrl+'));
 
@@ -39,13 +39,13 @@
       accion: () => (esCampo(el) ? el.focus() : el.click()),
     }));
   const deObjeto = (objeto) => Object.entries(objeto).filter(([, a]) => !a.si || a.si()).map(([teclas, a]) => ({ teclas, ...a }));
-  // <html data-atajos="no"> (Ajustes): sin atajos de una tecla, solo los de Ctrl (WCAG 2.1.4: dictado por voz).
+  // data-atajos="no": solo atajos con Ctrl. WCAG 2.1.4, dictado por voz.
   const todosAtajos = () => {
     const lista = [...deElementos(), ...deObjeto(ATAJOS)];
     return raiz.dataset.atajos === 'no' ? lista.filter((a) => a.teclas.startsWith('Mod+')) : lista;
   };
 
-  // Letras en minúscula: con Bloq Mayús, g c sigue siendo g c.
+  // Minúsculas: con Bloq Mayús, g c sigue siendo g c.
   const tecla = (e) => {
     if (['Shift', 'Control', 'Meta', 'Alt', 'CapsLock'].includes(e.key) || e.altKey) return null;
     const mod = e.ctrlKey || e.metaKey;
@@ -60,12 +60,12 @@
   const reiniciar = () => { pendiente = []; clearTimeout(espera); };
 
   document.addEventListener('keydown', (e) => {
-    // IME o tecla muerta (´ + a): la tecla es parte de un carácter, no un atajo.
+    // IME o tecla muerta, como ´ + a: es parte de un carácter, no un atajo.
     if (e.isComposing || e.key === 'Dead') return;
     const t = tecla(e);
     if (!t || e.defaultPrevented || document.querySelector('dialog[open]')) return;
     if (t === 'Escape' && pendiente.length) { reiniciar(); return; }
-    // Tecla sostenida a mitad de secuencia: la repetición no es otra tecla.
+    // Tecla sostenida en una secuencia: la repetición no cuenta.
     if (e.repeat && pendiente.length) { e.preventDefault(); return; }
     // En un campo solo cuentan las combinaciones con Ctrl. Space y Enter conservan su uso en botones y enlaces.
     if (esCampo(e.target) && !t.startsWith('Mod+')) return;
@@ -89,9 +89,9 @@
   });
   document.addEventListener('pointerdown', () => { if (pendiente.length) reiniciar(); });
 
-  // Cada elemento con atajo lo muestra: en el tooltip, en aria-keyshortcuts (ARIA no describe secuencias como g c)
-  // y en el sidebar con un <kbd> al pasar el mouse. Así se aprenden sin abrir ?.
-  // Con data-atajos="no", el CSS esconde el <kbd> y el tooltip, aunque se apaguen en otra pestaña.
+  // Cada atajo se ve en el tooltip, en aria-keyshortcuts y en un <kbd> del sidebar con hover.
+  // ARIA no describe secuencias como g c. Se aprenden sin abrir ?.
+  // data-atajos="no": el CSS esconde <kbd> y tooltip, aunque se apaguen en otra pestaña.
   document.querySelectorAll('[data-atajo]').forEach((el) => {
     const teclas = el.dataset.atajo;
     const visto = teclas.split(' ').map(verTecla).join(' ');
@@ -104,7 +104,7 @@
     }
   });
 
-  // Grupos por la tecla: Ir a (g + letra), General (? y Ctrl) y Esta página (el resto).
+  // Grupos. Ir a: g + letra. General: ? y Ctrl. Esta página: el resto.
   function seccionesAtajos() {
     const grupos = { 'Ir a': [], 'Esta página': [], 'General': [] };
     const vistos = new Set();
@@ -127,7 +127,7 @@
     return secciones;
   }
 
-  // ?: lista de atajos de la página, armada al abrir.
+  // ?: atajos de la página, armados al abrir.
   let dialogoAtajos;
   function ayudaAtajos() {
     if (!dialogoAtajos) {
@@ -140,7 +140,7 @@
     titulo.id = 'atajos-titulo';
     titulo.textContent = 'Atajos de teclado';
     const secciones = seccionesAtajos();
-    // Botón visible para cerrar; method="dialog" cierra sin JS.
+    // Botón para cerrar. method="dialog" cierra sin JS.
     const cerrar = Object.assign(document.createElement('form'), { method: 'dialog', className: 'acciones' });
     cerrar.append(Object.assign(document.createElement('button'), { className: 'btn btn-secundario', textContent: 'Cerrar', autofocus: true }));
     dialogoAtajos.replaceChildren(titulo, ...secciones, cerrar);
@@ -148,8 +148,8 @@
   }
   document.querySelector('[data-ver-atajos]')?.addEventListener('click', () => ayudaAtajos());
 
-  // Paleta de comandos (Ctrl/⌘+K). Las opciones fijas vienen del servidor (partials/paleta.php).
-  // Al abrir se suman Recientes (localStorage) y Esta página (botones del encabezado y elementos con atajo).
+  // Paleta, Ctrl/⌘+K. Opciones fijas del servidor, partials/paleta.php.
+  // Al abrir suma Recientes, de localStorage, y Esta página: botones del encabezado y elementos con atajo.
   const paleta = document.getElementById('paleta');
   let abrirPaleta = () => {};
   if (paleta) {
@@ -239,9 +239,9 @@
     });
   }
 
-  // Ajustes → Accesibilidad: la misma lista, en la página. Cambia al apagar los atajos de una tecla.
+  // Ajustes → Accesibilidad: la misma lista. Cambia al apagar los atajos de una tecla.
   const listaAtajos = document.querySelector('[data-lista-atajos]');
-  // Los de otras pantallas no están en esta página: van fijos, al final.
+  // Atajos de otras pantallas: fijos, al final.
   const OTRAS = [
     ['c', 'Listas: crear'], ['/', 'Listas: ir al filtro'], ['j', 'Listas: fila siguiente; caso: el siguiente'],
     ['k', 'Listas: fila anterior; caso: el anterior'], ['o', 'Listas: abrir la fila'], ['e', 'Caso: editar'],

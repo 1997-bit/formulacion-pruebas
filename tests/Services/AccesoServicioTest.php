@@ -145,7 +145,7 @@ final class AccesoServicioTest extends BaseDatos
         $this->assertSame([$proyecto], $vigente['proyectos'] ?? null);
     }
 
-    // RF-02: el registro público nunca crea admin.
+    // RF-02. El registro público nunca crea admin.
     public function testRegistrarCreaTester(): void
     {
         $usuario = uniqid('reg', true);

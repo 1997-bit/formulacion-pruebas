@@ -48,7 +48,7 @@
       if (e.key === 'Escape' && movilAbierto()) cerrarMovil();
     });
 
-    // Colapsado: abrir un grupo expande el sidebar.
+    // Sidebar colapsado: abrir un grupo lo expande.
     sidebar.querySelectorAll('.sidebar-desplegable > summary').forEach((summary) => {
       summary.addEventListener('click', (e) => {
         if (escritorio.matches && colapsado()) {
@@ -59,7 +59,7 @@
       });
     });
 
-    // Ajustes → Apariencia: el radio del menú lateral.
+    // Ajustes → Apariencia: radio del menú lateral.
     document.addEventListener('change', (e) => {
       if (e.target.matches('input[name="sidebar"][data-ajuste]')) fijarColapsado(e.target.value === 'colapsado');
     });
@@ -89,14 +89,14 @@
     const dialogo = document.getElementById(boton.dataset.abrirDialogo);
     boton.addEventListener('click', () => dialogo?.showModal());
   });
-  // Todo <dialog> cierra con clic en el velo, no en el relleno.
+  // <dialog> cierra con clic en el velo, no en el relleno.
   document.addEventListener('click', (e) => {
     if (!(e.target instanceof HTMLDialogElement)) return;
     const r = e.target.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });
 
-  // Aviso flotante: se cierra a los 5 s o con ✕. Con el mouse o el foco encima, espera.
+  // Aviso flotante: cierra a los 5 s o con ✕. Espera con mouse o foco encima.
   const aviso = document.querySelector('.aviso-flotante');
   if (aviso) {
     const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
@@ -104,10 +104,10 @@
     aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
   }
 
-  // Error de validación: el foco va al primer campo marcado.
+  // Error de validación: foco al primer campo marcado.
   document.querySelector('.alerta-error') && document.querySelector('[aria-invalid="true"]')?.focus();
 
-  // Un envío por form: el segundo clic no hace nada. Volver con Atrás lo libera.
+  // Un envío por form. Atrás lo libera.
   document.addEventListener('submit', (e) => {
     const form = e.target;
     if (form.method === 'dialog' || e.submitter?.formMethod === 'dialog') return;
@@ -122,7 +122,7 @@
     });
   });
 
-  // Cambios sin guardar en un form POST: el navegador pregunta antes de salir.
+  // Form POST sin guardar: el navegador pregunta antes de salir.
   let sinGuardar = false;
   document.addEventListener('input', (e) => { if (e.target.form?.method === 'post') sinGuardar = true; });
   document.addEventListener('submit', () => { sinGuardar = false; });
@@ -136,7 +136,7 @@
   document.addEventListener('pointermove', mostrarTooltips);
   document.addEventListener('focusin', mostrarTooltips);
 
-  // data-agregar-fila="tbody" copia <template id="tbody-fila">; data-quitar-fila borra. Siempre queda una.
+  // data-agregar-fila="tbody" copia <template id="tbody-fila">. data-quitar-fila borra. Mínimo 1 fila.
   document.addEventListener('click', (e) => {
     const agregar = e.target.closest('[data-agregar-fila]');
     if (agregar) {
@@ -158,7 +158,7 @@
     }
   });
 
-  // Totales en vivo, solo para ver: el servidor recalcula. data-suma, data-promedio y data-porcentaje.
+  // Totales en vivo, solo visuales: el servidor recalcula. data-suma, data-promedio, data-porcentaje.
   function calcular() {
     document.querySelectorAll('output[data-suma], output[data-promedio]').forEach((salida) => {
       const grupo = salida.dataset.suma ?? salida.dataset.promedio;
@@ -173,7 +173,7 @@
       const fila = salida.closest('tr');
       const total = fila.querySelector('[data-parte="total"]')?.value ?? '';
       const cubiertos = fila.querySelector('[data-parte="cubiertos"]')?.value ?? '';
-      // Mismo redondeo que CoberturaServicio::porcentaje(): multiplicar antes de dividir.
+      // Redondeo de CoberturaServicio::porcentaje(): multiplica antes de dividir.
       const valido = /^\d+$/.test(total) && /^\d+$/.test(cubiertos) && Number(total) > 0 && Number(cubiertos) <= Number(total);
       const porcentaje = valido ? Math.round((Number(cubiertos) * 100) / Number(total)) : 0;
       salida.textContent = valido ? `${porcentaje} %` : '—';
@@ -184,7 +184,7 @@
   document.addEventListener('input', calcular);
   calcular();
 
-  // Tablero: soltar una tarjeta en otra columna pulsa su botón "Mover a" de esa columna.
+  // Tablero: soltar en otra columna pulsa su botón "Mover a".
   let arrastrada = null;
   const columnaDe = (e) => (e.target instanceof Element ? e.target.closest('[data-columna-estado]') : null);
   document.addEventListener('dragstart', (e) => {
@@ -212,7 +212,7 @@
     document.querySelectorAll('.soltar').forEach((c) => c.classList.remove('soltar'));
   });
 
-  // Recientes: el caso o incidente abierto se guarda (5 como máximo). El panel y la paleta los muestran.
+  // Recientes: caso o incidente abierto, máximo 5. Para el panel y la paleta.
   const marca = document.querySelector('[data-reciente]');
   let recientes = [];
   try { recientes = JSON.parse(localStorage.getItem('recientes')) || []; } catch (e) {}
@@ -238,7 +238,7 @@
     boton.addEventListener('click', () => window.print());
   });
 
-  // data-desde="id-inicio": la fecha final no puede ser anterior.
+  // data-desde="id-inicio": fecha final no anterior.
   document.querySelectorAll('input[data-desde]').forEach((fin) => {
     const inicio = document.getElementById(fin.dataset.desde);
     if (!inicio) return;
@@ -247,7 +247,7 @@
     ajustar();
   });
 
-  // data-cuando="nombre=valor": se ve y se envía solo si esa opción está marcada.
+  // data-cuando="nombre=valor": visible y enviado solo con esa opción marcada.
   const mostrarSegunMarcado = () => {
     document.querySelectorAll('[data-cuando]').forEach((bloque) => {
       const [nombre, valor] = bloque.dataset.cuando.split('=');
@@ -268,7 +268,7 @@
     });
   });
 
-  // Tema y atajos: localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
+  // Tema y atajos en localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
   const botonTema = document.getElementById('tema');
   const pintarTema = () => {
     if (!botonTema) return;
@@ -285,7 +285,7 @@
   const aplicarAjustes = () => {
     aplicarPreferencias();
     pintarTema();
-    // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
+    // Radio: marcado si es el valor guardado. Switch value="si": marcado si vale 'si'.
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
       r.checked = r.value === valorAjuste(r.name);
     });
@@ -294,7 +294,7 @@
     guardar('tema', raiz.dataset.tema === 'dark' ? 'light' : 'dark');
     aplicarAjustes();
   });
-  // Página de Ajustes: cada opción se guarda al marcarla.
+  // Ajustes: cada opción se guarda al marcarla.
   document.addEventListener('change', (e) => {
     if (!e.target.matches('input[data-ajuste]')) return;
     const { name, type, checked } = e.target;
@@ -304,7 +304,7 @@
     document.getElementById('ajuste-estado').textContent = 'Guardado.';
   });
   window.addEventListener('storage', aplicarAjustes);
-  // Tema "Sistema": sigue al sistema operativo sin recargar.
+  // Tema "Sistema": sigue al SO sin recargar.
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarAjustes);
   aplicarAjustes();
 })();

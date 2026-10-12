@@ -1,4 +1,4 @@
-/* Variables de diseño. --x es fondo; --x-texto, lo que va encima. */
+/* Variables de diseño. --x: fondo. --x-texto: lo de encima. */
 
 /* Inter local, sin internet. */
 @font-face {
@@ -52,7 +52,7 @@
   --aviso-texto: #111111;
   --info: #1A5AFF;                                                  /* En progreso */
   --info-texto: #FFFFFF;
-  /* Texto sobre el fondo; --peligro y --exito son fondos. */
+  /* Texto sobre fondo. --peligro y --exito son fondos. */
   --error: light-dark(#C4262C, oklch(70% 0.16 25));
   --correcto: light-dark(#1E7A4C, oklch(78% 0.15 155));
 
@@ -98,7 +98,7 @@
   --fuente: "Inter", system-ui, sans-serif;
   --fuente-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* Texto en rem: crece 200 % con el zoom. Títulos fluidos con vw. */
+  /* rem: crece 200 % con zoom. Títulos fluidos con vw. */
   --letra-xs: 0.75rem;
   --letra-sm: 0.875rem;
   --letra-base: 1rem;

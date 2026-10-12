@@ -15,7 +15,7 @@ use App\Services\RequerimientoServicio;
 // RF-10
 final class ValorLimiteControlador
 {
-    // Sin requerimiento: la lista de análisis. Con requerimiento: el análisis de solo lectura.
+    // Sin requerimiento: lista de análisis. Con requerimiento: análisis de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
@@ -83,7 +83,7 @@ final class ValorLimiteControlador
     }
 
     /**
-     * Columnas name="columna[]" a filas, en el orden de la pantalla.
+     * name="columna[]" → filas, en el orden de la pantalla.
      *
      * @param list<string> $columnas
      * @return list<array<string, string>>

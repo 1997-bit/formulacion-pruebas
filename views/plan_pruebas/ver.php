@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 6 (RF-13) de solo lectura e imprimible.
+ * Formulario 6, RF-13, solo lectura e imprimible.
  *
  * @var array<string, mixed> $proyecto
  * @var ?array<string, mixed> $plan

@@ -9,8 +9,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Detalle de la paleta: la prueba a la izquierda, con el resultado para anotar; los datos a la derecha.
- * Al imprimir es el formulario 1 (RF-08): una columna, sin el form del resultado.
+ * Detalle de la paleta. Prueba y resultado a la izquierda, datos a la derecha.
+ * Al imprimir: formulario 1, RF-08. Una columna, sin el form del resultado.
  *
  * @var array<string, mixed> $caso  con evidencias
  * @var bool $editable

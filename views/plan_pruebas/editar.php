@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 6 (RF-13) para llenar o editar, como en la paleta.
+ * Formulario 6, RF-13, llenar o editar, como en la paleta.
  *
  * @var array<string, mixed> $proyecto
  * @var bool $nuevo

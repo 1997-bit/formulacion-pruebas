@@ -36,8 +36,8 @@ final class Historial
     ];
 
     /**
-     * Una fila por campo cambiado, en un INSERT. Va en la transacción del UPDATE: si falla, el registro no cambia.
-     * Casos: los campos de CAMPOS. Incidentes y plan: los que trae $despues.
+     * Una fila por campo cambiado, un INSERT. En la transacción del UPDATE: si falla, nada cambia.
+     * Casos: campos de CAMPOS. Incidentes y plan: los de $despues.
      *
      * @param array<string, mixed> $antes
      * @param array<string, mixed> $despues
@@ -62,7 +62,7 @@ final class Historial
      */
     public static function deCaso(int $casoId): array
     {
-        // 'usuario' no es un catálogo: guarda el id y el historial muestra el nombre.
+        // 'usuario' no es catálogo: guarda el id, el historial muestra el nombre.
         $nombres = [];
         $nombreUsuario = static function (?string $valor) use (&$nombres): string {
             if ($valor === null) {

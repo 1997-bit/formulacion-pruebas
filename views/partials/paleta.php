@@ -5,8 +5,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Paleta de comandos (Ctrl/⌘+K, atajos.js). PHP escribe las opciones fijas; JS suma Recientes y Esta página, y filtra.
- * Patrón ARIA combobox: el foco queda en el campo, la opción activa va en aria-activedescendant.
+ * Paleta, Ctrl/⌘+K, atajos.js. PHP: opciones fijas. JS: Recientes, Esta página y filtro.
+ * ARIA combobox: foco en el campo, opción activa en aria-activedescendant.
  *
  * @var array{rol: int} $usuario
  * @var list<array{id: int, nombre: string}> $proyectos
@@ -14,7 +14,7 @@ use App\Helpers\Icono;
 
 $rol = $usuario['rol'];
 $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
-// [grupo, texto, ruta o acción de JS]. Sin íconos: la paleta va en cada página y cada SVG pesa.
+// [grupo, texto, ruta o acción JS]. Sin íconos: va en cada página y cada SVG pesa.
 $opciones = [];
 foreach (require RAIZ . '/config/menu.php' as $grupo) {
     if (!$permitido($grupo)) {

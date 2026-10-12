@@ -15,7 +15,7 @@ use App\Services\TablaDecisionServicio;
 // RF-11
 final class TablaDecisionControlador
 {
-    // Sin requerimiento: la lista de tablas. Con requerimiento: la tabla de solo lectura.
+    // Sin requerimiento: lista de tablas. Con requerimiento: tabla de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
@@ -90,8 +90,8 @@ final class TablaDecisionControlador
     }
 
     /**
-     * condicion[i], condicion_regla[i][r], accion[i] y accion_regla[i][r] a la tabla del servicio.
-     * Una casilla sin marcar no llega: es "-".
+     * condicion[i], condicion_regla[i][r], accion[i] y accion_regla[i][r] → tabla del servicio.
+     * Casilla sin marcar no llega: vale "-".
      *
      * @return array{condiciones: list<array{texto: string, reglas: list<string>}>, acciones: list<array{texto: string, reglas: list<string>}>}
      */

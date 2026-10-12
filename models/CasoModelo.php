@@ -24,8 +24,8 @@ final class CasoModelo
     }
 
     /**
-     * Una página. Orden del índice (proyecto_id, sigla, numero): sin filesort.
-     * La subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
+     * Una página. Orden del índice proyecto_id, sigla, numero: sin filesort.
+     * La subconsulta lee solo el índice. El resto, 20 filas. #107.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
@@ -48,7 +48,7 @@ final class CasoModelo
     }
 
     /**
-     * Por código exacto, en los proyectos permitidos. Varios si el código se repite entre proyectos (#111).
+     * Por código exacto en los proyectos permitidos. Varios si se repite entre proyectos, #111.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -68,7 +68,7 @@ final class CasoModelo
     }
 
     /**
-     * Tablero y cronograma: sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
+     * Tablero y cronograma. Sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
@@ -138,7 +138,7 @@ final class CasoModelo
 
     /**
      * Caso anterior y siguiente del mismo proyecto, en el orden de la lista.
-     * OR en vez de (sigla, numero) > (?, ?): así usa el índice único y no ordena (filesort).
+     * OR y no (sigla, numero) > (?, ?): usa el índice único, sin filesort.
      *
      * @param array<string, mixed> $caso
      * @return array{0: ?array<string, mixed>, 1: ?array<string, mixed>}
@@ -180,7 +180,7 @@ final class CasoModelo
     }
 
     /**
-     * Dentro de una transacción: los valores de antes para el historial.
+     * En transacción. Valores de antes para el historial.
      *
      * @return array<string, mixed>|null
      */
@@ -251,7 +251,7 @@ final class CasoModelo
     }
 
     /**
-     * RF-22: los filtros se suman al permiso. Solo entran los filtros usados.
+     * RF-22. Filtros usados + permiso.
      *
      * @param list<int>|null $proyectos
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros

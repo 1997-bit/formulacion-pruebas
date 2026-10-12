@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Medium;
 use Tests\Apoyo\BaseDatos;
 
-// Tablas temporales: no hacen COMMIT implícito y el ROLLBACK las vacía.
+// Tablas temporales: sin COMMIT implícito, el ROLLBACK las vacía.
 #[CoversClass(FilasModelo::class)]
 #[Medium]
 final class FilasModeloTest extends BaseDatos
@@ -62,7 +62,7 @@ final class FilasModeloTest extends BaseDatos
         $this->assertSame([['a' => 1, 'b' => 'x'], ['a' => 2, 'b' => '0'], ['a' => 3, 'b' => 'z']], $this->insertadas());
     }
 
-    // #98: autor marca qué filas se escribieron.
+    // #98. autor marca las filas escritas.
     public function testSincronizarSinCambiosNoEscribe(): void
     {
         $this->sincInicial();

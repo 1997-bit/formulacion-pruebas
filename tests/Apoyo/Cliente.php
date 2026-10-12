@@ -43,7 +43,7 @@ final class Cliente
         return $m[1] ?? throw new \LogicException("Sin token CSRF en {$ruta}.");
     }
 
-    // Id de la sesión; null si no hay cookie.
+    // Id de sesión. null sin cookie.
     public function sesion(): ?string
     {
         foreach (curl_getinfo($this->curl, CURLINFO_COOKIELIST) as $linea) {

@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\ValorLimiteServicio;
 
 /**
- * Formulario 3 (RF-10) de solo lectura. Al imprimir es la plantilla de la guía.
+ * Formulario 3, RF-10, solo lectura. Al imprimir: plantilla de la guía.
  *
  * @var array<string, mixed> $requerimiento
  * @var list<array<string, mixed>> $filas

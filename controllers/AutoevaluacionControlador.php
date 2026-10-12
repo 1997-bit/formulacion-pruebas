@@ -14,11 +14,11 @@ use App\Services\AutoevaluacionServicio;
 // RF-15
 final class AutoevaluacionControlador
 {
-    // Sin proyecto: la lista de proyectos. Con proyecto: la evaluación propia y los promedios del equipo.
+    // Sin proyecto: lista de proyectos. Con proyecto: evaluación propia y promedios del equipo.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        // Sin ?proyecto: el proyecto activo del sidebar.
+        // Sin ?proyecto: el activo del sidebar.
         $id = $_GET['proyecto'] ?? $usuario['activo'];
         if ($id === null) {
             Vista::pagina('autoevaluacion/listar', [
@@ -95,7 +95,7 @@ final class AutoevaluacionControlador
     }
 
     /**
-     * name="campo[aspecto]" a aspecto => texto; lo que no sea texto queda vacío.
+     * name="campo[aspecto]" → aspecto => texto. Lo que no es texto queda vacío.
      *
      * @return array<int|string, string>
      */

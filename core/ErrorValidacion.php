@@ -17,7 +17,7 @@ final class ErrorValidacion extends \RuntimeException
     }
 
     /**
-     * Un UNIQUE repetido (1062) se muestra como error del campo, no como 500 (#101). Lo demás sigue igual.
+     * UNIQUE repetido, 1062: error del campo, no 500. #101. Lo demás igual.
      *
      * @param array<string, string> $errores
      */
@@ -26,7 +26,7 @@ final class ErrorValidacion extends \RuntimeException
         return ($e->errorInfo[1] ?? null) === 1062 ? new self($errores) : $e;
     }
 
-    // Al borrar: otra tabla lo usa (llave foránea).
+    // Al borrar: otra tabla lo usa por foreign key.
     public static function esLlaveForanea(\PDOException $e): bool
     {
         return $e->getCode() === '23000';

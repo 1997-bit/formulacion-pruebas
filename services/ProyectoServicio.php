@@ -11,7 +11,7 @@ use App\Models\PlanModelo;
 use App\Models\ProyectoModelo;
 use App\Models\UsuarioModelo;
 
-// Proyectos y miembros (7.1). Miembros: solo testers; el admin ya ve todo.
+// Proyectos y miembros, IR 7.1. Miembros: solo testers. El admin ya ve todo.
 final class ProyectoServicio
 {
     /**

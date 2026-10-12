@@ -7,7 +7,7 @@ namespace App\Models;
 use App\Config\Conexion;
 use App\Core\ErrorValidacion;
 
-// Solo porUsuario() lee la clave: es para entrar.
+// Solo porUsuario() lee la clave, para entrar.
 final class UsuarioModelo
 {
     /** @return array<string, mixed>|null */
@@ -20,7 +20,7 @@ final class UsuarioModelo
     }
 
     /**
-     * Una consulta por petición: el usuario y sus proyectos (#109, #110).
+     * Una consulta por petición: usuario y proyectos. #109, #110.
      *
      * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int, proyectos: list<int>}|null
      */
@@ -106,7 +106,7 @@ final class UsuarioModelo
         return (int) Conexion::pdo()->lastInsertId();
     }
 
-    // Clave null: no la cambia. Una clave o un rol nuevo sube sesion_version; va primero porque compara el rol de antes.
+    // Clave null: no cambia. Clave o rol nuevo sube sesion_version. Va primero: compara con el rol de antes.
     public static function actualizar(int $id, string $nombre, string $usuario, ?string $clave, int $rol): void
     {
         $sql = Conexion::pdo()->prepare(
@@ -121,7 +121,7 @@ final class UsuarioModelo
         Conexion::pdo()->prepare('UPDATE usuarios SET clave = ? WHERE id = ?')->execute([$clave, $id]);
     }
 
-    // FOR UPDATE: dentro de una transacción, otro cambio de rol espera a que esta termine.
+    // FOR UPDATE en transacción: otro cambio de rol espera.
     public static function contarAdmins(): int
     {
         return (int) Conexion::pdo()->query('SELECT COUNT(*) FROM (SELECT id FROM usuarios WHERE rol = 1 FOR UPDATE) a')->fetchColumn();

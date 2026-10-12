@@ -27,7 +27,7 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'error' => $errores[$nombre] ?? '',
     'requerido' => true,
 ]);
-// Radios de un catálogo; error en el fieldset (RNF-07).
+// Radios de catálogo. Error en el fieldset, RNF-07.
 $radios = function (string $nombre, string $legenda) use ($datos, $errores): string {
     $error = $errores[$nombre] ?? '';
     $html = '<fieldset class="grupo"' . ($error !== '' ? ' aria-describedby="f-' . $nombre . '-error"' : '') . '>'

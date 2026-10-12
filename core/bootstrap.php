@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Autoloader propio (App\Core\Env -> core/Env.php) y .env.
+// Autoloader propio y .env. App\Core\Env → core/Env.php.
 spl_autoload_register(function (string $clase): void {
     if (!str_starts_with($clase, 'App\\')) {
         return;
@@ -17,5 +17,5 @@ spl_autoload_register(function (string $clase): void {
 
 App\Core\Env::cargar(RAIZ . '/.env');
 
-// La base usa la misma zona (Conexion.php).
+// Misma zona horaria en la base, Conexion.php.
 date_default_timezone_set(App\Core\Env::get('APP_ZONA', 'America/Panama'));

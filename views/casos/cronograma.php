@@ -9,7 +9,7 @@ use App\Services\CasoServicio;
 
 /**
  * Gantt de un mes: una fila por caso, de fecha_inicio a fecha_fin, agrupadas por requerimiento.
- * Grid CSS: la columna 1 es el código; las demás, un día cada una. Cada celda lleva su fila: la línea de hoy se cruza con las barras. Sin JS.
+ * Grid CSS. Columna 1: código. Demás: un día cada una. Cada celda lleva su fila: la línea de hoy cruza las barras. Sin JS.
  *
  * @var list<array<string, mixed>> $casos  CasoModelo::sinPaginar() con el rango del mes
  * @var DateTimeImmutable $mes  primer día
@@ -32,7 +32,7 @@ foreach ($casos as $c) {
     $grupos[$c['proyecto'] . ' · ' . $c['requerimiento']][] = $c;
 }
 $filas = count($casos) + count($grupos) + 1;
-// Símbolo por estado: una barra corta no cabe el texto, y el color no es la única señal (RNF-07).
+// Símbolo por estado: una barra corta no cabe texto, y el color no basta. RNF-07.
 $simbolos = [0 => '!', 1 => '✓', 2 => '✗'];
 $fila = 1;
 ?>

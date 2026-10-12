@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// cobertura_blanca: una fila por métrica, sin orden. Quién guardó y el conteo van por FilasModelo.
+// cobertura_blanca. Una fila por métrica, sin orden. Autor y conteo en FilasModelo.
 final class CoberturaModelo
 {
     /** @return array<int, array<string, mixed>> metrica => fila */

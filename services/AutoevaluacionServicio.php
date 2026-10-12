@@ -12,7 +12,7 @@ use App\Models\AutoevaluacionModelo;
 use App\Models\ProyectoModelo;
 use App\Models\RequerimientoModelo;
 
-// RF-15. Formulario 8: cada miembro se evalúa y evalúa a un compañero, de 1 a 5 por aspecto.
+// RF-15, formulario 8. Cada miembro se evalúa y evalúa a un compañero, 1 a 5 por aspecto.
 final class AutoevaluacionServicio
 {
     /**
@@ -49,7 +49,7 @@ final class AutoevaluacionServicio
         return $proyecto;
     }
 
-    // El admin ve los promedios pero no llena: no es miembro.
+    // El admin ve promedios pero no llena: no es miembro.
     public static function puedeLlenar(int $proyectoId, int $usuarioId): bool
     {
         return ProyectoModelo::esMiembro($proyectoId, $usuarioId);
@@ -98,7 +98,7 @@ final class AutoevaluacionServicio
     }
 
     /**
-     * Todos los aspectos, auto y co, o nada. Errores con clave "auto.aspecto", "co.aspecto" y "comentario.aspecto".
+     * Todos los aspectos, auto y co, o nada. Keys de error: "auto.aspecto", "co.aspecto", "comentario.aspecto".
      *
      * @param array{evaluado_id: string, auto: array<int|string, string>, co: array<int|string, string>, comentario: array<int|string, string>} $datos
      * @param array{id: int, rol: int} $usuario

@@ -24,7 +24,7 @@ final class UsuarioServicioTest extends BaseDatos
         return ['nombre' => 'Nombre', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol];
     }
 
-    // La base ya trae admins: dentro de la transacción, $admin queda como único admin.
+    // La base ya trae admins. En la transacción, $admin queda como único admin.
     private function unicoAdmin(): int
     {
         $admin = $this->usuario(1);
@@ -87,7 +87,7 @@ final class UsuarioServicioTest extends BaseDatos
         ];
     }
 
-    // RF-03: clave o rol cambiado cierra la sesión abierta.
+    // RF-03. Clave o rol cambiado cierra la sesión.
     #[DataProvider('versiones')]
     public function testEditarSubeVersionDeSesionSoloConClaveORol(string $clave, string $rol, int $esperado): void
     {

@@ -31,7 +31,7 @@ $elegido = fn (string $campo, int|string $valor): string => (string) $valor === 
 // Cerrado mientras el caso siga Pendiente y sin evidencias.
 $conResultado = ($datos['estado'] ?? '0') !== '0' || !empty($datos['evidencias']) || isset($errores['estado']);
 
-// El proyecto sale del requerimiento: se agrupan por proyecto, sin grupos si hay uno solo.
+// Proyecto del requerimiento. Agrupados por proyecto, sin grupos si hay 1.
 $porProyecto = [];
 foreach ($requerimientos as $r) {
     $porProyecto[$r['proyecto']][] = $r;
@@ -55,7 +55,7 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
     }
     $opcionesSub .= '</optgroup>';
 }
-// Solicitado y aprobado: los miembros del proyecto, en el mismo orden que los requerimientos.
+// Solicitado y aprobado: miembros del proyecto, en el orden de los requerimientos.
 // Un option por campo, porque cada select marca su propia selección.
 $proyectosConMiembros = [];
 foreach ($porProyecto as $proyecto => $reqs) {
@@ -64,7 +64,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
         $proyectosConMiembros[$proyecto] = $lista;
     }
 }
-// Quien ya no es miembro sigue como opción mientras el caso lo tenga: guardar no lo borra.
+// Un ex miembro sigue como opción si el caso lo tiene: guardar no lo borra.
 $nombreActual = ['solicitado_por' => $caso['solicitante'] ?? null, 'aprobado_por' => $caso['aprobador'] ?? null];
 $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, $elegido, $caso, $nombreActual): string {
     $html = '';

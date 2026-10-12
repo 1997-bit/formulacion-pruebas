@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Medium;
 use Tests\Apoyo\BaseDatos;
 
-// RNF-02: 3 fallos libres; el tercero bloquea 1 s.
+// RNF-02. 3 fallos libres. El tercero bloquea 1 s.
 #[CoversClass(IntentoModelo::class)]
 #[Medium]
 final class IntentoModeloTest extends BaseDatos

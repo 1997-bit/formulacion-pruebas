@@ -16,11 +16,11 @@ final class PlanControlador
 {
     private const CAMPOS = ['version', 'responsable_id', 'fecha', 'estrategia', 'estado', ...PlanServicio::TEXTOS];
 
-    // Sin proyecto: la lista de proyectos. Con proyecto: su plan.
+    // Sin proyecto: lista de proyectos. Con proyecto: su plan.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        // Sin ?proyecto: el proyecto activo del sidebar.
+        // Sin ?proyecto: el activo del sidebar.
         $id = $_GET['proyecto'] ?? $usuario['activo'];
         if ($id === null) {
             Vista::pagina('plan_pruebas/listar', [

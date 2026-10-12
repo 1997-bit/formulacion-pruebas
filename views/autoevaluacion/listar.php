@@ -5,7 +5,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 8 (RF-15): una evaluación por persona del proyecto.
+ * Formulario 8, RF-15. Una evaluación por persona del proyecto.
  *
  * @var list<array<string, mixed>> $proyectos  con guardadas
  */

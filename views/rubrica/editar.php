@@ -9,7 +9,7 @@ use App\Helpers\Icono;
 use App\Services\RubricaServicio;
 
 /**
- * Formulario 7 (RF-14) para llenar o editar. El total se ve al elegir; el servidor lo recalcula.
+ * Formulario 7, RF-14, llenar o editar. Total en vivo. El servidor recalcula.
  *
  * @var array<string, mixed> $proyecto
  * @var bool $nueva

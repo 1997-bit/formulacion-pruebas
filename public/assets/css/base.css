@@ -70,7 +70,7 @@ textarea {
   max-width: 100%;
 }
 
-/* Sin field-sizing (Firefox) el textarea no crece: se deja redimensionar */
+/* Firefox sin field-sizing: el textarea no crece, se redimensiona a mano */
 @supports not (field-sizing: content) {
   textarea {
     resize: vertical;
@@ -78,7 +78,7 @@ textarea {
   }
 }
 
-/* Íconos (helpers/Icono.php) */
+/* Íconos, helpers/Icono.php */
 .icono {
   width: 16px;
   height: 16px;

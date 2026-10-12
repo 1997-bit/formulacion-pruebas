@@ -1,7 +1,7 @@
-# Saltos de línea LF para todos, aunque se edite en Windows
+# LF siempre, también en Windows.
 * text=auto eol=lf
 
-# Binarios: no tocar
+# Binarios: Git no los toca.
 *.png binary
 *.jpg binary
 *.woff2 binary

@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Large;
 use Tests\Apoyo\PruebaHttp;
 
-// RF-21, RNF-02: matriz rol × ruta de config/rutas.php.
+// RF-21, RNF-02. Matriz rol × ruta de config/rutas.php.
 #[CoversNothing]
 #[Large]
 final class RutasTest extends PruebaHttp

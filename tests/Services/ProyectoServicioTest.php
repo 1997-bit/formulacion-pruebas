@@ -89,7 +89,7 @@ final class ProyectoServicioTest extends BaseDatos
         $this->assertSame($nombre, ProyectoServicio::ver($proyecto, $admin)['nombre']);
     }
 
-    // BUG-007: solo sale quien se quitó, con su autoevaluación.
+    // BUG-007. Solo sale quien se quitó, con su autoevaluación.
     public function testQuitarMiembroSoloSacaAEseYSusEvaluaciones(): void
     {
         $admin = $this->sesion($this->usuario(1));
