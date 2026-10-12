@@ -83,14 +83,13 @@
   // <button data-abrir-dialogo="id"> abre <dialog id="id">.
   document.querySelectorAll('[data-abrir-dialogo]').forEach((boton) => {
     const dialogo = document.getElementById(boton.dataset.abrirDialogo);
-    if (!dialogo) return;
-    boton.addEventListener('click', () => dialogo.showModal());
-    dialogo.addEventListener('click', (e) => {
-      // Solo clic en el velo, no en el relleno.
-      const r = dialogo.getBoundingClientRect();
-      const fuera = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-      if (e.target === dialogo && fuera) dialogo.close();
-    });
+    boton.addEventListener('click', () => dialogo?.showModal());
+  });
+  // Todo <dialog> cierra con clic en el velo, no en el relleno.
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof HTMLDialogElement)) return;
+    const r = e.target.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });
 
   // Escape esconde los tooltips hasta mover el mouse o el foco.

@@ -100,7 +100,6 @@
       dialogoAtajos.className = 'dialogo dialogo-atajos';
       dialogoAtajos.setAttribute('aria-labelledby', 'atajos-titulo');
       document.body.append(dialogoAtajos);
-      dialogoAtajos.addEventListener('click', (e) => { if (e.target === dialogoAtajos) dialogoAtajos.close(); });
     }
     const titulo = document.createElement('h2');
     titulo.id = 'atajos-titulo';
