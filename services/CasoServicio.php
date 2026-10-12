@@ -154,17 +154,7 @@ final class CasoServicio
      */
     public static function miembrosPorProyecto(array $requerimientos): array
     {
-        $ids = [];
-        foreach ($requerimientos as $r) {
-            $ids[(int) $r['proyecto_id']] = true;
-        }
-
-        $salida = [];
-        foreach (array_keys($ids) as $proyectoId) {
-            $salida[$proyectoId] = UsuarioModelo::deProyecto($proyectoId);
-        }
-
-        return $salida;
+        return UsuarioModelo::deProyectos(array_values(array_unique(array_map(intval(...), array_column($requerimientos, 'proyecto_id')))));
     }
 
     /**

@@ -73,6 +73,31 @@ final class UsuarioModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Miembros de varios proyectos en una consulta, por id de proyecto.
+     *
+     * @param list<int> $proyectos
+     * @return array<int, list<array<string, mixed>>>
+     */
+    public static function deProyectos(array $proyectos): array
+    {
+        if ($proyectos === []) {
+            return [];
+        }
+        $marcas = implode(', ', array_fill(0, count($proyectos), '?'));
+        $sql = Conexion::pdo()->prepare(
+            "SELECT m.proyecto_id, u.id, u.nombre FROM usuarios u JOIN proyecto_miembros m ON m.usuario_id = u.id
+             WHERE m.proyecto_id IN ({$marcas}) ORDER BY u.nombre"
+        );
+        $sql->execute($proyectos);
+        $salida = [];
+        foreach ($sql->fetchAll(\PDO::FETCH_ASSOC) as $fila) {
+            $salida[$fila['proyecto_id']][] = ['id' => $fila['id'], 'nombre' => $fila['nombre']];
+        }
+
+        return $salida;
+    }
+
     public static function crear(string $nombre, string $usuario, string $clave, int $rol): int
     {
         $sql = Conexion::pdo()->prepare('INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (?, ?, ?, ?)');
