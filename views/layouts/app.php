@@ -73,5 +73,6 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
     <?= $contenido ?>
   </main>
 </div>
+<?= Vista::capturar('partials/paleta', ['usuario' => $usuario]) ?>
 </body>
 </html>

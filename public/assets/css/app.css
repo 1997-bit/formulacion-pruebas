@@ -496,3 +496,17 @@
 
 /* j / k: la fila con el foco se marca */
 .tabla tbody tr:focus-within { background: var(--acento); }
+
+/* Paleta de comandos (Ctrl/⌘+K) */
+.paleta { width: min(36rem, calc(100% - 32px)); padding: 0; margin-top: 12vh; overflow: hidden; }
+.paleta-campo { display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid var(--borde); color: var(--tenue-texto); }
+.paleta-entrada { flex: 1; min-width: 0; height: 3rem; border: 0; background: transparent; color: var(--texto); font: inherit; font-size: var(--letra-base); outline: none; }
+.paleta-lista { list-style: none; margin: 0; padding: 6px; max-height: min(24rem, 60dvh); overflow-y: auto; }
+.paleta-lista [role="option"] {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radio-md);
+  font-size: var(--letra-sm); cursor: pointer;
+}
+.paleta-lista [role="option"] > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.paleta-lista [role="option"]::after { content: attr(data-grupo); font-size: var(--letra-xs); color: var(--tenue-texto); white-space: nowrap; }
+.paleta-lista [aria-selected="true"] { background: var(--acento); color: var(--acento-texto); }
+.dialogo .paleta-vacio { margin: 0; padding: 16px; text-align: center; }

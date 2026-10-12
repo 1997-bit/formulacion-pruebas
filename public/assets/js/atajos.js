@@ -20,6 +20,7 @@
     'j': { texto: 'Fila siguiente', si: () => filas().length, accion: () => mover(1) },
     'k': { texto: 'Fila anterior', si: () => filas().length, accion: () => mover(-1) },
     'o': { texto: 'Abrir la fila', si: filaActual, accion: () => filaActual().querySelector('a').click() },
+    'Mod+k': { texto: 'Paleta de comandos', si: () => paleta && raiz.dataset.paleta !== 'no', accion: () => abrirPaleta() },
     '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
     'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };
@@ -147,10 +148,115 @@
   }
   document.querySelector('[data-ver-atajos]')?.addEventListener('click', () => ayudaAtajos());
 
+  // Paleta de comandos (Ctrl/⌘+K). Las opciones fijas vienen del servidor (partials/paleta.php).
+  // Al abrir se suman Recientes (localStorage) y Esta página (botones del encabezado y elementos con atajo).
+  const paleta = document.getElementById('paleta');
+  let abrirPaleta = () => {};
+  if (paleta) {
+    const entrada = paleta.querySelector('.paleta-entrada');
+    const lista = paleta.querySelector('.paleta-lista');
+    const vacio = paleta.querySelector('.paleta-vacio');
+    const estado = document.getElementById('paleta-estado');
+    // Sin tildes ni mayúsculas: "configuracion" encuentra "Configuración".
+    const normal = (t) => t.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+    let enPagina = [];
+    const ACCIONES = {
+      tema: () => document.getElementById('tema')?.click(),
+      menu: () => document.getElementById('sidebar-alternar')?.click(),
+      atajos: () => ayudaAtajos(),
+    };
+    let n = 0;
+    const opcion = (grupo, texto, destino) => {
+      const li = Object.assign(document.createElement('li'), { id: `paleta-d${n++}` });
+      li.setAttribute('role', 'option');
+      li.dataset.grupo = grupo;
+      li.dataset.destino = destino;
+      li.dataset.dinamica = '';
+      li.append(Object.assign(document.createElement('span'), { textContent: texto }));
+      return li;
+    };
+    const visibles = () => [...lista.children].filter((li) => !li.hidden);
+    const activa = () => lista.querySelector('[aria-selected="true"]');
+    const activar = (li) => {
+      activa()?.setAttribute('aria-selected', 'false');
+      if (!li) { entrada.removeAttribute('aria-activedescendant'); return; }
+      li.setAttribute('aria-selected', 'true');
+      entrada.setAttribute('aria-activedescendant', li.id);
+      li.scrollIntoView({ block: 'nearest' });
+    };
+    const filtrar = () => {
+      const q = normal(entrada.value.trim());
+      [...lista.children].forEach((li) => { li.hidden = q !== '' && !normal(`${li.textContent} ${li.dataset.grupo}`).includes(q); });
+      const v = visibles();
+      vacio.hidden = v.length > 0;
+      estado.textContent = `${v.length} resultado(s)`;
+      activar(v[0]);
+    };
+    const ejecutar = (li) => {
+      if (!li) return;
+      paleta.close();
+      const d = li.dataset.destino;
+      if (d.startsWith('accion:')) ACCIONES[d.slice(7)]?.();
+      else if (d.startsWith('pagina:')) enPagina[Number(d.slice(7))]?.click();
+      else location.href = d;
+    };
+    abrirPaleta = () => {
+      lista.querySelectorAll('[data-dinamica]').forEach((li) => li.remove());
+      let recientes = [];
+      try { recientes = JSON.parse(localStorage.getItem('recientes')) || []; } catch (e) {}
+      enPagina = [...new Set(document.querySelectorAll('.encabezado .acciones :is(a, button), .app-principal [data-atajo]'))]
+        .filter((el) => !el.closest('[hidden], [inert], dialog') && !el.disabled && el.getAttribute('aria-disabled') !== 'true');
+      const nuevas = [
+        ...recientes.map((r) => opcion('Recientes', `${r.codigo} · ${r.texto}`, r.url)),
+        ...enPagina.map((el, i) => opcion('Esta página', el.dataset.atajoTexto || el.getAttribute('aria-label') || el.textContent.trim(), `pagina:${i}`)),
+      ];
+      lista.prepend(...nuevas);
+      entrada.value = '';
+      filtrar();
+      paleta.showModal();
+      entrada.focus();
+    };
+    entrada.addEventListener('input', filtrar);
+    entrada.addEventListener('keydown', (e) => {
+      const v = visibles();
+      const i = v.indexOf(activa());
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        activar(v[(i + (e.key === 'ArrowDown' ? 1 : -1) + v.length) % v.length]);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        ejecutar(activa());
+      } else if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        paleta.close();
+      }
+    });
+    lista.addEventListener('click', (e) => ejecutar(e.target.closest('[role="option"]')));
+    lista.addEventListener('pointermove', (e) => {
+      const li = e.target.closest('[role="option"]');
+      if (li && li !== activa()) activar(li);
+    });
+  }
+
   // Ajustes → Accesibilidad: la misma lista, en la página. Cambia al apagar los atajos de una tecla.
   const listaAtajos = document.querySelector('[data-lista-atajos]');
+  // Los de otras pantallas no están en esta página: van fijos, al final.
+  const OTRAS = [
+    ['c', 'Listas: crear'], ['/', 'Listas: ir al filtro'], ['j', 'Listas: fila siguiente; caso: el siguiente'],
+    ['k', 'Listas: fila anterior; caso: el anterior'], ['o', 'Listas: abrir la fila'], ['e', 'Caso: editar'],
+    ['i', 'Caso: registrar incidente'], ['a', 'Incidente: asignarme'], ['Mod+Enter', 'Formularios: enviar'],
+  ];
+  const otrasPantallas = () => {
+    const lista = Object.assign(document.createElement('dl'), { className: 'atajos-lista' });
+    OTRAS.filter(([t]) => raiz.dataset.atajos !== 'no' || t.startsWith('Mod+')).forEach(([teclas, texto]) => {
+      const dt = document.createElement('dt');
+      dt.append(Object.assign(document.createElement('kbd'), { textContent: verTecla(teclas) }));
+      lista.append(dt, Object.assign(document.createElement('dd'), { textContent: texto }));
+    });
+    return [Object.assign(document.createElement('h3'), { className: 'atajos-grupo', textContent: 'En otras pantallas' }), lista];
+  };
   if (listaAtajos) {
-    const pintar = () => listaAtajos.replaceChildren(...seccionesAtajos());
+    const pintar = () => listaAtajos.replaceChildren(...seccionesAtajos().filter((el, i, todos) => todos[i - 1]?.textContent !== 'Esta página' && el.textContent !== 'Esta página'), ...otrasPantallas());
     document.addEventListener('change', () => setTimeout(pintar));
     pintar();
   }
