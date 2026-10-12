@@ -781,6 +781,17 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   object-fit: contain;
 }
 
+/* Pestañas: enlaces, la actual con aria-current="page" */
+
+.pestanas { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--borde); overflow-x: auto; }
+.pestanas a {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; margin-bottom: -1px;
+  color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.pestanas a:hover { color: var(--texto); }
+.pestanas a[aria-current="page"] { color: var(--texto); border-bottom-color: var(--primario); }
+
 /* Ajustes */
 
 .ajuste { padding: 16px 20px; border: 1px solid var(--borde); }

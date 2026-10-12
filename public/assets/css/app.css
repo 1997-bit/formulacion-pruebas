@@ -437,3 +437,9 @@
 :is(.sidebar-boton, .sidebar-subboton):is(:hover, :focus-visible) .sidebar-atajo { opacity: 1; }
 [data-sidebar="colapsado"] .sidebar-atajo { display: none; }
 [data-atajos="no"] .sidebar-atajo { display: none; }
+
+/* Ajustes → Accesibilidad. Movimiento reducido: lo mismo que prefers-reduced-motion, a mano. */
+[data-movimiento="reducido"] *,
+[data-movimiento="reducido"] *::before,
+[data-movimiento="reducido"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+[data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso) { text-decoration: underline; text-underline-offset: 3px; }

@@ -59,6 +59,11 @@
       });
     });
 
+    // Ajustes → Apariencia: el radio del menú lateral.
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[name="sidebar"][data-ajuste]')) fijarColapsado(e.target.value === 'colapsado');
+    });
+
     escritorio.addEventListener('change', () => {
       if (escritorio.matches && movilAbierto()) cerrarMovil(false);
       sincronizarAria();
@@ -218,14 +223,14 @@
   const guardar = (clave, valor) => {
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
-  // El valor por defecto no se guarda.
-  const POR_DEFECTO = { tema: 'sistema', atajos: 'si' };
+  // El valor por defecto no se guarda. AJUSTES está en tema.js. El menú lateral va en su cookie.
+  const valorAjuste = (nombre) => (nombre === 'sidebar' ? raiz.dataset.sidebar : leer(nombre) || AJUSTES[nombre]);
   const aplicarAjustes = () => {
     aplicarPreferencias();
     pintarTema();
     // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
-      r.checked = r.value === (leer(r.name) || POR_DEFECTO[r.name]);
+      r.checked = r.value === valorAjuste(r.name);
     });
   };
   botonTema?.addEventListener('click', () => {
@@ -237,7 +242,7 @@
     if (!e.target.matches('input[data-ajuste]')) return;
     const { name, type, checked } = e.target;
     const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
-    guardar(name, value === POR_DEFECTO[name] ? null : value);
+    if (name !== 'sidebar') guardar(name, value === AJUSTES[name] ? null : value);
     aplicarAjustes();
     document.getElementById('ajuste-estado').textContent = 'Guardado.';
   });

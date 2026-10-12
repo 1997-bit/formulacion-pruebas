@@ -92,19 +92,8 @@
     }
   });
 
-  // ?: lista de atajos de la página, armada al abrir.
-  let dialogoAtajos;
-  function ayudaAtajos() {
-    if (!dialogoAtajos) {
-      dialogoAtajos = document.createElement('dialog');
-      dialogoAtajos.className = 'dialogo dialogo-atajos';
-      dialogoAtajos.setAttribute('aria-labelledby', 'atajos-titulo');
-      document.body.append(dialogoAtajos);
-    }
-    const titulo = document.createElement('h2');
-    titulo.id = 'atajos-titulo';
-    titulo.textContent = 'Atajos de teclado';
-    // Grupos por la tecla: Ir a (g + letra), General (? y Ctrl) y Esta página (el resto).
+  // Grupos por la tecla: Ir a (g + letra), General (? y Ctrl) y Esta página (el resto).
+  function seccionesAtajos() {
     const grupos = { 'Ir a': [], 'Esta página': [], 'General': [] };
     const vistos = new Set();
     todosAtajos().forEach((a) => {
@@ -123,6 +112,22 @@
       });
       return [subtitulo, lista];
     });
+    return secciones;
+  }
+
+  // ?: lista de atajos de la página, armada al abrir.
+  let dialogoAtajos;
+  function ayudaAtajos() {
+    if (!dialogoAtajos) {
+      dialogoAtajos = document.createElement('dialog');
+      dialogoAtajos.className = 'dialogo dialogo-atajos';
+      dialogoAtajos.setAttribute('aria-labelledby', 'atajos-titulo');
+      document.body.append(dialogoAtajos);
+    }
+    const titulo = document.createElement('h2');
+    titulo.id = 'atajos-titulo';
+    titulo.textContent = 'Atajos de teclado';
+    const secciones = seccionesAtajos();
     // Botón visible para cerrar; method="dialog" cierra sin JS.
     const cerrar = Object.assign(document.createElement('form'), { method: 'dialog', className: 'acciones' });
     cerrar.append(Object.assign(document.createElement('button'), { className: 'btn btn-secundario', textContent: 'Cerrar', autofocus: true }));
@@ -130,4 +135,12 @@
     dialogoAtajos.showModal();
   }
   document.querySelector('[data-ver-atajos]')?.addEventListener('click', () => ayudaAtajos());
+
+  // Ajustes → Accesibilidad: la misma lista, en la página. Cambia al apagar los atajos de una tecla.
+  const listaAtajos = document.querySelector('[data-lista-atajos]');
+  if (listaAtajos) {
+    const pintar = () => listaAtajos.replaceChildren(...seccionesAtajos());
+    document.addEventListener('change', () => setTimeout(pintar));
+    pintar();
+  }
 })();
