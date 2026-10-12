@@ -71,19 +71,18 @@
     sincronizarAria();
   }
 
-  // Menú del usuario: cierra con clic fuera o Escape.
-  const menuUsuario = document.querySelector('.usuario-menu');
-  if (menuUsuario) {
+  // Menú del usuario y selector de proyecto: cierran con clic fuera o Escape.
+  document.querySelectorAll('.usuario-menu, .proyecto-menu').forEach((menu) => {
     document.addEventListener('click', (e) => {
-      if (menuUsuario.open && !menuUsuario.contains(e.target)) menuUsuario.open = false;
+      if (menu.open && !menu.contains(e.target)) menu.open = false;
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && menuUsuario.open) {
-        menuUsuario.open = false;
-        menuUsuario.querySelector('summary').focus();
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary').focus();
       }
     });
-  }
+  });
 
   // <button data-abrir-dialogo="id"> abre <dialog id="id">.
   document.querySelectorAll('[data-abrir-dialogo]').forEach((boton) => {
@@ -96,6 +95,14 @@
     const r = e.target.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });
+
+  // Aviso flotante: se cierra a los 5 s o con ✕. Con el mouse o el foco encima, espera.
+  const aviso = document.querySelector('.aviso-flotante');
+  if (aviso) {
+    const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
+    setTimeout(cerrar, 5000);
+    aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
+  }
 
   // Error de validación: el foco va al primer campo marcado.
   document.querySelector('.alerta-error') && document.querySelector('[aria-invalid="true"]')?.focus();

@@ -543,7 +543,7 @@ final class CasoServicioTest extends BaseDatos
         $r2 = $this->requerimiento($p, 'RF-02');
         $this->requerimiento($q);
 
-        $requerimientos = CasoServicio::requerimientos(['proyecto_id' => $p], $this->sesion($usuario));
+        $requerimientos = CasoServicio::requerimientos(['proyecto_id' => $p]);
 
         $this->assertSame([$r1, $r2], array_keys($requerimientos));
     }

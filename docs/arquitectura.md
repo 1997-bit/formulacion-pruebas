@@ -22,7 +22,6 @@ Una pantalla nueva es una línea en `config/rutas.php`, un método en el control
 | Carpeta o archivo | Contenido |
 | --- | --- |
 | `public/` | `index.php` y `assets/`. |
-| `public/paleta.php` | Catálogo de pantallas. No se entrega. |
 | `config/rutas.php` | Ruta, controlador, acción, rol y RF. |
 | `config/catalogos.php` | Estados, tipos, severidades, prioridades y roles. |
 | `config/menu.php` | Menú del sidebar. |

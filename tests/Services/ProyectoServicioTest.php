@@ -149,4 +149,35 @@ final class ProyectoServicioTest extends BaseDatos
 
         $llamadas[$accion]();
     }
+
+    // Panel del admin.
+    public function testIncompletosSinMiembrosYSinPlan(): void
+    {
+        $admin = $this->sesion($this->usuario(1));
+        $vacio = $this->proyecto();
+        $conMiembro = $this->proyecto($this->usuario());
+
+        $porId = array_column(ProyectoServicio::incompletos($admin), null, 'id');
+
+        $this->assertSame([true, true], [$porId[$vacio]['sin_miembros'], $porId[$vacio]['sin_plan']]);
+        $this->assertSame([false, true], [$porId[$conMiembro]['sin_miembros'], $porId[$conMiembro]['sin_plan']]);
+    }
+
+    public function testIncompletosConActivoSoloEse(): void
+    {
+        $admin = $this->sesion($this->usuario(1));
+        $activo = $this->proyecto();
+        $this->proyecto();
+
+        $incompletos = ProyectoServicio::incompletos($admin + ['activo' => $activo]);
+
+        $this->assertSame([$activo], array_column($incompletos, 'id'));
+    }
+
+    public function testIncompletosSoloAdmin(): void
+    {
+        $this->expectException(ErrorPermiso::class);
+
+        ProyectoServicio::incompletos($this->sesion($this->usuario()));
+    }
 }

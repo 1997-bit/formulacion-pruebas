@@ -87,7 +87,7 @@ final class CasoServicio
     {
         $caso = self::paraEditar($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
-        $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
+        $requerimiento = self::requerimientos($caso)[$d['requerimiento_id']] ?? null;
         self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
 
         $campos = self::campos($d);
@@ -123,14 +123,12 @@ final class CasoServicio
      * Los del proyecto del caso, por id.
      *
      * @param array<string, mixed> $caso
-     * @param array{id: int, rol: int} $usuario
      * @return array<int, array<string, mixed>>
      */
-    public static function requerimientos(array $caso, array $usuario): array
+    public static function requerimientos(array $caso): array
     {
-        $todos = RequerimientoModelo::todos(Permisos::proyectos($usuario));
-
-        return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
+        // Los del caso aunque no sea el proyecto activo: el caso ya pasó por exigirMiembro.
+        return array_column(RequerimientoModelo::todos([$caso['proyecto_id']]), null, 'id');
     }
 
     /**

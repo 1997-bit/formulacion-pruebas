@@ -9,6 +9,7 @@ use App\Helpers\Icono;
  * Patrón ARIA combobox: el foco queda en el campo, la opción activa va en aria-activedescendant.
  *
  * @var array{rol: int} $usuario
+ * @var list<array{id: int, nombre: string}> $proyectos
  */
 
 $rol = $usuario['rol'];
@@ -35,6 +36,10 @@ $opciones[] = ['Ir a', 'Casos › Tablero', '/casos/listar?vista=tablero'];
 $opciones[] = ['Ir a', 'Casos › Cronograma', '/casos/listar?vista=cronograma'];
 $opciones[] = ['Ir a', 'Incidentes › Tablero', '/formularios/incidentes?vista=tablero'];
 $opciones[] = ['Ir a', 'Incidentes asignados a mí', '/formularios/incidentes?mios=1'];
+// proyecto:id pulsa el botón del selector del sidebar.
+foreach ([['id' => 0, 'nombre' => 'Todos los proyectos'], ...$proyectos] as $p) {
+    $opciones[] = ['Cambiar de proyecto', $p['nombre'], 'proyecto:' . $p['id']];
+}
 $opciones[] = ['Acciones', 'Cambiar tema claro u oscuro', 'accion:tema'];
 $opciones[] = ['Acciones', 'Mostrar u ocultar menú', 'accion:menu'];
 $opciones[] = ['Acciones', 'Ver atajos de teclado', 'accion:atajos'];

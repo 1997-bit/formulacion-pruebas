@@ -21,12 +21,7 @@ use App\Helpers\Icono;
   <div class="acciones"><a class="btn btn-primario" href="/admin/proyectos/crear" data-atajo="c"><?= Icono::svg('plus') ?> Crear proyecto</a></div>
 </header>
 <div class="pila">
-  <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
-  <?php if (isset($errores['general'])): ?>
-    <div class="alerta alerta-error" role="alert"><?= Icono::svg('circle-alert') ?>
-      <p class="alerta-titulo"><?= Html::e($errores['general']) ?></p>
-    </div>
-  <?php endif; ?>
+  <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <?php if (!$proyectos): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
@@ -39,13 +34,20 @@ use App\Helpers\Icono;
     <table class="tabla tabla-tarjetas">
       <caption class="solo-lector">Proyectos</caption>
       <thead>
-        <tr><th scope="col">Nombre</th><th scope="col">Miembros</th><th scope="col">Creado</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
+        <tr><th scope="col">Nombre</th><th scope="col">Miembros</th><th scope="col">Ejecutados</th><th scope="col">Creado</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
       </thead>
       <tbody>
         <?php foreach ($proyectos as $p): ?>
           <tr>
             <td data-columna="Nombre"><?= Html::e($p['nombre']) ?></td>
             <td data-columna="Miembros"><?= Html::e($p['miembros'] ?? 'Sin miembros') ?></td>
+            <td data-columna="Ejecutados">
+              <?php $avance = $p['casos'] > 0 ? (int) round($p['ejecutados'] / $p['casos'] * 100) : 0; ?>
+              <div class="progreso-celda">
+                <progress class="progreso" max="100" value="<?= $avance ?>" aria-label="<?= Html::e('Casos ejecutados de ' . $p['nombre']) ?>"></progress>
+                <span><?= (int) $p['ejecutados'] ?> de <?= (int) $p['casos'] ?></span>
+              </div>
+            </td>
             <td data-columna="Creado"><?= Fecha::legible(new DateTime($p['creado_en'])) ?></td>
             <td class="celda-acciones">
               <div class="acciones">

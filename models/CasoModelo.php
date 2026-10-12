@@ -117,6 +117,26 @@ final class CasoModelo
     }
 
     /**
+     * Pendientes que creó el usuario, el de fecha final más próxima primero.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function pendientesDe(?array $proyectos, int $usuarioId, int $limite): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
+             FROM casos_prueba c
+             WHERE ' . $permiso . ' AND c.estado = 0 AND c.creado_por = ?
+             ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
+        );
+        $sql->execute([...$valores, $usuarioId]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Caso anterior y siguiente del mismo proyecto, en el orden de la lista.
      * OR en vez de (sigla, numero) > (?, ?): así usa el índice único y no ordena (filesort).
      *

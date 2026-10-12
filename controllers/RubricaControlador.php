@@ -17,7 +17,9 @@ final class RubricaControlador
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        if (!isset($_GET['proyecto'])) {
+        // Sin ?proyecto: el proyecto activo del sidebar.
+        $id = $_GET['proyecto'] ?? $usuario['activo'];
+        if ($id === null) {
             Vista::pagina('rubrica/listar', [
                 'titulo' => 'Rúbrica',
                 'proyectos' => RubricaServicio::proyectos($usuario),
@@ -27,7 +29,7 @@ final class RubricaControlador
             return;
         }
 
-        $proyecto = RubricaServicio::proyecto((int) $_GET['proyecto'], $usuario) ?? Respuesta::error(404);
+        $proyecto = RubricaServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('rubrica/ver', [
             'titulo' => 'Rúbrica · ' . $proyecto['nombre'],
             'proyecto' => $proyecto,

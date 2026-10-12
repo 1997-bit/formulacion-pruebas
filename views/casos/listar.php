@@ -16,6 +16,7 @@ use App\Helpers\Icono;
  * @var array<string, string> $filtros proyecto, requerimiento, estado
  * @var list<array<string, mixed>> $proyectos
  * @var list<array<string, mixed>> $requerimientos
+ * @var array{activo: ?int} $usuario
  */
 
 $filtrado = array_filter($filtros, fn (string $v): bool => $v !== '') !== [];
@@ -37,6 +38,15 @@ foreach ($porProyecto as $proyecto => $reqs) {
     }
     $opcionesReq .= count($porProyecto) > 1 ? '</optgroup>' : '';
 }
+// Con proyecto activo la columna Proyecto sobra.
+$todos = $usuario['activo'] === null;
+$nombreProyecto = array_column($proyectos, 'nombre', 'id')[$filtros['proyecto']] ?? null;
+$codigoReq = array_column($requerimientos, 'codigo', 'id')[$filtros['requerimiento']] ?? null;
+$chips = array_filter([
+    'proyecto' => $nombreProyecto === null ? '' : 'Proyecto: ' . $nombreProyecto,
+    'requerimiento' => $codigoReq === null ? '' : 'Requerimiento: ' . $codigoReq,
+    'estado' => $filtros['estado'] === '' ? '' : 'Estado: ' . Catalogo::texto('estado_caso', $filtros['estado']),
+]);
 ?>
 <header class="encabezado">
   <div>
@@ -56,6 +66,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
     <form class="filtros" method="get" action="/casos/listar" role="search" aria-label="Filtrar casos">
       <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
       <?php if ($vista === 'cronograma'): ?><input type="hidden" name="mes" value="<?= $mes->format('Y-m') ?>"><?php endif; ?>
+      <?php if ($todos): ?>
       <div class="campo">
         <label for="fl-proyecto">Proyecto</label>
         <div class="select">
@@ -67,6 +78,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
           </select>
         </div>
       </div>
+      <?php endif; ?>
       <div class="campo">
         <label for="fl-req">Requerimiento</label>
         <div class="select"><select class="control" id="fl-req" name="requerimiento"><option value="">Todos</option><?= $opcionesReq ?></select></div>
@@ -80,6 +92,12 @@ foreach ($porProyecto as $proyecto => $reqs) {
         <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
       </div>
     </form>
+    <?= Vista::capturar('partials/filtros_activos', [
+        'ruta' => '/casos/listar',
+        'fijos' => ['vista' => $vista] + ($vista === 'cronograma' ? ['mes' => $mes->format('Y-m')] : []),
+        'filtros' => $filtros,
+        'textos' => $chips,
+    ]) ?>
   <?php endif; ?>
   <?php if ($vista === 'cronograma'): ?>
     <?= Vista::capturar('casos/cronograma', ['casos' => $casos, 'mes' => $mes, 'filtros' => $filtros]) ?>
@@ -104,14 +122,14 @@ foreach ($porProyecto as $proyecto => $reqs) {
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Casos de prueba</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Caso</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col">Tipo</th><th scope="col">Creado por</th><th scope="col">Estado</th></tr>
         </thead>
         <tbody>
           <?php foreach ($casos as $c): ?>
             <tr>
               <td data-columna="Código"><a class="codigo" href="/casos/resultado?id=<?= (int) $c['id'] ?>"><?= Html::e($c['codigo']) ?></a></td>
               <td data-columna="Caso" class="celda-larga"><?= Html::e($c['objetivo']) ?></td>
-              <td data-columna="Proyecto"><?= Html::e($c['proyecto']) ?></td>
+              <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($c['proyecto']) ?></td><?php endif; ?>
               <td data-columna="Tipo"><?= Html::e(Catalogo::texto('tipo_prueba', $c['tipo_prueba'])) ?></td>
               <td data-columna="Creado por"><?= Html::e($c['autor']) ?></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_caso', $c['estado']) ?></td>

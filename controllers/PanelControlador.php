@@ -10,6 +10,7 @@ use App\Core\Vista;
 use App\Models\CasoModelo;
 use App\Models\IncidenteModelo;
 use App\Services\Permisos;
+use App\Services\ProyectoServicio;
 use App\Services\ReporteServicio;
 
 // RF-23
@@ -24,6 +25,9 @@ final class PanelControlador
             'avance' => ReporteServicio::avance($usuario),
             'asignados' => IncidenteModelo::asignadosA($usuario['id'], $proyectos, 5),
             'atrasados' => CasoModelo::atrasados($proyectos, 5),
+            // Por rol: el tester ve lo suyo por anotar; el admin, lo que solo él completa.
+            'misPendientes' => $usuario['rol'] === 1 ? [] : CasoModelo::pendientesDe($proyectos, $usuario['id'], 5),
+            'incompletos' => $usuario['rol'] === 1 ? ProyectoServicio::incompletos($usuario) : [],
             'migas' => [
                 ['texto' => 'Plataforma'],
                 ['texto' => 'Panel'],
@@ -35,7 +39,9 @@ final class PanelControlador
     public function cierre(): void
     {
         $usuario = Sesion::usuario();
-        if (!isset($_GET['proyecto'])) {
+        // Sin ?proyecto: el proyecto activo del sidebar.
+        $id = $_GET['proyecto'] ?? $usuario['activo'];
+        if ($id === null) {
             Vista::pagina('reportes/listar', [
                 'titulo' => 'Reporte de cierre',
                 'proyectos' => ReporteServicio::avance($usuario)['proyectos'],
@@ -45,7 +51,7 @@ final class PanelControlador
             return;
         }
 
-        $proyecto = ReporteServicio::cierre((int) $_GET['proyecto'], $usuario) ?? Respuesta::error(404);
+        $proyecto = ReporteServicio::cierre((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('reportes/cierre', [
             'titulo' => 'Reporte de cierre · ' . $proyecto['nombre'],
             'proyecto' => $proyecto,

@@ -14,7 +14,9 @@ final class ProyectoModelo
     {
         return Conexion::pdo()->query(
             'SELECT p.id, p.nombre, p.descripcion, p.creado_en,
-                    GROUP_CONCAT(u.usuario ORDER BY u.usuario SEPARATOR \', \') AS miembros
+                    GROUP_CONCAT(u.usuario ORDER BY u.usuario SEPARATOR \', \') AS miembros,
+                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.proyecto_id = p.id) AS casos,
+                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.proyecto_id = p.id AND c.estado <> 0) AS ejecutados
              FROM proyectos p
              LEFT JOIN proyecto_miembros m ON m.proyecto_id = p.id
              LEFT JOIN usuarios u ON u.id = m.usuario_id

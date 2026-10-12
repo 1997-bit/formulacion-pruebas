@@ -198,6 +198,7 @@
       const d = li.dataset.destino;
       if (d.startsWith('accion:')) ACCIONES[d.slice(7)]?.();
       else if (d.startsWith('pagina:')) enPagina[Number(d.slice(7))]?.click();
+      else if (d.startsWith('proyecto:')) document.querySelector(`[data-proyecto="${d.slice(9)}"]`)?.click();
       else location.href = d;
     };
     abrirPaleta = () => {

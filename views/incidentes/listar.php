@@ -14,12 +14,25 @@ use App\Helpers\Icono;
  * @var ?string $flash
  * @var string $vista lista o tablero
  * @var array<string, string> $filtros estado, severidad, stopper, mios
+ * @var array{activo: ?int} $usuario
  */
 
 $filtrado = array_filter($filtros, fn (string $v): bool => $v !== '') !== [];
 $usados = array_filter($filtros, fn (string $v): bool => $v !== '');
 $enlaceVista = fn (string $v): string => '/formularios/incidentes?' . http_build_query(['vista' => $v] + $usados);
 $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked' : '';
+// Con proyecto activo la columna Proyecto sobra.
+$todos = $usuario['activo'] === null;
+// Avatar: las iniciales son decoración; el nombre va en texto.
+$asignado = fn (?string $nombre): string => $nombre === null
+    ? 'Sin asignar'
+    : '<span class="avatar" aria-hidden="true">' . Html::e(Html::iniciales($nombre)) . '</span>' . Html::e($nombre);
+$chips = array_filter([
+    'estado' => $filtros['estado'] === '' || $vista === 'tablero' ? '' : 'Estado: ' . Catalogo::texto('estado_incidente', $filtros['estado']),
+    'severidad' => $filtros['severidad'] === '' ? '' : 'Severidad: ' . Catalogo::texto('severidad', $filtros['severidad']),
+    'stopper' => $filtros['stopper'] === '1' ? 'Solo stoppers' : '',
+    'mios' => $filtros['mios'] === '1' ? 'Asignados a mí' : '',
+]);
 ?>
 <header class="encabezado">
   <div>
@@ -57,6 +70,7 @@ $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked'
         <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/formularios/incidentes?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
       </div>
     </form>
+    <?= Vista::capturar('partials/filtros_activos', ['ruta' => '/formularios/incidentes', 'fijos' => ['vista' => $vista], 'filtros' => $filtros, 'textos' => $chips]) ?>
   <?php endif; ?>
   <?php if (!$incidentes && $filtrado): ?>
     <div class="vacio">
@@ -94,7 +108,7 @@ $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked'
                   <span class="fila"><?= $i['es_stopper'] ? '<span class="insignia insignia-peligro">Stopper</span>' : '' ?><?= Catalogo::insignia('severidad', $i['severidad']) ?></span>
                 </span>
                 <span class="tarjeta-caso-texto"><?= Html::e($i['titulo']) ?></span>
-                <span class="tarjeta-caso-pie"><span><?= Html::e($i['proyecto']) ?> · <?= Html::e($i['caso']) ?></span><span><?= Html::e($i['asignado'] ?? 'Sin asignar') ?></span></span>
+                <span class="tarjeta-caso-pie"><span><?= Html::e($i['proyecto']) ?> · <?= Html::e($i['caso']) ?></span><span class="fila"><?= $asignado($i['asignado']) ?></span></span>
                 <span class="mover"><?php foreach (Catalogo::valores('estado_incidente') as $destino => $d): ?><?php if ($destino !== $estado): ?><button class="btn btn-secundario btn-sm" form="mover" name="destino" value="<?= (int) $i['id'] ?>-<?= $destino ?>" aria-label="Mover <?= Html::e($i['codigo']) ?> a <?= Html::e($d['texto']) ?>"><?= $destino > $estado ? Html::e($d['texto']) . ' →' : '← ' . Html::e($d['texto']) ?></button><?php endif; ?><?php endforeach; ?></span>
               </li>
             <?php endforeach; ?>
@@ -107,7 +121,7 @@ $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked'
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Incidentes</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Título</th><th scope="col">Caso</th><th scope="col">Proyecto</th><th scope="col">Severidad</th><th scope="col">Prioridad</th><th scope="col">Asignado a</th><th scope="col">Estado</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Título</th><th scope="col">Caso</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col">Severidad</th><th scope="col">Prioridad</th><th scope="col">Asignado a</th><th scope="col">Estado</th></tr>
         </thead>
         <tbody>
           <?php foreach ($incidentes as $i): ?>
@@ -115,10 +129,10 @@ $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked'
               <td data-columna="Código"><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a></td>
               <td data-columna="Título" class="celda-larga"><?= Html::e($i['titulo']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?></td>
               <td data-columna="Caso"><a class="codigo" href="/casos/resultado?id=<?= (int) $i['caso_id'] ?>"><?= Html::e($i['caso']) ?></a></td>
-              <td data-columna="Proyecto"><?= Html::e($i['proyecto']) ?></td>
+              <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($i['proyecto']) ?></td><?php endif; ?>
               <td data-columna="Severidad"><?= Catalogo::insignia('severidad', $i['severidad']) ?></td>
               <td data-columna="Prioridad"><?= Catalogo::insignia('prioridad', $i['prioridad']) ?></td>
-              <td data-columna="Asignado a"><?= Html::e($i['asignado'] ?? 'Sin asignar') ?></td>
+              <td data-columna="Asignado a"><span class="fila"><?= $asignado($i['asignado']) ?></span></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_incidente', $i['estado']) ?></td>
             </tr>
           <?php endforeach; ?>

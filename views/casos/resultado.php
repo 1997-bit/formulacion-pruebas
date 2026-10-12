@@ -37,7 +37,7 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
         <a class="btn btn-fantasma btn-icono" href="/casos/resultado?id=<?= (int) $v['id'] ?>" aria-label="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>"
            data-tooltip="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>" data-atajo="<?= $tecla ?>" data-atajo-texto="<?= $etiqueta ?>"><?= Icono::svg($icono) ?></a>
       <?php else: ?>
-        <span class="btn btn-fantasma btn-icono" aria-disabled="true" role="link" aria-label="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></span>
+        <span class="btn btn-fantasma btn-icono" aria-disabled="true" role="link" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></span>
       <?php endif; ?>
     <?php endforeach; ?>
     <a class="btn <?= $caso['estado'] === 2 ? 'btn-primario' : 'btn-secundario' ?>" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>" data-atajo="i"><?= Icono::svg('bug') ?> Registrar incidente</a>

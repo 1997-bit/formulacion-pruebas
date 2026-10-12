@@ -87,7 +87,7 @@ final class CasosControlador
     public function editar(): void
     {
         $caso = CasoServicio::paraEditar((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
-        $requerimientos = array_values(CasoServicio::requerimientos($caso, Sesion::usuario()));
+        $requerimientos = array_values(CasoServicio::requerimientos($caso));
         Vista::pagina('casos/formulario', [
             'titulo' => 'Editar ' . $caso['codigo'],
             'caso' => $caso,

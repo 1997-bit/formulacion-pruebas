@@ -1,49 +1,60 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Csrf;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * RF-23: avance de los proyectos del usuario, y lo que falta por hacer.
+ * RF-23. Sin proyecto activo: "Mi trabajo", con una tarjeta por proyecto. Con proyecto activo: su resumen.
  *
  * @var array{total: array<string, int>, proyectos: list<array<string, mixed>>} $avance
  * @var list<array<string, mixed>> $asignados  incidentes abiertos asignados al usuario
  * @var list<array<string, mixed>> $atrasados  casos pendientes con la fecha final pasada
+ * @var list<array<string, mixed>> $misPendientes  tester: sus casos sin resultado
+ * @var list<array{id: int, nombre: string, sin_miembros: bool, sin_plan: bool}> $incompletos  admin
+ * @var array{rol: int, activo: ?int} $usuario
  */
 
 $t = $avance['total'];
+$enProyecto = $usuario['activo'] !== null && $avance['proyectos'] !== [];
 $porcentaje = fn (int $n, int $de): int => $de === 0 ? 0 : (int) round($n / $de * 100);
 $cifras = [
-    ['Casos', 'clipboard-list', $t['casos'], count($avance['proyectos']) . ' proyecto(s)', ''],
+    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : count($avance['proyectos']) . ' proyecto(s)', ''],
     ['OK', 'circle-check', $t['ok'], $t['aprobacion'] . ' % de aprobación', '1'],
     ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2'],
     ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0'],
 ];
-// Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre del proyecto.
+// Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre del proyecto. Los stoppers van en la alerta de arriba.
 $tareas = [];
 foreach ($avance['proyectos'] as $p) {
     foreach ([
-        ['stoppers', 'triangle-alert', 'stopper(s) abierto(s)'],
         ['fault_sin_incidente', 'bug', 'FAULT sin incidente'],
         ['sin_evidencia', 'image', 'con resultado y sin evidencia'],
     ] as [$clave, $icono, $texto]) {
         if ($p[$clave] > 0) {
-            $tareas[] = [$icono, $p[$clave] . ' ' . $texto, $p['nombre'], '/reportes/cierre?proyecto=' . (int) $p['id']];
+            $tareas[] = [$icono, $p[$clave] . ' ' . $texto, $enProyecto ? '' : $p['nombre'], '/reportes/cierre?proyecto=' . (int) $p['id']];
         }
     }
 }
 ?>
 <header class="encabezado">
   <div>
-    <h1>Panel</h1>
-    <p>Avance de los casos de sus proyectos.</p>
+    <h1><?= $enProyecto ? Html::e($avance['proyectos'][0]['nombre']) : 'Mi trabajo' ?></h1>
+    <p><?= $enProyecto ? 'Resumen del proyecto activo.' : 'Lo que le toca en todos sus proyectos.' ?></p>
   </div>
   <div class="acciones"><a class="btn btn-secundario" href="/reportes/cierre"><?= Icono::svg('chart-column') ?> Reporte de cierre</a></div>
 </header>
 <div class="pila">
+  <?php if ($t['stoppers'] > 0): ?>
+    <div class="alerta alerta-error"><?= Icono::svg('triangle-alert') ?>
+      <p class="alerta-titulo"><?= (int) $t['stoppers'] ?> stopper(s) abierto(s)</p>
+      <p class="alerta-descripcion">Con un stopper abierto el proyecto es No-Go.</p>
+      <a class="btn btn-secundario btn-sm alerta-accion" href="/formularios/incidentes?stopper=1">Ver stoppers</a>
+    </div>
+  <?php endif; ?>
   <div class="cifras">
     <?php foreach ($cifras as [$etiqueta, $icono, $valor, $nota, $estado]): ?>
       <a class="tarjeta cifra cifra-enlace" href="/casos/listar<?= $estado === '' ? '' : '?estado=' . $estado ?>">
@@ -69,7 +80,7 @@ foreach ($avance['proyectos'] as $p) {
         <?php else: ?>
           <ul class="tareas">
             <?php foreach ($tareas as [$icono, $texto, $proyecto, $ruta]): ?>
-              <li><a href="<?= Html::e($ruta) ?>"><?= Icono::svg($icono) ?> <span><?= Html::e($texto) ?></span> <small><?= Html::e($proyecto) ?></small></a></li>
+              <li><a href="<?= Html::e($ruta) ?>"><?= Icono::svg($icono) ?> <span><?= Html::e($texto) ?></span><?php if ($proyecto !== ''): ?> <small><?= Html::e($proyecto) ?></small><?php endif; ?></a></li>
             <?php endforeach; ?>
           </ul>
         <?php endif; ?>
@@ -105,12 +116,49 @@ foreach ($avance['proyectos'] as $p) {
           <?php endif; ?>
         </div>
       </section>
+      <?php if ($usuario['rol'] !== 1): ?>
+        <section class="tarjeta" aria-labelledby="h-mis-pendientes">
+          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-mis-pendientes">Mis casos sin resultado</h2></header>
+          <div class="tarjeta-contenido">
+            <?php if (!$misPendientes): ?>
+              <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Todos tienen resultado.</p>
+            <?php else: ?>
+              <ul class="tareas">
+                <?php foreach ($misPendientes as $c): ?>
+                  <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small>Hasta el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
+                <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+          </div>
+        </section>
+      <?php else: ?>
+        <section class="tarjeta" aria-labelledby="h-incompletos">
+          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-incompletos">Proyectos por completar</h2></header>
+          <div class="tarjeta-contenido">
+            <?php if (!$incompletos): ?>
+              <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Todos tienen miembros y plan.</p>
+            <?php else: ?>
+              <ul class="tareas">
+                <?php foreach ($incompletos as $p): ?>
+                  <?php if ($p['sin_miembros']): ?>
+                    <li><a href="/admin/proyectos/editar?id=<?= $p['id'] ?>"><?= Icono::svg('users') ?> <span>Sin miembros</span> <small><?= Html::e($p['nombre']) ?></small></a></li>
+                  <?php endif; ?>
+                  <?php if ($p['sin_plan']): ?>
+                    <li><a href="/formularios/plan_pruebas?proyecto=<?= $p['id'] ?>"><?= Icono::svg('file-text') ?> <span>Sin plan de pruebas</span> <small><?= Html::e($p['nombre']) ?></small></a></li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+          </div>
+        </section>
+      <?php endif; ?>
       <section class="tarjeta" aria-labelledby="h-recientes" data-recientes hidden>
         <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-recientes">Vistos hace poco</h2></header>
         <div class="tarjeta-contenido"><ul class="tareas"></ul></div>
       </section>
     </div>
 
+    <?php if (!$enProyecto): ?>
     <h2 class="titulo-seccion">Proyectos</h2>
     <div class="rejilla-panel">
       <?php foreach ($avance['proyectos'] as $p): ?>
@@ -137,12 +185,19 @@ foreach ($avance['proyectos'] as $p) {
             </ul>
           </div>
           <footer class="tarjeta-pie">
-            <a class="btn btn-secundario btn-sm" href="/casos/listar?proyecto=<?= (int) $p['id'] ?>&amp;vista=cronograma">Cronograma</a>
+            <?php // Abrir = elegirlo en el selector del sidebar. ?>
+            <form method="post" action="/proyecto">
+              <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+              <input type="hidden" name="volver" value="/dashboard">
+              <button class="btn btn-primario btn-sm" type="submit" name="proyecto" value="<?= (int) $p['id'] ?>"
+                aria-label="<?= Html::e('Abrir ' . $p['nombre']) ?>">Abrir</button>
+            </form>
             <a class="btn btn-secundario btn-sm" href="/reportes/cierre?proyecto=<?= (int) $p['id'] ?>"
               aria-label="<?= Html::e('Ver cierre de ' . $p['nombre']) ?>">Ver cierre</a>
           </footer>
         </section>
       <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   <?php endif; ?>
 </div>
