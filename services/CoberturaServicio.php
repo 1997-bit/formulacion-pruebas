@@ -112,17 +112,11 @@ final class CoberturaServicio
         }
         $v->regla('general', $llenas > 0, 'Llene al menos una métrica.')->comprobar();
 
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($requerimientoId, $huella, $guardar, $usuario): void {
             if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
                 throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
             }
             CoberturaModelo::guardar($requerimientoId, $guardar, $usuario['id']);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 }

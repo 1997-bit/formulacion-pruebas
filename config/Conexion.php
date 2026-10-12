@@ -31,4 +31,26 @@ final class Conexion
 
         return self::$pdo;
     }
+
+    /**
+     * Corre $hacer en una transacción: commit si termina, rollBack si lanza.
+     *
+     * @template T
+     * @param callable(): T $hacer
+     * @return T
+     */
+    public static function transaccion(callable $hacer): mixed
+    {
+        $pdo = self::pdo();
+        $pdo->beginTransaction();
+        try {
+            $resultado = $hacer();
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        return $resultado;
+    }
 }

@@ -408,7 +408,7 @@
   .app-principal { padding: 0; }
 }
 
-/* Atajo del enlace (app.js): se ve al pasar el mouse o con foco; colapsado va en la etiqueta */
+/* Atajo del enlace (atajos.js): se ve al pasar el mouse o con foco */
 .sidebar-atajo {
   margin-left: auto;
   opacity: 0;

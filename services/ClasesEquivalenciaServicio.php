@@ -91,17 +91,11 @@ final class ClasesEquivalenciaServicio
         }
         $v->comprobar();
 
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($requerimientoId, $huella, $filas, $usuario): void {
             if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
                 throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
             }
             FilasModelo::guardar(self::TABLA, $requerimientoId, array_keys(self::COLUMNAS), $filas, $usuario['id']);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 }

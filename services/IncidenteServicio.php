@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
@@ -24,7 +25,7 @@ final class IncidenteServicio
      */
     public static function registrar(int $casoId, array $datos, array $usuario): array
     {
-        $caso = CasoServicio::ver($casoId, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $caso = CasoServicio::ver($casoId, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $asignables = array_column(self::asignables($caso), 'id');
 
@@ -45,9 +46,7 @@ final class IncidenteServicio
         $v->comprobar();
 
         // El bloqueo evita dos códigos iguales; UNIQUE (proyecto_id, codigo) lo respalda.
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        return Conexion::transaccion(function () use ($caso, $casoId, $d, $usuario): array {
             self::exigirPlanAbierto($caso['proyecto_id'], $d);
             $codigo = sprintf('BUG-%03d', IncidenteModelo::siguienteNumero($caso['proyecto_id']));
             $id = IncidenteModelo::crear([
@@ -67,13 +66,9 @@ final class IncidenteServicio
                 'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
                 'creado_por' => $usuario['id'],
             ]);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
 
-        return [$id, $codigo];
+            return [$id, $codigo];
+        });
     }
 
     /**
@@ -84,7 +79,7 @@ final class IncidenteServicio
      */
     public static function seguimiento(int $id, array $datos, array $usuario): string
     {
-        $incidente = self::ver($id, $usuario) ?? throw new \DomainException('Incidente no encontrado.');
+        $incidente = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $v = new Validador();
         self::validarSeguimiento($v, $d, array_column(self::asignables($incidente), 'id'));
@@ -96,16 +91,10 @@ final class IncidenteServicio
             'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
             'es_stopper' => (int) ($d['es_stopper'] === '1'),
         ];
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($id, $incidente, $despues, $usuario): void {
             IncidenteModelo::actualizar($id, $despues['estado'], $despues['asignado_id'], $despues['es_stopper']);
             Historial::registrar('incidentes', $id, $incidente, $despues, $usuario['id']);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
 
         return $incidente['codigo'];
     }

@@ -123,19 +123,13 @@ final class PlanServicio
             'riesgos' => $opcional('riesgos'),
             'estado' => (int) $d['estado'],
         ];
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($proyectoId, $plan, $usuario): void {
             // Al editar, deja rastro de lo cambiado (#115). Crear no deja rastro.
             $antes = PlanModelo::deProyecto($proyectoId);
             PlanModelo::guardar($proyectoId, $plan);
             if ($antes !== null) {
                 Historial::registrar('plan_pruebas', $proyectoId, $antes, $plan, $usuario['id']);
             }
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 }
