@@ -7,8 +7,19 @@
   // si: el atajo existe solo si hay dónde actuar. Sin eso, preventDefault quitaría la tecla al navegador (/ en Firefox) sin hacer nada.
   const filtro = () => document.querySelector('.filtros .control');
   const enFormulario = () => document.activeElement?.form;
+  // j / k: fila siguiente o anterior de una tabla, tablero o lista del panel; o abre la fila. Como en Jira y Gmail.
+  const filas = () => [...document.querySelectorAll('.tabla tbody tr, .tablero-lista > li, .tareas li')].filter((f) => f.querySelector('a'));
+  const filaActual = () => filas().find((f) => f.contains(document.activeElement));
+  const mover = (paso) => {
+    const lista = filas();
+    const i = lista.indexOf(filaActual());
+    lista[i === -1 ? 0 : Math.min(lista.length - 1, Math.max(0, i + paso))].querySelector('a').focus();
+  };
   const ATAJOS = {
     '?': { texto: 'Ayuda de atajos', accion: () => ayudaAtajos() },
+    'j': { texto: 'Fila siguiente', si: () => filas().length, accion: () => mover(1) },
+    'k': { texto: 'Fila anterior', si: () => filas().length, accion: () => mover(-1) },
+    'o': { texto: 'Abrir la fila', si: filaActual, accion: () => filaActual().querySelector('a').click() },
     '/': { texto: 'Ir al filtro', si: filtro, accion: () => filtro().focus() },
     'Mod+Enter': { texto: 'Enviar el formulario', si: enFormulario, accion: () => enFormulario().requestSubmit() },
   };

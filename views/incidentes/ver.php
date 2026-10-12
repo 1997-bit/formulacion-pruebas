@@ -25,7 +25,7 @@ foreach ($asignables as $a) {
     $opciones .= '<option value="' . $a['id'] . '"' . ((string) $a['id'] === $datos['asignado_id'] ? ' selected' : '') . '>' . Html::e($a['nombre']) . '</option>';
 }
 ?>
-<header class="encabezado">
+<header class="encabezado" data-reciente="<?= Html::e($incidente['codigo']) ?>" data-reciente-texto="<?= Html::e($incidente['titulo']) ?>">
   <div>
     <p class="antetitulo fila">
       <span class="codigo"><?= Html::e($incidente['codigo']) ?></span>

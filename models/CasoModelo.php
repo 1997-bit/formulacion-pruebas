@@ -116,6 +116,30 @@ final class CasoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Caso anterior y siguiente en el orden de la lista, dentro de los proyectos permitidos.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @param array<string, mixed> $caso
+     * @return array{0: ?array<string, mixed>, 1: ?array<string, mixed>}
+     */
+    public static function vecinos(?array $proyectos, array $caso): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('proyecto_id', $proyectos);
+        $clave = [$caso['proyecto_id'], $caso['sigla'], $caso['numero']];
+        $uno = function (string $signo, string $orden) use ($permiso, $valores, $clave): ?array {
+            $sql = Conexion::pdo()->prepare(
+                'SELECT id, codigo FROM casos_prueba WHERE ' . $permiso . " AND (proyecto_id, sigla, numero) {$signo} (?, ?, ?)
+                 ORDER BY proyecto_id {$orden}, sigla {$orden}, numero {$orden} LIMIT 1"
+            );
+            $sql->execute([...$valores, ...$clave]);
+
+            return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+        };
+
+        return [$uno('<', 'DESC'), $uno('>', 'ASC')];
+    }
+
     /** @return array<string, mixed>|null */
     public static function porId(int $id): ?array
     {

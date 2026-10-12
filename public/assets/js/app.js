@@ -206,6 +206,28 @@
     document.querySelectorAll('.soltar').forEach((c) => c.classList.remove('soltar'));
   });
 
+  // Recientes: el caso o incidente abierto se guarda (5 como máximo). El panel y la paleta los muestran.
+  const marca = document.querySelector('[data-reciente]');
+  let recientes = [];
+  try { recientes = JSON.parse(localStorage.getItem('recientes')) || []; } catch (e) {}
+  if (marca) {
+    const actual = { url: location.pathname + location.search, codigo: marca.dataset.reciente, texto: marca.dataset.recienteTexto };
+    recientes = [actual, ...recientes.filter((r) => r.url !== actual.url)].slice(0, 5);
+    try { localStorage.setItem('recientes', JSON.stringify(recientes)); } catch (e) {}
+  }
+  const panelRecientes = document.querySelector('[data-recientes]');
+  if (panelRecientes && recientes.length) {
+    panelRecientes.querySelector('ul').replaceChildren(...recientes.map((r) => {
+      const a = Object.assign(document.createElement('a'), { href: r.url });
+      a.append(Object.assign(document.createElement('span'), { className: 'codigo', textContent: r.codigo }), ' ',
+        Object.assign(document.createElement('span'), { textContent: r.texto }));
+      const li = document.createElement('li');
+      li.append(a);
+      return li;
+    }));
+    panelRecientes.hidden = false;
+  }
+
   document.querySelectorAll('[data-imprimir]').forEach((boton) => {
     boton.addEventListener('click', () => window.print());
   });

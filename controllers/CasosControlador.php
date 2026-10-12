@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\CasoModelo;
 use App\Models\FilasModelo;
 use App\Services\CasoServicio;
 use App\Services\Historial;
@@ -127,6 +128,7 @@ final class CasosControlador
             'titulo' => $caso['codigo'],
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
+            'vecinos' => CasoModelo::vecinos(Permisos::proyectos(Sesion::usuario()), $caso),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [
