@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Config\Conexion;
+use App\Core\ErrorValidacion;
 
 // Solo porUsuario() lee la clave: es para entrar.
 final class UsuarioModelo
@@ -107,7 +108,7 @@ final class UsuarioModelo
         try {
             Conexion::pdo()->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
         } catch (\PDOException $e) {
-            if ($e->getCode() === '23000') {
+            if (ErrorValidacion::esLlaveForanea($e)) {
                 return false;
             }
             throw $e;

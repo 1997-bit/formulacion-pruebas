@@ -25,4 +25,10 @@ final class ErrorValidacion extends \RuntimeException
     {
         return ($e->errorInfo[1] ?? null) === 1062 ? new self($errores) : $e;
     }
+
+    // Al borrar: otra tabla lo usa (llave foránea).
+    public static function esLlaveForanea(\PDOException $e): bool
+    {
+        return $e->getCode() === '23000';
+    }
 }

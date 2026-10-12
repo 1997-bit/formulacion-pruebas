@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Config\Conexion;
+use App\Core\ErrorValidacion;
 
 final class ProyectoModelo
 {
@@ -93,7 +94,7 @@ final class ProyectoModelo
         try {
             Conexion::pdo()->prepare('DELETE FROM proyectos WHERE id = ?')->execute([$id]);
         } catch (\PDOException $e) {
-            if ($e->getCode() === '23000') {
+            if (ErrorValidacion::esLlaveForanea($e)) {
                 return false;
             }
             throw $e;
