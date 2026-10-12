@@ -56,9 +56,7 @@ final class CasoServicio
                     'proyecto_id' => $proyectoId,
                     'codigo' => $codigo,
                     ...self::campos($d),
-                    'estado' => (int) $d['estado'],
-                    'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
-                    'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
+                    ...self::resultado($d),
                     'creado_por' => $usuario['id'],
                     'anotado_por' => $anotado ? $usuario['id'] : null,
                     'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
@@ -187,11 +185,7 @@ final class CasoServicio
         try {
             Conexion::transaccion(function () use ($id, $d, $tipos, $archivos, $usuario, &$guardados): void {
                 $antes = CasoModelo::bloquear($id);
-                $resultado = [
-                    'estado' => (int) $d['estado'],
-                    'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
-                    'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
-                ];
+                $resultado = self::resultado($d);
                 if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
                     throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
                 }
@@ -352,6 +346,21 @@ final class CasoServicio
             'fecha_fin' => $d['fecha_fin'],
             'solicitado_por' => ($d['solicitado_por'] ?? '') === '' ? null : (int) $d['solicitado_por'],
             'aprobado_por' => ($d['aprobado_por'] ?? '') === '' ? null : (int) $d['aprobado_por'],
+        ];
+    }
+
+    /**
+     * Resultado del caso: estado, obtenido y observaciones.
+     *
+     * @param array<string, string> $d
+     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string}
+     */
+    private static function resultado(array $d): array
+    {
+        return [
+            'estado' => (int) $d['estado'],
+            'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+            'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
         ];
     }
 
