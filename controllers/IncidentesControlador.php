@@ -24,11 +24,25 @@ final class IncidentesControlador
 
     public function listar(): void
     {
-        [$incidentes, $paginacion] = IncidenteServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
+        $filtros = [];
+        foreach (['estado', 'severidad', 'stopper', 'mios'] as $filtro) {
+            $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
+        }
+        // Lista o tablero. La última elegida queda en una cookie.
+        $vista = $_GET['vista'] ?? $_COOKIE['vista_incidentes'] ?? 'lista';
+        $vista = $vista === 'tablero' ? 'tablero' : 'lista';
+        if (isset($_GET['vista'])) {
+            setcookie('vista_incidentes', $vista, ['expires' => time() + 31536000, 'path' => '/', 'samesite' => 'Lax']);
+        }
+        [$incidentes, $paginacion] = $vista === 'lista'
+            ? IncidenteServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1), $filtros)
+            : [IncidenteServicio::tablero(Sesion::usuario(), $filtros), null];
         Vista::pagina('incidentes/listar', [
             'titulo' => 'Incidentes',
             'incidentes' => $incidentes,
             'paginacion' => $paginacion,
+            'vista' => $vista,
+            'filtros' => $filtros,
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Incidentes'], ['texto' => 'Listar']],
         ]);
@@ -116,6 +130,8 @@ final class IncidentesControlador
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, $datos, '/formularios/incidentes/ver?id=' . $id);
         }
-        Respuesta::exito("Incidente {$codigo} guardado.", '/formularios/incidentes/ver?id=' . $id);
+        // Desde el tablero se vuelve al tablero.
+        $volver = ($_POST['volver'] ?? '') === 'tablero' ? '/formularios/incidentes?vista=tablero' : '/formularios/incidentes/ver?id=' . $id;
+        Respuesta::exito("Incidente {$codigo} guardado.", $volver);
     }
 }

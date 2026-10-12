@@ -484,3 +484,12 @@
 .cronograma-tramo.barra-peligro { color: var(--peligro-texto); }
 .cronograma-tramo.sigue-antes { border-start-start-radius: 0; border-end-start-radius: 0; margin-left: 0; }
 .cronograma-tramo.sigue-despues { border-start-end-radius: 0; border-end-end-radius: 0; margin-right: 0; }
+
+/* Incidentes → Tablero: arrastrar y "Mover a" */
+.tablero-columna.soltar { outline: 2px dashed var(--anillo); outline-offset: -2px; }
+[data-arrastrable] { cursor: grab; }
+.tarjeta-caso .codigo { text-decoration: none; color: inherit; }
+.mover { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
+.mover .select { flex: 1; }
+.mover .control { min-height: 1.75rem; font-size: var(--letra-xs); }
+.filtros-casillas { align-self: end; padding-bottom: 8px; }

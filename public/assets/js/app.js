@@ -177,6 +177,35 @@
   document.addEventListener('input', calcular);
   calcular();
 
+  // Tablero: soltar una tarjeta en otra columna marca ese estado en su "Mover a" y envía el form.
+  let arrastrada = null;
+  const columnaDe = (e) => (e.target instanceof Element ? e.target.closest('[data-columna-estado]') : null);
+  document.addEventListener('dragstart', (e) => {
+    arrastrada = e.target instanceof Element ? e.target.closest('[data-arrastrable]') : null;
+    if (arrastrada) e.dataTransfer.effectAllowed = 'move';
+  });
+  document.addEventListener('dragover', (e) => {
+    const columna = columnaDe(e);
+    if (!arrastrada || !columna) return;
+    e.preventDefault();
+    document.querySelectorAll('.soltar').forEach((c) => c !== columna && c.classList.remove('soltar'));
+    columna.classList.add('soltar');
+  });
+  document.addEventListener('drop', (e) => {
+    const columna = columnaDe(e);
+    if (!arrastrada || !columna) return;
+    e.preventDefault();
+    const estado = arrastrada.querySelector('select[name="estado"]');
+    if (estado.value === columna.dataset.columnaEstado) return;
+    estado.value = columna.dataset.columnaEstado;
+    columna.querySelector('ul').append(arrastrada);
+    estado.form.requestSubmit();
+  });
+  document.addEventListener('dragend', () => {
+    arrastrada = null;
+    document.querySelectorAll('.soltar').forEach((c) => c.classList.remove('soltar'));
+  });
+
   document.querySelectorAll('[data-imprimir]').forEach((boton) => {
     boton.addEventListener('click', () => window.print());
   });
