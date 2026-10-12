@@ -101,6 +101,22 @@ final class IncidenteServicio
     }
 
     /**
+     * Tablero: el seguimiento con otro estado y lo demás igual.
+     *
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function mover(int $id, int $estado, array $usuario): string
+    {
+        $incidente = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
+
+        return self::seguimiento($id, [
+            'estado' => (string) $estado,
+            'asignado_id' => (string) $incidente['asignado_id'],
+            'es_stopper' => (string) $incidente['es_stopper'],
+        ], $usuario);
+    }
+
+    /**
      * Null si no existe.
      *
      * @param array{id: int, rol: int} $usuario

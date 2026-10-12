@@ -177,7 +177,7 @@
   document.addEventListener('input', calcular);
   calcular();
 
-  // Tablero: soltar una tarjeta en otra columna marca ese estado en su "Mover a" y envía el form.
+  // Tablero: soltar una tarjeta en otra columna pulsa su botón "Mover a" de esa columna.
   let arrastrada = null;
   const columnaDe = (e) => (e.target instanceof Element ? e.target.closest('[data-columna-estado]') : null);
   document.addEventListener('dragstart', (e) => {
@@ -195,11 +195,10 @@
     const columna = columnaDe(e);
     if (!arrastrada || !columna) return;
     e.preventDefault();
-    const estado = arrastrada.querySelector('select[name="estado"]');
-    if (estado.value === columna.dataset.columnaEstado) return;
-    estado.value = columna.dataset.columnaEstado;
+    const boton = [...arrastrada.querySelectorAll('button[name="destino"]')].find((b) => b.value.endsWith(`-${columna.dataset.columnaEstado}`));
+    if (!boton) return;
     columna.querySelector('ul').append(arrastrada);
-    estado.form.requestSubmit();
+    boton.form.requestSubmit(boton);
   });
   document.addEventListener('dragend', () => {
     arrastrada = null;

@@ -79,7 +79,8 @@ $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked'
         $columnas[$i['estado']][] = $i;
     }
     ?>
-    <p class="campo-ayuda">Arrastre una tarjeta a otra columna, o use "Mover a" en la tarjeta.</p>
+    <p class="campo-ayuda">Arrastre una tarjeta a otra columna, o use los botones de la tarjeta.</p>
+    <form id="mover" method="post" action="/formularios/incidentes/mover"><input type="hidden" name="csrf" value="<?= Csrf::token() ?>"></form>
     <div class="tablero" data-tablero>
       <?php foreach ($columnas as $estado => $lista): ?>
         <section class="tablero-columna" aria-labelledby="col-<?= $estado ?>" data-columna-estado="<?= $estado ?>">
@@ -94,19 +95,7 @@ $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked'
                 </span>
                 <span class="tarjeta-caso-texto"><?= Html::e($i['titulo']) ?></span>
                 <span class="tarjeta-caso-pie"><span><?= Html::e($i['proyecto']) ?> · <?= Html::e($i['caso']) ?></span><span><?= Html::e($i['asignado'] ?? 'Sin asignar') ?></span></span>
-                <form class="mover" method="post" action="/formularios/incidentes/ver">
-                  <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-                  <input type="hidden" name="id" value="<?= (int) $i['id'] ?>">
-                  <input type="hidden" name="asignado_id" value="<?= $i['asignado_id'] === null ? '' : (int) $i['asignado_id'] ?>">
-                  <input type="hidden" name="es_stopper" value="<?= (int) $i['es_stopper'] ?>">
-                  <input type="hidden" name="volver" value="tablero">
-                  <div class="select">
-                    <select class="control" name="estado" aria-label="Mover <?= Html::e($i['codigo']) ?> a">
-                      <?= Catalogo::opciones('estado_incidente', $estado) ?>
-                    </select>
-                  </div>
-                  <button class="btn btn-secundario btn-sm" type="submit">Mover</button>
-                </form>
+                <span class="mover"><?php foreach (Catalogo::valores('estado_incidente') as $destino => $d): ?><?php if ($destino !== $estado): ?><button class="btn btn-secundario btn-sm" form="mover" name="destino" value="<?= (int) $i['id'] ?>-<?= $destino ?>" aria-label="Mover <?= Html::e($i['codigo']) ?> a <?= Html::e($d['texto']) ?>"><?= $destino > $estado ? Html::e($d['texto']) . ' →' : '← ' . Html::e($d['texto']) ?></button><?php endif; ?><?php endforeach; ?></span>
               </li>
             <?php endforeach; ?>
           </ul>

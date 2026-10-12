@@ -35,12 +35,8 @@ final class CasosControlador
         foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
-        // Lista, tablero o cronograma. La última elegida queda en una cookie.
-        $vista = $_GET['vista'] ?? $_COOKIE['vista_casos'] ?? 'lista';
-        $vista = in_array($vista, ['lista', 'tablero', 'cronograma'], true) ? $vista : 'lista';
-        if (isset($_GET['vista'])) {
-            setcookie('vista_casos', $vista, ['expires' => time() + 31536000, 'path' => '/', 'samesite' => 'Lax']);
-        }
+        // Lista por defecto: g c y el menú siempre llevan a la lista.
+        $vista = in_array($_GET['vista'] ?? null, ['tablero', 'cronograma'], true) ? $_GET['vista'] : 'lista';
         // Cronograma: un mes, ?mes=2026-10. Por defecto el actual.
         $mes = \DateTimeImmutable::createFromFormat('!Y-m', is_string($_GET['mes'] ?? null) ? $_GET['mes'] : '') ?: new \DateTimeImmutable('first day of this month midnight');
         $rango = $vista === 'cronograma' ? [$mes->format('Y-m-d'), $mes->format('Y-m-t')] : null;
@@ -128,7 +124,7 @@ final class CasosControlador
             'titulo' => $caso['codigo'],
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
-            'vecinos' => CasoModelo::vecinos(Permisos::proyectos(Sesion::usuario()), $caso),
+            'vecinos' => CasoModelo::vecinos($caso),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [

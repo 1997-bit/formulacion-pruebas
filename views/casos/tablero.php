@@ -4,7 +4,6 @@ declare(strict_types=1);
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
-use App\Helpers\Icono;
 use App\Services\CasoServicio;
 
 /**
@@ -34,18 +33,8 @@ $hoy = date('Y-m-d');
       <?php else: ?>
         <ul class="tablero-lista">
           <?php foreach ($lista as $c): ?>
-            <li>
-              <a class="tarjeta tarjeta-caso" href="/casos/resultado?id=<?= (int) $c['id'] ?>">
-                <span class="tarjeta-caso-cabeza"><span class="codigo"><?= Html::e($c['codigo']) ?></span>
-                  <?php if ($c['incidentes'] > 0): ?><span class="insignia insignia-peligro"><?= Icono::svg('bug') ?> <?= (int) $c['incidentes'] ?><span class="solo-lector"> incidente(s) abierto(s)</span></span><?php endif; ?>
-                </span>
-                <span class="tarjeta-caso-texto"><?= Html::e($c['objetivo']) ?></span>
-                <span class="tarjeta-caso-pie">
-                  <span><?= Html::e($c['proyecto']) ?> · <?= Html::e($c['requerimiento']) ?></span>
-                  <span<?= $c['estado'] === 0 && $c['fecha_fin'] < $hoy ? ' class="atrasado"' : '' ?>><?= Fecha::legible(new DateTime($c['fecha_fin'])) ?><?= $c['estado'] === 0 && $c['fecha_fin'] < $hoy ? ' · atrasado' : '' ?></span>
-                </span>
-              </a>
-            </li>
+            <?php $atrasado = $c['estado'] === 0 && $c['fecha_fin'] < $hoy; ?>
+            <li><a class="tarjeta tarjeta-caso" href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="tarjeta-caso-cabeza"><span class="codigo"><?= Html::e($c['codigo']) ?></span><?= $c['incidentes'] > 0 ? '<span class="insignia insignia-peligro">' . (int) $c['incidentes'] . ' incidente(s)</span>' : '' ?></span><span class="tarjeta-caso-texto"><?= Html::e($c['objetivo']) ?></span><span class="tarjeta-caso-pie"><span><?= Html::e($c['proyecto']) ?> · <?= Html::e($c['requerimiento']) ?></span><span<?= $atrasado ? ' class="atrasado"' : '' ?>><?= Fecha::legible(new DateTime($c['fecha_fin'])) ?><?= $atrasado ? ' · atrasado' : '' ?></span></span></a></li>
           <?php endforeach; ?>
         </ul>
       <?php endif; ?>

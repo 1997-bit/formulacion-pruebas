@@ -32,6 +32,8 @@ foreach ($casos as $c) {
     $grupos[$c['proyecto'] . ' · ' . $c['requerimiento']][] = $c;
 }
 $filas = count($casos) + count($grupos) + 1;
+// Símbolo por estado: una barra corta no cabe el texto, y el color no es la única señal (RNF-07).
+$simbolos = [0 => '!', 1 => '✓', 2 => '✗'];
 $fila = 1;
 ?>
 <div class="cronograma-barra">
@@ -40,6 +42,7 @@ $fila = 1;
   <a class="btn btn-secundario btn-sm" href="<?= Html::e($enlaceMes($mes->modify('+1 month'))) ?>"><?= Html::e(ucfirst($nombreMes($mes->modify('+1 month')))) ?> <?= Icono::svg('chevron-right') ?></a>
   <?php if ($diaHoy === null): ?><a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceMes(new DateTimeImmutable('first day of this month'))) ?>">Hoy</a><?php endif; ?>
 </div>
+<p class="leyenda cronograma-leyenda" aria-hidden="true"><?php foreach (Catalogo::valores('estado_caso') as $e => $v): ?><span><span class="leyenda-muestra barra-<?= $v['variante'] ?>"></span><?= $simbolos[$e] ?> <?= Html::e($v['texto']) ?></span><?php endforeach; ?></p>
 <?php if (!$casos): ?>
   <div class="vacio">
     <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
@@ -71,7 +74,7 @@ $fila = 1;
           ?>
           <a class="cronograma-caso codigo" style="grid-row:<?= $fila ?>" href="/casos/resultado?id=<?= (int) $c['id'] ?>" title="<?= Html::e($c['objetivo']) ?>"><?= Html::e($c['codigo']) ?><span class="solo-lector">: <?= Html::e($estado) ?>, <?= $fechas ?></span></a>
           <span class="cronograma-tramo barra-<?= $variante ?><?= $c['fecha_inicio'] < $inicio ? ' sigue-antes' : '' ?><?= $c['fecha_fin'] > $fin ? ' sigue-despues' : '' ?>"
-                style="grid-row:<?= $fila ?>;grid-column:<?= $desde + 1 ?> / <?= $hasta + 2 ?>" title="<?= Html::e($c['codigo'] . ' · ' . $estado . ' · ' . $fechas) ?>" aria-hidden="true"><?= Html::e($estado) ?></span>
+                style="grid-row:<?= $fila ?>;grid-column:<?= $desde + 1 ?> / <?= $hasta + 2 ?>" title="<?= Html::e($c['codigo'] . ' · ' . $estado . ' · ' . $fechas) ?>" aria-hidden="true"><?= $simbolos[$c['estado']] ?><?= $hasta - $desde >= 2 ? ' ' . Html::e($estado) : '' ?></span>
         <?php endforeach; ?>
       <?php endforeach; ?>
     </div>
