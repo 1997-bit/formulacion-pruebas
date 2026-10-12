@@ -35,8 +35,12 @@ final class CasoServicio
     public static function registrar(array $datos, array $marcadas, array $archivos, array $usuario): array
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(RequerimientoModelo::todos(Permisos::proyectos($usuario)), null, 'id');
-        $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
+        // Uno de otro proyecto cuenta como no elegido.
+        $requerimiento = RequerimientoModelo::porId((int) $d['requerimiento_id']);
+        $proyectos = Permisos::proyectos($usuario);
+        if ($requerimiento !== null && $proyectos !== null && !in_array($requerimiento['proyecto_id'], $proyectos, true)) {
+            $requerimiento = null;
+        }
         $tipos = self::tipos($marcadas);
 
         $v = self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), null);
