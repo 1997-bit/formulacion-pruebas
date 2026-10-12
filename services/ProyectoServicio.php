@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Config\Conexion;
 use App\Core\ErrorValidacion;
 use App\Core\Validador;
 use App\Models\ProyectoModelo;
@@ -68,7 +69,7 @@ final class ProyectoServicio
             ->comprobar();
 
         try {
-            ProyectoModelo::guardar($id, $nombre, $descripcion === '' ? null : $descripcion, array_values(array_unique($miembros)));
+            Conexion::transaccion(fn () => ProyectoModelo::guardar($id, $nombre, $descripcion === '' ? null : $descripcion, array_values(array_unique($miembros))));
         } catch (\PDOException $e) {
             throw ErrorValidacion::siDuplicado($e, ['nombre' => 'Ese proyecto ya existe.']);
         }

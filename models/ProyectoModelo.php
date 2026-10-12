@@ -65,33 +65,26 @@ final class ProyectoModelo
     }
 
     /**
-     * $id null: crea. Los miembros se reemplazan.
+     * $id null: crea. Los miembros se reemplazan. La transacción la abre ProyectoServicio.
      *
      * @param list<int> $miembros
      */
     public static function guardar(?int $id, string $nombre, ?string $descripcion, array $miembros): void
     {
         $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
-            if ($id === null) {
-                $pdo->prepare('INSERT INTO proyectos (nombre, descripcion) VALUES (?, ?)')->execute([$nombre, $descripcion]);
-                $id = (int) $pdo->lastInsertId();
-            } else {
-                $pdo->prepare('UPDATE proyectos SET nombre = ?, descripcion = ? WHERE id = ?')->execute([$nombre, $descripcion, $id]);
-            }
-            // Por diferencia: solo sale quien se quitó, y con él su auto y coevaluación (BUG-007).
-            FilasModelo::sincronizar(
-                'proyecto_miembros',
-                ['proyecto_id' => $id],
-                ['usuario_id'],
-                array_map(fn (int $u): array => ['usuario_id' => $u], $miembros)
-            );
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
+        if ($id === null) {
+            $pdo->prepare('INSERT INTO proyectos (nombre, descripcion) VALUES (?, ?)')->execute([$nombre, $descripcion]);
+            $id = (int) $pdo->lastInsertId();
+        } else {
+            $pdo->prepare('UPDATE proyectos SET nombre = ?, descripcion = ? WHERE id = ?')->execute([$nombre, $descripcion, $id]);
         }
+        // Por diferencia: solo sale quien se quitó, y con él su auto y coevaluación (BUG-007).
+        FilasModelo::sincronizar(
+            'proyecto_miembros',
+            ['proyecto_id' => $id],
+            ['usuario_id'],
+            array_map(fn (int $u): array => ['usuario_id' => $u], $miembros)
+        );
     }
 
     // False si tiene requerimientos o casos.
