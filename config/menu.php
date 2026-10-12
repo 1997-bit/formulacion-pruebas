@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-// Menú del sidebar. 'rol' => 1 lo oculta al tester; ocultar no protege (RF-21). 'atajo': secuencia de teclas (app.js).
+// Menú del sidebar. 'rol' => 1 lo oculta al tester; ocultar no protege (RF-21). 'atajo': secuencia de teclas (atajos.js).
+// g s (Ajustes) está en views/partials/sidebar.php: va en el menú del usuario.
 return [
     [
         'grupo' => 'Plataforma',
