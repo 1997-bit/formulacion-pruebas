@@ -97,7 +97,6 @@ final class CasosControlador
     public function actualizar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        CasoServicio::paraEditar($id, Sesion::usuario()) ?? Respuesta::error(404);
         $datos = $this->texto(self::CAMPOS);
         try {
             $codigo = CasoServicio::editar($id, $datos, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
@@ -129,7 +128,6 @@ final class CasosControlador
     public function anotar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        CasoServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
         $datos = $this->texto(self::CAMPOS_RESULTADO);
         $marcadas = $this->marcadas();
         try {

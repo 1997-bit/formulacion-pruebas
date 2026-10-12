@@ -79,7 +79,6 @@ final class IncidentesControlador
     public function guardar(): void
     {
         $casoId = (int) ($_POST['caso_id'] ?? 0);
-        CasoServicio::ver($casoId, Sesion::usuario()) ?? Respuesta::error(404);
         $datos = $this->texto(self::CAMPOS);
         try {
             [$id, $codigo] = IncidenteServicio::registrar($casoId, $datos, Sesion::usuario());
@@ -110,7 +109,6 @@ final class IncidentesControlador
     public function actualizar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        IncidenteServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
         $datos = $this->texto(['estado', 'asignado_id', 'es_stopper']);
         try {
             $codigo = IncidenteServicio::seguimiento($id, $datos, Sesion::usuario());
