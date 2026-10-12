@@ -141,13 +141,12 @@ final class CasosControlador
     public function eliminar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        $caso = CasoServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
         try {
-            CasoServicio::eliminar($id, Sesion::usuario());
+            $codigo = CasoServicio::eliminar($id, Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, [], '/casos/resultado?id=' . $id);
         }
-        Respuesta::exito("Caso {$caso['codigo']} eliminado.", '/casos/listar');
+        Respuesta::exito("Caso {$codigo} eliminado.", '/casos/listar');
     }
 
     /**

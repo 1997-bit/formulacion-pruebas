@@ -217,13 +217,20 @@ final class CasoServicio
         return $caso['codigo'];
     }
 
-    /** @param array{id: int, rol: int} $usuario */
-    public static function eliminar(int $id, array $usuario): void
+    /**
+     * Devuelve el código del caso eliminado.
+     *
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function eliminar(int $id, array $usuario): string
     {
         Permisos::exigirAdmin($usuario);
+        $caso = CasoModelo::porId($id) ?? throw new ErrorNoEncontrado();
         if (!CasoModelo::eliminar($id)) {
             throw new ErrorValidacion(['general' => 'Tiene evidencias o incidentes: no se puede eliminar.']);
         }
+
+        return $caso['codigo'];
     }
 
     /**
