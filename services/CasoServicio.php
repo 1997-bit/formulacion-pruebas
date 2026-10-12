@@ -49,30 +49,28 @@ final class CasoServicio
         $guardados = [];
 
         // El bloqueo evita dos códigos iguales; UNIQUE (proyecto_id, codigo) lo respalda.
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
         try {
-            $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
-            $casoId = CasoModelo::crear([
-                'proyecto_id' => $proyectoId,
-                'codigo' => $codigo,
-                ...self::campos($d),
-                'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
-                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
-                'creado_por' => $usuario['id'],
-                'anotado_por' => $anotado ? $usuario['id'] : null,
-                'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
-            ]);
-            self::guardarEvidencias($casoId, $d, $tipos, $archivos, $usuario['id'], $guardados);
-            $pdo->commit();
+            return Conexion::transaccion(function () use ($proyectoId, $sigla, $d, $anotado, $tipos, $archivos, $usuario, &$guardados): array {
+                $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
+                $casoId = CasoModelo::crear([
+                    'proyecto_id' => $proyectoId,
+                    'codigo' => $codigo,
+                    ...self::campos($d),
+                    'estado' => (int) $d['estado'],
+                    'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+                    'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
+                    'creado_por' => $usuario['id'],
+                    'anotado_por' => $anotado ? $usuario['id'] : null,
+                    'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
+                ]);
+                self::guardarEvidencias($casoId, $d, $tipos, $archivos, $usuario['id'], $guardados);
+
+                return [$casoId, $codigo];
+            });
         } catch (\Throwable $e) {
-            $pdo->rollBack();
             array_map('unlink', $guardados);
             throw $e;
         }
-
-        return [$casoId, $codigo];
     }
 
     /**
@@ -89,20 +87,14 @@ final class CasoServicio
         self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
 
         $campos = self::campos($d);
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($id, $huella, $campos, $requerimiento, $usuario): void {
             if (FilasModelo::huella(['casos_prueba'], 'id', $id) !== $huella) {
                 throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
             }
             $antes = CasoModelo::bloquear($id);
             CasoModelo::actualizar($id, $campos);
             Historial::registrar('casos_prueba', $id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
 
         return $caso['codigo'];
     }
@@ -192,24 +184,22 @@ final class CasoServicio
         $v->comprobar();
 
         $guardados = [];
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
         try {
-            $antes = CasoModelo::bloquear($id);
-            $resultado = [
-                'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
-                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
-            ];
-            if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
-                throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
-            }
-            CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
-            Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
-            self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
-            $pdo->commit();
+            Conexion::transaccion(function () use ($id, $d, $tipos, $archivos, $usuario, &$guardados): void {
+                $antes = CasoModelo::bloquear($id);
+                $resultado = [
+                    'estado' => (int) $d['estado'],
+                    'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+                    'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
+                ];
+                if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
+                    throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
+                }
+                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
+                Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
+                self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
+            });
         } catch (\Throwable $e) {
-            $pdo->rollBack();
             array_map('unlink', $guardados);
             throw $e;
         }
