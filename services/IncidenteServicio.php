@@ -9,6 +9,7 @@ use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
+use App\Helpers\Catalogo;
 use App\Models\IncidenteModelo;
 use App\Models\PlanModelo;
 use App\Models\UsuarioModelo;
@@ -100,6 +101,22 @@ final class IncidenteServicio
     }
 
     /**
+     * Tablero: el seguimiento con otro estado y lo demás igual.
+     *
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function mover(int $id, int $estado, array $usuario): string
+    {
+        $incidente = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
+
+        return self::seguimiento($id, [
+            'estado' => (string) $estado,
+            'asignado_id' => (string) $incidente['asignado_id'],
+            'es_stopper' => (string) $incidente['es_stopper'],
+        ], $usuario);
+    }
+
+    /**
      * Null si no existe.
      *
      * @param array{id: int, rol: int} $usuario
@@ -119,14 +136,47 @@ final class IncidenteServicio
      * RNF-09
      *
      * @param array{id: int, rol: int} $usuario
+     * @param array<string, string> $filtros
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
      */
-    public static function pagina(array $usuario, int $pagina): array
+    public static function pagina(array $usuario, int $pagina, array $filtros = []): array
     {
         $proyectos = Permisos::proyectos($usuario);
-        $paginacion = new Paginacion(IncidenteModelo::contar($proyectos), $pagina);
+        $f = self::filtros($filtros, $usuario);
+        $paginacion = new Paginacion(IncidenteModelo::contar($proyectos, $f), $pagina);
 
-        return [IncidenteModelo::listar($proyectos, $paginacion->offset()), $paginacion];
+        return [IncidenteModelo::listar($proyectos, $paginacion->offset(), $f), $paginacion];
+    }
+
+    /**
+     * Tablero: los filtros de la lista, sin paginar.
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @param array<string, string> $filtros
+     * @return list<array<string, mixed>>
+     */
+    public static function tablero(array $usuario, array $filtros): array
+    {
+        return IncidenteModelo::listar(Permisos::proyectos($usuario), null, self::filtros($filtros, $usuario), CasoServicio::TOPE_VISTA);
+    }
+
+    /**
+     * Valores de la URL a filtros del modelo. Lo que no es válido no filtra.
+     *
+     * @param array<string, string> $filtros estado, severidad, stopper ('1'), mios ('1')
+     * @param array{id: int} $usuario
+     * @return array<string, ?int>
+     */
+    private static function filtros(array $filtros, array $usuario): array
+    {
+        $numero = fn (string $clave, string $catalogo): ?int => Catalogo::existe($catalogo, $filtros[$clave] ?? null) ? (int) $filtros[$clave] : null;
+
+        return [
+            'estado' => $numero('estado', 'estado_incidente'),
+            'severidad' => $numero('severidad', 'severidad'),
+            'stopper' => ($filtros['stopper'] ?? '') === '1' ? 1 : null,
+            'asignado' => ($filtros['mios'] ?? '') === '1' ? $usuario['id'] : null,
+        ];
     }
 
     /**

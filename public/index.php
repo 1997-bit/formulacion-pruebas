@@ -12,6 +12,7 @@ use App\Core\ErrorPermiso;
 use App\Core\Respuesta;
 use App\Core\Ruteador;
 use App\Core\Sesion;
+use App\Models\ProyectoModelo;
 use App\Services\AccesoServicio;
 
 // Ningún sitio puede cargar estas páginas en un iframe (BUG-017).
@@ -51,6 +52,11 @@ if ($usuario !== null) {
         Sesion::salir();
         Respuesta::redirigir('/');
     }
+    // Proyecto activo del selector del sidebar: solo si existe y el usuario todavía es miembro.
+    $activo = $_SESSION['proyecto'] ?? null;
+    $usuario['activo'] = is_int($activo) && ($usuario['rol'] === 1 ? ProyectoModelo::porId($activo) !== null : in_array($activo, $usuario['proyectos'], true))
+        ? $activo
+        : null;
     Sesion::refrescar($usuario);
 }
 

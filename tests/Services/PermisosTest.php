@@ -89,6 +89,13 @@ final class PermisosTest extends TestCase
         $this->assertSame([10, 11], $proyectos);
     }
 
+    // Selector del sidebar: las listas muestran solo el proyecto activo, también al admin.
+    public function testProyectosConActivoSoloEse(): void
+    {
+        $this->assertSame([11], Permisos::proyectos(self::TESTER + ['activo' => 11]));
+        $this->assertSame([3], Permisos::proyectos(self::ADMIN + ['activo' => 3]));
+    }
+
     /** @return array<string, array{array<string, mixed>, bool}> */
     public static function editores(): array
     {

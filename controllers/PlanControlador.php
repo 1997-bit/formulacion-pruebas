@@ -20,7 +20,9 @@ final class PlanControlador
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        if (!isset($_GET['proyecto'])) {
+        // Sin ?proyecto: el proyecto activo del sidebar.
+        $id = $_GET['proyecto'] ?? $usuario['activo'];
+        if ($id === null) {
             Vista::pagina('plan_pruebas/listar', [
                 'titulo' => 'Plan de pruebas',
                 'proyectos' => PlanServicio::proyectos($usuario),
@@ -30,7 +32,7 @@ final class PlanControlador
             return;
         }
 
-        $proyecto = PlanServicio::proyecto((int) $_GET['proyecto'], $usuario) ?? Respuesta::error(404);
+        $proyecto = PlanServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('plan_pruebas/ver', [
             'titulo' => 'Plan de pruebas · ' . $proyecto['nombre'],
             'proyecto' => $proyecto,

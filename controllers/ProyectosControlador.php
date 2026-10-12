@@ -9,6 +9,8 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\ProyectoModelo;
+use App\Services\Permisos;
 use App\Services\ProyectoServicio;
 
 // Proyectos y miembros (7.1).
@@ -73,6 +75,27 @@ final class ProyectosControlador
             Respuesta::errores($e->errores, [], '/admin/proyectos');
         }
         Respuesta::exito('Proyecto eliminado.', '/admin/proyectos');
+    }
+
+    // Selector del sidebar. 0: todos. Vuelve a la misma sección; desde un detalle, al panel.
+    public function activar(): void
+    {
+        $id = (int) ($_POST['proyecto'] ?? 0);
+        if ($id !== 0) {
+            ProyectoModelo::porId($id) ?? Respuesta::error(404);
+            Permisos::exigirMiembro(Sesion::usuario(), $id);
+        }
+        $_SESSION['proyecto'] = $id ?: null;
+
+        $volver = parse_url((string) ($_POST['volver'] ?? ''), PHP_URL_PATH);
+        $menu = require RAIZ . '/config/menu.php';
+        $secciones = [];
+        array_walk_recursive($menu, function (mixed $valor, string|int $clave) use (&$secciones): void {
+            if ($clave === 'ruta') {
+                $secciones[] = $valor;
+            }
+        });
+        Respuesta::redirigir(in_array($volver, $secciones, true) ? $volver : '/dashboard');
     }
 
     /** @param array{nombre?: string, descripcion?: string, miembros: list<string>} $datos */

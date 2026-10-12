@@ -10,8 +10,10 @@ use App\Helpers\Icono;
  */
 ?>
 <?php if (!empty($flash)): ?>
-  <div class="alerta alerta-exito" role="status"><?= Icono::svg('circle-check') ?>
+  <?php // Aviso flotante: app.js lo cierra a los 5 s. Sin JS queda visible. ?>
+  <div class="alerta alerta-exito aviso-flotante" role="status"><?= Icono::svg('circle-check') ?>
     <p class="alerta-titulo"><?= Html::e($flash) ?></p>
+    <button class="btn btn-fantasma btn-icono btn-sm alerta-accion" type="button" data-cerrar-aviso aria-label="Cerrar aviso" data-tooltip="Cerrar" data-tooltip-alinear="fin"><?= Icono::svg('x') ?></button>
   </div>
 <?php endif; ?>
 <?php if (!empty($errores)): ?>

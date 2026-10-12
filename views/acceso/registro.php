@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Core\Csrf;
+use App\Core\Vista;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -22,11 +23,7 @@ $campos = [
     <h1 class="tarjeta-titulo" id="ac-titulo">Crear cuenta</h1>
     <p class="tarjeta-descripcion">La cuenta nueva tiene rol tester.</p>
   </header>
-  <?php if (isset($errores['general'])): ?>
-    <div class="alerta alerta-error" role="alert"><?= Icono::svg('circle-alert') ?>
-      <p class="alerta-titulo"><?= Html::e($errores['general']) ?></p>
-    </div>
-  <?php endif; ?>
+  <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <?php foreach ($campos as [$campo, $etiqueta, $tipo, $autocompletar, $maximo]): ?>
     <?php $error = $errores[$campo] ?? null; ?>
     <div class="campo">

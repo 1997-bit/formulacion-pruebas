@@ -24,11 +24,21 @@ final class IncidentesControlador
 
     public function listar(): void
     {
-        [$incidentes, $paginacion] = IncidenteServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
+        $filtros = [];
+        foreach (['estado', 'severidad', 'stopper', 'mios'] as $filtro) {
+            $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
+        }
+        // Lista por defecto: g i y el menú siempre llevan a la lista.
+        $vista = ($_GET['vista'] ?? '') === 'tablero' ? 'tablero' : 'lista';
+        [$incidentes, $paginacion] = $vista === 'lista'
+            ? IncidenteServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1), $filtros)
+            : [IncidenteServicio::tablero(Sesion::usuario(), $filtros), null];
         Vista::pagina('incidentes/listar', [
             'titulo' => 'Incidentes',
             'incidentes' => $incidentes,
             'paginacion' => $paginacion,
+            'vista' => $vista,
+            'filtros' => $filtros,
             'flash' => Sesion::tomar('flash'),
             'migas' => [['texto' => 'Incidentes'], ['texto' => 'Listar']],
         ]);
@@ -117,5 +127,17 @@ final class IncidentesControlador
             Respuesta::errores($e->errores, $datos, '/formularios/incidentes/ver?id=' . $id);
         }
         Respuesta::exito("Incidente {$codigo} guardado.", '/formularios/incidentes/ver?id=' . $id);
+    }
+
+    // Tablero: destino = "id-estado". Solo cambia el estado.
+    public function mover(): void
+    {
+        [$id, $estado] = array_map('intval', explode('-', (string) ($_POST['destino'] ?? '0-0'), 2) + [1 => 0]);
+        try {
+            $codigo = IncidenteServicio::mover($id, $estado, Sesion::usuario());
+        } catch (ErrorValidacion $e) {
+            Respuesta::errores($e->errores, [], '/formularios/incidentes/ver?id=' . $id);
+        }
+        Respuesta::exito("Incidente {$codigo} movido.", '/formularios/incidentes?vista=tablero');
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
     ->exclude(['vendor', 'storage', 'views'])
-    ->notPath(['public/paleta.php', 'public/dashboard.php']);
+    ->notPath(['public/dashboard.php']);
 
 return (new PhpCsFixer\Config())
     ->setRules(['@PSR12' => true])

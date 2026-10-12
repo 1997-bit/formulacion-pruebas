@@ -1,9 +1,13 @@
-// Sin defer: fija el tema y los atajos antes de pintar, sin parpadeo. app.js la vuelve a llamar al cambiar un ajuste.
+// Sin defer: fija los ajustes antes de pintar, sin parpadeo. app.js la vuelve a llamar al cambiar uno.
+// <html data-tema data-atajos data-movimiento data-subrayar data-paleta>: el CSS y los scripts los leen de ahí.
+const AJUSTES = { tema: 'sistema', atajos: 'si', movimiento: 'sistema', subrayar: 'no', paleta: 'si' };
 function aplicarPreferencias() {
-  let t = null;
-  let a = null;
-  try { t = localStorage.getItem('tema'); a = localStorage.getItem('atajos'); } catch (e) {}
-  document.documentElement.dataset.tema = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.dataset.atajos = a || 'si';
+  const raiz = document.documentElement;
+  Object.entries(AJUSTES).forEach(([clave, porDefecto]) => {
+    let valor = null;
+    try { valor = localStorage.getItem(clave); } catch (e) {}
+    raiz.dataset[clave] = valor || porDefecto;
+  });
+  if (raiz.dataset.tema === 'sistema') raiz.dataset.tema = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 aplicarPreferencias();

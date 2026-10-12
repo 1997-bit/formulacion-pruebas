@@ -18,7 +18,9 @@ final class AutoevaluacionControlador
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        if (!isset($_GET['proyecto'])) {
+        // Sin ?proyecto: el proyecto activo del sidebar.
+        $id = $_GET['proyecto'] ?? $usuario['activo'];
+        if ($id === null) {
             Vista::pagina('autoevaluacion/listar', [
                 'titulo' => 'Auto y coevaluación',
                 'proyectos' => AutoevaluacionServicio::proyectos($usuario),
@@ -28,7 +30,7 @@ final class AutoevaluacionControlador
             return;
         }
 
-        $proyecto = AutoevaluacionServicio::proyecto((int) $_GET['proyecto'], $usuario) ?? Respuesta::error(404);
+        $proyecto = AutoevaluacionServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('autoevaluacion/ver', [
             'titulo' => 'Auto y coevaluación · ' . $proyecto['nombre'],
             'proyecto' => $proyecto,

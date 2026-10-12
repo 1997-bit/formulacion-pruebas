@@ -29,13 +29,17 @@ final class Permisos
 
     /**
      * Proyectos que el usuario puede ver en una lista. null: admin, todos.
-     * Vienen con el usuario de la sesión, leído en cada petición (#109).
+     * Vienen con el usuario de la sesión, leído en cada petición (#109). Con proyecto activo: solo ese.
      *
      * @param array<string, mixed> $usuario
      * @return list<int>|null
      */
     public static function proyectos(array $usuario): ?array
     {
+        if (($usuario['activo'] ?? null) !== null) {
+            return [$usuario['activo']];
+        }
+
         return $usuario['rol'] === 1 ? null : $usuario['proyectos'];
     }
 

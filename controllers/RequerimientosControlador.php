@@ -33,7 +33,7 @@ final class RequerimientosControlador
             'titulo' => 'Registrar requerimiento',
             'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
             'errores' => Sesion::tomar('errores', []),
-            'datos' => Sesion::tomar('datos', []),
+            'datos' => Sesion::tomar('datos', ['proyecto_id' => (string) Sesion::usuario()['activo']]),
             'migas' => [['texto' => 'Requerimientos', 'ruta' => '/requerimientos/listar'], ['texto' => 'Registrar']],
         ]);
     }

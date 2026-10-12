@@ -15,14 +15,14 @@ final class ReporteServicio
     /**
      * Totales por proyecto y del conjunto. Cada proyecto lleva sus criterios Go / No-Go.
      *
-     * @param array{id: int, rol: int} $usuario
+     * @param array{id: int, rol: int, activo?: ?int} $usuario
      * @return array{total: array<string, int>, proyectos: list<array<string, mixed>>}
      */
     public static function avance(array $usuario): array
     {
         $proyectos = array_map(
             self::evaluar(...),
-            ReporteModelo::porProyecto($usuario['id'], $usuario['rol'] === 1),
+            ReporteModelo::porProyecto($usuario['id'], $usuario['rol'] === 1, $usuario['activo'] ?? null),
         );
         $total = [];
         foreach (self::CIFRAS as $cifra) {

@@ -18,22 +18,31 @@ use App\Helpers\Icono;
  * @var array<string, string> $errores
  * @var array<string, mixed> $datos
  * @var array{rol: int} $usuario
+ * @var array{0: ?array<string, mixed>, 1: ?array<string, mixed>} $vecinos  caso anterior y siguiente
  */
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
 $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—' : Html::e($valor);
 ?>
-<header class="encabezado">
+<header class="encabezado" data-reciente="<?= Html::e($caso['codigo']) ?>" data-reciente-texto="<?= Html::e($caso['objetivo']) ?>">
   <div>
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?></p>
     <h1><?= Html::e($caso['modulo']) ?></h1>
     <p class="solo-impresion">Formulario 1 · Registro de caso de prueba</p>
   </div>
   <div class="acciones">
-    <a class="btn btn-secundario" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
+    <?php foreach ([[$vecinos[0], 'k', 'Caso anterior', 'chevron-left'], [$vecinos[1], 'j', 'Caso siguiente', 'chevron-right']] as [$v, $tecla, $etiqueta, $icono]): ?>
+      <?php if ($v !== null): ?>
+        <a class="btn btn-fantasma btn-icono" href="/casos/resultado?id=<?= (int) $v['id'] ?>" aria-label="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>"
+           data-tooltip="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>" data-atajo="<?= $tecla ?>" data-atajo-texto="<?= $etiqueta ?>"><?= Icono::svg($icono) ?></a>
+      <?php else: ?>
+        <span class="btn btn-fantasma btn-icono" aria-disabled="true" role="link" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></span>
+      <?php endif; ?>
+    <?php endforeach; ?>
+    <a class="btn <?= $caso['estado'] === 2 ? 'btn-primario' : 'btn-secundario' ?>" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>" data-atajo="i"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
-      <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
+      <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>" data-atajo="e"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
     <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
     <?php if ($usuario['rol'] === 1): ?>

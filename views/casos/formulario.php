@@ -172,23 +172,16 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
       <?php if (!$historial): ?>
         <p class="campo-ayuda">Sin cambios todavía.</p>
       <?php else: ?>
-        <div class="tabla-contenedor">
-          <table class="tabla tabla-tarjetas">
-            <caption class="solo-lector">Cambios de <?= Html::e($caso['codigo']) ?></caption>
-            <thead><tr><th scope="col">Fecha</th><th scope="col">Usuario</th><th scope="col">Campo</th><th scope="col">Antes</th><th scope="col">Después</th></tr></thead>
-            <tbody>
-              <?php foreach ($historial as $h): ?>
-                <tr>
-                  <td data-columna="Fecha"><?= Fecha::legible(new DateTime($h['fecha'])) ?> <?= (new DateTime($h['fecha']))->format('H:i') ?></td>
-                  <td data-columna="Usuario"><?= Html::e($h['usuario']) ?></td>
-                  <td data-columna="Campo"><?= Html::e($h['etiqueta']) ?></td>
-                  <td data-columna="Antes" class="celda-larga"><del class="cambio"><?= Html::e($h['antes']) ?></del></td>
-                  <td data-columna="Después" class="celda-larga"><ins class="cambio"><?= Html::e($h['despues']) ?></ins></td>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
+        <ol class="linea-tiempo" aria-label="<?= Html::e('Cambios de ' . $caso['codigo']) ?>">
+          <?php foreach ($historial as $h): ?>
+            <?php $fecha = new DateTime($h['fecha']); ?>
+            <li>
+              <p class="linea-tiempo-cabeza"><strong><?= Html::e($h['usuario']) ?></strong> cambió <?= Html::e($h['etiqueta']) ?>
+                <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>"><?= Fecha::legible($fecha) ?> <?= $fecha->format('H:i') ?></time></p>
+              <p><span class="solo-lector">Antes: </span><del class="cambio"><?= Html::e($h['antes']) ?></del> <span aria-hidden="true">→</span><span class="solo-lector">. Después: </span> <ins class="cambio"><?= Html::e($h['despues']) ?></ins></p>
+            </li>
+          <?php endforeach; ?>
+        </ol>
       <?php endif; ?>
     </section>
   <?php endif; ?>

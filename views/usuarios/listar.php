@@ -23,12 +23,7 @@ use App\Helpers\Icono;
   <div class="acciones"><a class="btn btn-primario" href="/admin/usuarios/crear"><?= Icono::svg('plus') ?> Crear usuario</a></div>
 </header>
 <div class="pila">
-  <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
-  <?php if (isset($errores['general'])): ?>
-    <div class="alerta alerta-error" role="alert"><?= Icono::svg('circle-alert') ?>
-      <p class="alerta-titulo"><?= Html::e($errores['general']) ?></p>
-    </div>
-  <?php endif; ?>
+  <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <?php if (!$usuarios): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
