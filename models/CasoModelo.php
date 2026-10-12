@@ -68,6 +68,35 @@ final class CasoModelo
     }
 
     /**
+     * Tablero y cronograma: sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{0: string, 1: string}|null $rango fechas ISO, inicio y fin
+     * @return list<array<string, mixed>>
+     */
+    public static function sinPaginar(?array $proyectos, array $filtros, ?array $rango, int $limite): array
+    {
+        [$donde, $valores] = self::donde($proyectos, $filtros);
+        if ($rango !== null) {
+            $donde .= ' AND c.fecha_inicio <= ? AND c.fecha_fin >= ?';
+            $valores = [...$valores, $rango[1], $rango[0]];
+        }
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.estado, c.fecha_inicio, c.fecha_fin,
+                    p.nombre AS proyecto, r.codigo AS requerimiento, r.descripcion AS requerimiento_descripcion,
+                    (SELECT COUNT(*) FROM incidentes i WHERE i.caso_id = c.id AND i.estado <> 2) AS incidentes
+             FROM casos_prueba c
+             JOIN proyectos p ON p.id = c.proyecto_id
+             JOIN requerimientos r ON r.id = c.requerimiento_id' . $donde . '
+             ORDER BY c.proyecto_id, r.codigo, c.fecha_inicio, c.sigla, c.numero LIMIT ' . $limite
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Pendientes con la fecha final ya pasada, el más atrasado primero.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()

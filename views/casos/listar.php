@@ -9,7 +9,9 @@ use App\Helpers\Icono;
 
 /**
  * @var list<array<string, mixed>> $casos
- * @var Paginacion $paginacion
+ * @var ?Paginacion $paginacion  null en tablero y cronograma
+ * @var string $vista lista, tablero o cronograma
+ * @var DateTimeImmutable $mes  primer día del mes del cronograma
  * @var ?string $flash
  * @var array<string, string> $filtros proyecto, requerimiento, estado
  * @var list<array<string, mixed>> $proyectos
@@ -17,6 +19,9 @@ use App\Helpers\Icono;
  */
 
 $filtrado = array_filter($filtros, fn (string $v): bool => $v !== '') !== [];
+// Las pestañas conservan los filtros.
+$vistas = ['lista' => ['Lista', 'list-checks'], 'tablero' => ['Tablero', 'folder-kanban'], 'cronograma' => ['Cronograma', 'chart-column']];
+$enlaceVista = fn (string $v): string => '/casos/listar?' . http_build_query(['vista' => $v] + array_filter($filtros, fn (string $x): bool => $x !== ''));
 $elegido = fn (string $filtro, int|string $valor): string => (string) $valor === $filtros[$filtro] ? ' selected' : '';
 
 // Los códigos se repiten entre proyectos: se agrupan, sin grupos si hay uno solo.
@@ -40,10 +45,17 @@ foreach ($porProyecto as $proyecto => $reqs) {
   </div>
   <div class="acciones"><a class="btn btn-primario" href="/casos/registrar" data-atajo="c"><?= Icono::svg('plus') ?> Registrar caso</a></div>
 </header>
+<nav class="pestanas" aria-label="Vistas de casos">
+  <?php foreach ($vistas as $clave => [$texto, $icono]): ?>
+    <a href="<?= Html::e($enlaceVista($clave)) ?>"<?= $clave === $vista ? ' aria-current="page"' : '' ?>><?= Icono::svg($icono) ?> <?= $texto ?></a>
+  <?php endforeach; ?>
+</nav>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
-  <?php if ($casos || $filtrado): ?>
+  <?php if ($casos || $filtrado || $vista === 'cronograma'): ?>
     <form class="filtros" method="get" action="/casos/listar" role="search" aria-label="Filtrar casos">
+      <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
+      <?php if ($vista === 'cronograma'): ?><input type="hidden" name="mes" value="<?= $mes->format('Y-m') ?>"><?php endif; ?>
       <div class="campo">
         <label for="fl-proyecto">Proyecto</label>
         <div class="select">
@@ -65,11 +77,13 @@ foreach ($porProyecto as $proyecto => $reqs) {
       </div>
       <div class="acciones">
         <button class="btn btn-secundario" type="submit">Filtrar</button>
-        <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar">Limpiar</a><?php endif; ?>
+        <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
       </div>
     </form>
   <?php endif; ?>
-  <?php if (!$casos && $filtrado): ?>
+  <?php if ($vista === 'cronograma'): ?>
+    <?= Vista::capturar('casos/cronograma', ['casos' => $casos, 'mes' => $mes, 'filtros' => $filtros]) ?>
+  <?php elseif (!$casos && $filtrado): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('search') ?></span>
       <h2>Ningún caso coincide con los filtros</h2>
@@ -83,6 +97,8 @@ foreach ($porProyecto as $proyecto => $reqs) {
       <p>Registre el primer caso para empezar a darle seguimiento.</p>
       <a class="btn btn-primario" href="/casos/registrar"><?= Icono::svg('plus') ?> Registrar caso</a>
     </div>
+  <?php elseif ($vista === 'tablero'): ?>
+    <?= Vista::capturar('casos/tablero', ['casos' => $casos]) ?>
   <?php else: ?>
     <div class="tabla-contenedor">
       <table class="tabla tabla-tarjetas">

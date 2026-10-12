@@ -20,6 +20,8 @@ use App\Models\UsuarioModelo;
 // RF-04, RF-05, RF-07, RF-16, RF-24
 final class CasoServicio
 {
+    // Tablero y cronograma: más de esto pide filtrar.
+    public const TOPE_VISTA = 300;
     // Tipo de evidencia => sufijo de los campos: evidencia_captura, descripcion_captura…
     public const EVIDENCIAS = [1 => 'captura', 2 => 'log', 4 => 'enlace'];
 
@@ -273,6 +275,19 @@ final class CasoServicio
         $paginacion = new Paginacion(CasoModelo::contar($proyectos, $f), $pagina);
 
         return [CasoModelo::listar($proyectos, $f, $paginacion->offset()), $paginacion];
+    }
+
+    /**
+     * Tablero y cronograma: los filtros de la lista, sin paginar.
+     *
+     * @param array<string, mixed> $usuario
+     * @param array<string, string> $filtros
+     * @param array{0: string, 1: string}|null $rango
+     * @return list<array<string, mixed>>
+     */
+    public static function sinPaginar(array $usuario, array $filtros, ?array $rango): array
+    {
+        return CasoModelo::sinPaginar(Permisos::proyectos($usuario), self::filtros($filtros), $rango, self::TOPE_VISTA);
     }
 
     /**
