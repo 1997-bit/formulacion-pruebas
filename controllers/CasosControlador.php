@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Entrada;
 use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
@@ -63,7 +64,7 @@ final class CasosControlador
 
     public function guardar(): void
     {
-        $datos = $this->texto([...self::CAMPOS, ...self::CAMPOS_RESULTADO]);
+        $datos = Entrada::textos([...self::CAMPOS, ...self::CAMPOS_RESULTADO]);
         $marcadas = $this->marcadas();
         try {
             [$id, $codigo] = CasoServicio::registrar($datos, $marcadas, $this->archivos(), Sesion::usuario());
@@ -97,7 +98,7 @@ final class CasosControlador
     public function actualizar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        $datos = $this->texto(self::CAMPOS);
+        $datos = Entrada::textos(self::CAMPOS);
         try {
             $codigo = CasoServicio::editar($id, $datos, (string) ($_POST['huella'] ?? ''), Sesion::usuario());
         } catch (ErrorValidacion $e) {
@@ -128,7 +129,7 @@ final class CasosControlador
     public function anotar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        $datos = $this->texto(self::CAMPOS_RESULTADO);
+        $datos = Entrada::textos(self::CAMPOS_RESULTADO);
         $marcadas = $this->marcadas();
         try {
             $codigo = CasoServicio::registrarResultado($id, $datos, $marcadas, $this->archivos(), Sesion::usuario());
@@ -147,20 +148,6 @@ final class CasosControlador
             Respuesta::errores($e->errores, [], '/casos/resultado?id=' . $id);
         }
         Respuesta::exito("Caso {$codigo} eliminado.", '/casos/listar');
-    }
-
-    /**
-     * @param list<string> $campos
-     * @return array<string, string>
-     */
-    private function texto(array $campos): array
-    {
-        $datos = [];
-        foreach ($campos as $campo) {
-            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
-        }
-
-        return $datos;
     }
 
     /** @return list<string> */

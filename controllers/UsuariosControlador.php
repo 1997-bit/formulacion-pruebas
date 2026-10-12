@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Entrada;
 use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
@@ -40,7 +41,7 @@ final class UsuariosControlador
 
     public function guardar(): void
     {
-        $datos = $this->datos();
+        $datos = Entrada::textos(self::CAMPOS);
         try {
             $usuario = UsuarioServicio::crear($datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
@@ -53,7 +54,7 @@ final class UsuariosControlador
     {
         $id = (int) ($_POST['id'] ?? 0);
         UsuarioServicio::ver($id, Sesion::usuario()) ?? Respuesta::error(404);
-        $datos = $this->datos();
+        $datos = Entrada::textos(self::CAMPOS);
         try {
             $usuario = UsuarioServicio::editar($id, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
@@ -83,17 +84,6 @@ final class UsuariosControlador
             'datos' => $datos,
             'migas' => [['texto' => 'Usuarios', 'ruta' => '/admin/usuarios'], ['texto' => $titulo]],
         ]);
-    }
-
-    /** @return array<string, string> */
-    private function datos(): array
-    {
-        $datos = [];
-        foreach (self::CAMPOS as $campo) {
-            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
-        }
-
-        return $datos;
     }
 
     /**

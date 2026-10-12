@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Entrada;
 use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
@@ -58,10 +59,7 @@ final class PlanControlador
     public function guardar(): void
     {
         $id = (int) ($_POST['proyecto_id'] ?? 0);
-        $datos = [];
-        foreach (self::CAMPOS as $campo) {
-            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
-        }
+        $datos = Entrada::textos(self::CAMPOS);
         try {
             PlanServicio::guardar($id, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {

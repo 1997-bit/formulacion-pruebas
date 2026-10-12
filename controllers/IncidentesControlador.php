@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Entrada;
 use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
@@ -79,7 +80,7 @@ final class IncidentesControlador
     public function guardar(): void
     {
         $casoId = (int) ($_POST['caso_id'] ?? 0);
-        $datos = $this->texto(self::CAMPOS);
+        $datos = Entrada::textos(self::CAMPOS);
         try {
             [$id, $codigo] = IncidenteServicio::registrar($casoId, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
@@ -109,26 +110,12 @@ final class IncidentesControlador
     public function actualizar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        $datos = $this->texto(['estado', 'asignado_id', 'es_stopper']);
+        $datos = Entrada::textos(['estado', 'asignado_id', 'es_stopper']);
         try {
             $codigo = IncidenteServicio::seguimiento($id, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, $datos, '/formularios/incidentes/ver?id=' . $id);
         }
         Respuesta::exito("Incidente {$codigo} guardado.", '/formularios/incidentes/ver?id=' . $id);
-    }
-
-    /**
-     * @param list<string> $campos
-     * @return array<string, string>
-     */
-    private function texto(array $campos): array
-    {
-        $datos = [];
-        foreach ($campos as $campo) {
-            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
-        }
-
-        return $datos;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Entrada;
 use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
@@ -91,13 +92,8 @@ final class ProyectosControlador
     /** @return array{nombre: string, descripcion: string, miembros: list<string>} */
     private function datos(): array
     {
-        $texto = fn (string $campo): string => is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
         $miembros = is_array($_POST['miembros'] ?? null) ? $_POST['miembros'] : [];
 
-        return [
-            'nombre' => $texto('nombre'),
-            'descripcion' => $texto('descripcion'),
-            'miembros' => array_values(array_filter($miembros, 'is_string')),
-        ];
+        return Entrada::textos(['nombre', 'descripcion']) + ['miembros' => array_values(array_filter($miembros, 'is_string'))];
     }
 }

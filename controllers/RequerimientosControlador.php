@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Entrada;
 use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
@@ -39,10 +40,7 @@ final class RequerimientosControlador
 
     public function guardar(): void
     {
-        $datos = [];
-        foreach (self::CAMPOS as $campo) {
-            $datos[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
-        }
+        $datos = Entrada::textos(self::CAMPOS);
         try {
             $codigo = RequerimientoServicio::registrar($datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
