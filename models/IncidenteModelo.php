@@ -45,6 +45,26 @@ final class IncidenteModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Abiertos asignados a un usuario, lo más grave primero.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function asignadosA(int $usuarioId, ?array $proyectos, int $limite): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT i.id, i.codigo, i.titulo, i.severidad, i.estado, i.es_stopper
+             FROM incidentes i
+             WHERE ' . $permiso . ' AND i.asignado_id = ? AND i.estado <> 2
+             ORDER BY i.severidad DESC, i.id LIMIT ' . $limite
+        );
+        $sql->execute([...$valores, $usuarioId]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** @return array<string, mixed>|null */
     public static function porId(int $id): ?array
     {

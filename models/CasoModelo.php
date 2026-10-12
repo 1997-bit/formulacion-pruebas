@@ -67,6 +67,26 @@ final class CasoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Pendientes con la fecha final ya pasada, el más atrasado primero.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function atrasados(?array $proyectos, int $limite): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
+             FROM casos_prueba c
+             WHERE ' . $permiso . ' AND c.estado = 0 AND c.fecha_fin < CURDATE()
+             ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** @return array<string, mixed>|null */
     public static function porId(int $id): ?array
     {

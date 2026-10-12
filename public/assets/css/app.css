@@ -397,6 +397,26 @@
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
 }
 
+/* Panel: cifras con enlace, listas de tareas y barra apilada */
+.cifra-enlace { color: inherit; text-decoration: none; }
+.cifra-enlace:hover { background: var(--acento); }
+.tareas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.tareas a {
+  display: flex; align-items: center; gap: 8px; padding: 8px; margin: 0 -8px;
+  color: inherit; text-decoration: none; border-radius: var(--radio-md); font-size: var(--letra-sm);
+}
+.tareas a:hover { background: var(--acento); }
+.tareas a > span:not(.codigo):not(.insignia) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tareas small { color: var(--tenue-texto); white-space: nowrap; }
+.tarea-vacia { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.barra-apilada { display: flex; gap: 2px; height: 10px; border-radius: var(--radio-total); overflow: hidden; background: var(--secundario); }
+.barra-exito { background: var(--exito); }
+.barra-peligro { background: var(--peligro); }
+.barra-aviso { background: var(--aviso); }
+.leyenda { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+.leyenda li { display: flex; align-items: center; gap: 6px; }
+.leyenda-muestra { width: 10px; height: 10px; border-radius: 3px; }
+
 /* Impresión: solo el contenido */
 
 @media print {
