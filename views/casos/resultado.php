@@ -31,9 +31,9 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
     <p class="solo-impresion">Formulario 1 · Registro de caso de prueba</p>
   </div>
   <div class="acciones">
-    <a class="btn btn-secundario" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>"><?= Icono::svg('bug') ?> Registrar incidente</a>
+    <a class="btn <?= $caso['estado'] === 2 ? 'btn-primario' : 'btn-secundario' ?>" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>" data-atajo="i"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
-      <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>"><?= Icono::svg('pencil') ?> Editar</a>
+      <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>" data-atajo="e"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
     <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
     <?php if ($usuario['rol'] === 1): ?>

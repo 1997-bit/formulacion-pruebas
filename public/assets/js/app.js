@@ -92,6 +92,30 @@
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });
 
+  // Error de validación: el foco va al primer campo marcado.
+  document.querySelector('.alerta-error') && document.querySelector('[aria-invalid="true"]')?.focus();
+
+  // Un envío por form: el segundo clic no hace nada. Volver con Atrás lo libera.
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (form.method === 'dialog' || e.submitter?.formMethod === 'dialog') return;
+    if ('enviando' in form.dataset) { e.preventDefault(); return; }
+    form.dataset.enviando = '';
+    e.submitter?.setAttribute('aria-disabled', 'true');
+  });
+  window.addEventListener('pageshow', () => {
+    document.querySelectorAll('form[data-enviando]').forEach((f) => {
+      delete f.dataset.enviando;
+      f.querySelectorAll('[aria-disabled]').forEach((b) => b.removeAttribute('aria-disabled'));
+    });
+  });
+
+  // Cambios sin guardar en un form POST: el navegador pregunta antes de salir.
+  let sinGuardar = false;
+  document.addEventListener('input', (e) => { if (e.target.form?.method === 'post') sinGuardar = true; });
+  document.addEventListener('submit', () => { sinGuardar = false; });
+  window.addEventListener('beforeunload', (e) => { if (sinGuardar) e.preventDefault(); });
+
   // Escape esconde los tooltips hasta mover el mouse o el foco.
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') raiz.setAttribute('data-tooltips-ocultos', '');
