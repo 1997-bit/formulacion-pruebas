@@ -165,19 +165,13 @@ final class TablaDecisionServicio
             }
         }
 
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($requerimientoId, $huella, $filas, $usuario, $celdas): void {
             if (FilasModelo::huella(self::TABLAS, 'requerimiento_id', $requerimientoId) !== $huella) {
                 throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
             }
             FilasModelo::guardar(self::TABLA, $requerimientoId, ['es_accion', 'texto'], $filas, $usuario['id']);
             TablaDecisionModelo::guardarCeldas($requerimientoId, $celdas);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 
     /**

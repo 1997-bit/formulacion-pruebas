@@ -134,15 +134,9 @@ final class AutoevaluacionServicio
         }
         $v->comprobar();
 
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($proyectoId, $usuario, $filas): void {
             AutoevaluacionModelo::guardar($proyectoId, $usuario['id'], $filas);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 
     /** @param array<int, int> $puntos */

@@ -75,14 +75,8 @@ final class RubricaServicio
         }
         $v->comprobar();
 
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($proyectoId, $usuario, $filas): void {
             RubricaModelo::guardar($proyectoId, $usuario['id'], $filas);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
     }
 }
