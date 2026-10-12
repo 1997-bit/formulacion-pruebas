@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Config\Conexion;
+use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 
 final class CasoModelo
@@ -148,7 +149,7 @@ final class CasoModelo
             Conexion::pdo()->prepare('DELETE FROM casos_prueba WHERE id = ?')->execute([$id]);
             Conexion::pdo()->prepare("DELETE FROM logs_cambios WHERE tabla = 'casos_prueba' AND registro_id = ?")->execute([$id]);
         } catch (\PDOException $e) {
-            if ($e->getCode() === '23000') {
+            if (ErrorValidacion::esLlaveForanea($e)) {
                 return false;
             }
             throw $e;

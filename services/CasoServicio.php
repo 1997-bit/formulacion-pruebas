@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Conexion;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
@@ -34,8 +35,12 @@ final class CasoServicio
     public static function registrar(array $datos, array $marcadas, array $archivos, array $usuario): array
     {
         $d = array_map('trim', $datos);
-        $requerimientos = array_column(RequerimientoModelo::todos(Permisos::proyectos($usuario)), null, 'id');
-        $requerimiento = $requerimientos[$d['requerimiento_id']] ?? null;
+        // Uno de otro proyecto cuenta como no elegido.
+        $requerimiento = RequerimientoModelo::porId((int) $d['requerimiento_id']);
+        $proyectos = Permisos::proyectos($usuario);
+        if ($requerimiento !== null && $proyectos !== null && !in_array($requerimiento['proyecto_id'], $proyectos, true)) {
+            $requerimiento = null;
+        }
         $tipos = self::tipos($marcadas);
 
         $v = self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), null);
@@ -48,30 +53,26 @@ final class CasoServicio
         $guardados = [];
 
         // El bloqueo evita dos códigos iguales; UNIQUE (proyecto_id, codigo) lo respalda.
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
         try {
-            $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
-            $casoId = CasoModelo::crear([
-                'proyecto_id' => $proyectoId,
-                'codigo' => $codigo,
-                ...self::campos($d),
-                'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
-                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
-                'creado_por' => $usuario['id'],
-                'anotado_por' => $anotado ? $usuario['id'] : null,
-                'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
-            ]);
-            self::guardarEvidencias($casoId, $d, $tipos, $archivos, $usuario['id'], $guardados);
-            $pdo->commit();
+            return Conexion::transaccion(function () use ($proyectoId, $sigla, $d, $anotado, $tipos, $archivos, $usuario, &$guardados): array {
+                $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
+                $casoId = CasoModelo::crear([
+                    'proyecto_id' => $proyectoId,
+                    'codigo' => $codigo,
+                    ...self::campos($d),
+                    ...self::resultado($d),
+                    'creado_por' => $usuario['id'],
+                    'anotado_por' => $anotado ? $usuario['id'] : null,
+                    'anotado_en' => $anotado ? date('Y-m-d H:i:s') : null,
+                ]);
+                self::guardarEvidencias($casoId, $d, $tipos, $archivos, $usuario['id'], $guardados);
+
+                return [$casoId, $codigo];
+            });
         } catch (\Throwable $e) {
-            $pdo->rollBack();
             array_map('unlink', $guardados);
             throw $e;
         }
-
-        return [$casoId, $codigo];
     }
 
     /**
@@ -82,26 +83,20 @@ final class CasoServicio
      */
     public static function editar(int $id, array $datos, string $huella, array $usuario): string
     {
-        $caso = self::paraEditar($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $caso = self::paraEditar($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
         self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
 
         $campos = self::campos($d);
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
-        try {
+        Conexion::transaccion(function () use ($id, $huella, $campos, $requerimiento, $usuario): void {
             if (FilasModelo::huella(['casos_prueba'], 'id', $id) !== $huella) {
                 throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
             }
             $antes = CasoModelo::bloquear($id);
             CasoModelo::actualizar($id, $campos);
             Historial::registrar('casos_prueba', $id, $antes, $campos + ['requerimiento' => $requerimiento['codigo']], $usuario['id']);
-            $pdo->commit();
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        });
 
         return $caso['codigo'];
     }
@@ -159,17 +154,7 @@ final class CasoServicio
      */
     public static function miembrosPorProyecto(array $requerimientos): array
     {
-        $ids = [];
-        foreach ($requerimientos as $r) {
-            $ids[(int) $r['proyecto_id']] = true;
-        }
-
-        $salida = [];
-        foreach (array_keys($ids) as $proyectoId) {
-            $salida[$proyectoId] = UsuarioModelo::deProyecto($proyectoId);
-        }
-
-        return $salida;
+        return UsuarioModelo::deProyectos(array_values(array_unique(array_map(intval(...), array_column($requerimientos, 'proyecto_id')))));
     }
 
     /**
@@ -182,7 +167,7 @@ final class CasoServicio
      */
     public static function registrarResultado(int $id, array $datos, array $marcadas, array $archivos, array $usuario): string
     {
-        $caso = self::ver($id, $usuario) ?? throw new \DomainException('Caso no encontrado.');
+        $caso = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
         $tipos = self::tipos($marcadas);
 
@@ -191,24 +176,18 @@ final class CasoServicio
         $v->comprobar();
 
         $guardados = [];
-        $pdo = Conexion::pdo();
-        $pdo->beginTransaction();
         try {
-            $antes = CasoModelo::bloquear($id);
-            $resultado = [
-                'estado' => (int) $d['estado'],
-                'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
-                'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
-            ];
-            if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
-                throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
-            }
-            CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
-            Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
-            self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
-            $pdo->commit();
+            Conexion::transaccion(function () use ($id, $d, $tipos, $archivos, $usuario, &$guardados): void {
+                $antes = CasoModelo::bloquear($id);
+                $resultado = self::resultado($d);
+                if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
+                    throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
+                }
+                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
+                Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
+                self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
+            });
         } catch (\Throwable $e) {
-            $pdo->rollBack();
             array_map('unlink', $guardados);
             throw $e;
         }
@@ -216,13 +195,21 @@ final class CasoServicio
         return $caso['codigo'];
     }
 
-    /** @param array{id: int, rol: int} $usuario */
-    public static function eliminar(int $id, array $usuario): void
+    /**
+     * Devuelve el código del caso eliminado.
+     *
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function eliminar(int $id, array $usuario): string
     {
         Permisos::exigirAdmin($usuario);
-        if (!CasoModelo::eliminar($id)) {
+        $caso = CasoModelo::porId($id) ?? throw new ErrorNoEncontrado();
+        // Caso y su historial juntos: sin logs huérfanos.
+        if (!Conexion::transaccion(fn () => CasoModelo::eliminar($id))) {
             throw new ErrorValidacion(['general' => 'Tiene evidencias o incidentes: no se puede eliminar.']);
         }
+
+        return $caso['codigo'];
     }
 
     /**
@@ -353,6 +340,21 @@ final class CasoServicio
             'fecha_fin' => $d['fecha_fin'],
             'solicitado_por' => ($d['solicitado_por'] ?? '') === '' ? null : (int) $d['solicitado_por'],
             'aprobado_por' => ($d['aprobado_por'] ?? '') === '' ? null : (int) $d['aprobado_por'],
+        ];
+    }
+
+    /**
+     * Resultado del caso: estado, obtenido y observaciones.
+     *
+     * @param array<string, string> $d
+     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string}
+     */
+    private static function resultado(array $d): array
+    {
+        return [
+            'estado' => (int) $d['estado'],
+            'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
+            'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
         ];
     }
 

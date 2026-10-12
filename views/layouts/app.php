@@ -29,6 +29,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/app.css') ?>">
 <script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
 <script src="<?= Vista::estatico('/assets/js/app.js') ?>" defer></script>
+<script src="<?= Vista::estatico('/assets/js/atajos.js') ?>" defer></script>
 </head>
 <body class="app">
 <a class="saltar" href="#principal">Saltar al contenido</a>
@@ -41,7 +42,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
     <button class="barra-boton" id="sidebar-alternar" type="button"
             aria-controls="sidebar" aria-expanded="<?= $colapsado ? 'false' : 'true' ?>"
             aria-label="Mostrar u ocultar menú"
-            data-tooltip="Menú (Ctrl+B)" data-tooltip-lado="abajo" data-tooltip-alinear="inicio">
+            data-atajo="Mod+b" data-atajo-texto="Mostrar u ocultar menú" data-tooltip="Menú" data-tooltip-lado="abajo" data-tooltip-alinear="inicio">
       <?= Icono::svg('panel-left') ?>
     </button>
     <span class="barra-separador" aria-hidden="true"></span>

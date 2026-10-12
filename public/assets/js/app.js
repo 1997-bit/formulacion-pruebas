@@ -45,10 +45,6 @@
     fondo.addEventListener('click', () => cerrarMovil());
 
     document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        conmutar();
-      }
       if (e.key === 'Escape' && movilAbierto()) cerrarMovil();
     });
 
@@ -87,14 +83,13 @@
   // <button data-abrir-dialogo="id"> abre <dialog id="id">.
   document.querySelectorAll('[data-abrir-dialogo]').forEach((boton) => {
     const dialogo = document.getElementById(boton.dataset.abrirDialogo);
-    if (!dialogo) return;
-    boton.addEventListener('click', () => dialogo.showModal());
-    dialogo.addEventListener('click', (e) => {
-      // Solo clic en el velo, no en el relleno.
-      const r = dialogo.getBoundingClientRect();
-      const fuera = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-      if (e.target === dialogo && fuera) dialogo.close();
-    });
+    boton.addEventListener('click', () => dialogo?.showModal());
+  });
+  // Todo <dialog> cierra con clic en el velo, no en el relleno.
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof HTMLDialogElement)) return;
+    const r = e.target.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });
 
   // Escape esconde los tooltips hasta mover el mouse o el foco.
@@ -187,19 +182,43 @@
     });
   });
 
-  // Tema claro u oscuro, recordado.
+  // Tema y atajos: localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
   const botonTema = document.getElementById('tema');
-  if (botonTema) {
-    const pintar = () => {
-      const oscuro = raiz.dataset.tema === 'dark';
-      botonTema.setAttribute('aria-pressed', String(oscuro));
-      botonTema.dataset.tooltip = oscuro ? 'Cambiar a claro' : 'Cambiar a oscuro';
-    };
-    botonTema.addEventListener('click', () => {
-      raiz.dataset.tema = raiz.dataset.tema === 'dark' ? 'light' : 'dark';
-      try { localStorage.setItem('tema', raiz.dataset.tema); } catch (e) {}
-      pintar();
+  const pintarTema = () => {
+    if (!botonTema) return;
+    const oscuro = raiz.dataset.tema === 'dark';
+    botonTema.setAttribute('aria-pressed', String(oscuro));
+    botonTema.dataset.tooltip = oscuro ? 'Cambiar a claro' : 'Cambiar a oscuro';
+  };
+  const leer = (clave) => { try { return localStorage.getItem(clave); } catch (e) { return null; } };
+  const guardar = (clave, valor) => {
+    try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
+  };
+  // El valor por defecto no se guarda.
+  const POR_DEFECTO = { tema: 'sistema', atajos: 'si' };
+  const aplicarAjustes = () => {
+    aplicarPreferencias();
+    pintarTema();
+    // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
+    document.querySelectorAll('input[data-ajuste]').forEach((r) => {
+      r.checked = r.value === (leer(r.name) || POR_DEFECTO[r.name]);
     });
-    pintar();
-  }
+  };
+  botonTema?.addEventListener('click', () => {
+    guardar('tema', raiz.dataset.tema === 'dark' ? 'light' : 'dark');
+    aplicarAjustes();
+  });
+  // Página de Ajustes: cada opción se guarda al marcarla.
+  document.addEventListener('change', (e) => {
+    if (!e.target.matches('input[data-ajuste]')) return;
+    const { name, type, checked } = e.target;
+    const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
+    guardar(name, value === POR_DEFECTO[name] ? null : value);
+    aplicarAjustes();
+    document.getElementById('ajuste-estado').textContent = 'Guardado.';
+  });
+  window.addEventListener('storage', aplicarAjustes);
+  // Tema "Sistema": sigue al sistema operativo sin recargar.
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarAjustes);
+  aplicarAjustes();
 })();

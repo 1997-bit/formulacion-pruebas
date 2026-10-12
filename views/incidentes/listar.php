@@ -18,7 +18,7 @@ use App\Helpers\Icono;
     <h1>Incidentes</h1>
     <p>Los defectos de los casos de sus proyectos. Abiertos y más graves primero.</p>
   </div>
-  <div class="acciones"><a class="btn btn-primario" href="/formularios/incidentes/registrar"><?= Icono::svg('plus') ?> Registrar incidente</a></div>
+  <div class="acciones"><a class="btn btn-primario" href="/formularios/incidentes/registrar" data-atajo="c"><?= Icono::svg('plus') ?> Registrar incidente</a></div>
 </header>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
