@@ -13,6 +13,7 @@
 
 html {
   scrollbar-gutter: stable;
+  scrollbar-color: var(--entrada) transparent;
   overscroll-behavior: contain;
 }
 
@@ -63,6 +64,11 @@ a {
   color: var(--enlace);
 }
 
+/* Texto seleccionado con el color de marca */
+::selection {
+  background: color-mix(in oklch, var(--primario), transparent 70%);
+}
+
 textarea {
   field-sizing: content;
   resize: none;
@@ -106,6 +112,14 @@ textarea {
   background: var(--velo);
   -webkit-backdrop-filter: var(--velo-desenfoque);
   backdrop-filter: var(--velo-desenfoque);
+}
+/* Ajustes del sistema → reducir transparencia: velo sólido, sin desenfoque */
+@media (prefers-reduced-transparency: reduce) {
+  .velo {
+    background: var(--velo-respaldo);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .velo {

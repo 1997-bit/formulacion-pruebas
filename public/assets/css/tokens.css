@@ -24,15 +24,15 @@
 :root[data-tema="dark"]  { color-scheme: dark; }
 
 :root {
-  --fondo: light-dark(#FFFFFF, oklch(18% 0.03 231));
-  --texto: light-dark(#111111, oklch(95% 0 0));
-  --tarjeta: light-dark(#FFFFFF, oklch(21% 0.03 231));
+  --fondo: light-dark(oklch(100% 0 0), oklch(18% 0.03 231));
+  --texto: light-dark(oklch(17.8% 0 0), oklch(95% 0 0));
+  --tarjeta: light-dark(oklch(100% 0 0), oklch(21% 0.03 231));
   --tarjeta-texto: var(--texto);
-  --flotante: light-dark(#FFFFFF, oklch(23% 0.03 231));
+  --flotante: light-dark(oklch(100% 0 0), oklch(23% 0.03 231));
   --flotante-texto: var(--texto);
 
-  --primario: #1A5AFF;
-  --primario-texto: #FFFFFF;
+  --primario: oklch(54.5% 0.252 264);
+  --primario-texto: oklch(100% 0 0);
   --secundario: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
   --secundario-texto: var(--texto);
   --tenue: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
@@ -40,34 +40,45 @@
   --acento: light-dark(oklch(95% 0.03 262), oklch(32% 0.07 262));   /* hover y selección */
   --acento-texto: var(--texto);
 
-  --destacado: #FF8000;
-  --destacado-texto: #111111;
+  --destacado: oklch(73.2% 0.186 53);
+  --destacado-texto: oklch(17.8% 0 0);
 
-  /* Estados */
-  --peligro: #D93036;                                               /* FAULT */
-  --peligro-texto: #FFFFFF;
-  --exito: #33CC80;                                                 /* OK */
-  --exito-texto: #111111;
-  --aviso: #FFD633;                                                 /* Pendiente */
-  --aviso-texto: #111111;
-  --info: #1A5AFF;                                                  /* En progreso */
-  --info-texto: #FFFFFF;
-  /* Texto sobre fondo. --peligro y --exito son fondos. */
-  --error: light-dark(#C4262C, oklch(70% 0.16 25));
-  --correcto: light-dark(#1E7A4C, oklch(78% 0.15 155));
+  /* Estados. Sólido: resultado marcado y barras en oscuro. */
+  --peligro: oklch(58% 0.204 25);                                   /* FAULT */
+  --peligro-texto: oklch(100% 0 0);
+  --exito: oklch(75% 0.166 156);                                    /* OK */
+  --exito-texto: oklch(17.8% 0 0);
+  --aviso: oklch(88.6% 0.17 94);                                    /* Atención */
+  --aviso-texto: oklch(17.8% 0 0);
+  --info: oklch(54.5% 0.252 264);                                   /* En progreso */
+  --info-texto: oklch(100% 0 0);
+
+  /* Suave: fondo de insignia. Fuerte: texto sobre fondo, mínimo 4.5:1. */
+  --exito-suave: light-dark(oklch(96.1% 0.026 166), oklch(30% 0.06 155));
+  --exito-fuerte: light-dark(oklch(51.5% 0.112 156), oklch(78% 0.15 155));
+  --aviso-suave: light-dark(oklch(96.6% 0.053 94), oklch(32% 0.06 90));
+  --aviso-fuerte: light-dark(oklch(50.8% 0.108 73), oklch(85% 0.14 90));
+  --peligro-suave: light-dark(oklch(94.8% 0.023 18), oklch(30% 0.08 25));
+  --peligro-fuerte: light-dark(oklch(53.4% 0.193 25), oklch(72% 0.16 25));
+  --info-suave: light-dark(oklch(95% 0.024 270), oklch(30% 0.08 262));
+  --info-fuerte: light-dark(oklch(48% 0.219 264), oklch(75% 0.12 262));
+  --destacado-suave: light-dark(oklch(95.6% 0.031 67), oklch(32% 0.07 55));
+  --destacado-fuerte: light-dark(oklch(51.2% 0.133 51), oklch(80% 0.14 55));
+  --error: var(--peligro-fuerte);
+  --correcto: var(--exito-fuerte);
 
   --borde: light-dark(oklch(92% 0 0), oklch(100% 0 0 / 12%));
-  --entrada: light-dark(oklch(88% 0 0), oklch(100% 0 0 / 18%));
-  --anillo: light-dark(#1A5AFF, oklch(72% 0.13 260));
-  --enlace: light-dark(#1A5AFF, oklch(72% 0.13 260));
+  --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, mínimo 3:1 */
+  --anillo: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
+  --enlace: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
 
   /* Fondo de diálogos y sidebar móvil. Más oscuro en tema oscuro. */
   --velo: linear-gradient(
-    light-dark(rgb(0 0 0 / 0.10), rgb(0 0 0 / 0.25)),
-    light-dark(rgb(0 0 0 / 0.15), rgb(0 0 0 / 0.35))
+    light-dark(oklch(0% 0 0 / 0.10), oklch(0% 0 0 / 0.25)),
+    light-dark(oklch(0% 0 0 / 0.15), oklch(0% 0 0 / 0.35))
   );
   --velo-desenfoque: blur(8px);
-  --velo-respaldo: rgb(0 0 0 / 0.4); /* sin backdrop-filter */
+  --velo-respaldo: oklch(0% 0 0 / 0.4); /* sin backdrop-filter */
 
   --lateral: light-dark(oklch(98.5% 0 0), oklch(20% 0.03 231));
   --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));
@@ -88,8 +99,8 @@
   --radio-total: 9999px;
 
   /* Sombras más fuertes en oscuro. */
-  --sombra-color: light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.45));
-  --sombra-xs: 0 1px 2px 0 light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.3));
+  --sombra-color: light-dark(oklch(0% 0 0 / 0.1), oklch(0% 0 0 / 0.45));
+  --sombra-xs: 0 1px 2px 0 light-dark(oklch(0% 0 0 / 0.05), oklch(0% 0 0 / 0.3));
   --sombra-sm: 0 1px 3px 0 var(--sombra-color), 0 1px 2px -1px var(--sombra-color);
   --sombra-md: 0 4px 6px -1px var(--sombra-color), 0 2px 4px -2px var(--sombra-color);
   --sombra-lg: 0 10px 15px -3px var(--sombra-color), 0 4px 6px -4px var(--sombra-color);
@@ -106,4 +117,13 @@
   --letra-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
   --letra-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
   --letra-3xl: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+}
+
+/* Ajustes del sistema → más contraste. Bordes y texto tenue más fuertes. */
+@media (prefers-contrast: more) {
+  :root {
+    --borde: light-dark(oklch(60% 0 0), oklch(100% 0 0 / 45%));
+    --entrada: light-dark(oklch(45% 0 0), oklch(100% 0 0 / 60%));
+    --tenue-texto: light-dark(oklch(35% 0 0), oklch(85% 0 0));
+  }
 }

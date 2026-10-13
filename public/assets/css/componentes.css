@@ -75,11 +75,16 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   border-radius: var(--radio-md);
   border: 1px solid transparent;
 }
-.insignia-exito { background: var(--exito); color: var(--exito-texto); }
-.insignia-aviso { background: var(--aviso); color: var(--aviso-texto); }
-.insignia-peligro { background: var(--peligro); color: var(--peligro-texto); }
-.insignia-info { background: var(--info); color: var(--info-texto); }
-.insignia-destacado { background: var(--destacado); color: var(--destacado-texto); }
+.insignia-exito { --suave: var(--exito-suave); --fuerte: var(--exito-fuerte); }
+.insignia-aviso { --suave: var(--aviso-suave); --fuerte: var(--aviso-fuerte); }
+.insignia-peligro { --suave: var(--peligro-suave); --fuerte: var(--peligro-fuerte); }
+.insignia-info { --suave: var(--info-suave); --fuerte: var(--info-fuerte); }
+.insignia-destacado { --suave: var(--destacado-suave); --fuerte: var(--destacado-fuerte); }
+/* Estilo Jira: fondo suave y texto fuerte del mismo tono */
+:is(.insignia-exito, .insignia-aviso, .insignia-peligro, .insignia-info, .insignia-destacado) {
+  background: var(--suave);
+  color: var(--fuerte);
+}
 .insignia-secundaria { background: var(--secundario); color: var(--secundario-texto); }
 .insignia-borde { border-color: var(--borde); }
 
@@ -320,8 +325,8 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 }
 .control::placeholder { color: var(--tenue-texto); }
 .control:focus-visible { outline: 2px solid var(--anillo); outline-offset: 1px; }
-.control[aria-invalid="true"] { border-color: var(--error); }
-.control[aria-invalid="true"]:focus-visible { outline-color: var(--error); }
+.control:is([aria-invalid="true"], :user-invalid) { border-color: var(--error); }
+.control:is([aria-invalid="true"], :user-invalid):focus-visible { outline-color: var(--error); }
 .control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
 textarea.control { min-height: 5rem; padding-block: 8px; }
 
@@ -409,7 +414,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 }
 .resultado-opcion:hover { background: var(--acento); }
 .resultado-opcion:has(input:focus-visible) { outline: 2px solid var(--anillo); outline-offset: 3px; }
-.resultado-pendiente:has(input:checked) { background: var(--aviso); color: var(--aviso-texto); border-color: var(--aviso); }
+.resultado-pendiente:has(input:checked) { background: var(--tenue-texto); color: var(--fondo); border-color: var(--tenue-texto); }
 .resultado-ok:has(input:checked) { background: var(--exito); color: var(--exito-texto); border-color: var(--exito); }
 .resultado-fault:has(input:checked) { background: var(--peligro); color: var(--peligro-texto); border-color: var(--peligro); }
 .resultado-opcion .icono { width: 20px; height: 20px; }
@@ -570,13 +575,18 @@ kbd {
   align-self: start;
 }
 
-.alerta-error { color: var(--error); }
-.alerta-error .alerta-descripcion { color: color-mix(in oklch, var(--error), var(--tarjeta) 10%); }
+/* Estilo Jira: fondo suave, borde y texto fuerte del mismo tono */
+.alerta-error {
+  background: var(--peligro-suave);
+  border-color: color-mix(in oklch, var(--peligro-fuerte), transparent 60%);
+  color: var(--peligro-fuerte);
+}
+.alerta-error .alerta-descripcion { color: var(--texto); }
 
 /* Éxito: confirma el texto, no el color */
 .alerta-exito {
-  background: color-mix(in oklch, var(--exito), var(--tarjeta) 88%);
-  border-color: color-mix(in oklch, var(--exito), var(--tarjeta) 45%);
+  background: var(--exito-suave);
+  border-color: color-mix(in oklch, var(--exito-fuerte), transparent 60%);
 }
 .alerta-exito > .icono { color: var(--correcto); }
 
@@ -760,7 +770,14 @@ ins.cambio {
   white-space: pre-line;
 }
 del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
-ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: none; }
+ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: underline; text-underline-offset: 3px; }
+/* El lector de pantalla no anuncia del ni ins. Texto oculto, solo para él. */
+del.cambio::before,
+ins.cambio::before { clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap; }
+del.cambio::before { content: " [eliminado: "; }
+ins.cambio::before { content: " [agregado: "; }
+del.cambio::after,
+ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; }
 
 /* Línea de tiempo: un punto por cambio, reciente arriba */
 .linea-tiempo { margin: 0; padding: 0; list-style: none; }
@@ -1022,12 +1039,20 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
 }
 
+/* Alto contraste de Windows: el sistema quita los fondos. Marcar con colores del sistema. */
+
+@media (forced-colors: active) {
+  .resultado-opcion:has(input:checked) { outline: 3px solid Highlight; outline-offset: 2px; }
+  .switch:checked { forced-color-adjust: none; background: Highlight; }
+  .progreso { forced-color-adjust: none; }
+}
+
 /* Impresión: claro, sin navegación ni botones */
 
 @media print {
   :root,
   :root[data-tema] { color-scheme: light !important; }
-  body { background: #FFFFFF; }
+  body { background: oklch(100% 0 0); }
 
   .solo-impresion { display: block; }
   .no-imprimir,
