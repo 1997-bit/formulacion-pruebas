@@ -28,6 +28,8 @@ final class Respuesta
      */
     public static function errores(array $errores, array $datos, string $ruta): never
     {
+        // Solo los nombres de campo, nunca los valores. ASVS 16.2.5.
+        Log::evento('warning', 'input_validation_fail:({campos}),{id}', ['campos' => implode(',', array_keys($errores))]);
         // Por ruta, #103: otro formulario no los toma.
         $_SESSION['errores'] = [$ruta => $errores];
         $_SESSION['datos'] = [$ruta => $datos];

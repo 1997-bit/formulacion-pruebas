@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\ErrorValidacion;
+use App\Core\Log;
 use App\Models\IntentoModelo;
 use App\Models\UsuarioModelo;
 
@@ -29,9 +30,11 @@ final class AccesoServicio
         $fila = UsuarioModelo::porUsuario($usuario);
         if (!password_verify($clave, $fila['clave'] ?? self::HASH_FALSO) || $fila === null) {
             IntentoModelo::fallar($llave);
+            Log::evento('warning', 'authn_login_fail:{usuario}', ['usuario' => mb_substr($usuario, 0, 64)]);
             throw new ErrorValidacion(['general' => self::ERROR_ENTRAR]);
         }
         IntentoModelo::borrar($llave);
+        Log::evento('info', 'authn_login_success:{usuario}', ['usuario' => $usuario]);
         // Las claves con parámetros viejos se actualizan al entrar.
         if (password_needs_rehash($fila['clave'], PASSWORD_ARGON2ID, UsuarioServicio::ARGON)) {
             UsuarioModelo::cambiarClave($fila['id'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON));
@@ -57,6 +60,7 @@ final class AccesoServicio
     private static function frenar(string $llave): void
     {
         if (IntentoModelo::bloqueado($llave)) {
+            Log::evento('warning', 'authn_login_lock:{llave}', ['llave' => $llave]);
             throw new ErrorValidacion(['general' => 'Demasiados intentos. Espere un momento.']);
         }
     }
@@ -75,6 +79,7 @@ final class AccesoServicio
             throw ErrorValidacion::siDuplicado($e, UsuarioServicio::USUARIO_REPETIDO);
         }
         IntentoModelo::fallar($llave);
+        Log::evento('warning', 'user_created:{id},{nuevo}', ['nuevo' => $d['usuario']]);
 
         return $id;
     }

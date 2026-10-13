@@ -60,6 +60,7 @@ $usuario = Sesion::usuario();
 if ($usuario !== null) {
     $usuario = AccesoServicio::vigente($usuario);
     if ($usuario === null) {
+        Log::evento('info', 'session_expired:{id},{motivo}', ['motivo' => 'revocada']);
         Sesion::salir();
         Respuesta::redirigir('/');
     }
@@ -75,11 +76,16 @@ if ($usuario !== null) {
 if ($ruta['rol'] !== null && $usuario === null) {
     Respuesta::redirigir('/');
 }
-if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
+// RNF-11. 403 con su evento de seguridad.
+$prohibir = static function (string $nivel, string $evento) use ($ruta): never {
+    Log::evento($nivel, $evento, ['ruta' => parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH)]);
     Respuesta::error(403);
+};
+if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
+    $prohibir('critical', 'authz_fail:{id},{ruta}');
 }
 if ($metodo === 'POST' && !Csrf::valido($_POST['csrf'] ?? null)) {
-    Respuesta::error(403);
+    $prohibir('warning', 'malicious_csrf:{id}');
 }
 // Doble clic, BUG-031: ya guardado. Va al registro del primer envío.
 if ($metodo === 'POST' && is_string($_POST['envio'] ?? null) && isset($_SESSION['envios'][$_POST['envio']])) {
@@ -90,7 +96,7 @@ $clase = 'App\\Controllers\\' . $ruta['controlador'] . 'Controlador';
 try {
     (new $clase())->{$ruta['accion']}();
 } catch (ErrorPermiso) {
-    Respuesta::error(403);
+    $prohibir('critical', 'authz_fail:{id},{ruta}');
 } catch (ErrorNoEncontrado) {
     Respuesta::error(404);
 }
