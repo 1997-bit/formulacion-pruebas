@@ -38,7 +38,7 @@ final class AutoevaluacionControlador
             'evaluacion' => AutoevaluacionServicio::evaluacion($proyecto['id'], $usuario),
             'promedios' => AutoevaluacionServicio::promedios($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($proyecto),
+            'migas' => Vista::migas('Auto y coevaluación', '/formularios/autoevaluacion', $proyecto['nombre']),
         ]);
     }
 
@@ -59,7 +59,7 @@ final class AutoevaluacionControlador
             'companeros' => $companeros,
             'datos' => Sesion::tomar('datos') ?? AutoevaluacionServicio::evaluacion($proyecto['id'], $usuario),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($proyecto, true), ['texto' => 'Editar']],
+            'migas' => Vista::migas('Auto y coevaluación', '/formularios/autoevaluacion', $proyecto['nombre'], 'Editar', '?proyecto=' . $proyecto['id']),
         ]);
     }
 
@@ -78,20 +78,6 @@ final class AutoevaluacionControlador
             Respuesta::errores($e->errores, $datos, '/formularios/autoevaluacion/editar?proyecto=' . $id);
         }
         Respuesta::exito('Evaluación guardada.', '/formularios/autoevaluacion?proyecto=' . $id);
-    }
-
-    /**
-     * @param array<string, mixed> $proyecto
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $proyecto, bool $enlace = false): array
-    {
-        $nombre = ['texto' => $proyecto['nombre']];
-        if ($enlace) {
-            $nombre['ruta'] = '/formularios/autoevaluacion?proyecto=' . $proyecto['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Auto y coevaluación', 'ruta' => '/formularios/autoevaluacion'], $nombre];
     }
 
     /**

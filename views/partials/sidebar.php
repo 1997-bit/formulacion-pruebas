@@ -115,10 +115,13 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
           <?= Icono::svg('settings') ?>
           <span>Ajustes</span>
         </a>
-        <a class="sidebar-boton" href="/salir">
-          <?= Icono::svg('log-out') ?>
-          <span>Cerrar sesión</span>
-        </a>
+        <form method="post" action="/salir">
+          <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+          <button class="sidebar-boton" type="submit">
+            <?= Icono::svg('log-out') ?>
+            <span>Cerrar sesión</span>
+          </button>
+        </form>
       </div>
     </details>
   </div>

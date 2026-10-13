@@ -93,6 +93,14 @@
   cursor: pointer;
   list-style: none;
 }
+/* Botón con el aspecto del enlace. Ejemplo: Cerrar sesión. */
+button.sidebar-boton {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--letra-sm);
+  text-align: left;
+}
 .sidebar-boton::-webkit-details-marker {
   display: none;
 }

@@ -38,7 +38,7 @@ final class PlanControlador
             'proyecto' => $proyecto,
             'plan' => PlanServicio::plan($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($proyecto),
+            'migas' => Vista::migas('Plan de pruebas', '/formularios/plan_pruebas', $proyecto['nombre']),
         ]);
     }
 
@@ -54,7 +54,7 @@ final class PlanControlador
             'miembros' => PlanServicio::miembros($proyecto['id']),
             'datos' => Sesion::tomar('datos') ?? array_map(fn (mixed $v): string => (string) $v, $plan ?? []),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($proyecto, true), ['texto' => $plan ? 'Editar' : 'Llenar']],
+            'migas' => Vista::migas('Plan de pruebas', '/formularios/plan_pruebas', $proyecto['nombre'], $plan ? 'Editar' : 'Llenar', '?proyecto=' . $proyecto['id']),
         ]);
     }
 
@@ -68,19 +68,5 @@ final class PlanControlador
             Respuesta::errores($e->errores, $datos, '/formularios/plan_pruebas/editar?proyecto=' . $id);
         }
         Respuesta::exito('Plan guardado.', '/formularios/plan_pruebas?proyecto=' . $id);
-    }
-
-    /**
-     * @param array<string, mixed> $proyecto
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $proyecto, bool $enlace = false): array
-    {
-        $nombre = ['texto' => $proyecto['nombre']];
-        if ($enlace) {
-            $nombre['ruta'] = '/formularios/plan_pruebas?proyecto=' . $proyecto['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Plan de pruebas', 'ruta' => '/formularios/plan_pruebas'], $nombre];
     }
 }
