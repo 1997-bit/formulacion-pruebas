@@ -7,7 +7,7 @@ use App\Helpers\Icono;
 
 /**
  * @var int $codigo
- * @var ?string $referencia  código corto del error, el mismo de storage/logs/errores.log
+ * @var ?string $referencia  código corto del error, el uid de la línea sys_crash en storage/logs
  */
 
 [$icono, $titulo, $texto] = match ($codigo) {

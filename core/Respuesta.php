@@ -61,7 +61,7 @@ final class Respuesta
         exit;
     }
 
-    // $referencia: código del error en storage/logs. Solo 500.
+    // $referencia: uid de la petición en storage/logs. Solo 500.
     public static function error(int $codigo, ?string $referencia = null): never
     {
         http_response_code($codigo);
