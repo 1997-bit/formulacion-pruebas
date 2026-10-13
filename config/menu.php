@@ -49,6 +49,7 @@ return [
         'elementos' => [
             ['texto' => 'Usuarios', 'icono' => 'users', 'ruta' => '/admin/usuarios', 'atajo' => 'g u'],
             ['texto' => 'Proyectos', 'icono' => 'folder-kanban', 'ruta' => '/admin/proyectos', 'atajo' => 'g o'],
+            ['texto' => 'Logs', 'icono' => 'terminal', 'ruta' => '/admin/logs'],
         ],
     ],
 ];

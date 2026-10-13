@@ -10,7 +10,7 @@ Inventario de logs, ASVS 16.1.1. RNF-11.
 | Formato | Una línea JSON por evento. Monolog `JsonFormatter`. |
 | Días | `LOG_DIAS`, 14 por defecto. Monolog borra los viejos. |
 | Nivel | `LOG_NIVEL`: `debug` en local, `info` en producción. |
-| Quién lee | `admin` del servidor. La app no lo muestra. |
+| Quién lee | `admin` en `/admin/logs`. Con acceso al servidor: `jq`, ver `docs/medicion.md`. |
 | Código | `core/Log.php`. |
 
 Cada línea lleva en `extra`: `uid` de la petición, `url`, `ip`, `http_method`, `referrer`, `memory_peak_usage`, `user_id` y `rf`.
@@ -43,6 +43,7 @@ Nombres de OWASP Logging Vocabulary. Formato `evento:param`.
 | `user_updated:id,otro` | warning | `UsuarioServicio::editar` |
 | `user_deleted:id,otro` | warning | `UsuarioServicio::eliminar` |
 | `privilege_permissions_changed:id,otro,de,a` | warning | `UsuarioServicio::editar` |
+| `sensitive_read:id,logs` | info | `LogServicio`, cada lectura de `/admin/logs` |
 
 Nunca: clave, cookie de sesión, `csrf` ni valores de campos. ASVS 16.2.5.
 
@@ -60,6 +61,24 @@ ISO/IEC/IEEE 29119-3, Test Execution Log. En la base, por caso.
 
 Cada ejecución queda en `logs_cambios`, RF-20.
 
-## 4. Fuera
+## 4. Cómo leerlos
 
-Envío a SIEM, métricas y trazas. ASVS 16.4.3.
+Solo admin. Solo lectura: sin descargar ni borrar. ASVS 16.4.2.
+
+| Pestaña | Muestra |
+| --- | --- |
+| Lista | Líneas del día, la más nueva primero. Filtros: canal, nivel mínimo, mensaje, código. |
+| Seguridad | Veces por evento. Login fallido por IP, top 10. |
+| Rendimiento | Por ruta: peticiones, p50, p95 y % de 5xx. |
+
+Error en pantalla, para un incidente:
+
+1. La página 500 muestra un código: `be45d3e3`.
+2. Captura de esa página: evidencia de tipo captura.
+3. `/admin/logs?uid=be45d3e3`: la petición entera, con el stack trace abierto. Busca en todos los días.
+4. Captura de esa vista, o copiar el JSON a un `.log`: evidencia de tipo log.
+5. Registrar el incidente, F10, con las dos evidencias y el código.
+
+## 5. Fuera
+
+Envío a un sistema separado y alertas, ASVS 16.4.3 y OWASP Top 10 A09. Fuera por alcance, IR §3: sin producción ni servicios externos. Con producción: Grafana Alloy, Loki y Grafana.

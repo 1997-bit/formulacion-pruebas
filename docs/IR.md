@@ -97,7 +97,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | RNF-08 | Compatibilidad | PHP 8.2 o superior, MySQL 8 o MariaDB 10.6 o superior. Chrome, Firefox y Edge. |
 | RNF-09 | Desempeño | Listados de 20 filas por página. |
 | RNF-10 | Mantenibilidad | Cada función corresponde a un RF. Hay manual por pantalla y guía para recrear el ambiente. |
-| RNF-11 | Logs | Monolog, una línea JSON por evento en `storage/logs`, 14 días. Eventos de seguridad de OWASP ASVS V16 con nombres de OWASP Logging Vocabulary. Nunca claves, cookies ni tokens. Ver `docs/logs.md`. |
+| RNF-11 | Logs | Monolog, una línea JSON por evento en `storage/logs`, 14 días. Eventos de seguridad de OWASP ASVS V16 con nombres de OWASP Logging Vocabulary. Nunca claves, cookies ni tokens. El admin los lee en `/admin/logs`. Ver `docs/logs.md`. |
 
 ---
 
@@ -122,6 +122,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | Rúbrica 7 | Sí | No |
 | Auto y Coevaluación 8 | Sí | Sí |
 | Reportes | Sí | Sus proyectos |
+| Logs | Sí | No |
 
 ---
 

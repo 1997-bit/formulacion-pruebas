@@ -60,6 +60,7 @@ return [
     'GET /admin/usuarios/editar' => ['controlador' => 'Usuarios', 'accion' => 'editar', 'rol' => 1, 'rf' => 'RF-03'],
     'POST /admin/usuarios/editar' => ['controlador' => 'Usuarios', 'accion' => 'actualizar', 'rol' => 1, 'rf' => 'RF-03'],
     'POST /admin/usuarios/eliminar' => ['controlador' => 'Usuarios', 'accion' => 'eliminar', 'rol' => 1, 'rf' => 'RF-03'],
+    'GET /admin/logs' => ['controlador' => 'Logs', 'accion' => 'ver', 'rol' => 1, 'rf' => 'RNF-11'],
     'GET /admin/proyectos' => ['controlador' => 'Proyectos', 'accion' => 'listar', 'rol' => 1, 'rf' => 'RF-21'],
     'GET /admin/proyectos/crear' => ['controlador' => 'Proyectos', 'accion' => 'crear', 'rol' => 1, 'rf' => 'RF-21'],
     'POST /admin/proyectos/crear' => ['controlador' => 'Proyectos', 'accion' => 'guardar', 'rol' => 1, 'rf' => 'RF-21'],
