@@ -163,7 +163,7 @@ foreach ($avance['proyectos'] as $p) {
     <div class="rejilla-panel">
       <?php foreach ($avance['proyectos'] as $p): ?>
         <?php
-        $partes = [['OK', 'ok', 'exito'], ['FAULT', 'fault', 'peligro'], ['Pendiente', 'pendientes', 'aviso']];
+        $partes = [['OK', 'ok', 'exito'], ['FAULT', 'fault', 'peligro'], ['Pendiente', 'pendientes', 'secundaria']];
         $resumen = implode(', ', array_map(fn (array $x): string => $x[0] . ' ' . (int) $p[$x[1]], $partes)) . ' de ' . (int) $p['casos'];
         ?>
         <section class="tarjeta" aria-labelledby="av-<?= (int) $p['id'] ?>">

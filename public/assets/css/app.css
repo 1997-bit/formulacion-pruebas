@@ -473,6 +473,9 @@ button.sidebar-boton {
 .barra-exito { background: var(--exito); }
 .barra-peligro { background: var(--peligro); }
 .barra-aviso { background: var(--aviso); }
+/* Pendiente: gris. Claro en la barra, medio en el cronograma por el texto encima. */
+.barra-secundaria { background: light-dark(oklch(87% 0 0), oklch(40% 0 0)); }
+.cronograma-tramo.barra-secundaria { background: var(--tenue-texto); color: var(--fondo); }
 .leyenda { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
 .leyenda li { display: flex; align-items: center; gap: 6px; }
 .leyenda-muestra { width: 10px; height: 10px; border-radius: 3px; }
@@ -533,7 +536,7 @@ button.sidebar-boton {
 .cronograma-dia { text-align: center; font-variant-numeric: tabular-nums; }
 .cronograma-dia.finde { background: var(--tenue); }
 .cronograma-dia.hoy { color: var(--primario); font-weight: 700; }
-.cronograma-hoy { justify-self: center; width: 2px; background: var(--primario); opacity: 0.5; z-index: 1; pointer-events: none; }
+.cronograma-hoy { justify-self: center; width: 2px; background: var(--primario); z-index: 1; pointer-events: none; }
 .cronograma-grupo { grid-column: 1 / -1; margin: 0; padding: 10px 12px 4px; font-size: var(--letra-xs); font-weight: 600; color: var(--tenue-texto); text-transform: uppercase; letter-spacing: 0.04em; position: sticky; left: 0; }
 .cronograma-caso { padding: 4px 12px; align-self: center; position: sticky; left: 0; background: var(--tarjeta); z-index: 2; text-decoration: none; }
 .cronograma-caso:hover { text-decoration: underline; }
