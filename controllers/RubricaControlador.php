@@ -35,7 +35,7 @@ final class RubricaControlador
             'proyecto' => $proyecto,
             'rubrica' => RubricaServicio::rubrica($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($proyecto),
+            'migas' => Vista::migas('Rúbrica', '/formularios/rubrica', $proyecto['nombre']),
         ]);
     }
 
@@ -50,7 +50,7 @@ final class RubricaControlador
             'nueva' => $rubrica === null,
             'puntos' => Sesion::tomar('datos')['puntos'] ?? $rubrica['puntos'] ?? [],
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($proyecto, true), ['texto' => 'Editar']],
+            'migas' => Vista::migas('Rúbrica', '/formularios/rubrica', $proyecto['nombre'], 'Editar', '?proyecto=' . $proyecto['id']),
         ]);
     }
 
@@ -67,19 +67,5 @@ final class RubricaControlador
             Respuesta::errores($e->errores, $datos, '/formularios/rubrica/editar?proyecto=' . $id);
         }
         Respuesta::exito('Rúbrica guardada.', '/formularios/rubrica?proyecto=' . $id);
-    }
-
-    /**
-     * @param array<string, mixed> $proyecto
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $proyecto, bool $enlace = false): array
-    {
-        $nombre = ['texto' => $proyecto['nombre']];
-        if ($enlace) {
-            $nombre['ruta'] = '/formularios/rubrica?proyecto=' . $proyecto['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Rúbrica', 'ruta' => '/formularios/rubrica'], $nombre];
     }
 }

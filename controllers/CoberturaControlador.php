@@ -38,7 +38,7 @@ final class CoberturaControlador
             'filas' => CoberturaServicio::filas($requerimiento['id'], $usuario),
             'guardado' => CoberturaServicio::guardado($requerimiento['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($requerimiento),
+            'migas' => Vista::migas('Cobertura de caja blanca', '/formularios/cobertura_blanca', $requerimiento['codigo']),
         ]);
     }
 
@@ -54,7 +54,7 @@ final class CoberturaControlador
             'nueva' => $guardadas === [],
             'huella' => FilasModelo::huella(CoberturaServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
+            'migas' => Vista::migas('Cobertura de caja blanca', '/formularios/cobertura_blanca', $requerimiento['codigo'], 'Editar', '?requerimiento=' . $requerimiento['id']),
         ]);
     }
 
@@ -68,20 +68,6 @@ final class CoberturaControlador
             Respuesta::errores($e->errores, ['filas' => $filas], '/formularios/cobertura_blanca/editar?requerimiento=' . $id);
         }
         Respuesta::exito('Cobertura guardada.', '/formularios/cobertura_blanca?requerimiento=' . $id);
-    }
-
-    /**
-     * @param array<string, mixed> $requerimiento
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $requerimiento, bool $enlace = false): array
-    {
-        $codigo = ['texto' => $requerimiento['codigo']];
-        if ($enlace) {
-            $codigo['ruta'] = '/formularios/cobertura_blanca?requerimiento=' . $requerimiento['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Cobertura de caja blanca', 'ruta' => '/formularios/cobertura_blanca'], $codigo];
     }
 
     /**

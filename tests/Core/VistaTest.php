@@ -58,4 +58,19 @@ final class VistaTest extends TestCase
 
         Vista::capturar('no/existe');
     }
+
+    public function testMigasSinPaso(): void
+    {
+        $migas = Vista::migas('Rúbrica', '/formularios/rubrica', 'Demo');
+
+        $this->assertSame([['texto' => 'Formularios'], ['texto' => 'Rúbrica', 'ruta' => '/formularios/rubrica'], ['texto' => 'Demo']], $migas);
+    }
+
+    public function testMigasConPasoEnlazaElElemento(): void
+    {
+        $migas = Vista::migas('Rúbrica', '/formularios/rubrica', 'Demo', 'Editar', '?proyecto=3');
+
+        $this->assertSame(['texto' => 'Demo', 'ruta' => '/formularios/rubrica?proyecto=3'], $migas[2]);
+        $this->assertSame(['texto' => 'Editar'], $migas[3]);
+    }
 }

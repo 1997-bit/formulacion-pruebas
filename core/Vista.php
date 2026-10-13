@@ -15,6 +15,22 @@ final class Vista
         echo self::capturar($layout, $datos);
     }
 
+    /**
+     * Formularios > formulario > elemento. Con $paso, el elemento es un enlace a $ruta . $consulta y $paso va al final.
+     *
+     * @return list<array{texto: string, ruta?: string}>
+     */
+    public static function migas(string $formulario, string $ruta, string $elemento, string $paso = '', string $consulta = ''): array
+    {
+        $migas = [['texto' => 'Formularios'], ['texto' => $formulario, 'ruta' => $ruta], ['texto' => $elemento]];
+        if ($paso !== '') {
+            $migas[2]['ruta'] = $ruta . $consulta;
+            $migas[] = ['texto' => $paso];
+        }
+
+        return $migas;
+    }
+
     // CSS o JS con su versión en la URL: un cambio en el archivo cambia la URL (#122).
     public static function estatico(string $ruta): string
     {

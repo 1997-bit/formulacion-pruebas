@@ -39,7 +39,7 @@ final class TablaDecisionControlador
             'tabla' => $guardado !== null ? TablaDecisionServicio::tabla($requerimiento['id'], $usuario) : null,
             'guardado' => $guardado,
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($requerimiento),
+            'migas' => Vista::migas('Tabla de decisión', '/formularios/tabla_decision', $requerimiento['codigo']),
         ]);
     }
 
@@ -54,7 +54,7 @@ final class TablaDecisionControlador
             'nueva' => TablaDecisionServicio::guardado($requerimiento['id'], $usuario) === null,
             'huella' => FilasModelo::huella(TablaDecisionServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
+            'migas' => Vista::migas('Tabla de decisión', '/formularios/tabla_decision', $requerimiento['codigo'], 'Editar', '?requerimiento=' . $requerimiento['id']),
         ]);
     }
 
@@ -73,20 +73,6 @@ final class TablaDecisionControlador
             Respuesta::errores($e->errores, ['tabla' => $tabla], $editar);
         }
         Respuesta::exito('Tabla guardada.', '/formularios/tabla_decision?requerimiento=' . $id);
-    }
-
-    /**
-     * @param array<string, mixed> $requerimiento
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $requerimiento, bool $enlace = false): array
-    {
-        $codigo = ['texto' => $requerimiento['codigo']];
-        if ($enlace) {
-            $codigo['ruta'] = '/formularios/tabla_decision?requerimiento=' . $requerimiento['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Tabla de decisión', 'ruta' => '/formularios/tabla_decision'], $codigo];
     }
 
     /**
