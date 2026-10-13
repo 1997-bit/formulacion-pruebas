@@ -22,7 +22,7 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
 ?>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-cabecera">
-    <?php // Selector de proyecto (Jira, Linear): todo lo de Plataforma y Formularios muestra solo el activo. ?>
+    <?php // Selector de proyecto, como Jira y Linear. Plataforma y Formularios: solo el activo. ?>
     <details class="proyecto-menu">
       <summary class="sidebar-boton sidebar-marca" data-etiqueta="<?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?>"
                data-atajo="p" data-atajo-texto="Cambiar de proyecto">

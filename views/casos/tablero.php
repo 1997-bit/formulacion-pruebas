@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Services\CasoServicio;
 
 /**
- * Casos en columnas por estado. Solo para ver: OK y FAULT piden evidencia (RF-24), el resultado se anota en el caso.
+ * Casos por estado, solo para ver. OK y FAULT piden evidencia, RF-24: el resultado se anota en el caso.
  *
  * @var list<array<string, mixed>> $casos  CasoModelo::sinPaginar()
  */

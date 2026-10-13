@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// F7: una fila por (proyecto, criterio). El total es SUM(puntos).
+// F7. Una fila por proyecto y criterio. Total = SUM(puntos).
 final class RubricaModelo
 {
     /**
@@ -29,7 +29,7 @@ final class RubricaModelo
 
         $puntos = array_map(intval(...), array_column($filas, 'puntos', 'criterio'));
 
-        // Quién y cuándo: el último criterio que cambió. Guardar sin cambios no escribe (#98).
+        // Autor y fecha: el último criterio cambiado. Sin cambios no escribe, #98.
         $fechas = array_column($filas, 'evaluado_en');
         $ultima = $filas[array_search(max($fechas), $fechas, true)];
 

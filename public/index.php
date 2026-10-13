@@ -18,7 +18,7 @@ use App\Services\AccesoServicio;
 // Ningún sitio puede cargar estas páginas en un iframe (BUG-017).
 header('X-Frame-Options: DENY');
 
-// Un error no muestra la pila ni rutas: página 500 con un código corto, y el detalle con ese código en storage/logs (#125, #46).
+// Error: página 500 con código corto, sin stack ni rutas. Detalle con ese código en storage/logs. #125, #46.
 ini_set('display_errors', '0');
 set_exception_handler(function (\Throwable $e): void {
     $codigo = bin2hex(random_bytes(4));
@@ -45,14 +45,14 @@ Sesion::iniciar();
 $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $ruta = Ruteador::buscar($metodo, $_SERVER['REQUEST_URI'] ?? '/') ?? Respuesta::error(404);
 $usuario = Sesion::usuario();
-// RNF-02: la clave o el rol cambió, o el usuario ya no existe: la sesión se cierra.
+// RNF-02. Clave o rol cambiado, o usuario borrado: cierra la sesión.
 if ($usuario !== null) {
     $usuario = AccesoServicio::vigente($usuario);
     if ($usuario === null) {
         Sesion::salir();
         Respuesta::redirigir('/');
     }
-    // Proyecto activo del selector del sidebar: solo si existe y el usuario todavía es miembro.
+    // Proyecto activo del sidebar: solo si existe y el usuario aún es miembro.
     $activo = $_SESSION['proyecto'] ?? null;
     $usuario['activo'] = is_int($activo) && ($usuario['rol'] === 1 ? ProyectoModelo::porId($activo) !== null : in_array($activo, $usuario['proyectos'], true))
         ? $activo
@@ -70,7 +70,7 @@ if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
 if ($metodo === 'POST' && !Csrf::valido($_POST['csrf'] ?? null)) {
     Respuesta::error(403);
 }
-// Doble clic (BUG-031): el envío ya se guardó; va al registro que creó el primero.
+// Doble clic, BUG-031: ya guardado. Va al registro del primer envío.
 if ($metodo === 'POST' && is_string($_POST['envio'] ?? null) && isset($_SESSION['envios'][$_POST['envio']])) {
     Respuesta::redirigir($_SESSION['envios'][$_POST['envio']]);
 }

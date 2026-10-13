@@ -5,7 +5,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * RF-23: decisión Go / No-Go de cada proyecto.
+ * RF-23. Go / No-Go de cada proyecto.
  *
  * @var list<array<string, mixed>> $proyectos
  */

@@ -14,8 +14,8 @@ final class AccesoServicio
     // No dice si el usuario existe (RNF-02).
     private const ERROR_ENTRAR = 'Usuario o contraseña incorrectos.';
 
-    // Clave al azar con UsuarioServicio::ARGON. Si el usuario no existe, se verifica contra este
-    // hash: la respuesta tarda lo mismo y el tiempo no dice si existe.
+    // Clave al azar con UsuarioServicio::ARGON. Usuario inexistente: verifica contra este hash.
+    // Así tarda lo mismo y el tiempo no revela si existe.
     private const HASH_FALSO = '$argon2id$v=19$m=19456,t=2,p=1$bWNzL3R6ZksvY0hJejJ1VA$PRg4SvgQEEZ1uei56DJDKihodqvTtRg5/1TkrmdqpZo';
 
     /** @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int} */
@@ -41,7 +41,7 @@ final class AccesoServicio
     }
 
     /**
-     * Cada petición: el usuario con sus proyectos, o null si ya no existe o cambió su clave o su rol (BUG-003, BUG-023).
+     * Cada petición: usuario con proyectos. Null si no existe o cambió clave o rol. BUG-003, BUG-023.
      *
      * @param array<string, mixed> $sesion
      * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int, proyectos: list<int>}|null

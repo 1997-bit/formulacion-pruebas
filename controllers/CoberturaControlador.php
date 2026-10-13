@@ -15,7 +15,7 @@ use App\Services\RequerimientoServicio;
 // RF-12
 final class CoberturaControlador
 {
-    // Sin requerimiento: la lista de coberturas. Con requerimiento: la cobertura de solo lectura.
+    // Sin requerimiento: lista de coberturas. Con requerimiento: cobertura de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
@@ -85,7 +85,7 @@ final class CoberturaControlador
     }
 
     /**
-     * total[metrica], cubiertos[metrica] y herramienta[metrica] a filas por métrica.
+     * total[metrica], cubiertos[metrica] y herramienta[metrica] → filas por métrica.
      *
      * @return array<int, array{total: string, cubiertos: string, herramienta: string}>
      */

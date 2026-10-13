@@ -25,7 +25,7 @@ $vistas = ['lista' => ['Lista', 'list-checks'], 'tablero' => ['Tablero', 'folder
 $enlaceVista = fn (string $v): string => '/casos/listar?' . http_build_query(['vista' => $v] + array_filter($filtros, fn (string $x): bool => $x !== ''));
 $elegido = fn (string $filtro, int|string $valor): string => (string) $valor === $filtros[$filtro] ? ' selected' : '';
 
-// Los códigos se repiten entre proyectos: se agrupan, sin grupos si hay uno solo.
+// Códigos repetidos entre proyectos: agrupados, sin grupos si hay 1.
 $porProyecto = [];
 foreach ($requerimientos as $r) {
     $porProyecto[$r['proyecto']][] = $r;

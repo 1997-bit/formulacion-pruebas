@@ -37,7 +37,7 @@ final class EnviosTest extends PruebaHttp
         $this->assertSame(0, $this->contar('SELECT COUNT(*) FROM requerimientos WHERE proyecto_id = ?', $proyecto));
     }
 
-    // #102, BUG-031: el segundo envío va a donde fue el primero, sin guardar otra vez.
+    // #102, BUG-031. El segundo envío va al destino del primero, sin guardar.
     public function testEnvioRepetidoGuardaUnaVez(): void
     {
         $tester = $this->usuario();

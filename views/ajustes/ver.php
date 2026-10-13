@@ -4,14 +4,15 @@ declare(strict_types=1);
 use App\Helpers\Html;
 
 /**
- * Sin formulario: cada opción se guarda al marcarla (app.js, data-ajuste). Una página por pestaña.
+ * Sin formulario: cada opción se guarda al marcarla, app.js y data-ajuste. Una página por pestaña.
  *
  * @var string $pestana apariencia o accesibilidad
  */
 
 $pestanas = ['apariencia' => ['Apariencia', '/ajustes'], 'accesibilidad' => ['Accesibilidad', '/ajustes/accesibilidad']];
-// Radios: nombre => [título, valores]. Switches (role="switch", marcado = 'si'): nombre => [título, texto, ayuda, marcado por defecto].
-// Un switch sale con su valor por defecto: así no se anima al cargar.
+// Radios: nombre => [título, valores]. Switches: nombre => [título, texto, ayuda, marcado por defecto].
+// Switch: role="switch", marcado = 'si'.
+// Switch con su valor por defecto: no se anima al cargar.
 $grupos = [
     'apariencia' => [
         'tema' => ['Tema', [

@@ -10,7 +10,7 @@ use App\Helpers\Catalogo;
 use App\Models\ProyectoModelo;
 use App\Models\RubricaModelo;
 
-// RF-14. Formulario 7: una rúbrica por proyecto, solo admin. 6 criterios de 1 a 5, total sobre 30.
+// RF-14, formulario 7. Una rúbrica por proyecto, solo admin. 6 criterios de 1 a 5, total 30.
 final class RubricaServicio
 {
     public const MAXIMO = 30;
@@ -56,7 +56,7 @@ final class RubricaServicio
     }
 
     /**
-     * Todos los criterios o nada. Errores con clave "puntos.criterio".
+     * Todos los criterios o nada. Keys de error: "puntos.criterio".
      *
      * @param array<int|string, string> $puntos criterio => puntos
      * @param array{id: int, rol: int} $usuario

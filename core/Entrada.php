@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Campos de $_POST: lo que no sea texto queda vacío.
+// Campos de $_POST. Lo que no es texto queda vacío.
 final class Entrada
 {
     /**

@@ -372,7 +372,7 @@ final class CasoServicioTest extends BaseDatos
     }
 
     /**
-     * Tester en dos proyectos. P: SIS-001 (r1, Pendiente), SIS-002 (r2, OK). Q: UNI-001.
+     * Tester en 2 proyectos. P: SIS-001 r1 Pendiente, SIS-002 r2 OK. Q: UNI-001.
      *
      * @return array{usuario: int, p: int, q: int, r2: int}
      */

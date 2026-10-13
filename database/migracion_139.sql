@@ -1,4 +1,4 @@
--- #139: Solicitado por y Aprobado por. Solo para una base creada antes de #139; schema.sql ya los trae.
+-- #139: Solicitado por y Aprobado por. Solo bases anteriores a #139. schema.sql ya los trae.
 -- mysql casos_prueba < database/migracion_139.sql
 
 ALTER TABLE casos_prueba

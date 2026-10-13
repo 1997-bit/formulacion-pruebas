@@ -66,7 +66,7 @@ final class PermisosTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    // BUG-026: 404, no 403.
+    // BUG-026. 404, no 403.
     public function testTesterAjenoNoEncuentraElProyecto(): void
     {
         $this->expectException(ErrorNoEncontrado::class);
@@ -89,7 +89,7 @@ final class PermisosTest extends TestCase
         $this->assertSame([10, 11], $proyectos);
     }
 
-    // Selector del sidebar: las listas muestran solo el proyecto activo, también al admin.
+    // Selector del sidebar: listas solo del proyecto activo, también para el admin.
     public function testProyectosConActivoSoloEse(): void
     {
         $this->assertSame([11], Permisos::proyectos(self::TESTER + ['activo' => 11]));
@@ -116,7 +116,7 @@ final class PermisosTest extends TestCase
         $this->assertSame($esperado, $puede);
     }
 
-    // BUG-026: un ajeno recibe 404 antes que 403.
+    // BUG-026. Ajeno: 404 antes que 403.
     public function testExigirEditarCasoAjenoDa404(): void
     {
         $this->expectException(ErrorNoEncontrado::class);

@@ -23,7 +23,7 @@ $enlaceVista = fn (string $v): string => '/formularios/incidentes?' . http_build
 $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked' : '';
 // Con proyecto activo la columna Proyecto sobra.
 $todos = $usuario['activo'] === null;
-// Avatar: las iniciales son decoración; el nombre va en texto.
+// Avatar: iniciales decorativas, nombre en texto.
 $asignado = fn (?string $nombre): string => $nombre === null
     ? 'Sin asignar'
     : '<span class="avatar" aria-hidden="true">' . Html::e(Html::iniciales($nombre)) . '</span>' . Html::e($nombre);

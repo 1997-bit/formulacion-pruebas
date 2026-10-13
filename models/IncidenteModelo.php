@@ -23,7 +23,7 @@ final class IncidenteModelo
     }
 
     /**
-     * Por proyecto: abiertos primero, luego lo más grave. Orden del índice: sin filesort.
+     * Por proyecto. Abiertos primero, luego lo más grave. Orden del índice: sin filesort.
      *
      * Sin $offset: todos hasta $limite, para el tablero.
      *
@@ -35,7 +35,7 @@ final class IncidenteModelo
     {
         [$permiso, $valores] = self::donde($proyectos, $filtros);
         $orden = ' ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero';
-        // La subconsulta salta solo por el índice (#107).
+        // La subconsulta lee solo el índice, #107.
         $sql = Conexion::pdo()->prepare(
             'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper, i.asignado_id,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
@@ -104,7 +104,7 @@ final class IncidenteModelo
         return (int) $sql->fetchColumn();
     }
 
-    // Sin cerrar del caso: impiden marcarlo OK (BUG-048). FOR UPDATE dentro de la transacción del resultado.
+    // Incidentes del caso sin cerrar: impiden OK. BUG-048. FOR UPDATE en la transacción del resultado.
     public static function abiertosDeCaso(int $casoId): int
     {
         $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM (SELECT id FROM incidentes WHERE caso_id = ? AND estado <> 2 FOR UPDATE) a');
@@ -148,7 +148,7 @@ final class IncidenteModelo
     }
 
     /**
-     * Permiso y filtros usados: estado, severidad, stopper (1) y asignado (id).
+     * Permiso y filtros usados: estado, severidad, stopper = 1, asignado = id.
      *
      * @param list<int>|null $proyectos
      * @param array<string, ?int> $filtros

@@ -5,8 +5,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Fila de una tabla editable (formularios 2 a 5). Sin $indice es la plantilla vacía.
- * Errores con clave "fila.columna", junto a la celda (RNF-07).
+ * Fila editable, formularios 2 a 5. Sin $indice: plantilla vacía.
+ * Keys de error "fila.columna", junto a la celda. RNF-07.
  *
  * @var array<string, array{0: string, 1: ?int}> $columnas  nombre => [etiqueta, maxlength]; sin maxlength es textarea
  * @var ?array<string, mixed> $valores

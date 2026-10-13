@@ -18,7 +18,7 @@ use App\Models\UsuarioModelo;
 final class IncidenteServicio
 {
     /**
-     * Formulario 10. El proyecto sale del caso; el código es BUG y un consecutivo del proyecto.
+     * Formulario 10. Proyecto del caso. Código: BUG + consecutivo del proyecto.
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -46,7 +46,7 @@ final class IncidenteServicio
         self::validarSeguimiento($v, $d, $asignables);
         $v->comprobar();
 
-        // El bloqueo evita dos códigos iguales; UNIQUE (proyecto_id, codigo) lo respalda.
+        // Lock: sin códigos duplicados. Respaldo: UNIQUE proyecto_id + codigo.
         return Conexion::transaccion(function () use ($caso, $casoId, $d, $usuario): array {
             self::exigirPlanAbierto($caso['proyecto_id'], $d);
             $codigo = sprintf('BUG-%03d', IncidenteModelo::siguienteNumero($caso['proyecto_id']));
@@ -73,7 +73,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Estado, asignado y stopper: cualquiera del proyecto.
+     * Estado, asignado y stopper. Cualquiera del proyecto.
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -101,7 +101,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Tablero: el seguimiento con otro estado y lo demás igual.
+     * Tablero: cambia solo el estado.
      *
      * @param array{id: int, rol: int} $usuario
      */

@@ -43,7 +43,7 @@ final class UsuarioModeloTest extends BaseDatos
         $this->assertNull($usuario);
     }
 
-    // #116: la base ya trae usuarios; se compara contra la cuenta de antes.
+    // #116. La base ya trae usuarios: compara con el conteo de antes.
     public function testContarAdminsCuentaSoloAdmins(): void
     {
         $antes = UsuarioModelo::contarAdmins();

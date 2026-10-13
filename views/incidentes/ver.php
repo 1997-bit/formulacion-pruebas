@@ -9,7 +9,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Detalle del incidente, como el del caso: el defecto a la izquierda, con el seguimiento; los datos a la derecha.
+ * Detalle del incidente, como el del caso. Defecto y seguimiento a la izquierda, datos a la derecha.
  *
  * @var array<string, mixed> $incidente
  * @var list<array<string, mixed>> $asignables

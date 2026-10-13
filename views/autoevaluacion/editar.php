@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 8 (RF-15) para llenar o editar. Los promedios se ven al escribir; el servidor los recalcula.
+ * Formulario 8, RF-15, llenar o editar. Promedios en vivo. El servidor recalcula.
  *
  * @var array<string, mixed> $proyecto
  * @var array<int, array{id: int, nombre: string}> $companeros

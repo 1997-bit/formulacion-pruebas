@@ -25,7 +25,7 @@ final class PanelControlador
             'avance' => ReporteServicio::avance($usuario),
             'asignados' => IncidenteModelo::asignadosA($usuario['id'], $proyectos, 5),
             'atrasados' => CasoModelo::atrasados($proyectos, 5),
-            // Por rol: el tester ve lo suyo por anotar; el admin, lo que solo él completa.
+            // Por rol. Tester: lo suyo por anotar. Admin: lo que solo él completa.
             'misPendientes' => $usuario['rol'] === 1 ? [] : CasoModelo::pendientesDe($proyectos, $usuario['id'], 5),
             'incompletos' => $usuario['rol'] === 1 ? ProyectoServicio::incompletos($usuario) : [],
             'migas' => [
@@ -35,11 +35,11 @@ final class PanelControlador
         ]);
     }
 
-    // Sin proyecto: la decisión de cada proyecto. Con proyecto: su cierre.
+    // Sin proyecto: decisión de cada proyecto. Con proyecto: su cierre.
     public function cierre(): void
     {
         $usuario = Sesion::usuario();
-        // Sin ?proyecto: el proyecto activo del sidebar.
+        // Sin ?proyecto: el activo del sidebar.
         $id = $_GET['proyecto'] ?? $usuario['activo'];
         if ($id === null) {
             Vista::pagina('reportes/listar', [

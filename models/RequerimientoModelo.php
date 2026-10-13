@@ -13,7 +13,7 @@ final class RequerimientoModelo
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * Todos, para los selects. Orden del índice (proyecto_id, no_funcional, numero).
+     * Todos, para los selects. Orden del índice proyecto_id, no_funcional, numero.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -32,8 +32,8 @@ final class RequerimientoModelo
     }
 
     /**
-     * Una página, con cuántos casos tiene cada uno: 20 conteos por índice (#108).
-     * La subconsulta salta solo por el índice (#107).
+     * Una página con el conteo de casos: 20 conteos por índice. #108.
+     * La subconsulta lee solo el índice, #107.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>

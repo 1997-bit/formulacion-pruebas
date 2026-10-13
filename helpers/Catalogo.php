@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// Lee y pinta config/catalogos.php. Clave int (PDO) o string ($_POST).
+// Lee y pinta config/catalogos.php. Key int de PDO o string de $_POST.
 final class Catalogo
 {
     /** @var array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string, niveles?: list<string>}>}>|null */
@@ -29,7 +29,7 @@ final class Catalogo
         return $clave !== null && isset(self::valores($catalogo)[$clave]);
     }
 
-    // Clave desconocida: se muestra tal cual.
+    // Key desconocida: se muestra tal cual.
     public static function texto(string $catalogo, int|string|null $clave): string
     {
         return self::valores($catalogo)[$clave ?? '']['texto'] ?? (string) $clave;

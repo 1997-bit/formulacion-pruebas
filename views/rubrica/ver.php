@@ -9,7 +9,7 @@ use App\Helpers\Icono;
 use App\Services\RubricaServicio;
 
 /**
- * Formulario 7 (RF-14) de solo lectura. El total lo suma el servidor.
+ * Formulario 7, RF-14, solo lectura. Total sumado en el servidor.
  *
  * @var array<string, mixed> $proyecto
  * @var ?array{puntos: array<int, int>, total: int, autor: string, guardado_en: string} $rubrica

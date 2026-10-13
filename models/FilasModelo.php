@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// Filas de los formularios 2 a 5: (requerimiento_id, orden), sus columnas y guardado_por/guardado_en. $tabla y las columnas vienen del servicio.
+// Filas de los formularios 2 a 5. Key: requerimiento_id + orden, más guardado_por y guardado_en. $tabla y columnas vienen del servicio.
 final class FilasModelo
 {
     /** @return list<array<string, mixed>> */
@@ -34,7 +34,7 @@ final class FilasModelo
     }
 
     /**
-     * Solo los requerimientos de la página: a lo más 20 grupos (#108).
+     * Solo requerimientos de la página: máximo 20 grupos. #108.
      *
      * @param list<int> $requerimientos
      * @return array<int, int> requerimiento_id => filas
@@ -54,8 +54,8 @@ final class FilasModelo
     }
 
     /**
-     * Resumen de lo guardado, como un ETag (#100). El formulario lo lleva oculto; al guardar,
-     * si ya no coincide, otro usuario guardó antes. FOR UPDATE: dentro de la transacción bloquea hasta el commit.
+     * Hash de lo guardado, tipo ETag, #100. Va oculto en el form. Si no coincide al guardar, otro guardó antes.
+     * FOR UPDATE: bloquea hasta el commit.
      *
      * @param list<string> $tablas
      */
@@ -137,7 +137,7 @@ final class FilasModelo
         if ($nuevas !== []) {
             self::insertar($tabla, array_keys($dueno + $filas[0] + $autor), $nuevas);
         }
-        // Las que quedaron en $antes ya no vienen: se borran en un DELETE.
+        // Lo que queda en $antes ya no viene: un DELETE.
         if ($antes !== []) {
             $tupla = '(' . implode(', ', array_fill(0, count($llave), '?')) . ')';
             $pdo->prepare("DELETE FROM {$tabla} WHERE {$deDueno} AND (" . implode(', ', $llave) . ') IN ('

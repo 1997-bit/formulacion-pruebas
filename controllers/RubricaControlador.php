@@ -13,11 +13,11 @@ use App\Services\RubricaServicio;
 // RF-14
 final class RubricaControlador
 {
-    // Sin proyecto: la lista de proyectos con su total. Con proyecto: la rúbrica de solo lectura.
+    // Sin proyecto: proyectos con su total. Con proyecto: rúbrica de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        // Sin ?proyecto: el proyecto activo del sidebar.
+        // Sin ?proyecto: el activo del sidebar.
         $id = $_GET['proyecto'] ?? $usuario['activo'];
         if ($id === null) {
             Vista::pagina('rubrica/listar', [

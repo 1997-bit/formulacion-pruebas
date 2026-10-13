@@ -69,7 +69,7 @@ final class RubricaServicioTest extends BaseDatos
         ];
     }
 
-    // RF-21: solo admin, aunque sea miembro.
+    // RF-21. Solo admin, aunque sea miembro.
     #[DataProvider('acciones')]
     public function testTesterNoTienePermiso(callable $accion): void
     {

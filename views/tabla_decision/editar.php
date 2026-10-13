@@ -8,8 +8,8 @@ use App\Helpers\Icono;
 use App\Services\TablaDecisionServicio;
 
 /**
- * Formulario 4 (RF-11) para crear o editar. Las columnas las arma el servidor:
- * agregar o quitar una fila envía el formulario sin guardar. Se guardan todas las reglas o ninguna.
+ * Formulario 4, RF-11, crear o editar. El servidor arma las columnas.
+ * Agregar o quitar fila envía sin guardar. Todas las reglas o ninguna.
  *
  * @var array<string, mixed> $requerimiento
  * @var string $huella  lo leído, para avisar si otro guardó antes (#100)
