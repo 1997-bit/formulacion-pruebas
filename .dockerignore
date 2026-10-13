@@ -1,13 +1,8 @@
-.git
-.github
-.claude
-.env
+# Ocultos de la raíz: .git, .env, caches.
+.*
 vendor
 tests
 docs
 storage/logs/*
 storage/evidencias/*
 !storage/*/.gitkeep
-.phpunit.cache
-.phpunit.result.cache
-.php-cs-fixer.cache
