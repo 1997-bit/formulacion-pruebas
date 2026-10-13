@@ -770,7 +770,14 @@ ins.cambio {
   white-space: pre-line;
 }
 del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
-ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: none; }
+ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: underline; text-underline-offset: 3px; }
+/* El lector de pantalla no anuncia del ni ins. Texto oculto, solo para él. */
+del.cambio::before,
+ins.cambio::before { clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap; }
+del.cambio::before { content: " [eliminado: "; }
+ins.cambio::before { content: " [agregado: "; }
+del.cambio::after,
+ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; }
 
 /* Línea de tiempo: un punto por cambio, reciente arriba */
 .linea-tiempo { margin: 0; padding: 0; list-style: none; }
@@ -1030,6 +1037,14 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
     text-align: left;
   }
   .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
+}
+
+/* Alto contraste de Windows: el sistema quita los fondos. Marcar con colores del sistema. */
+
+@media (forced-colors: active) {
+  .resultado-opcion:has(input:checked) { outline: 3px solid Highlight; outline-offset: 2px; }
+  .switch:checked { forced-color-adjust: none; background: Highlight; }
+  .progreso { forced-color-adjust: none; }
 }
 
 /* Impresión: claro, sin navegación ni botones */

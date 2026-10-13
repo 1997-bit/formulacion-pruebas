@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Este changelog y las versiones retroactivas.
+- Soporte de alto contraste, más contraste y menos transparencia del sistema.
+
+### Changed
+
+- Colores en oklch. Insignias con fondo suave estilo Jira.
+- Pendiente en gris. El amarillo queda para atención.
+- Bordes de campo con contraste 3:1.
 
 ## [1.5.0] - 2026-10-13
 
