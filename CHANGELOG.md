@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Este changelog y las versiones retroactivas.
 - Soporte de alto contraste, más contraste y menos transparencia del sistema.
 
 ### Changed
