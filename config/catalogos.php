@@ -8,7 +8,7 @@ return [
     'estado_caso' => [
         'nombre' => 'Estado del caso',
         'valores' => [
-            0 => ['texto' => 'Pendiente', 'variante' => 'aviso'],
+            0 => ['texto' => 'Pendiente', 'variante' => 'secundaria'],
             1 => ['texto' => 'OK', 'variante' => 'exito'],
             2 => ['texto' => 'FAULT', 'variante' => 'peligro'],
         ],

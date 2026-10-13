@@ -25,6 +25,9 @@ $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#03141C" media="(prefers-color-scheme: dark)">
 <title><?= Html::e($titulo) ?> · Casos de Prueba</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/tokens.css') ?>">
