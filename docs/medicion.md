@@ -72,3 +72,23 @@ EXPLAIN SELECT COALESCE(MAX(numero), 0) + 1 FROM incidentes WHERE proyecto_id = 
 -- Registrar incidente (CasoModelo::porCodigo)
 EXPLAIN SELECT c.id FROM casos_prueba c WHERE c.codigo = 'SIS-01000' ORDER BY c.proyecto_id LIMIT 20;
 ```
+
+## 5. Golden signals desde el log
+
+Cada petición deja una línea `http` con `duracion_ms`, RNF-11. Ver `docs/logs.md`.
+
+```sh
+# p95 por ruta
+jq -s 'map(select(.channel=="http")) | group_by(.context.ruta)[] | {ruta: .[0].context.ruta, p95: (map(.context.duracion_ms) | sort | .[(length*0.95|floor)])}' storage/logs/app-*.log
+# tasa 5xx
+jq -s 'map(select(.channel=="http")) | (map(select(.context.codigo>=500)) | length) / length' storage/logs/app-*.log
+# login fallido por ip
+jq -r 'select(.message|startswith("authn_login_fail")) | .extra.ip' storage/logs/app-*.log | sort | uniq -c
+```
+
+SQL lento: `slow_query_log` de MySQL, sin código.
+
+```ini
+slow_query_log = 1
+long_query_time = 0.2
+```

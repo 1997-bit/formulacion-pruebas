@@ -183,7 +183,7 @@ final class CasoServicio
                 if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
                     throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
                 }
-                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
+                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $resultado['impacto'], $usuario['id']);
                 Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
                 self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             });
@@ -357,10 +357,10 @@ final class CasoServicio
     }
 
     /**
-     * Resultado: estado, obtenido y observaciones.
+     * Resultado: estado, obtenido, observaciones e impacto.
      *
      * @param array<string, string> $d
-     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string}
+     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string}
      */
     private static function resultado(array $d): array
     {
@@ -368,6 +368,7 @@ final class CasoServicio
             'estado' => (int) $d['estado'],
             'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
             'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
+            'impacto' => $d['impacto'] === '' ? null : $d['impacto'],
         ];
     }
 
@@ -397,7 +398,8 @@ final class CasoServicio
     }
 
     /**
-     * RF-24. OK o FAULT: resultado, observaciones y al menos 1 evidencia, nueva o anterior.
+     * RF-24. OK o FAULT: resultado, observaciones, impacto y al menos 1 evidencia, nueva o anterior.
+     * Impacto: campo obligatorio de 29119-3.
      *
      * @param array<string, string> $d
      * @param list<int> $tipos
@@ -410,6 +412,7 @@ final class CasoServicio
             ->catalogo('estado', 'estado_caso', $d['estado'])
             ->regla('resultado_obtenido', !$anotado || $d['resultado_obtenido'] !== '', 'Es obligatorio con OK o FAULT.')
             ->regla('observaciones', !$anotado || $d['observaciones'] !== '', 'Es obligatorio con OK o FAULT.')
+            ->regla('impacto', !$anotado || $d['impacto'] !== '', 'Es obligatorio con OK o FAULT.')
             ->regla('evidencias', !$anotado || $tipos !== [] || $previas > 0, 'Con OK o FAULT hace falta al menos una.');
 
         foreach ($tipos as $tipo) {

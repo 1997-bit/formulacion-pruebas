@@ -22,7 +22,7 @@ use Tests\Apoyo\BaseDatos;
 final class CasoServicioTest extends BaseDatos
 {
     private const OK = [
-        'estado' => '1', 'resultado_obtenido' => 'Obtenido', 'observaciones' => 'Observaciones',
+        'estado' => '1', 'resultado_obtenido' => 'Obtenido', 'observaciones' => 'Observaciones', 'impacto' => 'Impacto',
         'evidencia_enlace' => 'https://ejemplo.com', 'descripcion_enlace' => 'Enlace',
     ];
 
@@ -51,6 +51,7 @@ final class CasoServicioTest extends BaseDatos
             'estado' => '0',
             'resultado_obtenido' => '',
             'observaciones' => '',
+            'impacto' => '',
             'evidencia_enlace' => '',
             'descripcion_captura' => '',
             'descripcion_log' => '',
@@ -163,6 +164,7 @@ final class CasoServicioTest extends BaseDatos
         $faltan = [
             'resultado_obtenido' => 'Es obligatorio con OK o FAULT.',
             'observaciones' => 'Es obligatorio con OK o FAULT.',
+            'impacto' => 'Es obligatorio con OK o FAULT.',
             'evidencias' => 'Con OK o FAULT hace falta al menos una.',
         ];
 
@@ -213,6 +215,17 @@ final class CasoServicioTest extends BaseDatos
         $errores = $this->errores(fn () => $this->registrar($usuario, $requerimiento, $cambios + self::OK, $marcadas));
 
         $this->assertSame($esperado, $errores);
+    }
+
+    // 29119-3. Impacto es obligatorio en el log de pruebas.
+    public function testOkSinImpactoNoSeGuarda(): void
+    {
+        $usuario = $this->usuario();
+        $requerimiento = $this->requerimiento($this->proyecto($usuario));
+
+        $errores = $this->errores(fn () => $this->registrar($usuario, $requerimiento, ['impacto' => ''] + self::OK, ['4']));
+
+        $this->assertSame(['impacto' => 'Es obligatorio con OK o FAULT.'], $errores);
     }
 
     public function testRegistrarGuardaElEnlace(): void
@@ -306,7 +319,7 @@ final class CasoServicioTest extends BaseDatos
         $requerimiento = $this->requerimiento($this->proyecto($usuario));
         [$caso] = $this->registrar($usuario, $requerimiento, self::OK, ['4']);
 
-        CasoServicio::registrarResultado($caso, ['estado' => '0', 'resultado_obtenido' => '', 'observaciones' => ''], [], [], $this->sesion($usuario));
+        CasoServicio::registrarResultado($caso, ['estado' => '0', 'resultado_obtenido' => '', 'observaciones' => '', 'impacto' => ''], [], [], $this->sesion($usuario));
 
         $this->assertSame(0, CasoModelo::porId($caso)['estado'] ?? null);
     }
@@ -384,7 +397,7 @@ final class CasoServicioTest extends BaseDatos
         $r1 = $this->requerimiento($p);
         $r2 = $this->requerimiento($p, 'RF-02');
         $this->caso($p, $r1, $usuario, 'SIS-001');
-        CasoModelo::anotar($this->caso($p, $r2, $usuario, 'SIS-002'), 1, 'Obtenido', 'Observaciones', $usuario);
+        CasoModelo::anotar($this->caso($p, $r2, $usuario, 'SIS-002'), 1, 'Obtenido', 'Observaciones', 'Impacto', $usuario);
         $this->caso($q, $this->requerimiento($q), $usuario, 'UNI-001');
 
         return ['usuario' => $usuario, 'p' => $p, 'q' => $q, 'r2' => $r2];

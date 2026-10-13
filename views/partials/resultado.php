@@ -58,6 +58,7 @@ $evidencias = [
 <div class="campos">
   <?= $campo('resultado_obtenido', 'Resultado obtenido', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué hizo el sistema"']) ?>
   <?= $campo('observaciones', 'Observaciones', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Notas adicionales"']) ?>
+  <?= $campo('impacto', 'Impacto', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué afecta el resultado: módulo, usuarios, otras pruebas"']) ?>
 </div>
 
 <fieldset class="grupo" aria-describedby="<?= isset($errores['evidencias']) ? 'f-evidencias-error ' : '' ?>f-evidencias-ayuda">

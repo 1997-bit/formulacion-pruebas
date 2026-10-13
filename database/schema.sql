@@ -71,6 +71,7 @@ CREATE TABLE casos_prueba (
     estado TINYINT UNSIGNED NOT NULL DEFAULT 0,
     resultado_obtenido TEXT NULL,
     observaciones TEXT NULL,
+    impacto TEXT NULL, -- ISO/IEC/IEEE 29119-3, log de pruebas
     creado_por INT UNSIGNED NOT NULL, -- RF-06
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24

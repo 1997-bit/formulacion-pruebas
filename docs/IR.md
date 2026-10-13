@@ -79,7 +79,7 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | RF-21 | Permisos | El servidor valida el rol en cada operación según la sección 7.1. | Alta |
 | RF-22 | Consultar resultados | La lista de casos filtra por proyecto, requerimiento y estado. | Alta |
 | RF-23 | Reportes | El panel muestra el avance. El reporte de cierre va aparte. | Alta |
-| RF-24 | Anotar resultado | Estado Pendiente, OK o FAULT; un caso nuevo está Pendiente. Con OK o FAULT lleva resultado obtenido, observaciones y al menos una evidencia: archivo o enlace, con descripción como texto alternativo. Se guardan fecha, hora y usuario. El caso puede volver a Pendiente. | Alta |
+| RF-24 | Anotar resultado | Estado Pendiente, OK o FAULT; un caso nuevo está Pendiente. Con OK o FAULT lleva resultado obtenido, observaciones, impacto y al menos una evidencia: archivo o enlace, con descripción como texto alternativo. Se guardan fecha, hora y usuario. El caso puede volver a Pendiente. | Alta |
 
 ---
 
