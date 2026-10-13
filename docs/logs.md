@@ -1,84 +1,51 @@
 # Logs
 
-Inventario de logs, ASVS 16.1.1. RNF-11.
+RNF-11. Inventario, ASVS 16.1.1. Código en `core/Log.php`.
 
-## 1. Log de la app
+## App
 
-| Tema | Valor |
-| --- | --- |
-| Dónde | `storage/logs/app-AAAA-MM-DD.log`. Sin acceso web. |
-| Formato | Una línea JSON por evento. Monolog `JsonFormatter`. |
-| Días | `LOG_DIAS`, 14 por defecto. Monolog borra los viejos. |
-| Nivel | `LOG_NIVEL`: `debug` en local, `info` en producción. |
-| Quién lee | `admin` en `/admin/logs`. Con acceso al servidor: `jq`, ver `docs/medicion.md`. |
-| Código | `core/Log.php`. |
+`storage/logs/app-AAAA-MM-DD.log`, una línea JSON por evento. `LOG_DIAS` 14. `LOG_NIVEL` `debug` en local, `info` en producción.
 
-Cada línea lleva en `extra`: `uid` de la petición, `url`, `ip`, `http_method`, `referrer`, `memory_peak_usage`, `user_id` y `rf`.
+`extra` en cada línea: `uid`, `url`, `ip`, `http_method`, `referrer`, `memory_peak_usage`, `user_id`, `rf`. El `uid` va también en `X-Request-Id` y en la página 500.
 
 | Canal | Qué | Nivel |
 | --- | --- | --- |
 | `http` | Una línea por petición: `metodo`, `ruta`, `codigo`, `duracion_ms`. | info |
-| `app` | `sys_crash` con stack trace. Warnings de PHP. | critical, warning |
-| `seguridad` | Eventos de la tabla 2. | info a critical |
+| `app` | `sys_crash` con stack trace, warnings de PHP. | critical, warning |
+| `seguridad` | Eventos de abajo. | info a critical |
 
-El `uid` también va en la cabecera `X-Request-Id` y en la página 500. Así el código que da el usuario lleva a su línea `sys_crash`. ASVS 16.5.1.
+## Eventos de seguridad
 
-## 2. Eventos de seguridad
+OWASP Logging Vocabulary, `evento:param`.
 
-Nombres de OWASP Logging Vocabulary. Formato `evento:param`.
-
-| Evento | Nivel | Dónde |
-| --- | --- | --- |
-| `authn_login_success:usuario` | info | `AccesoServicio::entrar` |
-| `authn_login_fail:usuario` | warning | `AccesoServicio::entrar` |
-| `authn_login_lock:llave` | warning | `AccesoServicio::frenar` |
-| `session_logout:id` | info | `AccesoControlador::salir` |
-| `session_expired:id,motivo` | info | `index.php`, RNF-02 |
-| `authz_fail:id,ruta` | critical | `index.php`, 403 |
-| `malicious_csrf:id` | warning | `index.php` |
-| `input_validation_fail:(campos),id` | warning | `Respuesta::errores` |
-| `upload_complete:id,archivo,tipo` | info | `Subida::guardar` |
-| `upload_validation:archivo,motivo` | critical | `Subida::error` |
-| `user_created:id,nuevo` | warning | `AccesoServicio::registrar`, `UsuarioServicio::crear` |
-| `user_updated:id,otro` | warning | `UsuarioServicio::editar` |
-| `user_deleted:id,otro` | warning | `UsuarioServicio::eliminar` |
-| `privilege_permissions_changed:id,otro,de,a` | warning | `UsuarioServicio::editar` |
-| `sensitive_read:id,logs` | info | `LogServicio`, cada lectura de `/admin/logs` |
-
-Nunca: clave, cookie de sesión, `csrf` ni valores de campos. ASVS 16.2.5.
-
-Casos, incidentes y formularios: sin evento. Ya están en `logs_cambios`, RF-20.
-
-## 3. Log de pruebas
-
-ISO/IEC/IEEE 29119-3, Test Execution Log. En la base, por caso.
-
-| Campo | Dónde |
+| Evento | Nivel |
 | --- | --- |
-| Fecha y hora | `casos_prueba.anotado_en`, RF-24 |
-| Descripción | `resultado_obtenido` y `observaciones` |
-| Impacto | `impacto`. Obligatorio con OK o FAULT. |
+| `authn_login_success:usuario` | info |
+| `authn_login_fail:usuario` | warning |
+| `authn_login_lock:llave` | warning |
+| `session_logout:id` | info |
+| `session_expired:id,motivo` | info |
+| `authz_fail:id,ruta` | critical |
+| `malicious_csrf:id` | warning |
+| `input_validation_fail:(campos),id` | warning |
+| `upload_complete:id,archivo,tipo` | info |
+| `upload_validation:archivo,motivo` | critical |
+| `user_created:id,nuevo` | warning |
+| `user_updated:id,otro` | warning |
+| `user_deleted:id,otro` | warning |
+| `privilege_permissions_changed:id,otro,de,a` | warning |
+| `sensitive_read:id,logs` | info |
 
-Cada ejecución queda en `logs_cambios`, RF-20.
+Nunca clave, cookie, `csrf` ni valores de campos. Casos, incidentes y formularios van en `logs_cambios`, RF-20.
 
-## 4. Cómo leerlos
+## Pruebas
 
-Solo admin. Solo lectura: sin descargar ni borrar. ASVS 16.4.2.
+Test Execution Log, ISO 29119-3: `anotado_en`, `resultado_obtenido`, `observaciones` e `impacto` en `casos_prueba`. Historial en `logs_cambios`.
 
-| Pestaña | Muestra |
-| --- | --- |
-| Lista | Líneas del día, la más nueva primero. Filtros: canal, nivel mínimo, mensaje, código. |
-| Seguridad | Veces por evento. Login fallido por IP, top 10. |
-| Rendimiento | Por ruta: peticiones, p50, p95 y % de 5xx. |
+## Leer
 
-Error en pantalla, para un incidente:
+Solo admin, solo lectura, en `/admin/logs`. Pestañas: Lista, Seguridad, Rendimiento.
 
-1. La página 500 muestra un código: `be45d3e3`.
-2. Captura de esa página: evidencia de tipo captura.
-3. `/admin/logs?uid=be45d3e3`: la petición entera, con el stack trace abierto. Busca en todos los días.
-4. Captura de esa vista, o copiar el JSON a un `.log`: evidencia de tipo log.
-5. Registrar el incidente, F10, con las dos evidencias y el código.
+Error 500: captura de la página con su código, abrir `/admin/logs?uid=<código>`, captura o `.log` de esa vista, y registrar el incidente con las dos evidencias.
 
-## 5. Fuera
-
-Envío a un sistema separado y alertas, ASVS 16.4.3 y OWASP Top 10 A09. Fuera por alcance, IR §3: sin producción ni servicios externos. Con producción: Grafana Alloy, Loki y Grafana.
+Fuera de alcance: envío a otro sistema y alertas, ASVS 16.4.3.

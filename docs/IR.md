@@ -1,139 +1,86 @@
 # IR
 
-**Proyecto:** Sistema de Casos de Prueba
+Sistema de Casos de Prueba. Ingeniería de Software Aplicada III.
 
-**Versión:** 1.0
+El sistema no ejecuta pruebas: una persona prueba y anota resultado, estado y evidencia en el caso.
 
-**Fecha:** 01/10/2026
-
-**Referencia:** Guía de Laboratorio, Ingeniería de Software Aplicada III
-
----
-
-## 1. Introducción
-
-Sistema web en PHP y MySQL para registrar casos de prueba, darles seguimiento y consultarlos. El sistema no ejecuta pruebas: una persona prueba y anota en el caso el resultado, el estado y la evidencia. El sistema genera los 10 formularios de testing de la guía.
-
-## 2. Objetivos
-
-- Autenticación con roles `admin` y `tester`, y creación de cuentas.
-- Registrar casos, su resultado y su evidencia, con fecha, hora y usuario.
-- Generar los 10 formularios de testing.
-- Consultar por proyecto, requerimiento y estado.
-- Recrear el sistema desde cero con la carpeta de Drive.
-
----
-
-## 3. Alcance
-
-Toda petición entra por `public/index.php`. Cada pantalla es una ruta de `config/rutas.php`, sin `.php`.
+## Alcance
 
 | Grupo | Rutas |
 | --- | --- |
-| Acceso | `/` inicio de sesión. `/registro` crea cuentas `tester`. `/dashboard` panel con el avance. |
-| Administración | `/admin/usuarios`, `/admin/proyectos`. |
+| Acceso | `/`, `/registro`, `/dashboard`. |
+| Administración | `/admin/usuarios`, `/admin/proyectos`, `/admin/logs`. |
 | Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`. |
-| Casos | `/casos/registrar`, `/casos/listar` con filtros, `/casos/resultado`, `/casos/editar`, `/casos/eliminar`, `/evidencias/ver`. En `/casos/resultado` se ve el caso, se anota el resultado y la evidencia, y se imprime el formulario 1. |
+| Casos | `/casos/registrar`, `/casos/listar`, `/casos/resultado`, `/casos/editar`, `/casos/eliminar`, `/evidencias/ver`. |
 | Formularios | `/formularios/` + `clases_equivalencia` 2, `valor_limite` 3, `tabla_decision` 4, `cobertura_blanca` 5, `plan_pruebas` 6, `rubrica` 7, `autoevaluacion` 8, `portafolio` 9, `incidentes` 10. |
 | Reportes | `/reportes/cierre`. |
 
-No incluye: producción, API REST, servicios externos, app móvil, pagos, ejecutar pruebas desde el sistema, UAT fuera del equipo y el profesor.
+Fuera: producción, API REST, servicios externos, móvil, pagos, ejecutar pruebas.
 
----
-
-## 4. Roles
+## Roles
 
 | Rol | Hace |
 | --- | --- |
-| `admin` | Gestiona cuentas, roles, proyectos y formularios. Llena la Rúbrica 7. |
-| `tester` | Registra casos, anota resultados, registra incidentes y llena la Auto y Coevaluación 8. |
+| `admin` | Cuentas, roles, proyectos, Rúbrica 7. |
+| `tester` | Casos, resultados, incidentes, Auto y Coevaluación 8. |
 
-Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingeniería de requerimientos, ingeniería de sistemas, product owner, usuario y profesor Arturo Murillo, que evalúa la exposición y el trabajo escrito.
+Profesor: Arturo Murillo.
 
----
+## Requerimientos funcionales
 
-## 5. Requerimientos funcionales
+| ID | Requerimiento | Regla |
+| --- | --- | --- |
+| RF-01 | Iniciar sesión | `password_verify`. |
+| RF-02 | Crear cuenta | Registro público como `tester`. Solo `admin` crea `admin`. |
+| RF-03 | Roles | Solo `admin` cambia el rol. |
+| RF-04 | Registrar caso | Proyecto, requerimiento, tipo, módulo, técnica, objetivo, precondiciones, entrada, pasos, esperado, fechas. Fecha final ≥ inicio. |
+| RF-05 | Listar casos | Por código. `tester` ve sus proyectos. |
+| RF-06 | Editar caso | `tester` solo los suyos. |
+| RF-07 | Eliminar caso | Solo `admin`, con confirmación. No con evidencias o incidentes. |
+| RF-08 a RF-17 | Formularios 1 a 10 | 1 es la vista imprimible del caso. 7 solo `admin`. 8 ambos roles. 9 por persona y semana. |
+| RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example`, `docs/recrear_ambiente.md`. |
+| RF-19 | Incidentes | Defectos de un caso en el formulario 10. |
+| RF-20 | Historial | Campo, antes, después, usuario y fecha por cambio. |
+| RF-21 | Permisos | El servidor valida el rol según la matriz. |
+| RF-22 | Consultar | Filtro por proyecto, requerimiento y estado. |
+| RF-23 | Reportes | Avance en el panel. Reporte de cierre aparte. |
+| RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto y una evidencia como mínimo. Guarda fecha, hora y usuario. |
 
-| ID | Requerimiento | Detalle | Prioridad |
-| --- | --- | --- | --- |
-| RF-01 | Iniciar sesión | Usuario y contraseña con `password_verify`. | Alta |
-| RF-02 | Crear cuenta | Registro público con rol `tester`. Solo un `admin` crea cuentas `admin`. | Alta |
-| RF-03 | Gestionar roles | Solo el `admin` cambia el rol, al editar un usuario. | Alta |
-| RF-04 | Registrar caso | Código, proyecto, requerimiento funcional o no funcional, tipo, módulo, técnica y sub-técnica, objetivo, precondiciones, entrada, pasos, resultado esperado, fecha de inicio y fecha final. La final no es anterior a la de inicio. Tipos: unitaria, integración, sistema, aceptación, mantenimiento, regresión, smoke, performance o seguridad. | Alta |
-| RF-05 | Listar casos | Orden por código. `admin` ve todos. `tester` ve los de sus proyectos. | Alta |
-| RF-06 | Editar caso | `admin` edita cualquiera. `tester` edita solo los que creó. | Media |
-| RF-07 | Eliminar caso | Solo `admin`, con confirmación. Un caso con evidencias o incidentes no se elimina. | Media |
-| RF-08 | Formulario 1 | Registro de Caso de Prueba: vista imprimible del caso. | Alta |
-| RF-09 | Formulario 2 | Matriz de Clases de Equivalencia. | Alta |
-| RF-10 | Formulario 3 | Análisis de Valor Límite. | Alta |
-| RF-11 | Formulario 4 | Tabla de Decisión. | Alta |
-| RF-12 | Formulario 5 | Cobertura de Caja Blanca. | Alta |
-| RF-13 | Formulario 6 | Plan de Pruebas del Proyecto. | Alta |
-| RF-14 | Formulario 7 | Rúbrica de Evaluación. Solo `admin`. | Media |
-| RF-15 | Formulario 8 | Autoevaluación y Coevaluación. Ambos roles. | Media |
-| RF-16 | Formulario 9 | Portafolio de Evidencias: lo que entrega cada persona por semana, con tipo y fecha. | Media |
-| RF-17 | Formulario 10 | Registro de Incidentes. | Alta |
-| RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example` y `docs/recrear_ambiente.md`. | Alta |
-| RF-19 | Incidentes | Los defectos de un caso se registran en el formulario 10. | Alta |
-| RF-20 | Historial | Cada cambio de un caso guarda campo, valor anterior, valor nuevo, usuario y fecha. | Media |
-| RF-21 | Permisos | El servidor valida el rol en cada operación según la sección 7.1. | Alta |
-| RF-22 | Consultar resultados | La lista de casos filtra por proyecto, requerimiento y estado. | Alta |
-| RF-23 | Reportes | El panel muestra el avance. El reporte de cierre va aparte. | Alta |
-| RF-24 | Anotar resultado | Estado Pendiente, OK o FAULT; un caso nuevo está Pendiente. Con OK o FAULT lleva resultado obtenido, observaciones, impacto y al menos una evidencia: archivo o enlace, con descripción como texto alternativo. Se guardan fecha, hora y usuario. El caso puede volver a Pendiente. | Alta |
-
----
-
-## 6. Requerimientos no funcionales
+## Requerimientos no funcionales
 
 | ID | Tema | Regla |
 | --- | --- | --- |
-| RNF-01 | Seguridad | Contraseñas con `PASSWORD_ARGON2ID`, nunca en texto plano. SQL con sentencias preparadas de PDO. Credenciales solo en `.env`; se entrega `.env.example`. |
-| RNF-02 | Acceso | El servidor valida rol y sesión en cada página. La sesión se regenera al entrar. Un inicio fallido no dice si el usuario existe. La sesión no borra un formulario a medias. |
-| RNF-03 | Evidencias | Solo png, jpg, txt o log, o un enlace. Máximo 5 MB. El archivo se renombra y se guarda fuera de la raíz pública. |
-| RNF-04 | Fiabilidad | Borrar un caso pide confirmación. Los pasos y datos de un caso permiten repetir la prueba. |
-| RNF-05 | Datos | InnoDB, `utf8mb4` y UTF-8. Nombre completo en un solo campo. Sin campo de género obligatorio. |
-| RNF-06 | Fechas | ISO en la base. `dd/mm/aaaa` en pantalla. |
-| RNF-07 | Accesibilidad | WCAG 2.2 AA. HTML semántico y `lang="es"`. Todo con teclado y foco visible. Contraste 4.5:1. El color no es la única señal. Errores junto al campo con `aria-describedby`. Texto alternativo. Zoom de 200 %. Mensajes cortos. Campos obligatorios marcados. |
-| RNF-08 | Compatibilidad | PHP 8.2 o superior, MySQL 8 o MariaDB 10.6 o superior. Chrome, Firefox y Edge. |
-| RNF-09 | Desempeño | Listados de 20 filas por página. |
-| RNF-10 | Mantenibilidad | Cada función corresponde a un RF. Hay manual por pantalla y guía para recrear el ambiente. |
-| RNF-11 | Logs | Monolog, una línea JSON por evento en `storage/logs`, 14 días. Eventos de seguridad de OWASP ASVS V16 con nombres de OWASP Logging Vocabulary. Nunca claves, cookies ni tokens. El admin los lee en `/admin/logs`. Ver `docs/logs.md`. |
+| RNF-01 | Seguridad | Argon2id. PDO preparado. Credenciales en `.env`. |
+| RNF-02 | Acceso | Rol y sesión en cada página. Sesión nueva al entrar. Login fallido no dice si el usuario existe. |
+| RNF-03 | Evidencias | png, jpg, txt, log o enlace. 5 MB. Renombrado, fuera de la raíz pública. |
+| RNF-04 | Fiabilidad | Borrar pide confirmación. Un caso se puede repetir. |
+| RNF-05 | Datos | InnoDB, `utf8mb4`. Nombre en un campo. Sin género obligatorio. |
+| RNF-06 | Fechas | ISO en base, `dd/mm/aaaa` en pantalla. |
+| RNF-07 | Accesibilidad | WCAG 2.2 AA. |
+| RNF-08 | Compatibilidad | PHP 8.2+, MySQL 8 o MariaDB 10.6+. Chrome, Firefox, Edge. |
+| RNF-09 | Desempeño | 20 filas por página. |
+| RNF-10 | Mantenibilidad | Cada función corresponde a un RF. |
+| RNF-11 | Logs | Ver `docs/logs.md`. |
 
----
+## Reglas de negocio
 
-## 7. Reglas de negocio
-
-- Un caso pertenece a un proyecto. Su código es la sigla del tipo y un consecutivo, único en el proyecto: `SIS-001`.
-- Formularios 2 a 5 pertenecen a un requerimiento. Formularios 6 y 7, a un proyecto. Formularios 8 y 9, a una persona del proyecto: cada una llena su autoevaluación, la coevaluación de su compañero y su portafolio.
-- Estados, tipos y roles se validan contra `config/catalogos.php`.
-
-### 7.1 Matriz rol por operación
+- Código de caso: sigla del tipo y consecutivo por proyecto, `SIS-001`.
+- Formularios 2 a 5 por requerimiento. 6 y 7 por proyecto. 8 y 9 por persona.
+- Estados, tipos y roles según `config/catalogos.php`.
 
 | Operación | admin | tester |
 | --- | --- | --- |
-| Usuarios y roles | Sí | No |
-| Proyectos y miembros | Sí | No |
-| Registrar caso | Sí | Sus proyectos |
-| Editar caso | Sí | Solo propios |
+| Usuarios, proyectos, Rúbrica 7, Logs | Sí | No |
 | Eliminar caso | Sí | No |
-| Ver casos | Todos | Sus proyectos |
-| Anotar resultado | Sí | Sus proyectos |
-| Registrar incidente | Sí | Sus proyectos |
-| Rúbrica 7 | Sí | No |
+| Editar caso | Sí | Propios |
+| Registrar, ver, anotar, incidentes, reportes | Sí | Sus proyectos |
 | Auto y Coevaluación 8 | Sí | Sí |
-| Reportes | Sí | Sus proyectos |
-| Logs | Sí | No |
 
----
+## Restricciones
 
-## 8. Restricciones
+PHP y MySQL sin frameworks. Solo Monolog en ejecución. PHPUnit, PHPStan y php-cs-fixer en desarrollo.
 
-- PHP y MySQL, sin frameworks. En tiempo de ejecución, solo Monolog 3 para los logs. En desarrollo, PHPUnit, PHPStan y php-cs-fixer.
-- Entrega: carpeta de Drive con código y base, y documento escrito en Word con el formato del ejemplo de clase.
-
----
-
-## 9. Datos
+## Datos
 
 | Grupo | Tablas |
 | --- | --- |
@@ -141,5 +88,3 @@ Roles organizacionales de referencia: desarrollador, QA/Tester, QA Lead, ingenie
 | Seguimiento | `evidencias`, `incidentes`, `logs_cambios` |
 | Formularios | `clases_equivalencia`, `valor_limite`, `decision_filas`, `decision_celdas`, `cobertura_blanca`, `plan_pruebas`, `rubrica_evaluaciones`, `autoevaluaciones` |
 | Vista | `v_trazabilidad` |
-
----

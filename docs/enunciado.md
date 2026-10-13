@@ -1,4 +1,3 @@
-
 # Creación de proyecto de programación (Casos de prueba)
 
 ## 1. Objetivos
