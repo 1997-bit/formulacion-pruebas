@@ -39,10 +39,18 @@ final class AccesoTest extends PruebaHttp
         $this->assertSame(['Usuario o contraseña incorrectos.', 'Usuario o contraseña incorrectos.'], $mensajes);
     }
 
+    public function testSalirConGetNoExiste(): void
+    {
+        $cliente = $this->entrar($this->usuario());
+
+        $this->assertSame(404, $cliente->get('/salir')['codigo']);
+        $this->assertSame(200, $cliente->get('/dashboard')['codigo']);
+    }
+
     public function testSalirCierraLaSesion(): void
     {
         $cliente = $this->entrar($this->usuario());
-        $cliente->get('/salir');
+        $cliente->post('/salir', ['csrf' => $cliente->token('/dashboard')]);
 
         $respuesta = $cliente->get('/dashboard');
 
