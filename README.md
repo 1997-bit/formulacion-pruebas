@@ -1,9 +1,32 @@
 # formulacion-pruebas
-Sistema web en PHP para la identificación, clasificación, registro y generación de formularios orientados a la gestión de casos de prueba. Incluye autenticación, roles de administrador y testers, gestión de casos de prueba, técnicas de caja negra y caja blanca, plan de pruebas, registro de incidentes y evidencias.
+
+App web para registrar casos de prueba, darles seguimiento y generar los 10 formularios de testing. Roles admin y tester.
+
+## Instalación con Docker
+
+```sh
+cp .env.example .env   # poner DB_USER y DB_PASS
+docker compose up -d --build
+```
+
+Abrir http://localhost:8080. La primera vez, MySQL carga `schema.sql` y `seed.sql`. Base, evidencias y logs quedan en volúmenes.
+
+Volver a crear la base: `docker compose down -v`.
+
+## Instalación sin Docker
+
+PHP 8.2+ con `pdo_mysql` y `mbstring`, MySQL 8 o MariaDB 10.6+, Composer.
+
+```sh
+composer install
+cp .env.example .env   # poner DB_USER y DB_PASS
+mysql -e "CREATE DATABASE casos_prueba CHARACTER SET utf8mb4"
+mysql casos_prueba < database/schema.sql
+mysql casos_prueba < database/seed.sql
+php -S 127.0.0.1:8000 -t public
+```
 
 ## Usuarios de prueba
-
-Los crea `database/seed.sql`.
 
 | Rol | Usuario | Contraseña |
 | --- | --- | --- |
@@ -11,25 +34,44 @@ Los crea `database/seed.sql`.
 | tester | `gloria` | `gloria1234` |
 | tester | `pan` | `pan12345` |
 
-## Producción
+## Desarrollo
 
-Instalar Monolog, RNF-11:
+```sh
+composer test   # PHPUnit
+composer stan   # PHPStan
+composer lint   # php-cs-fixer, sin cambiar archivos
+composer fix    # php-cs-fixer
+```
+
+## Producción sin Docker
+
+La imagen ya trae esto.
 
 ```sh
 composer install --no-dev
 ```
 
-`storage/logs` necesita permiso de escritura para el servidor web.
+- `public/` es la raíz web. `storage/logs` necesita permiso de escritura.
+- `LOG_NIVEL=info` en `.env`.
+- `php.ini`:
 
-En `php.ini` (#123):
+  ```ini
+  opcache.enable=1
+  opcache.validate_timestamps=0
+  opcache.preload=/ruta/al/proyecto/config/precarga.php  ; no en Windows
+  opcache.preload_user=www-data
+  ```
 
-```ini
-opcache.enable=1
-opcache.validate_timestamps=0  ; PHP no revisa la fecha de cada archivo en cada petición
-opcache.preload=/ruta/al/proyecto/config/precarga.php  ; no funciona en Windows (XAMPP): omitir
-opcache.preload_user=www-data  ; el usuario del servidor web
-```
+- Reiniciar Apache o PHP-FPM después de cada despliegue.
+- Apache: `mod_headers` guarda CSS y JS un año. `mod_xsendfile` con `XSendFilePath` en `storage/evidencias` envía las evidencias.
 
-Después de cada despliegue, reiniciar Apache o PHP-FPM para vaciar OPcache. Sin eso, PHP sigue usando el código anterior.
+## Documentación
 
-Con Apache, `mod_headers` guarda los CSS y JS un año (`public/.htaccess`). Con `mod_xsendfile` y `XSendFilePath` apuntando a `storage/evidencias`, Apache envía las evidencias y PHP queda libre.
+| Doc | Contenido |
+| --- | --- |
+| [IR](docs/IR.md) | Requerimientos |
+| [Arquitectura](docs/arquitectura.md) | Capas y carpetas |
+| [Logs](docs/logs.md) | Eventos y lectura |
+| [Medición](docs/medicion.md) | Rendimiento |
+| [Bugs corregidos](docs/bugs_corregidos.md) | Cierre de bugs |
+| [Enunciado](docs/enunciado.md) | Tarea original |

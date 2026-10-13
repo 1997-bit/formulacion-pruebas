@@ -1,4 +1,4 @@
--- Esquema, IR §9. MySQL 8 o MariaDB 10.6+. Borra y crea todo: mysql casos_prueba < database/schema.sql
+-- Esquema. MySQL 8 o MariaDB 10.6+. Borra y crea todo: mysql casos_prueba < database/schema.sql
 -- TINYINT de catálogo, key en config/catalogos.php. Collation explícita: sirve en los 2 motores.
 -- Formularios. Key: dueño + orden. Guardan por diferencia en una transacción.
 

@@ -1,0 +1,8 @@
+# Ocultos de la raíz: .git, .env, caches.
+.*
+vendor
+tests
+docs
+storage/logs/*
+storage/evidencias/*
+!storage/*/.gitkeep

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Lector mínimo de .env.
+// Lector mínimo de .env. La variable real del entorno gana: Docker.
 final class Env
 {
     public static function cargar(string $ruta): void
     {
         if (!is_file($ruta)) {
+            if (getenv('DB_NAME') !== false) {
+                return;
+            }
             throw new \RuntimeException('Falta el archivo .env. Copie .env.example a .env y complete los valores.');
         }
 
@@ -26,6 +29,8 @@ final class Env
 
     public static function get(string $clave, ?string $defecto = null): ?string
     {
-        return $_ENV[$clave] ?? $defecto;
+        $valor = getenv($clave);
+
+        return $valor !== false ? $valor : $_ENV[$clave] ?? $defecto;
     }
 }
