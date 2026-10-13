@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Este changelog y las versiones retroactivas.
+
 ## [1.5.0] - 2026-10-13
 
 ### Added
 
 - Imagen Docker y `compose.yaml` con la app y MySQL.
-- Este changelog y las versiones retroactivas.
 
 ### Changed
 
