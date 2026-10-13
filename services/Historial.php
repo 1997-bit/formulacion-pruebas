@@ -33,6 +33,7 @@ final class Historial
         'aprobado_por' => ['Aprobado por', 'usuario'],
         'resultado_obtenido' => ['Resultado obtenido', null],
         'observaciones' => ['Observaciones', null],
+        'impacto' => ['Impacto', null],
     ];
 
     /**

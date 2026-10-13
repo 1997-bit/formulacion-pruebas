@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Services;
 
 use App\Config\Conexion;
+use App\Core\Log;
 use App\Models\UsuarioModelo;
 use App\Services\AccesoServicio;
 use App\Services\UsuarioServicio;
+use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Medium;
@@ -71,6 +73,18 @@ final class AccesoServicioTest extends BaseDatos
         $errores = $this->errores(fn () => AccesoServicio::entrar($this->nombre . $sufijo, $clave));
 
         $this->assertSame(self::ERROR, $errores);
+    }
+
+    // RNF-11, ASVS 16.2.5. El evento no lleva la clave.
+    public function testFalloDejaAuthnLoginFailSinLaClave(): void
+    {
+        $log = new TestHandler();
+        Log::usar($log);
+
+        $this->errores(fn () => AccesoServicio::entrar($this->nombre, 'clave-secreta'));
+
+        $this->assertTrue($log->hasWarningThatContains('authn_login_fail:' . $this->nombre));
+        $this->assertStringNotContainsString('clave-secreta', json_encode(array_map(fn ($r) => $r->toArray(), $log->getRecords())));
     }
 
     // IntentoModelo::LIBRES = 3: el tercer fallo bloquea.

@@ -82,6 +82,7 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
           <dl class="detalle">
             <dt>Resultado obtenido</dt><dd class="multilinea"><?= $texto($caso['resultado_obtenido']) ?></dd>
             <dt>Observaciones</dt><dd class="multilinea"><?= $texto($caso['observaciones']) ?></dd>
+            <dt>Impacto</dt><dd class="multilinea"><?= $texto($caso['impacto']) ?></dd>
           </dl>
         </div>
         <?php if ($caso['evidencias']): ?>

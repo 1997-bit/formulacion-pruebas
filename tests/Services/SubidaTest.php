@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Services;
 
+use App\Core\Log;
 use App\Services\Subida;
+use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
@@ -57,6 +59,17 @@ final class SubidaTest extends TestCase
         $error = Subida::error($archivo, 2);
 
         $this->assertSame($esperado, $error);
+    }
+
+    // RNF-11. Archivo rechazado: upload_validation con nombre y motivo.
+    public function testExeRechazadoDejaUploadValidation(): void
+    {
+        $log = new TestHandler();
+        Log::usar($log);
+
+        Subida::error(['name' => 'virus.exe', 'tmp_name' => __FILE__, 'size' => 10, 'error' => UPLOAD_ERR_OK], 2);
+
+        $this->assertTrue($log->hasCriticalThatContains('upload_validation:virus.exe'));
     }
 
     // #118. Archivo igual ya guardado: no se mueve otra vez.

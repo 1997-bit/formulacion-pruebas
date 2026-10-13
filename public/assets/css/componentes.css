@@ -1070,3 +1070,6 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 
   @page { margin: 1.5cm; }
 }
+
+/* Detalle de una línea de log, RNF-11 */
+.log-detalle { margin: 8px 0 0; padding: 12px; overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); white-space: pre-wrap; word-break: break-all; background: var(--tenue); border-radius: var(--radio-md); }

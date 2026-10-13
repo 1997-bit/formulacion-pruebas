@@ -2,18 +2,8 @@
 
 declare(strict_types=1);
 
-// Autoloader propio y .env. App\Core\Env → core/Env.php.
-spl_autoload_register(function (string $clase): void {
-    if (!str_starts_with($clase, 'App\\')) {
-        return;
-    }
-    $partes = explode('\\', substr($clase, 4));
-    $partes[0] = strtolower($partes[0]);
-    $archivo = RAIZ . '/' . implode('/', $partes) . '.php';
-    if (is_file($archivo)) {
-        require $archivo;
-    }
-});
+// Composer: clases App\ y Monolog. Ver README.
+require RAIZ . '/vendor/autoload.php';
 
 App\Core\Env::cargar(RAIZ . '/.env');
 

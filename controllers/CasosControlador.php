@@ -25,7 +25,7 @@ final class CasosControlador
         'solicitado_por', 'aprobado_por',
     ];
     private const CAMPOS_RESULTADO = [
-        'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace',
+        'estado', 'resultado_obtenido', 'observaciones', 'impacto', 'evidencia_enlace',
         'descripcion_captura', 'descripcion_log', 'descripcion_enlace',
     ];
 
@@ -131,6 +131,7 @@ final class CasosControlador
                 'estado' => (string) $caso['estado'],
                 'resultado_obtenido' => (string) $caso['resultado_obtenido'],
                 'observaciones' => (string) $caso['observaciones'],
+                'impacto' => (string) $caso['impacto'],
                 'evidencias' => [],
             ],
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => $caso['codigo']]],

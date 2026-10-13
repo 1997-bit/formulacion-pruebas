@@ -204,11 +204,11 @@ final class CasoModelo
         )->execute([...array_values($campos), $id]);
     }
 
-    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, int $usuarioId): void
+    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, ?string $impacto, int $usuarioId): void
     {
         Conexion::pdo()->prepare(
-            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
-        )->execute([$estado, $obtenido, $observaciones, $usuarioId, $id]);
+            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, impacto = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
+        )->execute([$estado, $obtenido, $observaciones, $impacto, $usuarioId, $id]);
     }
 
     // Dentro de una transacción.

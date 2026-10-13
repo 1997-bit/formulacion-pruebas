@@ -9,6 +9,7 @@ require RAIZ . '/core/bootstrap.php';
 use App\Core\Csrf;
 use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
+use App\Core\Log;
 use App\Core\Respuesta;
 use App\Core\Ruteador;
 use App\Core\Sesion;
@@ -18,37 +19,48 @@ use App\Services\AccesoServicio;
 // Ningún sitio puede cargar estas páginas en un iframe (BUG-017).
 header('X-Frame-Options: DENY');
 
-// Error: página 500 con código corto, sin stack ni rutas. Detalle con ese código en storage/logs. #125, #46.
+// RNF-11. Una línea http por petición, con su duración. Golden signals: latencia, tráfico y 5xx.
+$duracion = static fn (): float => round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 1);
+header('X-Request-Id: ' . Log::uid());
+header_register_callback(static fn () => header('Server-Timing: app;dur=' . $duracion()));
+register_shutdown_function(static function () use ($duracion): void {
+    Log::canal('http')->info('{metodo} {ruta} {codigo}', [
+        'metodo' => $_SERVER['REQUEST_METHOD'] ?? '-',
+        'ruta' => parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/',
+        'codigo' => http_response_code(),
+        'duracion_ms' => $duracion(),
+    ]);
+});
+
+// Error: página 500 con el uid de la petición, sin stack ni rutas. Stack trace en el log con ese uid. #125, #46, ASVS 16.5.1.
 ini_set('display_errors', '0');
 set_exception_handler(function (\Throwable $e): void {
-    $codigo = bin2hex(random_bytes(4));
-    $linea = sprintf(
-        '[%s] %s %s %s %s: %s en %s:%d',
-        date('Y-m-d H:i:s'),
-        $codigo,
-        $_SERVER['REQUEST_METHOD'] ?? '-',
-        $_SERVER['REQUEST_URI'] ?? '-',
-        $e::class,
-        $e->getMessage(),
-        $e->getFile(),
-        $e->getLine()
-    );
-    error_log(str_replace(["\r", "\n"], ' ', $linea) . "\n", 3, RAIZ . '/storage/logs/errores.log');
+    Log::canal('app')->critical('sys_crash', ['exception' => $e]);
     while (ob_get_level() > 0) {
         ob_end_clean();
     }
-    Respuesta::error(500, $codigo);
+    Respuesta::error(500, Log::uid());
+});
+// Warnings y notices: al log, no a la pantalla. @ los calla.
+set_error_handler(function (int $nivel, string $mensaje, string $archivo, int $linea): bool {
+    if (error_reporting() & $nivel) {
+        Log::canal('app')->warning($mensaje, ['archivo' => $archivo, 'linea' => $linea]);
+    }
+
+    return true;
 });
 
 Sesion::iniciar();
 
 $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $ruta = Ruteador::buscar($metodo, $_SERVER['REQUEST_URI'] ?? '/') ?? Respuesta::error(404);
+Log::$rf = $ruta['rf'];
 $usuario = Sesion::usuario();
 // RNF-02. Clave o rol cambiado, o usuario borrado: cierra la sesión.
 if ($usuario !== null) {
     $usuario = AccesoServicio::vigente($usuario);
     if ($usuario === null) {
+        Log::evento('info', 'session_expired:{id},{motivo}', ['motivo' => 'revocada']);
         Sesion::salir();
         Respuesta::redirigir('/');
     }
@@ -64,11 +76,16 @@ if ($usuario !== null) {
 if ($ruta['rol'] !== null && $usuario === null) {
     Respuesta::redirigir('/');
 }
-if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
+// RNF-11. 403 con su evento de seguridad.
+$prohibir = static function (string $nivel, string $evento) use ($ruta): never {
+    Log::evento($nivel, $evento, ['ruta' => parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH)]);
     Respuesta::error(403);
+};
+if ($ruta['rol'] === 1 && $usuario['rol'] !== 1) {
+    $prohibir('critical', 'authz_fail:{id},{ruta}');
 }
 if ($metodo === 'POST' && !Csrf::valido($_POST['csrf'] ?? null)) {
-    Respuesta::error(403);
+    $prohibir('warning', 'malicious_csrf:{id}');
 }
 // Doble clic, BUG-031: ya guardado. Va al registro del primer envío.
 if ($metodo === 'POST' && is_string($_POST['envio'] ?? null) && isset($_SESSION['envios'][$_POST['envio']])) {
@@ -79,7 +96,7 @@ $clase = 'App\\Controllers\\' . $ruta['controlador'] . 'Controlador';
 try {
     (new $clase())->{$ruta['accion']}();
 } catch (ErrorPermiso) {
-    Respuesta::error(403);
+    $prohibir('critical', 'authz_fail:{id},{ruta}');
 } catch (ErrorNoEncontrado) {
     Respuesta::error(404);
 }

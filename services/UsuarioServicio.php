@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Config\Conexion;
 use App\Core\ErrorValidacion;
+use App\Core\Log;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
 
@@ -53,6 +54,7 @@ final class UsuarioServicio
         } catch (\PDOException $e) {
             throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
         }
+        Log::evento('warning', 'user_created:{id},{nuevo}', ['nuevo' => $d['usuario']]);
 
         return $d['usuario'];
     }
@@ -71,16 +73,23 @@ final class UsuarioServicio
             throw new ErrorValidacion(['rol' => 'No puede quitarse su propio rol de admin.']);
         }
         $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON);
-        Conexion::transaccion(function () use ($id, $d, $clave): void {
+        $rol = Conexion::transaccion(function () use ($id, $d, $clave): ?int {
             if ($d['rol'] !== 1) {
                 self::exigirOtroAdmin($id);
             }
+            $rol = UsuarioModelo::porId($id)['rol'] ?? null;
             try {
                 UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
             } catch (\PDOException $e) {
                 throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
             }
+
+            return $rol;
         });
+        Log::evento('warning', 'user_updated:{id},{otro}', ['otro' => $id]);
+        if ($rol !== $d['rol']) {
+            Log::evento('warning', 'privilege_permissions_changed:{id},{otro},{de},{a}', ['otro' => $id, 'de' => $rol, 'a' => $d['rol']]);
+        }
 
         return $d['usuario'];
     }
@@ -98,6 +107,7 @@ final class UsuarioServicio
                 throw new ErrorValidacion(['general' => 'Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar.']);
             }
         });
+        Log::evento('warning', 'user_deleted:{id},{otro}', ['otro' => $id]);
     }
 
     // Siempre queda un admin, #116. Cuenta con lock: 2 admins que se quitan el rol a la vez no pasan los 2.
