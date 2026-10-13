@@ -43,6 +43,13 @@ composer lint   # php-cs-fixer, sin cambiar archivos
 composer fix    # php-cs-fixer
 ```
 
+## Versiones
+
+[SemVer 2.0.0](https://semver.org/spec/v2.0.0.html) y [Keep a Changelog 2.0.0](CHANGELOG.md). En cada merge de `staging` a `main` con `feat` o `fix`:
+
+1. Mover lo de `[Unreleased]` a la versión nueva, con la fecha. `feat` sube MINOR, `fix` sube PATCH. Un cambio que rompe algo lleva `**Breaking:**` y sube MAJOR.
+2. Tag anotado en el merge: `git tag -a v1.5.0 -m v1.5.0 <commit> && git push origin v1.5.0`.
+
 ## Producción sin Docker
 
 La imagen ya trae esto.
@@ -75,3 +82,4 @@ composer install --no-dev
 | [Medición](docs/medicion.md) | Rendimiento |
 | [Bugs corregidos](docs/bugs_corregidos.md) | Cierre de bugs |
 | [Enunciado](docs/enunciado.md) | Tarea original |
+| [Changelog](CHANGELOG.md) | Versiones |
