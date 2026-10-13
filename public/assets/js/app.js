@@ -48,7 +48,7 @@
       if (e.key === 'Escape' && movilAbierto()) cerrarMovil();
     });
 
-    // Colapsado: abrir un grupo expande el sidebar.
+    // Sidebar colapsado: abrir un grupo lo expande.
     sidebar.querySelectorAll('.sidebar-desplegable > summary').forEach((summary) => {
       summary.addEventListener('click', (e) => {
         if (escritorio.matches && colapsado()) {
@@ -59,6 +59,11 @@
       });
     });
 
+    // Ajustes → Apariencia: radio del menú lateral.
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[name="sidebar"][data-ajuste]')) fijarColapsado(e.target.value === 'colapsado');
+    });
+
     escritorio.addEventListener('change', () => {
       if (escritorio.matches && movilAbierto()) cerrarMovil(false);
       sincronizarAria();
@@ -66,31 +71,62 @@
     sincronizarAria();
   }
 
-  // Menú del usuario: cierra con clic fuera o Escape.
-  const menuUsuario = document.querySelector('.usuario-menu');
-  if (menuUsuario) {
+  // Menú del usuario y selector de proyecto: cierran con clic fuera o Escape.
+  document.querySelectorAll('.usuario-menu, .proyecto-menu').forEach((menu) => {
     document.addEventListener('click', (e) => {
-      if (menuUsuario.open && !menuUsuario.contains(e.target)) menuUsuario.open = false;
+      if (menu.open && !menu.contains(e.target)) menu.open = false;
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && menuUsuario.open) {
-        menuUsuario.open = false;
-        menuUsuario.querySelector('summary').focus();
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary').focus();
       }
     });
-  }
+  });
 
   // <button data-abrir-dialogo="id"> abre <dialog id="id">.
   document.querySelectorAll('[data-abrir-dialogo]').forEach((boton) => {
     const dialogo = document.getElementById(boton.dataset.abrirDialogo);
     boton.addEventListener('click', () => dialogo?.showModal());
   });
-  // Todo <dialog> cierra con clic en el velo, no en el relleno.
+  // <dialog> cierra con clic en el velo, no en el relleno.
   document.addEventListener('click', (e) => {
     if (!(e.target instanceof HTMLDialogElement)) return;
     const r = e.target.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });
+
+  // Aviso flotante: cierra a los 5 s o con ✕. Espera con mouse o foco encima.
+  const aviso = document.querySelector('.aviso-flotante');
+  if (aviso) {
+    const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
+    setTimeout(cerrar, 5000);
+    aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
+  }
+
+  // Error de validación: foco al primer campo marcado.
+  document.querySelector('.alerta-error') && document.querySelector('[aria-invalid="true"]')?.focus();
+
+  // Un envío por form. Atrás lo libera.
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (form.method === 'dialog' || e.submitter?.formMethod === 'dialog') return;
+    if ('enviando' in form.dataset) { e.preventDefault(); return; }
+    form.dataset.enviando = '';
+    e.submitter?.setAttribute('aria-disabled', 'true');
+  });
+  window.addEventListener('pageshow', () => {
+    document.querySelectorAll('form[data-enviando]').forEach((f) => {
+      delete f.dataset.enviando;
+      f.querySelectorAll('[aria-disabled]').forEach((b) => b.removeAttribute('aria-disabled'));
+    });
+  });
+
+  // Form POST sin guardar: el navegador pregunta antes de salir.
+  let sinGuardar = false;
+  document.addEventListener('input', (e) => { if (e.target.form?.method === 'post') sinGuardar = true; });
+  document.addEventListener('submit', () => { sinGuardar = false; });
+  window.addEventListener('beforeunload', (e) => { if (sinGuardar) e.preventDefault(); });
 
   // Escape esconde los tooltips hasta mover el mouse o el foco.
   document.addEventListener('keydown', (e) => {
@@ -100,7 +136,7 @@
   document.addEventListener('pointermove', mostrarTooltips);
   document.addEventListener('focusin', mostrarTooltips);
 
-  // data-agregar-fila="tbody" copia <template id="tbody-fila">; data-quitar-fila borra. Siempre queda una.
+  // data-agregar-fila="tbody" copia <template id="tbody-fila">. data-quitar-fila borra. Mínimo 1 fila.
   document.addEventListener('click', (e) => {
     const agregar = e.target.closest('[data-agregar-fila]');
     if (agregar) {
@@ -122,7 +158,7 @@
     }
   });
 
-  // Totales en vivo, solo para ver: el servidor recalcula. data-suma, data-promedio y data-porcentaje.
+  // Totales en vivo, solo visuales: el servidor recalcula. data-suma, data-promedio, data-porcentaje.
   function calcular() {
     document.querySelectorAll('output[data-suma], output[data-promedio]').forEach((salida) => {
       const grupo = salida.dataset.suma ?? salida.dataset.promedio;
@@ -137,7 +173,7 @@
       const fila = salida.closest('tr');
       const total = fila.querySelector('[data-parte="total"]')?.value ?? '';
       const cubiertos = fila.querySelector('[data-parte="cubiertos"]')?.value ?? '';
-      // Mismo redondeo que CoberturaServicio::porcentaje(): multiplicar antes de dividir.
+      // Redondeo de CoberturaServicio::porcentaje(): multiplica antes de dividir.
       const valido = /^\d+$/.test(total) && /^\d+$/.test(cubiertos) && Number(total) > 0 && Number(cubiertos) <= Number(total);
       const porcentaje = valido ? Math.round((Number(cubiertos) * 100) / Number(total)) : 0;
       salida.textContent = valido ? `${porcentaje} %` : '—';
@@ -148,11 +184,61 @@
   document.addEventListener('input', calcular);
   calcular();
 
+  // Tablero: soltar en otra columna pulsa su botón "Mover a".
+  let arrastrada = null;
+  const columnaDe = (e) => (e.target instanceof Element ? e.target.closest('[data-columna-estado]') : null);
+  document.addEventListener('dragstart', (e) => {
+    arrastrada = e.target instanceof Element ? e.target.closest('[data-arrastrable]') : null;
+    if (arrastrada) e.dataTransfer.effectAllowed = 'move';
+  });
+  document.addEventListener('dragover', (e) => {
+    const columna = columnaDe(e);
+    if (!arrastrada || !columna) return;
+    e.preventDefault();
+    document.querySelectorAll('.soltar').forEach((c) => c !== columna && c.classList.remove('soltar'));
+    columna.classList.add('soltar');
+  });
+  document.addEventListener('drop', (e) => {
+    const columna = columnaDe(e);
+    if (!arrastrada || !columna) return;
+    e.preventDefault();
+    const boton = [...arrastrada.querySelectorAll('button[name="destino"]')].find((b) => b.value.endsWith(`-${columna.dataset.columnaEstado}`));
+    if (!boton) return;
+    columna.querySelector('ul').append(arrastrada);
+    boton.form.requestSubmit(boton);
+  });
+  document.addEventListener('dragend', () => {
+    arrastrada = null;
+    document.querySelectorAll('.soltar').forEach((c) => c.classList.remove('soltar'));
+  });
+
+  // Recientes: caso o incidente abierto, máximo 5. Para el panel y la paleta.
+  const marca = document.querySelector('[data-reciente]');
+  let recientes = [];
+  try { recientes = JSON.parse(localStorage.getItem('recientes')) || []; } catch (e) {}
+  if (marca) {
+    const actual = { url: location.pathname + location.search, codigo: marca.dataset.reciente, texto: marca.dataset.recienteTexto };
+    recientes = [actual, ...recientes.filter((r) => r.url !== actual.url)].slice(0, 5);
+    try { localStorage.setItem('recientes', JSON.stringify(recientes)); } catch (e) {}
+  }
+  const panelRecientes = document.querySelector('[data-recientes]');
+  if (panelRecientes && recientes.length) {
+    panelRecientes.querySelector('ul').replaceChildren(...recientes.map((r) => {
+      const a = Object.assign(document.createElement('a'), { href: r.url });
+      a.append(Object.assign(document.createElement('span'), { className: 'codigo', textContent: r.codigo }), ' ',
+        Object.assign(document.createElement('span'), { textContent: r.texto }));
+      const li = document.createElement('li');
+      li.append(a);
+      return li;
+    }));
+    panelRecientes.hidden = false;
+  }
+
   document.querySelectorAll('[data-imprimir]').forEach((boton) => {
     boton.addEventListener('click', () => window.print());
   });
 
-  // data-desde="id-inicio": la fecha final no puede ser anterior.
+  // data-desde="id-inicio": fecha final no anterior.
   document.querySelectorAll('input[data-desde]').forEach((fin) => {
     const inicio = document.getElementById(fin.dataset.desde);
     if (!inicio) return;
@@ -161,7 +247,7 @@
     ajustar();
   });
 
-  // data-cuando="nombre=valor": se ve y se envía solo si esa opción está marcada.
+  // data-cuando="nombre=valor": visible y enviado solo con esa opción marcada.
   const mostrarSegunMarcado = () => {
     document.querySelectorAll('[data-cuando]').forEach((bloque) => {
       const [nombre, valor] = bloque.dataset.cuando.split('=');
@@ -182,7 +268,7 @@
     });
   });
 
-  // Tema y atajos: localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
+  // Tema y atajos en localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
   const botonTema = document.getElementById('tema');
   const pintarTema = () => {
     if (!botonTema) return;
@@ -194,31 +280,31 @@
   const guardar = (clave, valor) => {
     try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch (e) {}
   };
-  // El valor por defecto no se guarda.
-  const POR_DEFECTO = { tema: 'sistema', atajos: 'si' };
+  // El valor por defecto no se guarda. AJUSTES está en tema.js. El menú lateral va en su cookie.
+  const valorAjuste = (nombre) => (nombre === 'sidebar' ? raiz.dataset.sidebar : leer(nombre) || AJUSTES[nombre]);
   const aplicarAjustes = () => {
     aplicarPreferencias();
     pintarTema();
-    // Radio: marcado si es el valor guardado. Switch (value="si"): marcado si vale 'si'.
+    // Radio: marcado si es el valor guardado. Switch value="si": marcado si vale 'si'.
     document.querySelectorAll('input[data-ajuste]').forEach((r) => {
-      r.checked = r.value === (leer(r.name) || POR_DEFECTO[r.name]);
+      r.checked = r.value === valorAjuste(r.name);
     });
   };
   botonTema?.addEventListener('click', () => {
     guardar('tema', raiz.dataset.tema === 'dark' ? 'light' : 'dark');
     aplicarAjustes();
   });
-  // Página de Ajustes: cada opción se guarda al marcarla.
+  // Ajustes: cada opción se guarda al marcarla.
   document.addEventListener('change', (e) => {
     if (!e.target.matches('input[data-ajuste]')) return;
     const { name, type, checked } = e.target;
     const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
-    guardar(name, value === POR_DEFECTO[name] ? null : value);
+    if (name !== 'sidebar') guardar(name, value === AJUSTES[name] ? null : value);
     aplicarAjustes();
     document.getElementById('ajuste-estado').textContent = 'Guardado.';
   });
   window.addEventListener('storage', aplicarAjustes);
-  // Tema "Sistema": sigue al sistema operativo sin recargar.
+  // Tema "Sistema": sigue al SO sin recargar.
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarAjustes);
   aplicarAjustes();
 })();

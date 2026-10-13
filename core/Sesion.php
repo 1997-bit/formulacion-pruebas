@@ -34,7 +34,7 @@ final class Sesion
         $_SESSION['usuario'] = $usuario;
     }
 
-    // Datos frescos de la base, sin regenerar el id (p. ej. un nombre cambiado).
+    // Datos nuevos de la base, sin regenerar el id. Ejemplo: nombre cambiado.
     /** @param array<string, mixed> $usuario */
     public static function refrescar(array $usuario): void
     {
@@ -59,7 +59,7 @@ final class Sesion
         $_SESSION['flash'] = $mensaje;
     }
 
-    // Lee y borra: flash, errores y datos de Respuesta::errores(). Errores y datos, solo en su ruta.
+    // Lee y borra flash, errores y datos de Respuesta::errores(). Errores y datos, solo en su ruta.
     public static function tomar(string $clave, mixed $defecto = null): mixed
     {
         $valor = in_array($clave, ['errores', 'datos'], true)

@@ -2,20 +2,10 @@
 
 declare(strict_types=1);
 
-// Autoloader propio (App\Core\Env -> core/Env.php) y .env.
-spl_autoload_register(function (string $clase): void {
-    if (!str_starts_with($clase, 'App\\')) {
-        return;
-    }
-    $partes = explode('\\', substr($clase, 4));
-    $partes[0] = strtolower($partes[0]);
-    $archivo = RAIZ . '/' . implode('/', $partes) . '.php';
-    if (is_file($archivo)) {
-        require $archivo;
-    }
-});
+// Composer: clases App\ y Monolog. Ver README.
+require RAIZ . '/vendor/autoload.php';
 
 App\Core\Env::cargar(RAIZ . '/.env');
 
-// La base usa la misma zona (Conexion.php).
+// Misma zona horaria en la base, Conexion.php.
 date_default_timezone_set(App\Core\Env::get('APP_ZONA', 'America/Panama'));

@@ -11,7 +11,7 @@ use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
 
-// RF-10. Formulario 3: las filas pertenecen a un requerimiento.
+// RF-10, formulario 3. Filas por requerimiento.
 final class ValorLimiteServicio
 {
     // Lo que resume la huella (#100).
@@ -19,7 +19,7 @@ final class ValorLimiteServicio
 
     private const TABLA = 'valor_limite';
 
-    // Columna => [etiqueta, largo máximo]; null es TEXT.
+    // Columna => [etiqueta, largo máximo]. null = TEXT.
     public const COLUMNAS = [
         'campo' => ['Campo', 100],
         'rango_valido' => ['Rango válido', 100],
@@ -70,8 +70,8 @@ final class ValorLimiteServicio
     }
 
     /**
-     * Todas o ninguna: valida cada fila antes de escribir y reemplaza en una transacción.
-     * Errores por celda con clave "fila.columna".
+     * Todas o ninguna: valida cada fila y reemplaza en una transacción.
+     * Keys de error: "fila.columna".
      *
      * @param list<array<string, string>> $filas
      * @param array{id: int, rol: int} $usuario

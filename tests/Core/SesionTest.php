@@ -16,7 +16,7 @@ final class SesionTest extends TestCase
 {
     protected function setUp(): void
     {
-        // Sin cookies ni cabeceras: la sesión funciona en CLI.
+        // Sin cookies ni cabeceras: sesión en CLI.
         ini_set('session.use_cookies', '0');
         ini_set('session.cache_limiter', '');
         session_start();

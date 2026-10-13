@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 4 (RF-11) de solo lectura. Al imprimir es la plantilla de la guía.
+ * Formulario 4, RF-11, solo lectura. Al imprimir: plantilla de la guía.
  *
  * @var array<string, mixed> $requerimiento
  * @var ?array{condiciones: list<array{texto: string, reglas: list<string>}>, acciones: list<array{texto: string, reglas: list<string>}>} $tabla

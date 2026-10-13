@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-// Única fuente de valores fijos. número => texto y variante (color de la insignia).
-// El número va en la base: no se cambia ni se reutiliza. El orden aquí es el de las listas.
+// Única fuente de valores fijos. número => texto y variante, el color de la insignia.
+// El número va en la base: no se cambia ni se reutiliza. Este orden es el de las listas.
 return [
     'estado_caso' => [
         'nombre' => 'Estado del caso',
@@ -13,7 +13,7 @@ return [
             2 => ['texto' => 'FAULT', 'variante' => 'peligro'],
         ],
     ],
-    // La sigla abre el código (SIS-001). Cambiarla no toca códigos ya generados.
+    // La sigla inicia el código, SIS-001. Cambiarla no toca códigos existentes.
     'tipo_prueba' => [
         'nombre' => 'Tipo de prueba',
         'valores' => [
@@ -64,7 +64,7 @@ return [
             5 => ['texto' => 'API', 'variante' => 'borde'],
         ],
     ],
-    // Captura png/jpg, log txt/log (RNF-03). El 3 era Documento: no se reutiliza.
+    // Captura png/jpg, log txt/log, RNF-03. El 3 era Documento: no se reutiliza.
     'tipo_evidencia' => [
         'nombre' => 'Tipo de evidencia',
         'valores' => [
@@ -73,7 +73,7 @@ return [
             4 => ['texto' => 'Enlace', 'variante' => 'borde'],
         ],
     ],
-    // De menor a mayor: DESC deja lo grave arriba.
+    // De menor a mayor: con DESC lo grave queda arriba.
     'severidad' => [
         'nombre' => 'Severidad',
         'valores' => [

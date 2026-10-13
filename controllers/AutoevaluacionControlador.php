@@ -14,11 +14,13 @@ use App\Services\AutoevaluacionServicio;
 // RF-15
 final class AutoevaluacionControlador
 {
-    // Sin proyecto: la lista de proyectos. Con proyecto: la evaluación propia y los promedios del equipo.
+    // Sin proyecto: lista de proyectos. Con proyecto: evaluación propia y promedios del equipo.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        if (!isset($_GET['proyecto'])) {
+        // Sin ?proyecto: el activo del sidebar.
+        $id = $_GET['proyecto'] ?? $usuario['activo'];
+        if ($id === null) {
             Vista::pagina('autoevaluacion/listar', [
                 'titulo' => 'Auto y coevaluación',
                 'proyectos' => AutoevaluacionServicio::proyectos($usuario),
@@ -28,7 +30,7 @@ final class AutoevaluacionControlador
             return;
         }
 
-        $proyecto = AutoevaluacionServicio::proyecto((int) $_GET['proyecto'], $usuario) ?? Respuesta::error(404);
+        $proyecto = AutoevaluacionServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('autoevaluacion/ver', [
             'titulo' => 'Auto y coevaluación · ' . $proyecto['nombre'],
             'proyecto' => $proyecto,
@@ -36,7 +38,7 @@ final class AutoevaluacionControlador
             'evaluacion' => AutoevaluacionServicio::evaluacion($proyecto['id'], $usuario),
             'promedios' => AutoevaluacionServicio::promedios($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($proyecto),
+            'migas' => Vista::migas('Auto y coevaluación', '/formularios/autoevaluacion', $proyecto['nombre']),
         ]);
     }
 
@@ -57,7 +59,7 @@ final class AutoevaluacionControlador
             'companeros' => $companeros,
             'datos' => Sesion::tomar('datos') ?? AutoevaluacionServicio::evaluacion($proyecto['id'], $usuario),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($proyecto, true), ['texto' => 'Editar']],
+            'migas' => Vista::migas('Auto y coevaluación', '/formularios/autoevaluacion', $proyecto['nombre'], 'Editar', '?proyecto=' . $proyecto['id']),
         ]);
     }
 
@@ -79,21 +81,7 @@ final class AutoevaluacionControlador
     }
 
     /**
-     * @param array<string, mixed> $proyecto
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $proyecto, bool $enlace = false): array
-    {
-        $nombre = ['texto' => $proyecto['nombre']];
-        if ($enlace) {
-            $nombre['ruta'] = '/formularios/autoevaluacion?proyecto=' . $proyecto['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Auto y coevaluación', 'ruta' => '/formularios/autoevaluacion'], $nombre];
-    }
-
-    /**
-     * name="campo[aspecto]" a aspecto => texto; lo que no sea texto queda vacío.
+     * name="campo[aspecto]" → aspecto => texto. Lo que no es texto queda vacío.
      *
      * @return array<int|string, string>
      */

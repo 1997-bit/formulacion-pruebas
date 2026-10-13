@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 use App\Core\Csrf;
+use App\Core\Vista;
 use App\Helpers\Html;
-use App\Helpers\Icono;
 
 /**
  * @var array<string, string> $errores
@@ -17,16 +17,7 @@ use App\Helpers\Icono;
     <h1 class="tarjeta-titulo" id="ac-titulo">Iniciar sesión</h1>
     <p class="tarjeta-descripcion">Entre con su usuario y contraseña.</p>
   </header>
-  <?php if ($flash): ?>
-    <div class="alerta alerta-exito" role="status"><?= Icono::svg('circle-check') ?>
-      <p class="alerta-titulo"><?= Html::e($flash) ?></p>
-    </div>
-  <?php endif; ?>
-  <?php if (isset($errores['general'])): ?>
-    <div class="alerta alerta-error" role="alert"><?= Icono::svg('circle-alert') ?>
-      <p class="alerta-titulo"><?= Html::e($errores['general']) ?></p>
-    </div>
-  <?php endif; ?>
+  <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="campo">
     <label for="ac-usuario">Usuario</label>
     <input class="control" id="ac-usuario" name="usuario" autocomplete="username" required value="<?= Html::e($datos['usuario'] ?? '') ?>">

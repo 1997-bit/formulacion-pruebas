@@ -10,7 +10,7 @@ use App\Core\Vista;
 use App\Services\CasoServicio;
 use App\Services\Subida;
 
-// RF-16, RF-24, RNF-03: solo miembros del proyecto.
+// RF-16, RF-24, RNF-03. Solo miembros del proyecto.
 final class EvidenciasControlador
 {
     public function ver(): void

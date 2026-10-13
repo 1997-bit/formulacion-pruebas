@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - staging
 
 permissions:
   contents: read
@@ -71,6 +72,12 @@ jobs:
 
       - name: Instalar dependencias
         run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Analizar con PHPStan
+        run: composer stan -- --no-progress
+
+      - name: Revisar estilo
+        run: composer lint
 
       - name: Crear configuración de base de datos para CI
         run: |

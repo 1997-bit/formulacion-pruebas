@@ -13,6 +13,14 @@ Los crea `database/seed.sql`.
 
 ## Producción
 
+Instalar Monolog, RNF-11:
+
+```sh
+composer install --no-dev
+```
+
+`storage/logs` necesita permiso de escritura para el servidor web.
+
 En `php.ini` (#123):
 
 ```ini

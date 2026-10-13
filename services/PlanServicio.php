@@ -12,7 +12,7 @@ use App\Models\ProyectoModelo;
 use App\Models\RequerimientoModelo;
 use App\Models\UsuarioModelo;
 
-// RF-13. Formulario 6: un plan por proyecto; lo llena cualquiera del proyecto.
+// RF-13, formulario 6. Un plan por proyecto. Lo llena cualquier miembro.
 final class PlanServicio
 {
     public const TEXTOS = ['alcance', 'objetivos', 'recursos', 'cronograma', 'criterios_aceptacion', 'riesgos'];
@@ -20,7 +20,7 @@ final class PlanServicio
     private const ESTADO_CERRADO = 2;
 
     /**
-     * Proyectos del usuario con el estado de su plan; null si no tiene.
+     * Proyectos del usuario con el estado del plan. null: sin plan.
      *
      * @param array{id: int, rol: int} $usuario
      * @return list<array<string, mixed>>

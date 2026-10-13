@@ -3,8 +3,9 @@
   "type": "project",
   "require": {
     "php": ">=8.2",
+    "ext-mbstring": "*",
     "ext-pdo": "*",
-    "ext-mbstring": "*"
+    "monolog/monolog": "^3"
   },
   "require-dev": {
     "phpunit/phpunit": "^11.5",

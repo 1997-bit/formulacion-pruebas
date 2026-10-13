@@ -62,7 +62,7 @@ final class EvidenciaModelo
     }
 
     /**
-     * RF-16: de la más reciente a la más vieja. Orden del índice (subido_en): sin filesort.
+     * RF-16. Más reciente primero. Orden del índice subido_en: sin filesort.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -71,7 +71,7 @@ final class EvidenciaModelo
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $orden = ' ORDER BY e.subido_en DESC, e.id DESC';
-        // La subconsulta salta solo por el índice (#107). El admin no necesita el caso para filtrar.
+        // La subconsulta lee solo el índice, #107. El admin filtra sin el caso.
         $ids = $proyectos === null
             ? 'SELECT e.id FROM evidencias e'
             : 'SELECT e.id FROM evidencias e JOIN casos_prueba c ON c.id = e.caso_id WHERE ' . $permiso;

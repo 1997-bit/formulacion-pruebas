@@ -8,7 +8,7 @@ namespace App\Core;
 final class Paginacion
 {
     public const POR_PAGINA = 20;
-    // Enlaces de página: primera, última y las de alrededor de la actual (BUG-049).
+    // Enlaces: primera, última y las cercanas a la actual. BUG-049.
     private const VENTANA = 7;
 
     public readonly int $total;
@@ -32,7 +32,7 @@ final class Paginacion
     }
 
     /**
-     * Páginas a enlazar. null: salto (…). Ej.: 1, null, 48, 49, 50, 51, 52, null, 1000.
+     * Páginas a enlazar. null = salto, …. Ejemplo: 1, null, 48, 49, 50, 51, 52, null, 1000.
      *
      * @return list<int|null>
      */

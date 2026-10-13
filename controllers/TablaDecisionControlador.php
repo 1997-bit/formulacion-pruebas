@@ -15,7 +15,7 @@ use App\Services\TablaDecisionServicio;
 // RF-11
 final class TablaDecisionControlador
 {
-    // Sin requerimiento: la lista de tablas. Con requerimiento: la tabla de solo lectura.
+    // Sin requerimiento: lista de tablas. Con requerimiento: tabla de solo lectura.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
@@ -39,7 +39,7 @@ final class TablaDecisionControlador
             'tabla' => $guardado !== null ? TablaDecisionServicio::tabla($requerimiento['id'], $usuario) : null,
             'guardado' => $guardado,
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($requerimiento),
+            'migas' => Vista::migas('Tabla de decisión', '/formularios/tabla_decision', $requerimiento['codigo']),
         ]);
     }
 
@@ -54,7 +54,7 @@ final class TablaDecisionControlador
             'nueva' => TablaDecisionServicio::guardado($requerimiento['id'], $usuario) === null,
             'huella' => FilasModelo::huella(TablaDecisionServicio::TABLAS, 'requerimiento_id', $requerimiento['id']),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($requerimiento, true), ['texto' => 'Editar']],
+            'migas' => Vista::migas('Tabla de decisión', '/formularios/tabla_decision', $requerimiento['codigo'], 'Editar', '?requerimiento=' . $requerimiento['id']),
         ]);
     }
 
@@ -76,22 +76,8 @@ final class TablaDecisionControlador
     }
 
     /**
-     * @param array<string, mixed> $requerimiento
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $requerimiento, bool $enlace = false): array
-    {
-        $codigo = ['texto' => $requerimiento['codigo']];
-        if ($enlace) {
-            $codigo['ruta'] = '/formularios/tabla_decision?requerimiento=' . $requerimiento['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Tabla de decisión', 'ruta' => '/formularios/tabla_decision'], $codigo];
-    }
-
-    /**
-     * condicion[i], condicion_regla[i][r], accion[i] y accion_regla[i][r] a la tabla del servicio.
-     * Una casilla sin marcar no llega: es "-".
+     * condicion[i], condicion_regla[i][r], accion[i] y accion_regla[i][r] → tabla del servicio.
+     * Casilla sin marcar no llega: vale "-".
      *
      * @return array{condiciones: list<array{texto: string, reglas: list<string>}>, acciones: list<array{texto: string, reglas: list<string>}>}
      */

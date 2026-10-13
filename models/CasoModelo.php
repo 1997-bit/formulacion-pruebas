@@ -24,8 +24,8 @@ final class CasoModelo
     }
 
     /**
-     * Una página. Orden del índice (proyecto_id, sigla, numero): sin filesort.
-     * La subconsulta salta solo por el índice y el resto se lee para 20 filas (#107).
+     * Una página. Orden del índice proyecto_id, sigla, numero: sin filesort.
+     * La subconsulta lee solo el índice. El resto, 20 filas. #107.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
@@ -48,7 +48,7 @@ final class CasoModelo
     }
 
     /**
-     * Por código exacto, en los proyectos permitidos. Varios si el código se repite entre proyectos (#111).
+     * Por código exacto en los proyectos permitidos. Varios si se repite entre proyectos, #111.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -65,6 +65,98 @@ final class CasoModelo
         $sql->execute([...$valores, $codigo]);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Tablero y cronograma. Sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{0: string, 1: string}|null $rango fechas ISO, inicio y fin
+     * @return list<array<string, mixed>>
+     */
+    public static function sinPaginar(?array $proyectos, array $filtros, ?array $rango, int $limite): array
+    {
+        [$donde, $valores] = self::donde($proyectos, $filtros);
+        if ($rango !== null) {
+            $donde .= ' AND c.fecha_inicio <= ? AND c.fecha_fin >= ?';
+            $valores = [...$valores, $rango[1], $rango[0]];
+        }
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.estado, c.fecha_inicio, c.fecha_fin,
+                    p.nombre AS proyecto, r.codigo AS requerimiento, r.descripcion AS requerimiento_descripcion,
+                    (SELECT COUNT(*) FROM incidentes i WHERE i.caso_id = c.id AND i.estado <> 2) AS incidentes
+             FROM casos_prueba c
+             JOIN proyectos p ON p.id = c.proyecto_id
+             JOIN requerimientos r ON r.id = c.requerimiento_id' . $donde . '
+             ORDER BY c.proyecto_id, r.codigo, c.fecha_inicio, c.sigla, c.numero LIMIT ' . $limite
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Pendientes con la fecha final ya pasada, el más atrasado primero.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function atrasados(?array $proyectos, int $limite): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
+             FROM casos_prueba c
+             WHERE ' . $permiso . ' AND c.estado = 0 AND c.fecha_fin < CURDATE()
+             ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Pendientes que creó el usuario, el de fecha final más próxima primero.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function pendientesDe(?array $proyectos, int $usuarioId, int $limite): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
+             FROM casos_prueba c
+             WHERE ' . $permiso . ' AND c.estado = 0 AND c.creado_por = ?
+             ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
+        );
+        $sql->execute([...$valores, $usuarioId]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Caso anterior y siguiente del mismo proyecto, en el orden de la lista.
+     * OR y no (sigla, numero) > (?, ?): usa el índice único, sin filesort.
+     *
+     * @param array<string, mixed> $caso
+     * @return array{0: ?array<string, mixed>, 1: ?array<string, mixed>}
+     */
+    public static function vecinos(array $caso): array
+    {
+        $uno = function (string $signo, string $orden) use ($caso): ?array {
+            $sql = Conexion::pdo()->prepare(
+                "SELECT id, codigo FROM casos_prueba
+                 WHERE proyecto_id = ? AND (sigla {$signo} ? OR (sigla = ? AND numero {$signo} ?))
+                 ORDER BY sigla {$orden}, numero {$orden} LIMIT 1"
+            );
+            $sql->execute([$caso['proyecto_id'], $caso['sigla'], $caso['sigla'], $caso['numero']]);
+
+            return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
+        };
+
+        return [$uno('<', 'DESC'), $uno('>', 'ASC')];
     }
 
     /** @return array<string, mixed>|null */
@@ -88,7 +180,7 @@ final class CasoModelo
     }
 
     /**
-     * Dentro de una transacción: los valores de antes para el historial.
+     * En transacción. Valores de antes para el historial.
      *
      * @return array<string, mixed>|null
      */
@@ -112,11 +204,11 @@ final class CasoModelo
         )->execute([...array_values($campos), $id]);
     }
 
-    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, int $usuarioId): void
+    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, ?string $impacto, int $usuarioId): void
     {
         Conexion::pdo()->prepare(
-            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
-        )->execute([$estado, $obtenido, $observaciones, $usuarioId, $id]);
+            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, impacto = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
+        )->execute([$estado, $obtenido, $observaciones, $impacto, $usuarioId, $id]);
     }
 
     // Dentro de una transacción.
@@ -159,7 +251,7 @@ final class CasoModelo
     }
 
     /**
-     * RF-22: los filtros se suman al permiso. Solo entran los filtros usados.
+     * RF-22. Filtros usados + permiso.
      *
      * @param list<int>|null $proyectos
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros

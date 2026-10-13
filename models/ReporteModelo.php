@@ -8,7 +8,7 @@ use App\Config\Conexion;
 
 final class ReporteModelo
 {
-    // Tester: solo sus proyectos (RF-05).
+    // Tester: solo sus proyectos. RF-05.
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
@@ -36,7 +36,7 @@ final class ReporteModelo
         );
         $sql->execute($proyectoId === null ? [(int) $admin, $usuarioId] : [(int) $admin, $usuarioId, $proyectoId]);
 
-        // SUM devuelve DECIMAL: PDO lo trae como texto.
+        // SUM da DECIMAL: PDO lo trae como texto.
         $filas = $sql->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($filas as &$f) {
             foreach (['pendientes', 'ok', 'fault', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
@@ -59,7 +59,7 @@ final class ReporteModelo
     }
 
     /**
-     * FAULT sin defecto registrado (RF-19).
+     * FAULT sin defecto registrado. RF-19.
      *
      * @return list<array<string, mixed>>
      */

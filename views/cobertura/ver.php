@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 5 (RF-12) de solo lectura. El porcentaje es el guardado. Al imprimir es la plantilla de la guía.
+ * Formulario 5, RF-12, solo lectura. Porcentaje guardado. Al imprimir: plantilla de la guía.
  *
  * @var array<string, mixed> $requerimiento
  * @var array<int, array<string, mixed>> $filas  metrica => fila

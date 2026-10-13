@@ -5,12 +5,12 @@ INSERT INTO usuarios (id, nombre, usuario, clave, rol) VALUES
     (2, 'Gloria', 'gloria', '$argon2id$v=19$m=19456,t=2,p=1$bmY4WlFmZW8yNGpOVUdpTw$OpU3uuLI/Q/+0mjEPOX+wI98Rp+hlHt4jTap2qdL2D8', 0),
     (3, 'Pan', 'pan', '$argon2id$v=19$m=19456,t=2,p=1$UE02Y2pnTHg3R29TN2JDbg$ISFnKVHqnWwIohGc7DJhw08gWXFpe5DZk55CMAgMkfw', 0);
 
--- El primero es este sistema; sus requerimientos salen del IR.
+-- El primero es este sistema. Requerimientos del IR.
 INSERT INTO proyectos (id, nombre, descripcion) VALUES
     (1, 'Formulación de pruebas', 'Este sistema: casos de prueba, formularios y evidencias.'),
     (2, 'Biblioteca escolar', 'Préstamo y devolución de libros para estudiantes.');
 
--- Gloria en los dos; Pan solo en el primero.
+-- Gloria en los 2. Pan solo en el primero.
 INSERT INTO proyecto_miembros (proyecto_id, usuario_id) VALUES
     (1, 2), (1, 3), (2, 2);
 
@@ -1202,7 +1202,7 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         2, 'Las dos responden 200 con el contenido: usuario y clave de la base, y el seed.',
         'Solo storage/ tiene .htaccess. Falta uno en la raíz y la guía que diga que la raíz es public/ (BUG-022). Ver BUG-054.',
         3, '2026-10-04 05:55:00', 3, '2026-10-04 05:55:05'),
-    -- Pruebas automáticas: un caso por archivo de tests/ que no tenía caso.
+    -- Pruebas automáticas. Un caso por archivo de tests/ sin caso.
     (110, 1, 18, 'UNI-012', 1, 1, 'Ambiente', 1,
         'PHPUnit 11, PHP 8.5, Linux',
         'Verificar las clases de líneas que lee Env::cargar.',
@@ -1545,10 +1545,9 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         'Automatizado en tests/Services/UsuarioServicioTest.php.',
         2, '2026-10-06 11:30:00', 2, '2026-10-06 11:30:05');
 
--- Solicitado y aprobado. Los dos son miembros del proyecto: lo pide quien registró el caso (o, si
--- quien lo registró es el admin, que no es miembro de ningún proyecto, el primer miembro) y lo aprueba
--- otro miembro del mismo proyecto. Mientras el caso sigue Pendiente no hay aprobación, así se ve
--- también el estado vacío del panel derecho.
+-- Solicitado: quien registró el caso, o el primer miembro si fue el admin. El admin no es miembro.
+-- Aprobado: otro miembro del proyecto.
+-- Pendiente no tiene aprobación: así se ve el panel derecho vacío.
 UPDATE casos_prueba c SET c.solicitado_por = COALESCE((
     SELECT m.usuario_id
     FROM proyecto_miembros m
@@ -1570,7 +1569,7 @@ UPDATE casos_prueba c SET c.aprobado_por = COALESCE((
 ), c.solicitado_por)
 WHERE c.estado <> 0;
 
--- RF-24: un caso OK lleva al menos una evidencia.
+-- RF-24. Un caso OK lleva al menos 1 evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
     (110, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'PR de tests/Core/EnvTest.php.', 2, '2026-10-06 11:00:05'),
     (111, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'PR de tests/Core/ErrorValidacionTest.php.', 3, '2026-10-06 11:01:05'),
@@ -1670,7 +1669,7 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (108, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/bootstrap.php', 'Sin manejador de errores ni configuración de display_errors.', 2, '2026-10-04 05:50:05'),
     (109, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/storage/.htaccess', 'Único .htaccess fuera de public/: la raíz no niega nada.', 3, '2026-10-04 05:55:05');
 
--- RF-19: los FAULT de arriba con su incidente. BUG-008 es stopper y sigue abierto;
+-- RF-19. Los FAULT de arriba con su incidente. BUG-008 es stopper y sigue abierto.
 -- BUG-041 está En progreso. BUG-003 es stopper, pero el bloque de corregidos lo cierra.
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
     severidad, prioridad, estado, es_stopper, asignado_id, creado_por, creado_en) VALUES
@@ -1999,8 +1998,8 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         '200 con las claves.',
         3, 3, 0, 0, NULL, 3, '2026-10-04 05:55:06');
 
--- RF-09: formulario 2. Cada matriz sale de las reglas del código y de los casos de su requerimiento.
--- Sin matriz a propósito: RF-06, RF-20 y los demás, para ver la lista con "Crear matriz".
+-- RF-09, formulario 2. Matrices desde las reglas del código y los casos del requerimiento.
+-- RF-06, RF-20 y otros sin matriz: así se ve "Crear matriz".
 INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, clases_invalidas, valores_representativos, resultado_esperado, guardado_por, guardado_en) VALUES
     -- RF-01 Iniciar sesión: AccesoServicio::entrar
     (1, 1, 'Usuario', 'Existe; los espacios de los lados se quitan.', 'No existe; vacío.', 'gloria, '' gloria '', noexiste, (vacío)',
@@ -2083,7 +2082,7 @@ INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, c
         'admin edita a pan; admin se pone tester; pan abre /admin/usuarios/editar',
         'admin cambia el rol de pan. Al quitarse el suyo: "No puede quitarse su propio rol de admin." pan recibe 403.', 3, '2026-10-03 23:58:00');
 
--- RF-10: formulario 3. Fronteras de las mismas reglas del formulario 2; cada límite con el valor de antes y el de después.
+-- RF-10, formulario 3. Fronteras de las reglas del formulario 2. Cada límite con su valor de antes y de después.
 INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, maximo, valores_limite, resultado_esperado, guardado_por, guardado_en) VALUES
     -- RF-02 Crear cuenta: UsuarioServicio
     (10, 1, 'Usuario', '1 a 30 caracteres', '1', '30', '0, 1, 2, 29, 30, 31 caracteres',
@@ -2136,7 +2135,7 @@ INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, 
     (21, 3, 'Texto de condición o acción', '1 a 255 caracteres', '1', '255', '0, 1, 255, 256 caracteres',
         'Acepta 1 y 255. Con 0: "Es obligatorio." Con 256: "Máximo 255 caracteres."', 2, '2026-10-03 23:40:00');
 
--- RF-15: formulario 8. Gloria ya se evaluó y evaluó a Pan; Pan no, para ver "Llenar evaluación". El comentario va en la fila de la autoevaluación.
+-- RF-15, formulario 8. Gloria se evaluó y evaluó a Pan. Pan no: así se ve "Llenar evaluación". El comentario va en la autoevaluación.
 INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, puntos, comentario) VALUES
     (1, 2, 2, 1, 4, NULL),
     (1, 2, 2, 2, 5, 'Usé partición de equivalencia y valor límite en los formularios 2 y 3.'),
@@ -2151,7 +2150,7 @@ INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, p
     (1, 2, 3, 5, 5, NULL),
     (1, 2, 3, 6, 4, NULL);
 
--- RF-14: formulario 7, del admin. Total 25 / 30. Biblioteca sin evaluar, para ver "Llenar rúbrica".
+-- RF-14, formulario 7, del admin. Total 25 / 30. Biblioteca sin rúbrica: así se ve "Llenar rúbrica".
 INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por, evaluado_en) VALUES
     (1, 1, 5, 1, '2026-10-04 04:10:00'),
     (1, 2, 4, 1, '2026-10-04 04:10:00'),
@@ -2160,7 +2159,7 @@ INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por, e
     (1, 5, 5, 1, '2026-10-04 04:10:00'),
     (1, 6, 4, 1, '2026-10-04 04:10:00');
 
--- RF-11: formulario 4. Condiciones en V/F, acciones con X; una celda sin marcar no tiene fila.
+-- RF-11, formulario 4. Condiciones V/F, acciones X. Celda sin marcar = sin fila.
 INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
     -- RF-01 Iniciar sesión: AccesoServicio
     (1, 1, 0, 'El usuario existe', 2, '2026-10-03 22:40:00'),
@@ -2179,7 +2178,7 @@ INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_
     (3, 4, 1, 'Dice "Tiene 3 préstamos activos"', 2, '2026-10-03 22:50:00'),
     (3, 5, 1, 'Dice "Tiene una multa sin pagar"', 2, '2026-10-03 22:50:00');
 
--- (requerimiento, fila, regla, valor): condición 1 V, 0 F; acción 1 X.
+-- Requerimiento, fila, regla, valor. Condición: 1 V, 0 F. Acción: 1 X.
 INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (1, 1, 1, 1), (1, 1, 2, 1), (1, 1, 3, 0), (1, 1, 4, 0),
     (1, 2, 1, 1), (1, 2, 2, 0), (1, 2, 3, 1), (1, 2, 4, 0),
@@ -2187,12 +2186,12 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (5, 1, 1, 1), (5, 1, 2, 1), (5, 1, 3, 0), (5, 1, 4, 0),
     (5, 2, 1, 1), (5, 2, 2, 0), (5, 2, 3, 1), (5, 2, 4, 0),
     (5, 3, 1, 1), (5, 3, 2, 1), (5, 3, 3, 1), (5, 4, 4, 1),
-    -- Con 3 préstamos la multa no importa: reglas 1 y 2 dan lo mismo.
+    -- Con 3 préstamos la multa no importa: reglas 1 y 2 iguales.
     (3, 1, 1, 1), (3, 1, 2, 1), (3, 1, 3, 0), (3, 1, 4, 0),
     (3, 2, 1, 1), (3, 2, 2, 0), (3, 2, 3, 1), (3, 2, 4, 0),
     (3, 4, 1, 1), (3, 4, 2, 1), (3, 5, 3, 1), (3, 3, 4, 1);
 
--- RF-11: más tablas, de permisos y del resultado del caso.
+-- RF-11. Tablas de permisos y del resultado del caso.
 INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
     -- RF-24 Anotar resultado: CasoServicio::validarResultado
     (9, 1, 0, 'Estado OK o FAULT', 2, '2026-10-03 23:00:00'),
@@ -2201,7 +2200,7 @@ INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_
     (9, 4, 1, 'Guarda el resultado', 2, '2026-10-03 23:00:00'),
     (9, 5, 1, 'Dice "Es obligatorio con OK o FAULT."', 2, '2026-10-03 23:00:00'),
     (9, 6, 1, 'Dice "Con OK o FAULT hace falta al menos una."', 2, '2026-10-03 23:00:00'),
-    -- RF-02 Crear cuenta: en el registro público el rol no se lee
+    -- RF-02 Crear cuenta. El registro público ignora el rol.
     (10, 1, 0, 'Lo crea un admin desde Usuarios', 3, '2026-10-03 23:05:00'),
     (10, 2, 0, 'Elige el rol admin', 3, '2026-10-03 23:05:00'),
     (10, 3, 1, 'Crea la cuenta como admin', 3, '2026-10-03 23:05:00'),
@@ -2271,7 +2270,7 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (20, 4, 1, 1),
     (20, 5, 3, 1), (20, 5, 4, 1);
 
--- F5. Medido con XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage, con las 497 pruebas. Una clase por requerimiento.
+-- F5. XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage, 497 pruebas. Una clase por requerimiento.
 -- Sentencias = líneas, decisiones = ramas, caminos = caminos. Xdebug no mide condiciones ni bucles.
 INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porcentaje, herramienta, guardado_por, guardado_en) VALUES
     -- RF-01 Acceso: AccesoServicio
@@ -2299,7 +2298,7 @@ INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porce
     (14, 12, 24, 20, 83, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00'),
     (14, 16, 16, 7, 44, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-06 12:00:00');
 
--- RF-13: formulario 6, un plan por proyecto. El 1 no se cierra mientras BUG-003 (stopper) siga abierto.
+-- RF-13, formulario 6. El plan 1 no cierra mientras BUG-003, stopper, siga abierto.
 INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, objetivos, estrategia, recursos, cronograma,
     criterios_aceptacion, riesgos, estado, actualizado_en) VALUES
     (1, '1.0', 2, '2026-10-01',
@@ -2318,8 +2317,8 @@ INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, 
         'Las reglas de préstamo de RF-01 cumplidas en todas sus particiones.',
         NULL, 0, '2026-10-02 19:05:00');
 
--- Bugs corregidos: procedimiento de docs/bugs_corregidos.md. El caso FAULT y el incidente no se borran.
--- Tabla normal y no TEMPORARY: MySQL no deja usar una temporal dos veces en la misma consulta. Se borra al final.
+-- Bugs corregidos según docs/bugs_corregidos.md. El caso FAULT y el incidente quedan.
+-- Tabla normal: MySQL no usa una TEMPORARY 2 veces en una consulta. Se borra al final.
 DROP TABLE IF EXISTS corregidos;
 CREATE TABLE corregidos (
     bug VARCHAR(10) PRIMARY KEY,
@@ -2356,13 +2355,13 @@ INSERT INTO corregidos (bug, pr, fecha, obtenido) VALUES
     ('BUG-053', 135, '2026-10-04 15:16:00', 'Con display_errors=1, un error muestra la página 500 con un código. La pila y las rutas quedan solo en storage/logs/errores.log.'),
     ('BUG-054', 135, '2026-10-04 15:16:00', 'Con Apache y la raíz web en el repositorio, /.env y /database/seed.sql responden 403.');
 
--- 1. El incidente pasa a Cerrado. 5. Rastro en el historial del incidente.
+-- Paso 1: incidente Cerrado. Paso 5: rastro en su historial.
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
 SELECT 'incidentes', i.id, 2, 'estado', i.estado, '2', k.fecha
 FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
 UPDATE incidentes i JOIN corregidos k ON k.bug = i.codigo SET i.estado = 2 WHERE i.proyecto_id = 1;
 
--- 5. Rastro del caso, antes de cambiarlo: estado, resultado obtenido y observaciones.
+-- Paso 5: rastro del caso antes del cambio. Estado, resultado obtenido y observaciones.
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
 SELECT 'casos_prueba', c.id, 2, 'estado', c.estado, '1', k.fecha
 FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1
@@ -2373,13 +2372,13 @@ UNION ALL
 SELECT 'casos_prueba', c.id, 2, 'observaciones', c.observaciones, CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'), k.fecha
 FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
 
--- 2 y 3. La prueba de regresión pasa: el caso queda OK. 6. El PR en las observaciones.
+-- Pasos 2 y 3: la regresión pasa, caso OK. Paso 6: PR en observaciones.
 UPDATE casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo
 SET c.estado = 1, c.resultado_obtenido = k.obtenido, c.observaciones = CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'),
     c.anotado_por = 2, c.anotado_en = k.fecha
 WHERE i.proyecto_id = 1;
 
--- 4. Evidencia con el enlace al PR.
+-- Paso 4: evidencia con el enlace al PR.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en)
 SELECT i.caso_id, 4, CONCAT('https://github.com/1997-bit/formulacion-pruebas/pull/', k.pr), CONCAT('PR de la corrección de ', k.bug), 2, k.fecha
 FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;

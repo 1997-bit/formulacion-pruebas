@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Core\Vista;
 use App\Helpers\Html;
 use App\Helpers\Icono;
+use App\Services\RequerimientoServicio;
 
 /**
  * @var string $titulo
@@ -15,6 +16,9 @@ use App\Helpers\Icono;
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 // Sidebar desde la cookie, sin parpadeo.
 $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
+// Para el selector de proyecto y la paleta.
+$proyectos = RequerimientoServicio::proyectos($usuario);
+$activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
 ?>
 <!doctype html>
 <html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>">
@@ -34,7 +38,7 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 <body class="app">
 <a class="saltar" href="#principal">Saltar al contenido</a>
 
-<?= Vista::capturar('partials/sidebar', ['usuario' => $usuario, 'rutaActual' => $rutaActual]) ?>
+<?= Vista::capturar('partials/sidebar', ['usuario' => $usuario, 'rutaActual' => $rutaActual, 'proyectos' => $proyectos, 'activo' => $activo]) ?>
 <div class="sidebar-fondo velo" id="sidebar-fondo" hidden></div>
 
 <div class="app-cuerpo">
@@ -73,5 +77,6 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
     <?= $contenido ?>
   </main>
 </div>
+<?= Vista::capturar('partials/paleta', ['usuario' => $usuario, 'proyectos' => $proyectos]) ?>
 </body>
 </html>

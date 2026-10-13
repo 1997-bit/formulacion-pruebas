@@ -13,9 +13,9 @@ use App\Models\FilasModelo;
 use App\Models\TablaDecisionModelo;
 
 /**
- * RF-11. Formulario 4: condiciones y acciones de un requerimiento, con una columna por regla.
- * Las reglas salen de las condiciones: n condiciones, 2^n reglas.
- * Celdas: condición V, F o -; acción X o -.
+ * RF-11, formulario 4. Condiciones y acciones de un requerimiento, una columna por regla.
+ * n condiciones = 2^n reglas.
+ * Celdas. Condición: V, F o -. Acción: X o -.
  *
  * @phpstan-type Fila array{texto: string, reglas: list<string>}
  * @phpstan-type Tabla array{condiciones: list<Fila>, acciones: list<Fila>}
@@ -27,7 +27,7 @@ final class TablaDecisionServicio
 
     private const TABLA = 'decision_filas';
 
-    // 4 condiciones son 16 reglas: más ya no cabe en pantalla.
+    // 4 condiciones = 16 reglas. Más no cabe en pantalla.
     public const MAX_CONDICIONES = 4;
     public const MAX_ACCIONES = 20;
 
@@ -122,8 +122,8 @@ final class TablaDecisionServicio
     }
 
     /**
-     * Todas o ninguna: valida cada celda antes de escribir; filas y celdas en una transacción.
-     * Errores con clave "condicion.i", "condicion.i.r", "accion.i", "accion.i.r" y "regla.r".
+     * Todas o ninguna: valida cada celda. Filas y celdas en una transacción.
+     * Keys de error: "condicion.i", "condicion.i.r", "accion.i", "accion.i.r", "regla.r".
      *
      * @param Tabla $tabla
      * @param array{id: int, rol: int} $usuario
@@ -175,7 +175,7 @@ final class TablaDecisionServicio
     }
 
     /**
-     * Combinación completa: la primera condición cambia cada 2^(n-1) reglas, la última en cada una (VVFF, VFVF).
+     * Combinación completa. La primera condición cambia cada 2^(n-1) reglas, la última en cada una: VVFF, VFVF.
      *
      * @param Tabla $tabla
      * @return Tabla

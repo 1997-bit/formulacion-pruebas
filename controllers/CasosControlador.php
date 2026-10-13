@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Models\CasoModelo;
 use App\Models\FilasModelo;
 use App\Services\CasoServicio;
 use App\Services\Historial;
@@ -24,7 +25,7 @@ final class CasosControlador
         'solicitado_por', 'aprobado_por',
     ];
     private const CAMPOS_RESULTADO = [
-        'estado', 'resultado_obtenido', 'observaciones', 'evidencia_enlace',
+        'estado', 'resultado_obtenido', 'observaciones', 'impacto', 'evidencia_enlace',
         'descripcion_captura', 'descripcion_log', 'descripcion_enlace',
     ];
 
@@ -34,11 +35,20 @@ final class CasosControlador
         foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
-        [$casos, $paginacion] = CasoServicio::listar(Sesion::usuario(), $filtros, (int) ($_GET['pagina'] ?? 1));
+        // Lista por defecto: g c y el menú llevan a la lista.
+        $vista = in_array($_GET['vista'] ?? null, ['tablero', 'cronograma'], true) ? $_GET['vista'] : 'lista';
+        // Cronograma de un mes, ?mes=2026-10. Por defecto, el actual.
+        $mes = \DateTimeImmutable::createFromFormat('!Y-m', is_string($_GET['mes'] ?? null) ? $_GET['mes'] : '') ?: new \DateTimeImmutable('first day of this month midnight');
+        $rango = $vista === 'cronograma' ? [$mes->format('Y-m-d'), $mes->format('Y-m-t')] : null;
+        [$casos, $paginacion] = $vista === 'lista'
+            ? CasoServicio::listar(Sesion::usuario(), $filtros, (int) ($_GET['pagina'] ?? 1))
+            : [CasoServicio::sinPaginar(Sesion::usuario(), $filtros, $rango), null];
         Vista::pagina('casos/listar', [
             'titulo' => 'Casos de prueba',
             'casos' => $casos,
             'paginacion' => $paginacion,
+            'vista' => $vista,
+            'mes' => $mes,
             'filtros' => $filtros,
             'proyectos' => RequerimientoServicio::proyectos(Sesion::usuario()),
             'requerimientos' => RequerimientoServicio::listar(Sesion::usuario()),
@@ -77,7 +87,7 @@ final class CasosControlador
     public function editar(): void
     {
         $caso = CasoServicio::paraEditar((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
-        $requerimientos = array_values(CasoServicio::requerimientos($caso, Sesion::usuario()));
+        $requerimientos = array_values(CasoServicio::requerimientos($caso));
         Vista::pagina('casos/formulario', [
             'titulo' => 'Editar ' . $caso['codigo'],
             'caso' => $caso,
@@ -114,12 +124,14 @@ final class CasosControlador
             'titulo' => $caso['codigo'],
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
+            'vecinos' => CasoModelo::vecinos($caso),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [
                 'estado' => (string) $caso['estado'],
                 'resultado_obtenido' => (string) $caso['resultado_obtenido'],
                 'observaciones' => (string) $caso['observaciones'],
+                'impacto' => (string) $caso['impacto'],
                 'evidencias' => [],
             ],
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => $caso['codigo']]],

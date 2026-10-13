@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-// RNF-03: revisa el contenido, no solo el nombre, y guarda fuera de public/.
+use App\Core\Log;
+
+// RNF-03. Revisa el contenido, no solo el nombre. Guarda fuera de public/.
 final class Subida
 {
     private const MAX_BYTES = 5 * 1024 * 1024;
@@ -26,7 +28,7 @@ final class Subida
         $permitidos = self::PERMITIDOS[$tipo];
         $esperado = $permitidos[strtolower(pathinfo($archivo['name'] ?? '', PATHINFO_EXTENSION))] ?? null;
 
-        return match (true) {
+        $motivo = match (true) {
             $archivo === null, $error === UPLOAD_ERR_NO_FILE => 'Es obligatorio.',
             in_array($error, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true), $archivo['size'] > self::MAX_BYTES => 'Máximo 5 MB.',
             $error !== UPLOAD_ERR_OK, !is_uploaded_file($archivo['tmp_name']) => 'No se pudo subir el archivo.',
@@ -34,11 +36,16 @@ final class Subida
                 => 'Solo ' . strtoupper(implode(', ', array_keys($permitidos))) . '.',
             default => null,
         };
+        if ($motivo !== null && $archivo !== null && $error !== UPLOAD_ERR_NO_FILE) {
+            Log::evento('critical', 'upload_validation:{archivo},{motivo}', ['archivo' => mb_substr($archivo['name'], 0, 255), 'motivo' => $motivo]);
+        }
+
+        return $motivo;
     }
 
     /**
-     * Ya revisado con error(). Devuelve el nombre guardado: el sha256 del contenido,
-     * así un archivo idéntico se guarda una sola vez (#118). $nuevo es false si ya estaba.
+     * Ya revisado con error(). Devuelve el nombre guardado: sha256 del contenido.
+     * Archivo idéntico se guarda 1 vez, #118. $nuevo = false si ya estaba.
      *
      * @param array{name: string, tmp_name: string, size: int, error: int} $archivo
      * @param-out bool $nuevo
@@ -50,6 +57,7 @@ final class Subida
         if ($nuevo && !move_uploaded_file($archivo['tmp_name'], self::ruta($guardado))) {
             throw new \RuntimeException('No se pudo guardar la evidencia.');
         }
+        Log::evento('info', 'upload_complete:{id},{archivo},{tipo}', ['archivo' => $guardado, 'tipo' => self::mime($guardado)]);
 
         return $guardado;
     }
@@ -59,7 +67,7 @@ final class Subida
         return RAIZ . '/storage/evidencias/' . basename($guardado);
     }
 
-    // Por la extensión propia, no por el contenido: lo guardado ya pasó error().
+    // Por la extensión propia: lo guardado ya pasó error().
     public static function mime(string $guardado): string
     {
         return match (pathinfo($guardado, PATHINFO_EXTENSION)) {

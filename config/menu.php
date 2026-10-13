@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-// Menú del sidebar. 'rol' => 1 lo oculta al tester; ocultar no protege (RF-21). 'atajo': secuencia de teclas (atajos.js).
-// g s (Ajustes) está en views/partials/sidebar.php: va en el menú del usuario.
+// Menú del sidebar. 'rol' => 1 lo oculta al tester, pero no protege, RF-21. 'atajo': teclas de atajos.js.
+// g s, Ajustes, va en views/partials/sidebar.php, en el menú del usuario.
 return [
     [
         'grupo' => 'Plataforma',
@@ -49,6 +49,7 @@ return [
         'elementos' => [
             ['texto' => 'Usuarios', 'icono' => 'users', 'ruta' => '/admin/usuarios', 'atajo' => 'g u'],
             ['texto' => 'Proyectos', 'icono' => 'folder-kanban', 'ruta' => '/admin/proyectos', 'atajo' => 'g o'],
+            ['texto' => 'Logs', 'icono' => 'terminal', 'ruta' => '/admin/logs'],
         ],
     ],
 ];

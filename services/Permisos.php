@@ -18,7 +18,7 @@ final class Permisos
         }
     }
 
-    // 404 y no 403: así no se sabe qué ids existen en otros proyectos (BUG-026).
+    // 404 y no 403: no revela ids de otros proyectos. BUG-026.
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
@@ -28,14 +28,18 @@ final class Permisos
     }
 
     /**
-     * Proyectos que el usuario puede ver en una lista. null: admin, todos.
-     * Vienen con el usuario de la sesión, leído en cada petición (#109).
+     * Proyectos visibles en una lista. null: admin, todos.
+     * Vienen del usuario de sesión, leído en cada petición, #109. Con proyecto activo, solo ese.
      *
      * @param array<string, mixed> $usuario
      * @return list<int>|null
      */
     public static function proyectos(array $usuario): ?array
     {
+        if (($usuario['activo'] ?? null) !== null) {
+            return [$usuario['activo']];
+        }
+
         return $usuario['rol'] === 1 ? null : $usuario['proyectos'];
     }
 

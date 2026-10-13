@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\CasoServicio;
 
 /**
- * Estado, resultado y evidencias nuevas (RF-24). Va dentro de un form multipart.
+ * Estado, resultado y evidencias nuevas, RF-24. Dentro de un form multipart.
  *
  * @var array<string, mixed> $datos  evidencias: tipos marcados
  * @var array<string, string> $errores
@@ -24,7 +24,7 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'error' => $errores[$nombre] ?? '',
 ]);
 $marcado = fn (string $campo, int $valor): string => (string) $valor === ($datos[$campo] ?? '') ? ' checked' : '';
-// Error y ayuda enlazados (RNF-07); en radios y casillas van en el fieldset.
+// Error y ayuda enlazados, RNF-07. En radios y casillas, en el fieldset.
 $describir = fn (string $id, string $nombre): string => isset($errores[$nombre])
     ? ' aria-invalid="true" aria-describedby="' . $id . '-error ' . $id . '-ayuda"'
     : ' aria-describedby="' . $id . '-ayuda"';
@@ -58,6 +58,7 @@ $evidencias = [
 <div class="campos">
   <?= $campo('resultado_obtenido', 'Resultado obtenido', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué hizo el sistema"']) ?>
   <?= $campo('observaciones', 'Observaciones', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Notas adicionales"']) ?>
+  <?= $campo('impacto', 'Impacto', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué afecta el resultado: módulo, usuarios, otras pruebas"']) ?>
 </div>
 
 <fieldset class="grupo" aria-describedby="<?= isset($errores['evidencias']) ? 'f-evidencias-error ' : '' ?>f-evidencias-ayuda">

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Csrf;
 use App\Helpers\Catalogo;
 use App\Helpers\Html;
 use App\Helpers\Icono;
@@ -8,6 +9,8 @@ use App\Helpers\Icono;
 /**
  * @var array{nombre: string, usuario: string, rol: int} $usuario
  * @var string $rutaActual
+ * @var list<array{id: int, nombre: string}> $proyectos
+ * @var array{id: int, nombre: string}|null $activo
  */
 
 $menu = require RAIZ . '/config/menu.php';
@@ -19,13 +22,30 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
 ?>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-cabecera">
-    <a class="sidebar-boton sidebar-marca" href="/dashboard" data-etiqueta="Casos de Prueba">
-      <span class="marca-icono"><?= Icono::svg('flask-conical') ?></span>
-      <span class="sidebar-texto sidebar-dos-lineas">
-        <strong>Casos de Prueba</strong>
-        <small>Sistema de pruebas</small>
-      </span>
-    </a>
+    <?php // Selector de proyecto, como Jira y Linear. Plataforma y Formularios: solo el activo. ?>
+    <details class="proyecto-menu">
+      <summary class="sidebar-boton sidebar-marca" data-etiqueta="<?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?>"
+               data-atajo="p" data-atajo-texto="Cambiar de proyecto">
+        <span class="marca-icono" aria-hidden="true"><?= $activo ? Html::e(Html::iniciales($activo['nombre'])) : Icono::svg('flask-conical') ?></span>
+        <span class="sidebar-texto sidebar-dos-lineas">
+          <strong><?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?></strong>
+          <small><?= $activo ? 'Proyecto' : count($proyectos) . ' proyecto(s)' ?></small>
+        </span>
+        <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
+      </summary>
+      <form class="proyecto-flotante" method="post" action="/proyecto">
+        <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+        <input type="hidden" name="volver" value="<?= Html::e($_SERVER['REQUEST_URI'] ?? '/') ?>">
+        <p class="proyecto-flotante-titulo">Proyectos</p>
+        <?php foreach ([['id' => 0, 'nombre' => 'Todos los proyectos'], ...$proyectos] as $p): ?>
+          <?php $esActivo = $p['id'] === ($activo['id'] ?? 0); ?>
+          <button class="sidebar-boton" type="submit" name="proyecto" value="<?= (int) $p['id'] ?>" data-proyecto="<?= (int) $p['id'] ?>"<?= $esActivo ? ' aria-current="true"' : '' ?>>
+            <span class="sidebar-texto"><?= Html::e($p['nombre']) ?></span>
+            <?php if ($esActivo): ?><?= Icono::svg('check') ?><?php endif; ?>
+          </button>
+        <?php endforeach; ?>
+      </form>
+    </details>
   </div>
 
   <nav class="sidebar-contenido" aria-label="Navegación principal">
@@ -95,10 +115,13 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
           <?= Icono::svg('settings') ?>
           <span>Ajustes</span>
         </a>
-        <a class="sidebar-boton" href="/salir">
-          <?= Icono::svg('log-out') ?>
-          <span>Cerrar sesión</span>
-        </a>
+        <form method="post" action="/salir">
+          <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+          <button class="sidebar-boton" type="submit">
+            <?= Icono::svg('log-out') ?>
+            <span>Cerrar sesión</span>
+          </button>
+        </form>
       </div>
     </details>
   </div>

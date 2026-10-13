@@ -7,10 +7,11 @@ namespace App\Services;
 use App\Config\Conexion;
 use App\Core\ErrorValidacion;
 use App\Core\Validador;
+use App\Models\PlanModelo;
 use App\Models\ProyectoModelo;
 use App\Models\UsuarioModelo;
 
-// Proyectos y miembros (7.1). Miembros: solo testers; el admin ya ve todo.
+// Proyectos y miembros, IR 7.1. Miembros: solo testers. El admin ya ve todo.
 final class ProyectoServicio
 {
     /**
@@ -22,6 +23,27 @@ final class ProyectoServicio
         Permisos::exigirAdmin($actor);
 
         return ProyectoModelo::listar();
+    }
+
+    /**
+     * Panel del admin: proyectos sin miembros o sin plan. Con proyecto activo, solo ese.
+     *
+     * @param array{id: int, rol: int, activo?: ?int} $actor
+     * @return list<array{id: int, nombre: string, sin_miembros: bool, sin_plan: bool}>
+     */
+    public static function incompletos(array $actor): array
+    {
+        Permisos::exigirAdmin($actor);
+        $planes = PlanModelo::estados();
+        $incompletos = [];
+        foreach (ProyectoModelo::listar() as $p) {
+            $faltan = ['sin_miembros' => $p['miembros'] === null, 'sin_plan' => !isset($planes[$p['id']])];
+            if (in_array(true, $faltan, true) && in_array($actor['activo'] ?? null, [null, $p['id']], true)) {
+                $incompletos[] = ['id' => $p['id'], 'nombre' => $p['nombre']] + $faltan;
+            }
+        }
+
+        return $incompletos;
     }
 
     /**

@@ -11,8 +11,8 @@ use App\Models\UsuarioModelo;
 use App\Services\UsuarioServicio;
 use PHPUnit\Framework\TestCase;
 
-// Pruebas grandes: php -S con la base del .env. El servidor no ve un ROLLBACK de la prueba:
-// los datos llevan nombres únicos y se borran al final de la clase.
+// Pruebas grandes: php -S con la base del .env. El servidor no ve el ROLLBACK de la prueba.
+// Por eso: nombres únicos y borrado al final de la clase.
 abstract class PruebaHttp extends TestCase
 {
     protected const CLAVE = 'clave-de-prueba';
@@ -52,7 +52,7 @@ abstract class PruebaHttp extends TestCase
         self::$servidor = $servidor ?: throw new \RuntimeException('No arrancó php -S.');
         register_shutdown_function(fn () => proc_terminate($servidor));
 
-        // Espera a que acepte conexiones (máx. 5 s).
+        // Espera conexiones, máximo 5 s.
         for ($i = 0; $i < 50 && !@fsockopen('127.0.0.1', (int) parse_url(self::$base, PHP_URL_PORT)); $i++) {
             usleep(100_000);
         }
@@ -92,7 +92,25 @@ abstract class PruebaHttp extends TestCase
         return $cliente;
     }
 
-    // Fábrica: nombres únicos; todo se borra en tearDownAfterClass().
+    /**
+     * Mensajes del canal seguridad con el X-Request-Id de la respuesta. El log es del servidor php -S.
+     *
+     * @param array{codigo: int, cabeceras: array<string, string>, cuerpo: string} $respuesta
+     * @return list<string>
+     */
+    protected function eventos(array $respuesta): array
+    {
+        // Todos los días: el servidor usa APP_ZONA, la prueba no.
+        $lineas = array_merge(...array_map(fn (string $f): array => file($f, FILE_IGNORE_NEW_LINES) ?: [], glob(RAIZ . '/storage/logs/app-*.log') ?: []));
+        $registros = array_map(fn (string $l): array => json_decode($l, true), $lineas);
+
+        return array_values(array_map(fn (array $r): string => $r['message'], array_filter(
+            $registros,
+            fn (array $r): bool => $r['channel'] === 'seguridad' && $r['extra']['uid'] === ($respuesta['cabeceras']['x-request-id'] ?? null),
+        )));
+    }
+
+    // Fábrica: nombres únicos. tearDownAfterClass() borra todo.
 
     protected function usuario(int $rol = 0): int
     {

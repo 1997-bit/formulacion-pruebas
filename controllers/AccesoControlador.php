@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\ErrorValidacion;
+use App\Core\Log;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
@@ -53,6 +54,7 @@ final class AccesoControlador
 
     public function salir(): void
     {
+        Log::evento('info', 'session_logout:{id}');
         Sesion::salir();
         Respuesta::redirigir('/');
     }

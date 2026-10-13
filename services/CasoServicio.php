@@ -20,6 +20,8 @@ use App\Models\UsuarioModelo;
 // RF-04, RF-05, RF-07, RF-16, RF-24
 final class CasoServicio
 {
+    // Tablero y cronograma: más casos piden filtrar.
+    public const TOPE_VISTA = 300;
     // Tipo de evidencia => sufijo de los campos: evidencia_captura, descripcion_captura…
     public const EVIDENCIAS = [1 => 'captura', 2 => 'log', 4 => 'enlace'];
 
@@ -52,7 +54,7 @@ final class CasoServicio
         $anotado = $d['estado'] !== '0';
         $guardados = [];
 
-        // El bloqueo evita dos códigos iguales; UNIQUE (proyecto_id, codigo) lo respalda.
+        // Lock: sin códigos duplicados. Respaldo: UNIQUE proyecto_id + codigo.
         try {
             return Conexion::transaccion(function () use ($proyectoId, $sigla, $d, $anotado, $tipos, $archivos, $usuario, &$guardados): array {
                 $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
@@ -76,7 +78,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-06. El código no cambia aunque cambie el tipo; el requerimiento queda en el mismo proyecto.
+     * RF-06. El código no cambia con el tipo. El requerimiento sigue en el mismo proyecto.
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -85,7 +87,7 @@ final class CasoServicio
     {
         $caso = self::paraEditar($id, $usuario) ?? throw new ErrorNoEncontrado();
         $d = array_map('trim', $datos);
-        $requerimiento = self::requerimientos($caso, $usuario)[$d['requerimiento_id']] ?? null;
+        $requerimiento = self::requerimientos($caso)[$d['requerimiento_id']] ?? null;
         self::validarCaso($d, $requerimiento, self::idsMiembros($requerimiento), $caso)->comprobar();
 
         $campos = self::campos($d);
@@ -102,7 +104,7 @@ final class CasoServicio
     }
 
     /**
-     * Con 'evidencias'. Null si no existe; ErrorPermiso si no puede editarlo.
+     * Con 'evidencias'. Null si no existe. ErrorPermiso si no puede editar.
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -121,18 +123,16 @@ final class CasoServicio
      * Los del proyecto del caso, por id.
      *
      * @param array<string, mixed> $caso
-     * @param array{id: int, rol: int} $usuario
      * @return array<int, array<string, mixed>>
      */
-    public static function requerimientos(array $caso, array $usuario): array
+    public static function requerimientos(array $caso): array
     {
-        $todos = RequerimientoModelo::todos(Permisos::proyectos($usuario));
-
-        return array_column(array_filter($todos, fn (array $r): bool => $r['proyecto_id'] === $caso['proyecto_id']), null, 'id');
+        // Proyecto del caso, no el activo: exigirMiembro ya validó.
+        return array_column(RequerimientoModelo::todos([$caso['proyecto_id']]), null, 'id');
     }
 
     /**
-     * Ids de los miembros del proyecto del requerimiento, para validar los dos campos de aprobacion.
+     * Ids de miembros del proyecto del requerimiento, para los 2 campos de aprobación.
      *
      * @param array<string, mixed>|null $requerimiento
      * @return list<int>
@@ -183,7 +183,7 @@ final class CasoServicio
                 if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
                     throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
                 }
-                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $usuario['id']);
+                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $resultado['impacto'], $usuario['id']);
                 Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
                 self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             });
@@ -204,7 +204,7 @@ final class CasoServicio
     {
         Permisos::exigirAdmin($usuario);
         $caso = CasoModelo::porId($id) ?? throw new ErrorNoEncontrado();
-        // Caso y su historial juntos: sin logs huérfanos.
+        // Caso e historial juntos: sin logs huérfanos.
         if (!Conexion::transaccion(fn () => CasoModelo::eliminar($id))) {
             throw new ErrorValidacion(['general' => 'Tiene evidencias o incidentes: no se puede eliminar.']);
         }
@@ -260,7 +260,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-22, RNF-09. Un filtro vacío no filtra; con uno de otro proyecto sale vacía.
+     * RF-22, RNF-09. Filtro vacío no filtra. Filtro de otro proyecto: lista vacía.
      *
      * @param array<string, string> $filtros proyecto, requerimiento, estado
      * @param array{id: int, rol: int} $usuario
@@ -276,6 +276,19 @@ final class CasoServicio
     }
 
     /**
+     * Tablero y cronograma: filtros de la lista, sin paginar.
+     *
+     * @param array<string, mixed> $usuario
+     * @param array<string, string> $filtros
+     * @param array{0: string, 1: string}|null $rango
+     * @return list<array<string, mixed>>
+     */
+    public static function sinPaginar(array $usuario, array $filtros, ?array $rango): array
+    {
+        return CasoModelo::sinPaginar(Permisos::proyectos($usuario), self::filtros($filtros), $rango, self::TOPE_VISTA);
+    }
+
+    /**
      * Formulario 1 sin el resultado.
      *
      * @param array<string, string> $d
@@ -285,7 +298,7 @@ final class CasoServicio
      */
     private static function validarCaso(array $d, ?array $requerimiento, array $miembros, ?array $caso): Validador
     {
-        // Solo los miembros del proyecto del requerimiento: un tester de otro proyecto no va.
+        // Solo miembros del proyecto del requerimiento.
         // El valor que ya tiene el caso se acepta aunque esa persona haya salido del proyecto.
         $esMiembro = static fn (string $campo): bool => ($d[$campo] ?? '') === ''
             || in_array((int) $d[$campo], $miembros, true)
@@ -344,10 +357,10 @@ final class CasoServicio
     }
 
     /**
-     * Resultado del caso: estado, obtenido y observaciones.
+     * Resultado: estado, obtenido, observaciones e impacto.
      *
      * @param array<string, string> $d
-     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string}
+     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string}
      */
     private static function resultado(array $d): array
     {
@@ -355,6 +368,7 @@ final class CasoServicio
             'estado' => (int) $d['estado'],
             'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
             'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
+            'impacto' => $d['impacto'] === '' ? null : $d['impacto'],
         ];
     }
 
@@ -384,7 +398,8 @@ final class CasoServicio
     }
 
     /**
-     * RF-24: con OK o FAULT lleva resultado, observaciones y al menos una evidencia, nueva o de antes.
+     * RF-24. OK o FAULT: resultado, observaciones, impacto y al menos 1 evidencia, nueva o anterior.
+     * Impacto: campo obligatorio de 29119-3.
      *
      * @param array<string, string> $d
      * @param list<int> $tipos
@@ -397,6 +412,7 @@ final class CasoServicio
             ->catalogo('estado', 'estado_caso', $d['estado'])
             ->regla('resultado_obtenido', !$anotado || $d['resultado_obtenido'] !== '', 'Es obligatorio con OK o FAULT.')
             ->regla('observaciones', !$anotado || $d['observaciones'] !== '', 'Es obligatorio con OK o FAULT.')
+            ->regla('impacto', !$anotado || $d['impacto'] !== '', 'Es obligatorio con OK o FAULT.')
             ->regla('evidencias', !$anotado || $tipos !== [] || $previas > 0, 'Con OK o FAULT hace falta al menos una.');
 
         foreach ($tipos as $tipo) {
@@ -435,7 +451,7 @@ final class CasoServicio
             $archivo = $archivos[$nombre];
             $guardado = Subida::guardar($archivo, $nuevo);
             if ($nuevo) {
-                $guardados[] = Subida::ruta($guardado); // si falla, se borra; uno que ya estaba lo usa otra evidencia
+                $guardados[] = Subida::ruta($guardado); // Se borra si falla. Si ya estaba, lo usa otra evidencia.
             }
             EvidenciaModelo::crear($casoId, $tipo, $guardado, mb_substr($archivo['name'], 0, 255), null, $descripcion, $usuarioId);
         }

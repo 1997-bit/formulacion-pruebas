@@ -16,11 +16,13 @@ final class PlanControlador
 {
     private const CAMPOS = ['version', 'responsable_id', 'fecha', 'estrategia', 'estado', ...PlanServicio::TEXTOS];
 
-    // Sin proyecto: la lista de proyectos. Con proyecto: su plan.
+    // Sin proyecto: lista de proyectos. Con proyecto: su plan.
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        if (!isset($_GET['proyecto'])) {
+        // Sin ?proyecto: el activo del sidebar.
+        $id = $_GET['proyecto'] ?? $usuario['activo'];
+        if ($id === null) {
             Vista::pagina('plan_pruebas/listar', [
                 'titulo' => 'Plan de pruebas',
                 'proyectos' => PlanServicio::proyectos($usuario),
@@ -30,13 +32,13 @@ final class PlanControlador
             return;
         }
 
-        $proyecto = PlanServicio::proyecto((int) $_GET['proyecto'], $usuario) ?? Respuesta::error(404);
+        $proyecto = PlanServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('plan_pruebas/ver', [
             'titulo' => 'Plan de pruebas · ' . $proyecto['nombre'],
             'proyecto' => $proyecto,
             'plan' => PlanServicio::plan($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
-            'migas' => $this->migas($proyecto),
+            'migas' => Vista::migas('Plan de pruebas', '/formularios/plan_pruebas', $proyecto['nombre']),
         ]);
     }
 
@@ -52,7 +54,7 @@ final class PlanControlador
             'miembros' => PlanServicio::miembros($proyecto['id']),
             'datos' => Sesion::tomar('datos') ?? array_map(fn (mixed $v): string => (string) $v, $plan ?? []),
             'errores' => Sesion::tomar('errores', []),
-            'migas' => [...$this->migas($proyecto, true), ['texto' => $plan ? 'Editar' : 'Llenar']],
+            'migas' => Vista::migas('Plan de pruebas', '/formularios/plan_pruebas', $proyecto['nombre'], $plan ? 'Editar' : 'Llenar', '?proyecto=' . $proyecto['id']),
         ]);
     }
 
@@ -66,19 +68,5 @@ final class PlanControlador
             Respuesta::errores($e->errores, $datos, '/formularios/plan_pruebas/editar?proyecto=' . $id);
         }
         Respuesta::exito('Plan guardado.', '/formularios/plan_pruebas?proyecto=' . $id);
-    }
-
-    /**
-     * @param array<string, mixed> $proyecto
-     * @return list<array{texto: string, ruta?: string}>
-     */
-    private function migas(array $proyecto, bool $enlace = false): array
-    {
-        $nombre = ['texto' => $proyecto['nombre']];
-        if ($enlace) {
-            $nombre['ruta'] = '/formularios/plan_pruebas?proyecto=' . $proyecto['id'];
-        }
-
-        return [['texto' => 'Formularios'], ['texto' => 'Plan de pruebas', 'ruta' => '/formularios/plan_pruebas'], $nombre];
     }
 }

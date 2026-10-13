@@ -1,6 +1,6 @@
--- Esquema (IR §9). MySQL 8 o MariaDB 10.6+. Borra y crea todo: mysql casos_prueba < database/schema.sql
--- TINYINT de catálogo: clave en config/catalogos.php. Collation explícita: compatible con ambos motores.
--- Formularios: llave dueño + orden; se guardan con DELETE + un INSERT en transacción.
+-- Esquema, IR §9. MySQL 8 o MariaDB 10.6+. Borra y crea todo: mysql casos_prueba < database/schema.sql
+-- TINYINT de catálogo, key en config/catalogos.php. Collation explícita: sirve en los 2 motores.
+-- Formularios. Key: dueño + orden. Guardan por diferencia en una transacción.
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP VIEW IF EXISTS v_trazabilidad;
@@ -71,13 +71,14 @@ CREATE TABLE casos_prueba (
     estado TINYINT UNSIGNED NOT NULL DEFAULT 0,
     resultado_obtenido TEXT NULL,
     observaciones TEXT NULL,
+    impacto TEXT NULL, -- ISO/IEC/IEEE 29119-3, log de pruebas
     creado_por INT UNSIGNED NOT NULL, -- RF-06
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24
     anotado_en DATETIME NULL,
     solicitado_por INT UNSIGNED NULL, -- quién pide el caso; informativo, no gobierna el estado
     aprobado_por INT UNSIGNED NULL, -- quién lo aprueba; informativo, no gobierna el estado
-    -- Para numerar y ordenar: SIS-1000 va después de SIS-999. codigo no cambia aunque cambie el tipo (RF-06).
+    -- Numera y ordena: SIS-1000 va después de SIS-999. codigo no cambia con el tipo, RF-06.
     sigla VARCHAR(3) AS (SUBSTRING_INDEX(codigo, '-', 1)) STORED,
     numero INT UNSIGNED AS (CAST(SUBSTRING_INDEX(codigo, '-', -1) AS UNSIGNED)) STORED,
     UNIQUE (proyecto_id, codigo),
@@ -155,14 +156,14 @@ CREATE TABLE logs_cambios (
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- RNF-02. clave: 'u:<usuario>' en el login, 'ip:<ip>' en el registro.
+-- RNF-02. Key 'u:<usuario>' en login, 'ip:<ip>' en registro.
 CREATE TABLE intentos_acceso (
     clave VARCHAR(64) PRIMARY KEY,
     fallos INT UNSIGNED NOT NULL DEFAULT 0,
     bloqueado_hasta DATETIME(3) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- F2 a F5: de un requerimiento
+-- F2 a F5, por requerimiento.
 
 -- F2
 CREATE TABLE clases_equivalencia (
@@ -197,7 +198,7 @@ CREATE TABLE valor_limite (
     FOREIGN KEY (guardado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- F4: filas son condiciones o acciones; columnas, reglas.
+-- F4. Filas: condiciones o acciones. Columnas: reglas.
 CREATE TABLE decision_filas (
     requerimiento_id INT UNSIGNED NOT NULL,
     orden TINYINT UNSIGNED NOT NULL,
@@ -210,7 +211,7 @@ CREATE TABLE decision_filas (
     FOREIGN KEY (guardado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Solo celdas marcadas: sin fila es "—".
+-- Solo celdas marcadas. Sin fila = "—".
 CREATE TABLE decision_celdas (
     requerimiento_id INT UNSIGNED NOT NULL,
     fila_orden TINYINT UNSIGNED NOT NULL,
@@ -239,7 +240,7 @@ CREATE TABLE cobertura_blanca (
     FOREIGN KEY (guardado_por) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- F6 a F9: de un proyecto
+-- F6 a F9, por proyecto.
 
 -- F6
 CREATE TABLE plan_pruebas (
@@ -290,7 +291,7 @@ CREATE TABLE autoevaluaciones (
 
 -- Vista
 
--- Requerimiento sin casos: caso NULL. Subconsulta en vez de GROUP BY: igual en ambos motores.
+-- Requerimiento sin casos: caso NULL. Subconsulta y no GROUP BY: igual en los 2 motores.
 CREATE VIEW v_trazabilidad AS
 SELECT r.proyecto_id,
        r.id AS requerimiento_id,

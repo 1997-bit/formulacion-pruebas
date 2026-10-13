@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 9 (RF-16). Archivos del Detalle de la paleta, agrupados por proyecto.
+ * Formulario 9, RF-16. Archivos del Detalle de la paleta, por proyecto.
  *
  * @var list<array<string, mixed>> $evidencias
  * @var Paginacion $paginacion

@@ -12,7 +12,7 @@ use App\Core\Validador;
 use App\Models\CoberturaModelo;
 use App\Models\FilasModelo;
 
-// RF-12. Formulario 5: una fila por métrica de caja blanca, de un requerimiento.
+// RF-12, formulario 5. Una fila por métrica de caja blanca, por requerimiento.
 final class CoberturaServicio
 {
     // Lo que resume la huella (#100).
@@ -24,7 +24,7 @@ final class CoberturaServicio
     public const METRICAS = [11, 12, 13, 16, 18];
 
     /**
-     * El mismo redondeo que la pantalla (app.js), en enteros para no depender de flotantes.
+     * Mismo redondeo que app.js. Enteros: sin floats.
      */
     public static function porcentaje(int $total, int $cubiertos): int
     {
@@ -72,8 +72,8 @@ final class CoberturaServicio
     }
 
     /**
-     * Una métrica vacía no se mide. Todas o ninguna: valida antes de escribir y reemplaza en una transacción.
-     * Errores por celda con clave "metrica.columna". El porcentaje se calcula aquí, no se recibe.
+     * Métrica vacía no se mide. Todas o ninguna: valida y reemplaza en una transacción.
+     * Keys de error: "metrica.columna". El porcentaje se calcula aquí, no se recibe.
      *
      * @param array<int, array{total: string, cubiertos: string, herramienta: string}> $filas  metrica => fila
      * @param array{id: int, rol: int} $usuario

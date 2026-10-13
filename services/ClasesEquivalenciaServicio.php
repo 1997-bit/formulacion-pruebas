@@ -11,7 +11,7 @@ use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
 
-// RF-09. Formulario 2: las filas pertenecen a un requerimiento.
+// RF-09, formulario 2. Filas por requerimiento.
 final class ClasesEquivalenciaServicio
 {
     // Lo que resume la huella (#100).
@@ -19,7 +19,7 @@ final class ClasesEquivalenciaServicio
 
     private const TABLA = 'clases_equivalencia';
 
-    // Columna => [etiqueta, largo máximo]; null es TEXT.
+    // Columna => [etiqueta, largo máximo]. null = TEXT.
     public const COLUMNAS = [
         'campo' => ['Campo', 100],
         'clase_valida' => ['Clase válida', null],
@@ -69,8 +69,8 @@ final class ClasesEquivalenciaServicio
     }
 
     /**
-     * Todas o ninguna: valida cada fila antes de escribir y reemplaza en una transacción.
-     * Errores por celda con clave "fila.columna".
+     * Todas o ninguna: valida cada fila y reemplaza en una transacción.
+     * Keys de error: "fila.columna".
      *
      * @param list<array<string, string>> $filas
      * @param array{id: int, rol: int} $usuario

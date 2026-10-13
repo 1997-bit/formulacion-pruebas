@@ -6,16 +6,17 @@ namespace App\Services;
 
 use App\Config\Conexion;
 use App\Core\ErrorValidacion;
+use App\Core\Log;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
 
 // RF-02, RF-03. Solo aquí se crea un admin.
 final class UsuarioServicio
 {
-    // Mínimo de OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo.
+    // Mínimo OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo.
     public const ARGON = ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1];
 
-    // Sin SELECT previo: el UNIQUE decide, también en una carrera (#101).
+    // Sin SELECT previo: decide el UNIQUE, también en race condition. #101.
     public const USUARIO_REPETIDO = ['usuario' => 'Ese usuario ya existe.'];
 
     /**
@@ -53,12 +54,13 @@ final class UsuarioServicio
         } catch (\PDOException $e) {
             throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
         }
+        Log::evento('warning', 'user_created:{id},{nuevo}', ['nuevo' => $d['usuario']]);
 
         return $d['usuario'];
     }
 
     /**
-     * Clave vacía: no la cambia. El rol se cambia aquí.
+     * Clave vacía: no cambia. Aquí cambia el rol.
      *
      * @param array<string, string> $datos nombre, usuario, clave, rol
      * @param array{id: int, rol: int} $actor
@@ -71,16 +73,23 @@ final class UsuarioServicio
             throw new ErrorValidacion(['rol' => 'No puede quitarse su propio rol de admin.']);
         }
         $clave = $datos['clave'] === '' ? null : password_hash($datos['clave'], PASSWORD_ARGON2ID, self::ARGON);
-        Conexion::transaccion(function () use ($id, $d, $clave): void {
+        $rol = Conexion::transaccion(function () use ($id, $d, $clave): ?int {
             if ($d['rol'] !== 1) {
                 self::exigirOtroAdmin($id);
             }
+            $rol = UsuarioModelo::porId($id)['rol'] ?? null;
             try {
                 UsuarioModelo::actualizar($id, $d['nombre'], $d['usuario'], $clave, $d['rol']);
             } catch (\PDOException $e) {
                 throw ErrorValidacion::siDuplicado($e, self::USUARIO_REPETIDO);
             }
+
+            return $rol;
         });
+        Log::evento('warning', 'user_updated:{id},{otro}', ['otro' => $id]);
+        if ($rol !== $d['rol']) {
+            Log::evento('warning', 'privilege_permissions_changed:{id},{otro},{de},{a}', ['otro' => $id, 'de' => $rol, 'a' => $d['rol']]);
+        }
 
         return $d['usuario'];
     }
@@ -98,9 +107,10 @@ final class UsuarioServicio
                 throw new ErrorValidacion(['general' => 'Tiene proyectos, casos, evidencias o formularios a su nombre: no se puede eliminar.']);
             }
         });
+        Log::evento('warning', 'user_deleted:{id},{otro}', ['otro' => $id]);
     }
 
-    // El sistema no queda sin admin (#116). Cuenta con bloqueo: dos admins que se quitan el rol a la vez no pasan los dos.
+    // Siempre queda un admin, #116. Cuenta con lock: 2 admins que se quitan el rol a la vez no pasan los 2.
     private static function exigirOtroAdmin(int $id): void
     {
         if (UsuarioModelo::contarAdmins() < 2 && (UsuarioModelo::porId($id)['rol'] ?? null) === 1) {
@@ -109,7 +119,7 @@ final class UsuarioServicio
     }
 
     /**
-     * Reglas comunes con el registro público. $id: el usuario que se edita.
+     * Reglas comunes con el registro público. $id: usuario editado.
      *
      * @param array<string, string> $datos
      * @return array{nombre: string, usuario: string, rol: int}

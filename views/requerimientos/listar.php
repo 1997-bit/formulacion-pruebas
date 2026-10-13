@@ -10,7 +10,10 @@ use App\Helpers\Icono;
  * @var list<array<string, mixed>> $requerimientos
  * @var Paginacion $paginacion
  * @var ?string $flash
+ * @var array{activo: ?int} $usuario
  */
+// Con proyecto activo la columna Proyecto sobra.
+$todos = $usuario['activo'] === null;
 ?>
 <header class="encabezado">
   <div>
@@ -33,7 +36,7 @@ use App\Helpers\Icono;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Requerimientos</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Descripción</th><th scope="col">Tipo</th><th scope="col">Proyecto</th><th scope="col">Casos</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Descripción</th><th scope="col">Tipo</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col">Casos</th></tr>
         </thead>
         <tbody>
           <?php foreach ($requerimientos as $r): ?>
@@ -41,7 +44,7 @@ use App\Helpers\Icono;
               <td data-columna="Código"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
               <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
               <td data-columna="Tipo"><span class="insignia insignia-borde"><?= $r['no_funcional'] ? 'No funcional' : 'Funcional' ?></span></td>
-              <td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td>
+              <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td><?php endif; ?>
               <td data-columna="Casos"><?= (int) $r['casos'] ?></td>
             </tr>
           <?php endforeach; ?>

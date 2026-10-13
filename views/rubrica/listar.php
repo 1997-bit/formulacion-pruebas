@@ -6,7 +6,7 @@ use App\Helpers\Icono;
 use App\Services\RubricaServicio;
 
 /**
- * Formulario 7 (RF-14): una rúbrica por proyecto, solo admin.
+ * Formulario 7, RF-14. Una rúbrica por proyecto, solo admin.
  *
  * @var list<array<string, mixed>> $proyectos  con total, null sin rúbrica
  */

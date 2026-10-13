@@ -14,7 +14,9 @@ final class ProyectoModelo
     {
         return Conexion::pdo()->query(
             'SELECT p.id, p.nombre, p.descripcion, p.creado_en,
-                    GROUP_CONCAT(u.usuario ORDER BY u.usuario SEPARATOR \', \') AS miembros
+                    GROUP_CONCAT(u.usuario ORDER BY u.usuario SEPARATOR \', \') AS miembros,
+                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.proyecto_id = p.id) AS casos,
+                    (SELECT COUNT(*) FROM casos_prueba c WHERE c.proyecto_id = p.id AND c.estado <> 0) AS ejecutados
              FROM proyectos p
              LEFT JOIN proyecto_miembros m ON m.proyecto_id = p.id
              LEFT JOIN usuarios u ON u.id = m.usuario_id
@@ -42,8 +44,8 @@ final class ProyectoModelo
     }
 
     /**
-     * Condición del permiso de lista (RF-05). null es admin: TRUE, que el optimizador descarta.
-     * Una lista de ids da range sobre el índice; EXISTS o "? = 1 OR" obligan a leer toda la tabla.
+     * Permiso de lista, RF-05. Admin: null → TRUE, el optimizador lo descarta.
+     * Lista de ids: range sobre el índice. EXISTS o "? = 1 OR" leen toda la tabla.
      *
      * @param list<int>|null $proyectos
      * @return array{0: string, 1: list<int>} condición y valores
@@ -66,7 +68,7 @@ final class ProyectoModelo
     }
 
     /**
-     * $id null: crea. Los miembros se reemplazan. La transacción la abre ProyectoServicio.
+     * $id null: crea. Reemplaza miembros. ProyectoServicio abre la transacción.
      *
      * @param list<int> $miembros
      */
@@ -79,7 +81,7 @@ final class ProyectoModelo
         } else {
             $pdo->prepare('UPDATE proyectos SET nombre = ?, descripcion = ? WHERE id = ?')->execute([$nombre, $descripcion, $id]);
         }
-        // Por diferencia: solo sale quien se quitó, y con él su auto y coevaluación (BUG-007).
+        // Por diferencia: solo sale quien se quitó, con su auto y coevaluación. BUG-007.
         FilasModelo::sincronizar(
             'proyecto_miembros',
             ['proyecto_id' => $id],

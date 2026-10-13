@@ -18,7 +18,7 @@ use Tests\Apoyo\BaseDatos;
 #[Medium]
 final class ReporteServicioTest extends BaseDatos
 {
-    // Caso del tester con estado; con evidencia (enlace) y con incidente (null: sin incidente).
+    // Caso del tester con estado. evidencia: enlace. incidente null: sin incidente.
     private function casoCon(int $proyecto, int $tester, int $estado, bool $evidencia, ?int $stopper, string $codigo = 'SIS-001'): int
     {
         $caso = $this->caso($proyecto, $this->requerimiento($proyecto, 'RF-' . substr($codigo, -2)), $tester, $codigo);

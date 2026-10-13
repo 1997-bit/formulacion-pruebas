@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Services;
 
+use App\Core\Log;
 use App\Services\Subida;
+use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
-// RNF-03. Lo que exige un archivo subido de verdad (is_uploaded_file) no se prueba aquí.
+// RNF-03. Sin probar lo que exige is_uploaded_file.
 #[CoversClass(Subida::class)]
 #[Small]
 final class SubidaTest extends TestCase
@@ -59,7 +61,18 @@ final class SubidaTest extends TestCase
         $this->assertSame($esperado, $error);
     }
 
-    // #118: un archivo igual ya guardado no se mueve otra vez.
+    // RNF-11. Archivo rechazado: upload_validation con nombre y motivo.
+    public function testExeRechazadoDejaUploadValidation(): void
+    {
+        $log = new TestHandler();
+        Log::usar($log);
+
+        Subida::error(['name' => 'virus.exe', 'tmp_name' => __FILE__, 'size' => 10, 'error' => UPLOAD_ERR_OK], 2);
+
+        $this->assertTrue($log->hasCriticalThatContains('upload_validation:virus.exe'));
+    }
+
+    // #118. Archivo igual ya guardado: no se mueve otra vez.
     public function testGuardarArchivoRepetidoDevuelveElMismoNombre(): void
     {
         $nombre = self::SHA . '.txt';

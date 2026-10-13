@@ -6,15 +6,17 @@ use App\Core\Vista;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
+use App\Helpers\Icono;
 
 /**
- * Detalle del incidente, como el del caso: el defecto a la izquierda, con el seguimiento; los datos a la derecha.
+ * Detalle del incidente, como el del caso. Defecto y seguimiento a la izquierda, datos a la derecha.
  *
  * @var array<string, mixed> $incidente
  * @var list<array<string, mixed>> $asignables
  * @var ?string $flash
  * @var array<string, string> $errores
  * @var array<string, string> $datos
+ * @var array{id: int} $usuario
  */
 
 $creado = new DateTime($incidente['creado_en']);
@@ -23,7 +25,7 @@ foreach ($asignables as $a) {
     $opciones .= '<option value="' . $a['id'] . '"' . ((string) $a['id'] === $datos['asignado_id'] ? ' selected' : '') . '>' . Html::e($a['nombre']) . '</option>';
 }
 ?>
-<header class="encabezado">
+<header class="encabezado" data-reciente="<?= Html::e($incidente['codigo']) ?>" data-reciente-texto="<?= Html::e($incidente['titulo']) ?>">
   <div>
     <p class="antetitulo fila">
       <span class="codigo"><?= Html::e($incidente['codigo']) ?></span>
@@ -32,6 +34,16 @@ foreach ($asignables as $a) {
     </p>
     <h1><?= Html::e($incidente['titulo']) ?></h1>
   </div>
+  <?php if ($incidente['asignado_id'] !== $usuario['id'] && in_array($usuario['id'], array_column($asignables, 'id'), true)): ?>
+    <form class="acciones" method="post" action="/formularios/incidentes/ver">
+      <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+      <input type="hidden" name="id" value="<?= (int) $incidente['id'] ?>">
+      <input type="hidden" name="estado" value="<?= (int) $incidente['estado'] ?>">
+      <input type="hidden" name="asignado_id" value="<?= (int) $usuario['id'] ?>">
+      <input type="hidden" name="es_stopper" value="<?= (int) $incidente['es_stopper'] ?>">
+      <button class="btn btn-secundario" type="submit" data-atajo="a" data-atajo-texto="Asignarme el incidente"><?= Icono::svg('users') ?> Asignarme</button>
+    </form>
+  <?php endif; ?>
 </header>
 
 <div class="pila">

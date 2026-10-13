@@ -31,6 +31,19 @@
 
 .btn-sm { min-height: 1.75rem; padding: 0 10px; font-size: var(--letra-xs); border-radius: var(--radio-sm); }
 
+/* Enviando, app.js. El botón gira, salvo con movimiento reducido */
+form[data-enviando] .btn[aria-disabled="true"]::before {
+  content: "";
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.6s linear infinite;
+}
+form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
+@keyframes girar { to { rotate: 1turn; } }
+
 /* Solo ícono: siempre con aria-label */
 .btn-icono { min-height: 2rem; width: 2rem; padding: 0; }
 
@@ -44,7 +57,7 @@
 .titulo-seccion { margin: 0 0 12px; font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; line-height: 1.3; }
 .separador { margin: 4px 0; border: 0; border-top: 1px solid var(--borde); }
 
-/* Sección plegable: <details class="plegable">, con .flecha al final del summary */
+/* Plegable: <details class="plegable">, .flecha al final del summary */
 .plegable > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; cursor: pointer; list-style: none; }
 .plegable > summary::-webkit-details-marker { display: none; }
 .plegable > summary .titulo-seccion { margin: 0; }
@@ -70,7 +83,7 @@
 .insignia-secundaria { background: var(--secundario); color: var(--secundario-texto); }
 .insignia-borde { border-color: var(--borde); }
 
-/* Código de caso (SIS-001), en monoespaciada */
+/* Código de caso, SIS-001, monoespaciada */
 
 .codigo {
   font-family: var(--fuente-mono);
@@ -79,7 +92,7 @@
   white-space: nowrap;
 }
 
-/* Tooltip: solo visual, el nombre va en aria-label. No sirve en <input> ni <img> (WCAG 1.4.13) */
+/* Tooltip solo visual. Nombre en aria-label. No en <input> ni <img>, WCAG 1.4.13 */
 
 [data-tooltip] {
   position: relative;
@@ -128,9 +141,9 @@
 }
 [data-tooltip-alinear="inicio"]::after { left: 0; translate: none; }
 [data-tooltip-alinear="fin"]::after { left: auto; right: 0; translate: none; }
-/* Escape los esconde (app.js) */
+/* Escape los esconde, app.js */
 [data-tooltips-ocultos] [data-tooltip]::after { display: none; }
-/* Atajos de una tecla apagados (Ajustes): el tooltip solo decía el atajo */
+/* Atajos de una tecla apagados: el tooltip solo tenía el atajo */
 [data-atajos="no"] [data-tooltip][data-atajo]:not([data-atajo^="Mod+"])::after { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -167,7 +180,7 @@
 /* Línea sobre el h1 */
 .encabezado .antetitulo { margin: 0 0 6px; }
 
-/* Detalle: contenido y datos a la derecha; una columna en celular e impresión */
+/* Detalle: contenido y datos a la derecha. Una columna en celular e impresión */
 
 .vista-detalle {
   display: grid;
@@ -179,7 +192,7 @@
   .vista-detalle { grid-template-columns: 1fr; }
 }
 
-/* Filtros: formulario GET, quedan en la URL */
+/* Filtros: form GET, en la URL */
 
 .filtros {
   display: grid;
@@ -193,6 +206,39 @@
   border-radius: var(--radio-xl);
 }
 .filtros .acciones { justify-content: flex-start; }
+
+/* Filtros activos: chips con ✕ */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 2px 2px 10px;
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  background: var(--secundario);
+  color: var(--secundario-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-total);
+}
+.chip-quitar { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; color: var(--tenue-texto); }
+.chip-quitar:hover { background: var(--acento); color: var(--acento-texto); }
+.chip-quitar .icono { width: 12px; height: 12px; }
+
+/* Avatar: iniciales, siempre con el nombre al lado */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--secundario);
+  color: var(--secundario-texto);
+  border: 1px solid var(--borde);
+  font-size: 0.625rem;
+  font-weight: 600;
+}
 
 /* Lista de datos <dl> */
 
@@ -328,9 +374,9 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 }
 .opcion input { width: 16px; height: 16px; margin: 0; accent-color: var(--primario); }
 .grupo-fila { flex-direction: row; flex-wrap: wrap; gap: 8px 20px; }
-/* Con error: el mensaje va en el fieldset; las opciones no cambian */
+/* Con error, el mensaje va en el fieldset */
 
-/* Estado del caso: la etiqueta es el botón, con texto e ícono */
+/* Estado del caso: etiqueta = botón, con texto e ícono */
 
 .resultado {
   margin: 0;
@@ -433,7 +479,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .paginacion a[aria-current="page"] { border: 1px solid var(--entrada); font-weight: 600; box-shadow: var(--sombra-xs); }
 .paginacion span[aria-disabled] { opacity: 0.4; }
 
-/* Diálogo nativo: showModal() atrapa el foco y cierra con Escape */
+/* Diálogo nativo: showModal() atrapa el foco, Escape cierra */
 
 .dialogo {
   width: min(28rem, calc(100% - 32px));
@@ -452,7 +498,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .dialogo p { margin: 0 0 20px; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .dialogo form { margin: 0; }
 
-/* Atajos: ayuda con ? (atajos.js) */
+/* Ayuda de atajos con ?, atajos.js */
 
 kbd {
   display: inline-block;
@@ -479,7 +525,7 @@ kbd {
 .dialogo-atajos { max-height: calc(100dvh - 32px); overflow-y: auto; }
 .dialogo-atajos .acciones { margin-top: 20px; justify-content: flex-end; }
 
-/* Alertas: role="status"; role="alert" para errores */
+/* Alertas: role="status", role="alert" en errores */
 
 .alerta {
   display: grid;
@@ -527,12 +573,27 @@ kbd {
 .alerta-error { color: var(--error); }
 .alerta-error .alerta-descripcion { color: color-mix(in oklch, var(--error), var(--tarjeta) 10%); }
 
-/* Éxito: lo que confirma es el texto, no el color */
+/* Éxito: confirma el texto, no el color */
 .alerta-exito {
   background: color-mix(in oklch, var(--exito), var(--tarjeta) 88%);
   border-color: color-mix(in oklch, var(--exito), var(--tarjeta) 45%);
 }
 .alerta-exito > .icono { color: var(--correcto); }
+
+/* Aviso flotante tipo sonner, abajo a la derecha. app.js lo cierra */
+.aviso-flotante {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 70;
+  width: min(24rem, calc(100% - 32px));
+  align-items: center;
+  box-shadow: var(--sombra-lg);
+  animation: subir 0.2s ease-out;
+}
+.aviso-flotante > .icono { margin-top: 0; }
+.aviso-flotante .alerta-accion { grid-row: 1; }
+@keyframes subir { from { opacity: 0; translate: 0 8px; } }
 
 /* Estado vacío */
 
@@ -627,10 +688,7 @@ kbd {
   overflow: hidden;
 }
 progress.progreso { appearance: none; }
-.progreso-exito { --progreso-color: var(--exito); }
-.progreso-aviso { --progreso-color: var(--aviso); }
-.progreso-peligro { --progreso-color: var(--peligro); }
-/* Una regla por pseudo-elemento: si uno falla, no tumba los demás */
+/* Una regla por pseudo-elemento: si una falla, las otras siguen */
 .progreso::-webkit-progress-bar { background: var(--progreso-pista); }
 .progreso::-webkit-progress-value { background: var(--progreso-color); border-radius: var(--radio-total); }
 .progreso::-moz-progress-bar { background: var(--progreso-color); border-radius: var(--radio-total); }
@@ -643,17 +701,6 @@ meter.progreso { --progreso-pista: var(--secundario); }
 .progreso:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--aviso); }
 .progreso:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--peligro); }
 .progreso::-moz-meter-bar { border-radius: var(--radio-total); }
-
-.progreso-fila {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 6px;
-  font-size: var(--letra-sm);
-}
-.progreso-fila > :first-child { font-weight: 500; }
-.progreso-fila > :last-child { color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
 
 /* Barra en celda */
 .progreso-celda { display: flex; align-items: center; gap: 10px; min-width: 9rem; }
@@ -675,7 +722,6 @@ meter.progreso { --progreso-pista: var(--secundario); }
 .tabla-editable tfoot td { padding: 10px 8px 10px 21px; }
 
 .tabla .celda-centro { text-align: center; }
-.tabla .celda-numero { text-align: right; font-variant-numeric: tabular-nums; }
 .tabla input:is([type="checkbox"], [type="radio"]) {
   width: 16px;
   height: 16px;
@@ -704,7 +750,7 @@ meter.progreso { --progreso-pista: var(--secundario); }
   font-variant-numeric: tabular-nums;
 }
 
-/* Historial: el anterior tachado, no solo color */
+/* Historial: anterior tachado, no solo color */
 
 del.cambio,
 ins.cambio {
@@ -716,24 +762,30 @@ ins.cambio {
 del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
 ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: none; }
 
-/* Casillas con scroll */
-
-.lista-opciones {
-  display: flex;
-  flex-direction: column;
-  max-height: 15rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-color: var(--entrada) transparent;
-  padding: 4px;
-  background: var(--fondo);
-  border: 1px solid var(--entrada);
-  border-radius: var(--radio-md);
-  box-shadow: var(--sombra-xs);
+/* Línea de tiempo: un punto por cambio, reciente arriba */
+.linea-tiempo { margin: 0; padding: 0; list-style: none; }
+.linea-tiempo li { position: relative; padding: 0 0 16px 22px; }
+.linea-tiempo li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primario);
 }
-.lista-opciones .opcion { display: flex; padding: 6px 8px; border-radius: var(--radio-sm); }
-.lista-opciones .opcion:hover { background: var(--acento); color: var(--acento-texto); }
-.lista-opciones .opcion small { margin-left: auto; font-size: var(--letra-xs); color: var(--tenue-texto); }
+.linea-tiempo li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: calc(0.45em + 13px);
+  bottom: 2px;
+  width: 1px;
+  background: var(--borde);
+}
+.linea-tiempo p { margin: 0 0 4px; font-size: var(--letra-sm); }
+.linea-tiempo time { margin-left: 6px; font-size: var(--letra-xs); color: var(--tenue-texto); }
 
 /* Archivos de evidencia */
 
@@ -768,7 +820,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 .archivo-icono img { width: 100%; height: 100%; object-fit: cover; }
 .archivo-nombre { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-sm); font-weight: 500; overflow-wrap: anywhere; }
 .archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
-/* La URL de una evidencia se parte; los códigos de las tablas no (#39) */
+/* La URL de una evidencia se parte. Los códigos no, #39 */
 .archivo-detalle span.codigo { white-space: normal; overflow-wrap: anywhere; }
 .archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: 4px; }
 
@@ -781,6 +833,17 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   object-fit: contain;
 }
 
+/* Pestañas: enlaces, la actual con aria-current="page" */
+
+.pestanas { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--borde); overflow-x: auto; }
+.pestanas a {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; margin-bottom: -1px;
+  color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.pestanas a:hover { color: var(--texto); }
+.pestanas a[aria-current="page"] { color: var(--texto); border-bottom-color: var(--primario); }
+
 /* Ajustes */
 
 .ajuste { padding: 16px 20px; border: 1px solid var(--borde); }
@@ -791,7 +854,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 .ajuste-estado:empty { display: none; }
 .ajuste-estado { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 
-/* Switch (como shadcn/ui): checkbox con role="switch"; el navegador lo maneja con teclado y lector */
+/* Switch tipo shadcn/ui: checkbox con role="switch". Teclado y lector nativos */
 
 .switch {
   appearance: none;
@@ -863,7 +926,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 
 /* Celular y táctil */
 
-/* Tabla como tarjetas: requiere data-columna en cada <td> */
+/* Tabla como tarjetas: cada <td> necesita data-columna */
 @media (max-width: 40rem) {
   .tabla-tarjetas thead {
     position: absolute;
@@ -910,7 +973,6 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 
   /* Filtros de dos en dos */
   .filtros { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
-  .filtros .campo-busqueda,
   .filtros .acciones { grid-column: 1 / -1; }
 
   /* Botones bajo el título */
@@ -927,7 +989,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .alerta:has(> .icono) .alerta-accion { margin-left: 10px; }
 }
 
-/* Táctil: blancos grandes y 16px para que iOS no haga zoom */
+/* Táctil: targets grandes. 16px evita el zoom de iOS */
 @media (pointer: coarse) {
   .btn { min-height: 2.5rem; }
   .btn-icono { width: 2.5rem; min-height: 2.5rem; }
@@ -971,6 +1033,7 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
   .no-imprimir,
   .btn,
   .filtros,
+  .aviso-flotante,
   .paginacion,
   .tabla .celda-acciones,
   .select::after { display: none !important; }
@@ -1007,3 +1070,6 @@ ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); tex
 
   @page { margin: 1.5cm; }
 }
+
+/* Detalle de una línea de log, RNF-11 */
+.log-detalle { margin: 8px 0 0; padding: 12px; overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); white-space: pre-wrap; word-break: break-all; background: var(--tenue); border-radius: var(--radio-md); }
