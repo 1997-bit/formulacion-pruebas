@@ -115,7 +115,21 @@
     form.dataset.enviando = '';
     e.submitter?.setAttribute('aria-disabled', 'true');
   });
+  // Página lenta: esqueleto en el contenido si la nueva tarda más de 150 ms. Atrás lo quita.
+  const principal = document.getElementById('principal');
+  let esqueleto;
+  const esperar = () => { esqueleto = setTimeout(() => principal?.setAttribute('aria-busy', 'true'), 150); };
+  document.addEventListener('click', (e) => {
+    const a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+    if (!a || e.defaultPrevented || e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    // Con cambios sin guardar el navegador pregunta. Si el usuario se queda, no hay esqueleto.
+    if (sinGuardar || a.target || a.hasAttribute('download') || a.origin !== location.origin || (a.hash && a.pathname === location.pathname)) return;
+    esperar();
+  });
+  document.addEventListener('submit', (e) => { if (!e.defaultPrevented && e.target.method !== 'dialog') esperar(); });
   window.addEventListener('pageshow', () => {
+    clearTimeout(esqueleto);
+    principal?.removeAttribute('aria-busy');
     document.querySelectorAll('form[data-enviando]').forEach((f) => {
       delete f.dataset.enviando;
       f.querySelectorAll('[aria-disabled]').forEach((b) => b.removeAttribute('aria-disabled'));

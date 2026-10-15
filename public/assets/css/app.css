@@ -33,7 +33,6 @@
   color: var(--lateral-texto);
   border-right: 1px solid var(--lateral-borde);
   z-index: 30;
-  transition: width 0.2s ease;
 }
 
 .sidebar-cabecera,
@@ -442,34 +441,26 @@ button.sidebar-boton {
   }
 }
 
-/* Hover suave, cambio de página, entrada de diálogos y menús. Sin movimiento si el usuario lo pide */
+/* Esqueleto: app.js pone aria-busy si la página nueva tarda más de 150 ms */
+.app-principal { position: relative; }
+.app-principal[aria-busy="true"] > * { visibility: hidden; }
+.app-principal[aria-busy="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  background:
+    linear-gradient(var(--tenue) 0 0) 0 0 / 30% 2.25rem,
+    linear-gradient(var(--tenue) 0 0) 0 3rem / 45% 1rem,
+    linear-gradient(var(--tenue) 0 0) 0 5.5rem / 100% 6.5rem,
+    linear-gradient(var(--tenue) 0 0) 0 13.5rem / 100% 18rem;
+  background-repeat: no-repeat;
+}
 @media (prefers-reduced-motion: no-preference) {
-  .btn, .cifra-enlace, .tarjeta-caso, .tareas a, .sidebar-boton, .sidebar-subboton {
-    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
-  }
-  /* Cambio de página con fundido. Firefox navega sin él */
-  @view-transition { navigation: auto; }
-  .encabezado h1 { view-transition-name: titulo; }
-  dialog[open], .usuario-flotante, .proyecto-flotante { animation: entrar 0.15s ease-out; }
-  /* <details> abre y cierra con altura animada. Sin soporte: abre al instante */
-  :root { interpolate-size: allow-keywords; }
-  .sidebar-desplegable::details-content { height: 0; overflow: clip; transition: height 0.2s, content-visibility 0.2s allow-discrete; }
-  .sidebar-desplegable[open]::details-content { height: auto; }
+  .app-principal[aria-busy="true"]::before { animation: pulso 1.2s ease-in-out infinite; }
 }
-@keyframes entrar { from { opacity: 0; scale: 0.97; } }
-:root[data-movimiento="reducido"]::view-transition-group(*),
-:root[data-movimiento="reducido"]::view-transition-old(*),
-:root[data-movimiento="reducido"]::view-transition-new(*) { animation: none; }
-[data-movimiento="reducido"] ::details-content { transition: none; }
-
-/* Sombra de la barra superior solo al bajar */
-@supports (animation-timeline: scroll()) {
-  .app-barra { animation: barra-sombra linear both; animation-timeline: scroll(); animation-range: 0 24px; }
-}
-@keyframes barra-sombra { to { box-shadow: var(--sombra-sm); } }
+@keyframes pulso { 50% { opacity: 0.5; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .sidebar,
   .flecha {
     transition: none;
   }
