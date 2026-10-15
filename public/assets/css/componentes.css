@@ -273,8 +273,9 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   background: var(--tarjeta);
   color: var(--tarjeta-texto);
   border: 1px solid var(--borde);
-  border-radius: var(--radio-xl);
-  padding: 16px;
+  border-radius: var(--radio-2xl);
+  padding: 20px;
+  box-shadow: var(--sombra-xs);
 }
 
 /* Campos: ayuda y error con aria-describedby */

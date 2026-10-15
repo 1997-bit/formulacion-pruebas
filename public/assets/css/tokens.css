@@ -67,7 +67,7 @@
   --error: var(--peligro-fuerte);
   --correcto: var(--exito-fuerte);
 
-  --borde: light-dark(oklch(92% 0 0), oklch(100% 0 0 / 12%));
+  --borde: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 12%));
   --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, mínimo 3:1 */
   --anillo: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
   --enlace: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
@@ -80,9 +80,9 @@
   --velo-desenfoque: blur(8px);
   --velo-respaldo: oklch(0% 0 0 / 0.4); /* sin backdrop-filter */
 
-  --lateral: light-dark(oklch(98.5% 0 0), oklch(20% 0.03 231));
+  --lateral: light-dark(oklch(97.5% 0 0), oklch(20% 0.03 231));
   --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));
-  --lateral-acento: var(--acento);
+  --lateral-acento: light-dark(oklch(94% 0 0), oklch(32% 0.07 262));
   --lateral-acento-texto: var(--acento-texto);
   --lateral-borde: var(--borde);
   --lateral-ancho: 16rem;
