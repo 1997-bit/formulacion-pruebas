@@ -164,6 +164,8 @@
       tema: () => document.getElementById('tema')?.click(),
       menu: () => document.getElementById('sidebar-alternar')?.click(),
       atajos: () => ayudaAtajos(),
+      // /salir es POST: envía el form del sidebar.
+      salir: () => document.querySelector('form[action="/salir"]')?.requestSubmit(),
     };
     let n = 0;
     const opcion = (grupo, texto, destino) => {

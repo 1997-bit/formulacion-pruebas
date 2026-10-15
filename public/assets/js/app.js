@@ -127,7 +127,14 @@
     esperar();
   });
   document.addEventListener('submit', (e) => { if (!e.defaultPrevented && e.target.method !== 'dialog') esperar(); });
-  window.addEventListener('pageshow', () => {
+  // Salir: Atrás no muestra páginas de la sesión cerrada desde bfcache.
+  document.addEventListener('submit', (e) => {
+    if (e.target.action.endsWith('/salir')) try { localStorage.setItem('salida', String(Date.now())); } catch (err) {}
+  });
+  window.addEventListener('pageshow', (e) => {
+    let salida = 0;
+    try { salida = Number(localStorage.getItem('salida')); } catch (err) {}
+    if (e.persisted && salida > performance.timeOrigin) location.reload();
     clearTimeout(esqueleto);
     principal?.removeAttribute('aria-busy');
     document.querySelectorAll('form[data-enviando]').forEach((f) => {

@@ -43,7 +43,7 @@ foreach ([['id' => 0, 'nombre' => 'Todos los proyectos'], ...$proyectos] as $p) 
 $opciones[] = ['Acciones', 'Cambiar tema claro u oscuro', 'accion:tema'];
 $opciones[] = ['Acciones', 'Mostrar u ocultar menú', 'accion:menu'];
 $opciones[] = ['Acciones', 'Ver atajos de teclado', 'accion:atajos'];
-$opciones[] = ['Acciones', 'Cerrar sesión', '/salir'];
+$opciones[] = ['Acciones', 'Cerrar sesión', 'accion:salir'];
 ?>
 <dialog class="dialogo paleta" id="paleta" aria-label="Paleta de comandos">
   <div class="paleta-campo">

@@ -24,7 +24,10 @@ final class Sesion
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
+        // Sin no-store: Atrás restaura la página al instante, bfcache. no-cache sigue pidiendo la página al servidor.
+        session_cache_limiter('');
         session_start();
+        header('Cache-Control: private, no-cache');
     }
 
     /** @param array<string, mixed> $usuario */
