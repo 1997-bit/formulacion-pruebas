@@ -462,9 +462,9 @@ button.sidebar-boton {
   .app-barra { view-transition-name: barra; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0.1s; }
 }
-:root[data-movimiento="reducido"]::view-transition-group(*),
-:root[data-movimiento="reducido"]::view-transition-old(*),
-:root[data-movimiento="reducido"]::view-transition-new(*) { animation: none; }
+:root[data-movimiento="si"]::view-transition-group(*),
+:root[data-movimiento="si"]::view-transition-old(*),
+:root[data-movimiento="si"]::view-transition-new(*) { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .flecha {
@@ -534,9 +534,9 @@ button.sidebar-boton {
 [data-atajos="no"] .sidebar-atajo { display: none; }
 
 /* Ajustes → Accesibilidad. Movimiento reducido a mano, igual que prefers-reduced-motion */
-[data-movimiento="reducido"] *,
-[data-movimiento="reducido"] *::before,
-[data-movimiento="reducido"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+[data-movimiento="si"] *,
+[data-movimiento="si"] *::before,
+[data-movimiento="si"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 /* Enlace en texto: subrayado tenue siempre, no solo color. WCAG 1.4.1 */
 .app-principal :is(p, dd) a:not(.btn) { text-decoration: underline; text-decoration-color: color-mix(in oklch, currentColor, transparent 60%); text-underline-offset: 3px; }
 [data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }

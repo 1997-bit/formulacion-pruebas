@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Ajustes → Accesibilidad: "Reducir movimiento" es un interruptor sí/no, sin la opción Sistema. La preferencia del sistema operativo se respeta siempre.
 - Menús de proyecto y de usuario con Popover API y anchor positioning: Esc y clic afuera nativos.
 - Cifras con container queries: una fila en ancho, 2 × 2 en medio, una por fila en angosto.
 - Cambio de página con un fundido de 100 ms del contenido. Sin él con "Reducir movimiento".
