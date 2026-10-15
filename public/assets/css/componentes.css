@@ -1143,7 +1143,54 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .archivo { break-inside: avoid; }
   h1, h2, h3, .tarjeta-encabezado { break-after: avoid; }
 
-  @page { margin: 1.5cm; }
+  /* Hoja carta. Encabezado y pie en cada hoja: variables --doc-* del <html>, ver layouts/app.php. */
+  @page {
+    size: letter;
+    margin: 2cm 1.5cm 1.8cm;
+    @top-left { content: var(--doc-titulo, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @top-right { content: var(--doc-proyecto, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @bottom-left { content: var(--doc-pie, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+  }
+
+  /* Documento plano: sin tarjetas, secciones separadas por una línea */
+  body { font-size: 10pt; }
+  h1 { font-size: 18pt; }
+  .tarjeta { padding: 0; border: 0; border-radius: 0; background: none; }
+  .pila > .tarjeta + .tarjeta,
+  .vista-detalle .pila > .tarjeta + .tarjeta { padding-top: 12pt; border-top: 1px solid oklch(80% 0 0); }
+  .tarjeta-titulo { font-size: 12pt; }
+  .pasos,
+  .pestanas { display: none; }
+
+  /* Datos del caso primero: identifican el documento */
+  .vista-detalle > aside { order: -1; padding-bottom: 12pt; border-bottom: 1px solid oklch(80% 0 0); }
+
+  /* Cifras y gráficos en filas fijas */
+  .cifras { grid-template-columns: repeat(5, 1fr); }
+  .cifra-principal { grid-column: auto; }
+  .cifra { padding: 8pt; border: 1px solid oklch(80% 0 0); border-radius: 0; }
+  .graficos { grid-template-columns: 1fr 1fr; }
+  .grafico,
+  .vista-detalle > aside,
+  .tarjeta-encabezado,
+  .tarjeta:not(:has(table, .detalle)),
+  .firmas { break-inside: avoid; }
+
+  /* Tablas: ajustan al ancho de la hoja, el texto baja de línea */
+  .tabla { font-size: 9pt; }
+  .tabla th,
+  .tabla td { padding: 4pt 6pt; white-space: normal; }
+  .tabla .celda-larga { min-width: 0; }
+  .tabla-contenedor { border-radius: 0; }
+
+  /* Firmas */
+  .firmas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24pt; margin-top: 28pt; }
+  .firma p { margin: 2pt 0 0; font-size: 8pt; }
+  .firma-linea { display: block; height: 32pt; border-bottom: 1px solid oklch(20% 0 0); }
+
+  /* Panel con curvas: en papel, flujo normal */
+  .app-cuerpo { height: auto; margin: 0; overflow: visible; border: 0; border-radius: 0; }
 }
 
 /* Detalle de una línea de log, RNF-11 */

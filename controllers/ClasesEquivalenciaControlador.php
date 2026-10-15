@@ -35,6 +35,8 @@ final class ClasesEquivalenciaControlador
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('clases_equivalencia/ver', [
             'titulo' => 'Clases de equivalencia · ' . $requerimiento['codigo'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 2 · Matriz de clases de equivalencia · ' . $requerimiento['codigo'], 'proyecto' => $requerimiento['proyecto']],
             'requerimiento' => $requerimiento,
             'filas' => ClasesEquivalenciaServicio::filas($requerimiento['id'], $usuario),
             'guardado' => ClasesEquivalenciaServicio::guardado($requerimiento['id'], $usuario),

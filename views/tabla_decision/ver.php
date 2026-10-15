@@ -72,5 +72,5 @@ $editar = '/formularios/tabla_decision/editar?requerimiento=' . (int) $requerimi
       <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
+  <?= Vista::capturar('partials/firmas') ?>
 </div>

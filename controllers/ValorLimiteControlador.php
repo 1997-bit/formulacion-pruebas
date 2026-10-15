@@ -35,6 +35,8 @@ final class ValorLimiteControlador
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('valor_limite/ver', [
             'titulo' => 'Valor límite · ' . $requerimiento['codigo'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 3 · Análisis de valor límite · ' . $requerimiento['codigo'], 'proyecto' => $requerimiento['proyecto']],
             'requerimiento' => $requerimiento,
             'filas' => ValorLimiteServicio::filas($requerimiento['id'], $usuario),
             'guardado' => ValorLimiteServicio::guardado($requerimiento['id'], $usuario),

@@ -35,6 +35,8 @@ final class TablaDecisionControlador
         $guardado = TablaDecisionServicio::guardado($requerimiento['id'], $usuario);
         Vista::pagina('tabla_decision/ver', [
             'titulo' => 'Tabla de decisión · ' . $requerimiento['codigo'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 4 · Tabla de decisión · ' . $requerimiento['codigo'], 'proyecto' => $requerimiento['proyecto']],
             'requerimiento' => $requerimiento,
             'tabla' => $guardado !== null ? TablaDecisionServicio::tabla($requerimiento['id'], $usuario) : null,
             'guardado' => $guardado,

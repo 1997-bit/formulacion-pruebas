@@ -68,5 +68,5 @@ $texto = fn (?string $t): string => $t === null || $t === '' ? '—' : Html::e($
       </aside>
     </div>
   <?php endif; ?>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
+  <?= Vista::capturar('partials/firmas') ?>
 </div>

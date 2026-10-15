@@ -11,6 +11,7 @@ use App\Services\RequerimientoServicio;
  * @var string $contenido
  * @var array{nombre: string, usuario: string, rol: int} $usuario
  * @var list<array{texto: string, ruta?: string}> $migas
+ * @var array{titulo: string, proyecto: string}|null $documento  encabezado y pie de cada hoja al imprimir
  */
 
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
@@ -19,9 +20,13 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 // Para el selector de proyecto y la paleta.
 $proyectos = RequerimientoServicio::proyectos($usuario);
 $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
+// Impresión: @page lee estas variables para el encabezado y el pie. Texto como cadena CSS.
+$cadena = fn (string $texto): string => "'" . addcslashes($texto, "'\\") . "'";
+$hoja = isset($documento) ? '--doc-titulo:' . $cadena($documento['titulo']) . ';--doc-proyecto:' . $cadena($documento['proyecto'])
+    . ';--doc-pie:' . $cadena('Impreso el ' . date('d/m/Y H:i') . ' por ' . $usuario['nombre']) : '';
 ?>
 <!doctype html>
-<html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>">
+<html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>"<?= $hoja !== '' ? ' style="' . Html::e($hoja) . '"' : '' ?>>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

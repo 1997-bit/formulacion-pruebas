@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 use App\Core\Vista;
 use App\Helpers\Catalogo;
-use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -85,5 +84,5 @@ $numero = fn (?float $n): string => $n === null ? '—' : number_format($n, 1);
     </div>
     <p class="campo-ayuda">Sin dato, la persona aún no se evalúa o nadie la ha evaluado.</p>
   </section>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
+  <?= Vista::capturar('partials/firmas') ?>
 </div>

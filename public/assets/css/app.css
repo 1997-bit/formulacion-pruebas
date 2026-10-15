@@ -651,6 +651,12 @@ button.sidebar-boton {
 
 @media print {
   .grafico-barras span, .grafico-stoppers span, .grafico-promedio span, .leyenda-muestra { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* En papel: dos gráficos por fila y más bajos */
+  .graficos { grid-template-columns: 1fr 1fr; gap: 16pt; }
+  .grafico-barras, .grafico-linea { height: 7rem; }
+  .grafico-stoppers { height: 1.5rem; }
+  .grafico-cifra { font-size: 20pt; }
+  .grafico-nota { margin-bottom: 8pt; }
 }
 
 /* Matriz de cobertura: celda = casos de un requerimiento y un tipo. Relleno por cantidad. */

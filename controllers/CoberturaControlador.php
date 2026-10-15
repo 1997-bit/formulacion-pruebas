@@ -34,6 +34,8 @@ final class CoberturaControlador
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('cobertura/ver', [
             'titulo' => 'Cobertura de caja blanca · ' . $requerimiento['codigo'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 5 · Cobertura de caja blanca · ' . $requerimiento['codigo'], 'proyecto' => $requerimiento['proyecto']],
             'requerimiento' => $requerimiento,
             'filas' => CoberturaServicio::filas($requerimiento['id'], $usuario),
             'guardado' => CoberturaServicio::guardado($requerimiento['id'], $usuario),

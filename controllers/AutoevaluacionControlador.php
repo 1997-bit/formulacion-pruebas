@@ -33,6 +33,8 @@ final class AutoevaluacionControlador
         $proyecto = AutoevaluacionServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('autoevaluacion/ver', [
             'titulo' => 'Auto y coevaluación · ' . $proyecto['nombre'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 8 · Autoevaluación y coevaluación', 'proyecto' => $proyecto['nombre']],
             'proyecto' => $proyecto,
             'puedeLlenar' => AutoevaluacionServicio::puedeLlenar($proyecto['id'], $usuario['id']),
             'evaluacion' => AutoevaluacionServicio::evaluacion($proyecto['id'], $usuario),

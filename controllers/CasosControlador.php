@@ -122,6 +122,8 @@ final class CasosControlador
         $caso = CasoServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
         Vista::pagina('casos/resultado', [
             'titulo' => $caso['codigo'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 1 · Registro de caso de prueba · ' . $caso['codigo'], 'proyecto' => $caso['proyecto']],
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'vecinos' => CasoModelo::vecinos($caso),

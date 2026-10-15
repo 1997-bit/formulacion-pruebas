@@ -156,5 +156,5 @@ $pasos = match ($caso['estado']) {
       </dl>
     </aside>
   </div>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
+  <?= Vista::capturar('partials/firmas') ?>
 </div>

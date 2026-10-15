@@ -120,4 +120,5 @@ $listas = [
       </div>
     <?php endif; ?>
   </section>
+  <?= Vista::capturar('partials/firmas') ?>
 </div>

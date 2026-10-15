@@ -32,6 +32,8 @@ final class RubricaControlador
         $proyecto = RubricaServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('rubrica/ver', [
             'titulo' => 'Rúbrica · ' . $proyecto['nombre'],
+            // Encabezado de cada hoja al imprimir.
+            'documento' => ['titulo' => 'Formulario 7 · Rúbrica de evaluación', 'proyecto' => $proyecto['nombre']],
             'proyecto' => $proyecto,
             'rubrica' => RubricaServicio::rubrica($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),
