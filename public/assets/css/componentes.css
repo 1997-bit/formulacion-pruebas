@@ -429,6 +429,25 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   cursor: pointer;
 }
 .opcion input { width: 16px; height: 16px; margin: 0; accent-color: var(--primario); }
+/* Radio propio: círculo fino. Marcado: relleno primario con punto blanco */
+input[type="radio"] {
+  appearance: none;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--entrada);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="radio"]:checked { background: var(--primario); border-color: var(--primario); }
+input[type="radio"]:checked::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--primario-texto); }
+input[type="radio"]:focus-visible { outline: 2px solid var(--anillo); outline-offset: 2px; }
+input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
+input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 .grupo-fila { flex-direction: row; flex-wrap: wrap; gap: var(--esp-2) var(--esp-5); }
 /* Con error, el mensaje va en el fieldset */
 
@@ -1009,8 +1028,19 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 .ajuste { padding: var(--esp-4) var(--esp-5); border: 1px solid var(--borde); }
 .ajuste > legend { float: left; width: 100%; font-weight: 600; }
-.ajuste .opcion { align-items: start; }
-.ajuste .opcion input { margin-top: 2px; }
+/* Opción en fila con borde. El radio va a la derecha. La marcada queda en azul */
+.ajuste .opcion {
+  display: flex;
+  gap: var(--esp-3);
+  padding: 10px var(--esp-3);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+}
+.ajuste .opcion > span:not(.opcion-icono) { flex: 1; }
+.ajuste .opcion:hover { background: var(--acento); }
+.ajuste .opcion:has(input:checked) { background: var(--info-suave); border-color: var(--primario); }
+.opcion-icono { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radio-md); background: var(--tenue); }
+.opcion-icono .icono { width: 16px; height: 16px; }
 .ajuste small { display: block; color: var(--tenue-texto); font-size: var(--letra-xs); }
 .ajuste-estado:empty { display: none; }
 .ajuste-estado { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
@@ -1188,6 +1218,8 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 @media (forced-colors: active) {
   .resultado-opcion:has(input:checked) { outline: 3px solid Highlight; outline-offset: 2px; }
   .switch:checked { forced-color-adjust: none; background: Highlight; }
+  input[type="radio"]:checked { forced-color-adjust: none; background: Highlight; border-color: Highlight; }
+  .ajuste .opcion:has(input:checked) { outline: 2px solid Highlight; }
   .progreso { forced-color-adjust: none; }
 }
 
