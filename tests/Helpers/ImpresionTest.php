@@ -31,42 +31,4 @@ final class ImpresionTest extends TestCase
 
         $this->assertSame("--doc-titulo:'T';--doc-proyecto:'O\\'Hara';--doc-pie:'Impreso el 15/10/2026 09:05 por Ana'", $css);
     }
-
-    // Postmortem: el ID de la petición cruza la hoja con los logs. Sin .git ni navegador: "sin dato".
-    public function testMetadatosLlevanPeticionYVersion(): void
-    {
-        $m = Impresion::metadatos(
-            ['titulo' => 'T', 'proyecto' => 'P'],
-            ['nombre' => 'Ana', 'usuario' => 'ana', 'rol' => 0],
-            new \DateTimeImmutable('2026-10-15T09:05:00-04:00'),
-            '/casos/resultado?id=1',
-            'abc123',
-            Impresion::version('/no/existe'),
-            '',
-        );
-
-        $this->assertSame(
-            ['Ana (ana, tester)', '2026-10-15T09:05:00-04:00', 'abc123', 'sin dato', 'sin dato'],
-            [$m['Usuario'], $m['Generado'], $m['ID de la petición'], $m['Versión de la app'], $m['Navegador']],
-        );
-    }
-
-    // XMP: XML válido, con dc:identifier y el esquema propio declarado.
-    public function testXmpEsXmlConEsquemaPropio(): void
-    {
-        $m = Impresion::metadatos(['titulo' => 'T & <b>', 'proyecto' => 'P'], ['nombre' => 'Ana', 'usuario' => 'ana', 'rol' => 1], new \DateTimeImmutable('2026-10-15'), '/r?a=1&b=2', 'abc123', 'main · 1234567', 'UA');
-        $xmp = Impresion::xmp($m);
-        $rdf = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#" xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">'
-            . $xmp['rdf'] . '<rdf:Description><rdf:Bag>' . $xmp['esquema'] . '</rdf:Bag></rdf:Description></rdf:RDF>';
-        $doc = new \DOMDocument();
-
-        $this->assertTrue($doc->loadXML($rdf));
-        $x = new \DOMXPath($doc);
-        $x->registerNamespace('dc', 'http://purl.org/dc/elements/1.1/');
-        $x->registerNamespace('cp', Impresion::XMP_NS);
-        $this->assertSame(
-            ['abc123', 'T & <b>', '/r?a=1&b=2', 'Ana (ana, admin)'],
-            [$x->evaluate('string(//dc:identifier)'), $x->evaluate('string(//cp:documento)'), $x->evaluate('string(//cp:direccion)'), $x->evaluate('string(//cp:usuario)')],
-        );
-    }
 }

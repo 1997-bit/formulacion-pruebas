@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Helpers\Impresion;
-use App\Services\Pdf;
-
 // Vista dentro de un layout.
 final class Vista
 {
@@ -14,12 +11,6 @@ final class Vista
     public static function pagina(string $vista, array $datos = [], string $layout = 'layouts/app'): void
     {
         $datos['usuario'] ??= Sesion::usuario();
-        // Documento imprimible con ?formato=pdf: el mismo HTML como PDF con metadatos.
-        if (isset($datos['documento']) && ($_GET['formato'] ?? '') === 'pdf') {
-            $metadatos = Impresion::metadatos($datos['documento'], $datos['usuario'], new \DateTimeImmutable(), $_SERVER['REQUEST_URI'] ?? '', Log::uid(), Impresion::version(RAIZ), (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
-            $pdf = Pdf::generar(self::capturar($vista, $datos), $datos['documento'], $metadatos);
-            Respuesta::pdf($pdf['archivo'], $pdf['nombre'], $pdf['sha256']);
-        }
         $datos['contenido'] = self::capturar($vista, $datos);
         echo self::capturar($layout, $datos);
     }

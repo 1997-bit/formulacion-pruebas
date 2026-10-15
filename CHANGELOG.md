@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Casos: filtro Desde y Hasta con atajos Esta semana, Próximos 7 días y Este mes.
 - Cronograma: tramo rayado si el resultado llegó tarde o el caso sigue atrasado.
 - Impresión en hoja carta: encabezado con formulario y proyecto, pie con fecha, usuario y número de página, datos primero, secciones y tablas cortas sin cortes, firmas al final. Al guardar como PDF, el título del archivo es el del documento.
-- Descargar PDF en los 9 documentos imprimibles: PDF/A-3b con Title, Author, Subject y Keywords, y XMP con Dublin Core más un esquema propio (proyecto, formulario, usuario, ID de la petición, versión). El SHA-256 de cada PDF queda en el log.
 - Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
 - Ajustes: densidad compacta.
 - Esqueleto de carga si una página tarda más de 150 ms.

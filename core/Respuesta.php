@@ -63,20 +63,6 @@ final class Respuesta
         exit;
     }
 
-    // Pdf::generar(). Descarga. X-Content-SHA256: el mismo hash del log.
-    public static function pdf(string $archivo, string $nombre, string $sha256): never
-    {
-        session_write_close();
-        header('Content-Type: application/pdf');
-        header('X-Content-Type-Options: nosniff');
-        header('Cache-Control: private, no-store');
-        header('Content-Disposition: attachment; filename="' . $nombre . '"');
-        header('Content-Length: ' . strlen($archivo));
-        header('X-Content-SHA256: ' . $sha256);
-        echo $archivo;
-        exit;
-    }
-
     // $referencia: uid de la petición en storage/logs. Solo 500.
     public static function error(int $codigo, ?string $referencia = null): never
     {
