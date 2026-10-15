@@ -173,6 +173,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 }
 .encabezado h1 {
   font-size: var(--letra-2xl);
+  font-weight: 600;
   margin: 0;
 }
 .encabezado p {
