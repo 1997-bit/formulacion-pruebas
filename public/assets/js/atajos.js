@@ -134,6 +134,8 @@ function ayudaAtajos() {
     dialogoAtajos = document.createElement('dialog');
     dialogoAtajos.className = 'dialogo dialogo-atajos';
     dialogoAtajos.setAttribute('aria-labelledby', 'atajos-titulo');
+    // Como los demás diálogos: cierra con Esc y con clic afuera. Sin closedby, app.js hace el respaldo.
+    dialogoAtajos.setAttribute('closedby', 'any');
     document.body.append(dialogoAtajos);
   }
   const titulo = document.createElement('h2');
