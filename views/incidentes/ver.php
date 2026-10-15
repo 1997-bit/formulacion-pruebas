@@ -47,6 +47,12 @@ foreach ($asignables as $a) {
 </header>
 
 <div class="pila">
+  <?php $estado = $incidente['estado']; ?>
+  <?= Vista::capturar('partials/pasos', ['etiqueta' => 'Avance del incidente', 'pasos' => [
+      ['Abierto', $estado === 0 ? 'actual' : 'hecho'],
+      ['En progreso', $estado === 1 ? 'actual' : ($estado === 2 ? 'hecho' : 'pendiente')],
+      ['Cerrado', $estado === 2 ? 'hecho' : 'pendiente'],
+  ]]) ?>
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="vista-detalle">
     <div class="pila">

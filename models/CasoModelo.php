@@ -12,7 +12,7 @@ final class CasoModelo
 {
     /**
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
      */
     public static function contar(?array $proyectos, array $filtros): int
     {
@@ -28,7 +28,7 @@ final class CasoModelo
      * La subconsulta lee solo el índice. El resto, 20 filas. #107.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
      * @return list<array<string, mixed>>
      */
     public static function listar(?array $proyectos, array $filtros, int $offset): array
@@ -71,7 +71,7 @@ final class CasoModelo
      * Tablero y cronograma. Sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
      * @param array{0: string, 1: string}|null $rango fechas ISO, inicio y fin
      * @return list<array<string, mixed>>
      */
@@ -83,7 +83,7 @@ final class CasoModelo
             $valores = [...$valores, $rango[1], $rango[0]];
         }
         $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.objetivo, c.estado, c.fecha_inicio, c.fecha_fin,
+            'SELECT c.id, c.codigo, c.objetivo, c.estado, c.fecha_inicio, c.fecha_fin, DATE(c.anotado_en) AS anotado,
                     p.nombre AS proyecto, r.codigo AS requerimiento, r.descripcion AS requerimiento_descripcion,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.caso_id = c.id AND i.estado <> 2) AS incidentes
              FROM casos_prueba c
@@ -254,16 +254,17 @@ final class CasoModelo
      * RF-22. Filtros usados + permiso.
      *
      * @param list<int>|null $proyectos
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
-     * @return array{0: string, 1: list<int>}
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
+     * @return array{0: string, 1: list<int|string>}
      */
     private static function donde(?array $proyectos, array $filtros): array
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $condiciones = [$permiso];
-        foreach (['proyecto' => 'c.proyecto_id', 'requerimiento' => 'c.requerimiento_id', 'estado' => 'c.estado'] as $filtro => $columna) {
+        // Fechas: el caso entra si su rango cruza el del filtro.
+        foreach (['proyecto' => 'c.proyecto_id = ?', 'requerimiento' => 'c.requerimiento_id = ?', 'estado' => 'c.estado = ?', 'desde' => 'c.fecha_fin >= ?', 'hasta' => 'c.fecha_inicio <= ?'] as $filtro => $condicion) {
             if ($filtros[$filtro] !== null) {
-                $condiciones[] = "{$columna} = ?";
+                $condiciones[] = $condicion;
                 $valores[] = $filtros[$filtro];
             }
         }

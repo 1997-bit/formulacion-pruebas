@@ -42,7 +42,7 @@ $fila = 1;
   <a class="btn btn-secundario btn-sm" href="<?= Html::e($enlaceMes($mes->modify('+1 month'))) ?>"><?= Html::e(ucfirst($nombreMes($mes->modify('+1 month')))) ?> <?= Icono::svg('chevron-right') ?></a>
   <?php if ($diaHoy === null): ?><a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceMes(new DateTimeImmutable('first day of this month'))) ?>">Hoy</a><?php endif; ?>
 </div>
-<p class="leyenda cronograma-leyenda" aria-hidden="true"><?php foreach (Catalogo::valores('estado_caso') as $e => $v): ?><span><span class="leyenda-muestra barra-<?= $v['variante'] ?>"></span><?= $simbolos[$e] ?> <?= Html::e($v['texto']) ?></span><?php endforeach; ?></p>
+<p class="leyenda cronograma-leyenda" aria-hidden="true"><?php foreach (Catalogo::valores('estado_caso') as $e => $v): ?><span><span class="leyenda-muestra barra-<?= $v['variante'] ?>"></span><?= $simbolos[$e] ?> <?= Html::e($v['texto']) ?></span><?php endforeach; ?><span><span class="leyenda-muestra cronograma-atraso"></span>Tarde o atrasado</span></p>
 <?php if (!$casos): ?>
   <div class="vacio">
     <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
@@ -71,8 +71,16 @@ $fila = 1;
           $variante = Catalogo::valores('estado_caso')[$c['estado']]['variante'];
           $fila++;
           $fechas = Fecha::legible(new DateTime($c['fecha_inicio'])) . ' al ' . Fecha::legible(new DateTime($c['fecha_fin']));
+          // Plan contra real: resultado después de la fecha final, o pendiente con la fecha final pasada.
+          $real = $c['estado'] === 0 ? $hoy : $c['anotado'];
+          $retraso = $real !== null && $real > $c['fecha_fin'] ? (int) (new DateTime($c['fecha_fin']))->diff(new DateTime($real))->days : 0;
+          $atraso = $retraso === 0 ? '' : ($c['estado'] === 0 ? "atrasado $retraso d" : "tarde $retraso d");
+          $despues = (new DateTimeImmutable($c['fecha_fin']))->modify('+1 day')->format('Y-m-d');
           ?>
-          <a class="cronograma-caso codigo" style="grid-row:<?= $fila ?>" href="/casos/resultado?id=<?= (int) $c['id'] ?>" title="<?= Html::e($c['objetivo']) ?>"><?= Html::e($c['codigo']) ?><span class="solo-lector">: <?= Html::e($estado) ?>, <?= $fechas ?></span></a>
+          <a class="cronograma-caso codigo" style="grid-row:<?= $fila ?>" href="/casos/resultado?id=<?= (int) $c['id'] ?>" title="<?= Html::e($c['objetivo']) ?>"><?= Html::e($c['codigo']) ?><span class="solo-lector">: <?= Html::e($estado) ?>, <?= $fechas ?><?= $atraso !== '' ? ', ' . $atraso : '' ?></span></a>
+          <?php if ($atraso !== '' && $despues <= $fin && $real >= $inicio): ?>
+            <span class="cronograma-atraso" style="grid-row:<?= $fila ?>;grid-column:<?= $columna($despues) + 1 ?> / <?= $columna($real) + 2 ?>" title="<?= Html::e($c['codigo'] . ' · ' . $atraso) ?>" aria-hidden="true"><?= $columna($real) - $columna($despues) >= 2 ? $atraso : '' ?></span>
+          <?php endif; ?>
           <span class="cronograma-tramo barra-<?= $variante ?><?= $c['fecha_inicio'] < $inicio ? ' sigue-antes' : '' ?><?= $c['fecha_fin'] > $fin ? ' sigue-despues' : '' ?>"
                 style="grid-row:<?= $fila ?>;grid-column:<?= $desde + 1 ?> / <?= $hasta + 2 ?>" title="<?= Html::e($c['codigo'] . ' · ' . $estado . ' · ' . $fechas) ?>" aria-hidden="true"><?= $simbolos[$c['estado']] ?><?= $hasta - $desde >= 2 ? ' ' . Html::e($estado) : '' ?></span>
         <?php endforeach; ?>

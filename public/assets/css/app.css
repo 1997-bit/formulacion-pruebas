@@ -580,6 +580,8 @@ button.sidebar-boton {
 }
 .cronograma-leyenda span { display: flex; align-items: center; gap: 6px; }
 .cronograma-tramo.barra-peligro { color: var(--peligro-texto); }
+/* Atraso: rayado, de la fecha final al resultado o a hoy */
+.cronograma-atraso { align-self: center; margin: 3px 1px; padding: 2px 6px; min-height: 1.25rem; overflow: hidden; white-space: nowrap; font-size: var(--letra-xs); color: var(--peligro-fuerte); border: 1px dashed var(--peligro-fuerte); border-radius: var(--radio-sm); background: repeating-linear-gradient(-45deg, color-mix(in oklch, var(--peligro), transparent 80%) 0 4px, transparent 4px 8px); }
 .cronograma-tramo.sigue-antes { border-start-start-radius: 0; border-end-start-radius: 0; margin-left: 0; }
 .cronograma-tramo.sigue-despues { border-start-end-radius: 0; border-end-end-radius: 0; margin-right: 0; }
 

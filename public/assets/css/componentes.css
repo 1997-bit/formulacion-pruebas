@@ -214,6 +214,8 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   border-radius: var(--radio-xl);
 }
 .filtros .acciones { justify-content: flex-start; }
+.filtros-atajos { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.filtros-atajos [aria-current] { background: var(--acento); color: var(--acento-texto); }
 
 /* Filtros activos: chips con ✕ */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
@@ -813,29 +815,43 @@ del.cambio::after,
 ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; }
 
 /* Línea de tiempo: un punto por cambio, reciente arriba */
-.linea-tiempo { margin: 0; padding: 0; list-style: none; }
-.linea-tiempo li { position: relative; padding: 0 0 16px 22px; }
+/* Línea de tiempo: hora | punto y línea | cambio */
+.linea-tiempo { --hora: 5.5rem; margin: 0; padding: 0; list-style: none; }
+.linea-tiempo li { position: relative; display: grid; grid-template-columns: var(--hora) 1fr; column-gap: 24px; padding-bottom: 16px; }
 .linea-tiempo li::before {
   content: "";
   position: absolute;
-  left: 0;
+  left: calc(var(--hora) + 8px);
   top: 0.45em;
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--primario);
+  background: var(--tenue-texto);
 }
+.linea-tiempo .linea-tiempo-estado::before { background: var(--primario); box-shadow: 0 0 0 3px color-mix(in oklch, var(--primario), transparent 70%); }
 .linea-tiempo li:not(:last-child)::after {
   content: "";
   position: absolute;
-  left: 4px;
+  left: calc(var(--hora) + 12px);
   top: calc(0.45em + 13px);
   bottom: 2px;
   width: 1px;
   background: var(--borde);
 }
 .linea-tiempo p { margin: 0 0 4px; font-size: var(--letra-sm); }
-.linea-tiempo time { margin-left: 6px; font-size: var(--letra-xs); color: var(--tenue-texto); }
+.linea-tiempo time { font-family: var(--fuente-mono); font-size: var(--letra-xs); line-height: 1.7; color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+.linea-tiempo-estado time { color: var(--texto); }
+
+/* Pasos: un segmento por paso, el texto debajo */
+.pasos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); }
+.paso { display: flex; flex-direction: column; gap: 6px; color: var(--tenue-texto); }
+.paso::before { content: ""; height: 4px; border-radius: var(--radio-total); background: var(--secundario); }
+.paso-hecho { color: var(--texto); }
+.paso-hecho::before { background: var(--tenue-texto); }
+.paso-actual { color: var(--texto); font-weight: 600; }
+.paso-actual::before { background: var(--primario); }
+.paso-mal { color: var(--peligro-fuerte); font-weight: 600; }
+.paso-mal::before { background: var(--peligro); }
 
 /* Archivos de evidencia */
 
@@ -1111,6 +1127,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   /* Sin esto se pierden fondos de insignias y barras */
   .insignia,
   .progreso,
+  .paso::before,
   .tabla th,
   .tabla tfoot td {
     -webkit-print-color-adjust: exact;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 use App\Core\Csrf;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
-use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -169,20 +168,7 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
   <?php if ($caso !== null): ?>
     <section class="pila" aria-labelledby="h-historial">
       <h2 class="titulo-seccion" id="h-historial">Historial</h2>
-      <?php if (!$historial): ?>
-        <p class="campo-ayuda">Sin cambios todavía.</p>
-      <?php else: ?>
-        <ol class="linea-tiempo" aria-label="<?= Html::e('Cambios de ' . $caso['codigo']) ?>">
-          <?php foreach ($historial as $h): ?>
-            <?php $fecha = new DateTime($h['fecha']); ?>
-            <li>
-              <p class="linea-tiempo-cabeza"><strong><?= Html::e($h['usuario']) ?></strong> cambió <?= Html::e($h['etiqueta']) ?>
-                <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>"><?= Fecha::legible($fecha) ?> <?= $fecha->format('H:i') ?></time></p>
-              <p><span class="solo-lector">Antes: </span><del class="cambio"><?= Html::e($h['antes']) ?></del> <span aria-hidden="true">→</span><span class="solo-lector">. Después: </span> <ins class="cambio"><?= Html::e($h['despues']) ?></ins></p>
-            </li>
-          <?php endforeach; ?>
-        </ol>
-      <?php endif; ?>
+      <?= Vista::capturar('partials/historial', ['historial' => $historial, 'codigo' => $caso['codigo']]) ?>
     </section>
   <?php endif; ?>
 </div>

@@ -19,11 +19,20 @@ use App\Helpers\Icono;
  * @var array<string, mixed> $datos
  * @var array{rol: int} $usuario
  * @var array{0: ?array<string, mixed>, 1: ?array<string, mixed>} $vecinos  caso anterior y siguiente
+ * @var list<array<string, mixed>> $historial
  */
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
 $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—' : Html::e($valor);
+// Pasos: Registrado, resultado y cierre. Con FAULT, el incidente va antes del cierre.
+$conIncidente = $caso['incidentes'] !== [];
+$abiertos = count(array_filter($caso['incidentes'], fn (array $i): bool => $i['estado'] !== 2));
+$pasos = match ($caso['estado']) {
+    0 => [['Registrado', 'hecho'], ['Ejecutado', 'actual'], ['Cerrado', 'pendiente']],
+    1 => [['Registrado', 'hecho'], ['OK', 'hecho'], ['Cerrado', 'hecho']],
+    default => [['Registrado', 'hecho'], ['FAULT', 'mal'], ['Incidente', $conIncidente ? 'hecho' : 'actual'], ['Cerrado', !$conIncidente ? 'pendiente' : ($abiertos === 0 ? 'hecho' : 'actual')]],
+};
 ?>
 <header class="encabezado" data-reciente="<?= Html::e($caso['codigo']) ?>" data-reciente-texto="<?= Html::e($caso['objetivo']) ?>">
   <div>
@@ -62,6 +71,7 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
 </header>
 
 <div class="pila">
+  <?= Vista::capturar('partials/pasos', ['pasos' => $pasos, 'etiqueta' => 'Avance del caso']) ?>
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="vista-detalle">
     <div class="pila">
@@ -114,6 +124,11 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
             <button class="btn btn-primario" type="submit">Guardar resultado</button>
           </div>
         </form>
+      </section>
+
+      <section class="tarjeta no-imprimir" aria-labelledby="dt-historial">
+        <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="dt-historial">Historial</h2></header>
+        <?= Vista::capturar('partials/historial', ['historial' => $historial, 'codigo' => $caso['codigo']]) ?>
       </section>
     </div>
 

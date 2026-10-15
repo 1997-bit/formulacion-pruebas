@@ -32,7 +32,7 @@ final class CasosControlador
     public function listar(): void
     {
         $filtros = [];
-        foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
+        foreach (['proyecto', 'requerimiento', 'estado', 'desde', 'hasta'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
         // Lista por defecto: g c y el menú llevan a la lista.
@@ -125,6 +125,7 @@ final class CasosControlador
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'vecinos' => CasoModelo::vecinos($caso),
+            'historial' => Historial::deCaso($caso['id']),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [

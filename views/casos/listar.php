@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Core\Paginacion;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
+use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -13,7 +14,7 @@ use App\Helpers\Icono;
  * @var string $vista lista, tablero o cronograma
  * @var DateTimeImmutable $mes  primer día del mes del cronograma
  * @var ?string $flash
- * @var array<string, string> $filtros proyecto, requerimiento, estado
+ * @var array<string, string> $filtros proyecto, requerimiento, estado, desde, hasta
  * @var list<array<string, mixed>> $proyectos
  * @var list<array<string, mixed>> $requerimientos
  * @var array{activo: ?int} $usuario
@@ -42,7 +43,19 @@ foreach ($porProyecto as $proyecto => $reqs) {
 $todos = $usuario['activo'] === null;
 $nombreProyecto = array_column($proyectos, 'nombre', 'id')[$filtros['proyecto']] ?? null;
 $codigoReq = array_column($requerimientos, 'codigo', 'id')[$filtros['requerimiento']] ?? null;
+// Atajos de fechas: cambian desde y hasta, conservan lo demás.
+$hoy = new DateTimeImmutable('today');
+$atajos = [
+    'Esta semana' => [$hoy->modify('monday this week'), $hoy->modify('sunday this week')],
+    'Próximos 7 días' => [$hoy, $hoy->modify('+6 days')],
+    'Este mes' => [$hoy->modify('first day of this month'), $hoy->modify('last day of this month')],
+];
+$enlaceAtajo = fn (array $r): string => '/casos/listar?' . http_build_query(['vista' => $vista] + ($vista === 'cronograma' ? ['mes' => $mes->format('Y-m')] : [])
+    + ['desde' => $r[0]->format('Y-m-d'), 'hasta' => $r[1]->format('Y-m-d')] + array_filter($filtros, fn (string $x): bool => $x !== ''));
+$legible = fn (string $iso): string => Fecha::legible(new DateTime($iso));
 $chips = array_filter([
+    'desde' => $filtros['desde'] === '' ? '' : 'Desde: ' . $legible($filtros['desde']),
+    'hasta' => $filtros['hasta'] === '' ? '' : 'Hasta: ' . $legible($filtros['hasta']),
     'proyecto' => $nombreProyecto === null ? '' : 'Proyecto: ' . $nombreProyecto,
     'requerimiento' => $codigoReq === null ? '' : 'Requerimiento: ' . $codigoReq,
     'estado' => $filtros['estado'] === '' ? '' : 'Estado: ' . Catalogo::texto('estado_caso', $filtros['estado']),
@@ -87,10 +100,24 @@ $chips = array_filter([
         <label for="fl-estado">Estado</label>
         <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Todos</option><?= Catalogo::opciones('estado_caso', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
       </div>
+      <div class="campo">
+        <label for="fl-desde">Desde</label>
+        <input class="control" type="date" id="fl-desde" name="desde" value="<?= Html::e($filtros['desde']) ?>">
+      </div>
+      <div class="campo">
+        <label for="fl-hasta">Hasta</label>
+        <input class="control" type="date" id="fl-hasta" name="hasta" value="<?= Html::e($filtros['hasta']) ?>">
+      </div>
       <div class="acciones">
         <button class="btn btn-secundario" type="submit">Filtrar</button>
         <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
       </div>
+      <p class="filtros-atajos"><span>Fechas:</span>
+        <?php foreach ($atajos as $texto => $r): ?>
+          <?php $activo = $filtros['desde'] === $r[0]->format('Y-m-d') && $filtros['hasta'] === $r[1]->format('Y-m-d'); ?>
+          <a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceAtajo($r)) ?>"<?= $activo ? ' aria-current="true"' : '' ?>><?= $texto ?></a>
+        <?php endforeach; ?>
+      </p>
     </form>
     <?= Vista::capturar('partials/filtros_activos', [
         'ruta' => '/casos/listar',
