@@ -1,5 +1,8 @@
 /* Variables de diseño. --x: fondo. --x-texto: lo de encima. */
 
+/* Orden de la cascada: lo de abajo gana. !important al revés: base gana */
+@layer tokens, base, componentes, app;
+
 /* Inter local, sin internet. */
 @font-face {
   font-family: "Inter";
@@ -16,6 +19,7 @@
   font-display: swap;
 }
 
+@layer tokens {
 /* Tema del sistema, salvo <html data-tema>. light-dark(claro, oscuro). */
 :root {
   color-scheme: light dark;
@@ -121,4 +125,5 @@
     --entrada: light-dark(oklch(45% 0 0), oklch(100% 0 0 / 60%));
     --tenue-texto: light-dark(oklch(35% 0 0), oklch(85% 0 0));
   }
+}
 }

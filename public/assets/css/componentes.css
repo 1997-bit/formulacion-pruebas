@@ -1,4 +1,5 @@
 /* Componentes. Requiere tokens.css y base.css. */
+@layer componentes {
 
 /* Botones */
 
@@ -347,6 +348,24 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   background: var(--tenue-texto);
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
   pointer-events: none;
+}
+
+/* <select> con los tokens de la app: lista flotante como los menús. Sin soporte: el select del sistema */
+@supports (appearance: base-select) {
+  .select .control, .select .control::picker(select) { appearance: base-select; }
+  .select .control::picker-icon { display: none; }
+  .select .control::picker(select) {
+    margin-top: 4px;
+    padding: 4px;
+    background: var(--flotante);
+    color: var(--flotante-texto);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-md);
+  }
+  .select option { padding: 6px 8px; border-radius: var(--radio-md); font-size: var(--letra-sm); }
+  .select option:is(:hover, :focus-visible) { background: var(--acento); color: var(--acento-texto); outline: none; }
+  .select option:checked { font-weight: 500; }
 }
 
 .control[type="file"] { padding: 4px; cursor: pointer; }
@@ -1112,3 +1131,4 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 /* Detalle de una línea de log, RNF-11 */
 .log-detalle { margin: 8px 0 0; padding: 12px; overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); white-space: pre-wrap; word-break: break-all; background: var(--tenue); border-radius: var(--radio-md); }
+}

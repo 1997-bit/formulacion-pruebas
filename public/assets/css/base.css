@@ -1,4 +1,5 @@
 /* Estilos base. Requiere tokens.css. */
+@layer base {
 
 *,
 *::before,
@@ -131,4 +132,5 @@ textarea {
   .velo {
     background: var(--velo-respaldo);
   }
+}
 }

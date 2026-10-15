@@ -1,4 +1,5 @@
 /* Estructura: sidebar, barra superior y contenido */
+@layer app {
 
 .app {
   display: flex;
@@ -599,3 +600,4 @@ button.sidebar-boton {
 .paleta-lista [role="option"]::after { content: attr(data-grupo); font-size: var(--letra-xs); color: var(--tenue-texto); white-space: nowrap; }
 .paleta-lista [aria-selected="true"] { background: var(--acento); color: var(--acento-texto); }
 .dialogo .paleta-vacio { margin: 0; padding: 16px; text-align: center; }
+}

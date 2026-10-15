@@ -45,7 +45,7 @@ $opciones[] = ['Acciones', 'Mostrar u ocultar menú', 'accion:menu'];
 $opciones[] = ['Acciones', 'Ver atajos de teclado', 'accion:atajos'];
 $opciones[] = ['Acciones', 'Cerrar sesión', 'accion:salir'];
 ?>
-<dialog class="dialogo paleta" id="paleta" aria-label="Paleta de comandos">
+<dialog closedby="any" class="dialogo paleta" id="paleta" aria-label="Paleta de comandos">
   <div class="paleta-campo">
     <?= Icono::svg('search') ?>
     <input class="paleta-entrada" type="text" role="combobox" aria-expanded="true" aria-controls="paleta-lista" aria-autocomplete="list"

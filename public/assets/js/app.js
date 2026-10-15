@@ -84,14 +84,15 @@
     });
   });
 
-  // <button data-abrir-dialogo="id"> abre <dialog id="id">.
-  document.querySelectorAll('[data-abrir-dialogo]').forEach((boton) => {
-    const dialogo = document.getElementById(boton.dataset.abrirDialogo);
-    boton.addEventListener('click', () => dialogo?.showModal());
-  });
-  // <dialog> cierra con clic en el velo, no en el relleno.
+  // <button command="show-modal" commandfor="id"> abre <dialog id="id"> sin JS. Respaldo para navegadores sin command.
+  if (!('command' in HTMLButtonElement.prototype)) {
+    document.querySelectorAll('[command="show-modal"]').forEach((boton) => {
+      boton.addEventListener('click', () => document.getElementById(boton.getAttribute('commandfor'))?.showModal());
+    });
+  }
+  // <dialog closedby="any"> cierra con clic en el velo. Respaldo para navegadores sin closedby.
   document.addEventListener('click', (e) => {
-    if (!(e.target instanceof HTMLDialogElement)) return;
+    if (!(e.target instanceof HTMLDialogElement) || 'closedBy' in HTMLDialogElement.prototype) return;
     const r = e.target.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
   });

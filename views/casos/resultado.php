@@ -46,8 +46,8 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
     <?php endif; ?>
     <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
     <?php if ($usuario['rol'] === 1): ?>
-      <button class="btn btn-secundario btn-icono" type="button" data-abrir-dialogo="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-      <dialog class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
+      <button class="btn btn-secundario btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
+      <dialog closedby="any" class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
         <h2 id="dlg-eliminar-titulo">¿Eliminar el caso <?= Html::e($caso['codigo']) ?>?</h2>
         <p>Si tiene evidencias o incidentes no se elimina. Esta acción no se puede deshacer.</p>
         <form method="post" action="/casos/eliminar" class="acciones">

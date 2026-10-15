@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ajustes: densidad compacta.
 - Esqueleto de carga si una página tarda más de 150 ms.
 - Precarga de páginas al pasar el mouse y Atrás instantáneo.
+- Cabeceras de seguridad: CSP, Referrer-Policy, Permissions-Policy y COOP.
+- Manifest: la app se puede instalar.
+- Diálogos con `closedby` y botones `command`. `<select>` con los colores de la app donde hay soporte.
 
 ### Changed
 

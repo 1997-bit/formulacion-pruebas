@@ -70,11 +70,11 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
       </div>
       <div class="campo">
         <label for="fl-evento">Mensaje</label>
-        <input class="control" id="fl-evento" name="evento" value="<?= Html::e($filtros['evento']) ?>" placeholder="authz_fail">
+        <input class="control" id="fl-evento" name="evento" enterkeyhint="search" value="<?= Html::e($filtros['evento']) ?>" placeholder="authz_fail">
       </div>
       <div class="campo">
         <label for="fl-uid">Código del error</label>
-        <input class="control codigo" id="fl-uid" name="uid" value="<?= Html::e($filtros['uid']) ?>" placeholder="be45d3e3" maxlength="8">
+        <input class="control codigo" id="fl-uid" name="uid" enterkeyhint="search" value="<?= Html::e($filtros['uid']) ?>" placeholder="be45d3e3" maxlength="8">
       </div>
     <?php endif; ?>
     <div class="acciones">
