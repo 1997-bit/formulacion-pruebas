@@ -33,15 +33,14 @@
 
   --primario: oklch(54.5% 0.252 264);
   --primario-texto: oklch(100% 0 0);
-  --secundario: light-dark(oklch(97% 0 0), oklch(25% 0 0));
+  --secundario: light-dark(oklch(97% 0 0), oklch(30% 0 0));
   --secundario-texto: var(--texto);
-  --tenue: light-dark(oklch(97% 0 0), oklch(25% 0 0));
+  --tenue: light-dark(oklch(97% 0 0), oklch(30% 0 0));
   --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0 0));
-  --acento: light-dark(oklch(95% 0 0), oklch(31% 0 0));   /* hover y selección */
+  --acento: light-dark(oklch(95% 0 0), oklch(34% 0 0));   /* hover y selección */
   --acento-texto: var(--texto);
 
   --destacado: oklch(73.2% 0.186 53);
-  --destacado-texto: oklch(17.8% 0 0);
 
   /* Estados. Sólido: resultado marcado y barras en oscuro. */
   --peligro: oklch(58% 0.204 25);                                   /* FAULT */
@@ -49,9 +48,7 @@
   --exito: oklch(75% 0.166 156);                                    /* OK */
   --exito-texto: oklch(17.8% 0 0);
   --aviso: oklch(88.6% 0.17 94);                                    /* Atención */
-  --aviso-texto: oklch(17.8% 0 0);
   --info: oklch(54.5% 0.252 264);                                   /* En progreso */
-  --info-texto: oklch(100% 0 0);
 
   /* Suave: fondo de insignia. Fuerte: texto sobre fondo, mínimo 4.5:1. */
   --exito-suave: light-dark(oklch(96.1% 0.026 166), oklch(30% 0.06 155));
@@ -94,8 +91,6 @@
   --radio-lg: var(--radio);
   --radio-xl: calc(var(--radio) + 4px);
   --radio-2xl: calc(var(--radio) + 8px);
-  --radio-3xl: calc(var(--radio) + 12px);
-  --radio-4xl: calc(var(--radio) + 16px);
   --radio-total: 9999px;
 
   /* Sombras más fuertes en oscuro. */

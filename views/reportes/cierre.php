@@ -34,7 +34,7 @@ $listas = [
 
 <div class="pila">
   <div class="cifras">
-    <?php foreach ([['Casos', 'clipboard-list', 'casos', '', ''], ['OK', 'circle-check', 'ok', '', 'cifra-exito'], ['FAULT', 'circle-x', 'fault', '', 'cifra-peligro'], ['Pendientes', 'circle-alert', 'pendientes', '', 'cifra-aviso'], ['Aprobación', 'chart-column', 'aprobacion', ' %', '']] as [$etiqueta, $icono, $clave, $unidad, $tono]): ?>
+    <?php foreach ([['Casos', 'clipboard-list', 'casos', '', ''], ['OK', 'circle-check', 'ok', '', 'cifra-exito'], ['FAULT', 'circle-x', 'fault', '', 'cifra-peligro'], ['Pendientes', 'circle-alert', 'pendientes', '', 'cifra-aviso'], ['Aprobación', 'chart-column', 'aprobacion', ' %', 'cifra-principal']] as [$etiqueta, $icono, $clave, $unidad, $tono]): ?>
       <div class="tarjeta cifra <?= $tono ?>">
         <p class="cifra-etiqueta"><?= $etiqueta ?> <?= Icono::svg($icono) ?></p>
         <p class="cifra-valor"><?= (int) $p[$clave] . $unidad ?></p>

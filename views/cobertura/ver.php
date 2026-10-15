@@ -46,15 +46,15 @@ $editar = '/formularios/cobertura_blanca/editar?requerimiento=' . (int) $requeri
       <table class="tabla">
         <caption class="solo-lector">Cobertura alcanzada por métrica</caption>
         <thead>
-          <tr><th scope="col">Métrica</th><th scope="col">Total</th><th scope="col">Cubiertos</th><th scope="col">Cobertura</th><th scope="col">Herramienta</th></tr>
+          <tr><th scope="col">Métrica</th><th scope="col" class="num">Total</th><th scope="col" class="num">Cubiertos</th><th scope="col">Cobertura</th><th scope="col">Herramienta</th></tr>
         </thead>
         <tbody>
           <?php foreach ($filas as $metrica => $fila): ?>
             <?php $nombre = Catalogo::texto('subtecnica', $metrica); ?>
             <tr>
               <th scope="row"><?= Html::e($nombre) ?></th>
-              <td><?= (int) $fila['total'] ?></td>
-              <td><?= (int) $fila['cubiertos'] ?></td>
+              <td class="num"><?= (int) $fila['total'] ?></td>
+              <td class="num"><?= (int) $fila['cubiertos'] ?></td>
               <td>
                 <div class="progreso-celda">
                   <meter class="progreso" min="0" max="100" low="70" high="90" optimum="100" value="<?= (int) $fila['porcentaje'] ?>" aria-label="<?= Html::e($nombre) ?>"></meter>
