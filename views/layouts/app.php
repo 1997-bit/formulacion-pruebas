@@ -37,8 +37,8 @@ $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] 
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/app.css') ?>">
 <script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
-<script src="<?= Vista::estatico('/assets/js/app.js') ?>" defer></script>
-<script src="<?= Vista::estatico('/assets/js/atajos.js') ?>" defer></script>
+<script type="module" src="<?= Vista::estatico('/assets/js/app.js') ?>"></script>
+<script type="module" src="<?= Vista::estatico('/assets/js/atajos.js') ?>"></script>
 <?php // Chrome y Edge piden la página al pasar el mouse por un enlace. Solo GET: todo cambio es POST. ?>
 <script type="speculationrules">{"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/evidencias/*"}}, {"not": {"selector_matches": "[target], [download]"}}]}, "eagerness": "moderate"}]}</script>
 </head>
