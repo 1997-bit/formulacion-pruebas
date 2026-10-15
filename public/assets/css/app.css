@@ -477,6 +477,7 @@ button.sidebar-boton {
 .tareas small { color: var(--tenue-texto); white-space: nowrap; }
 .tarea-vacia { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .tarea-vacia svg { color: var(--exito-fuerte); }
+.al-dia { margin: 0; }
 .barra-apilada { display: flex; gap: 3px; height: 12px; border-radius: var(--radio-total); overflow: hidden; background: var(--secundario); }
 .barra-apilada > span { border-radius: var(--radio-total); }
 .barra-exito { background: var(--exito); }

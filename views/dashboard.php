@@ -21,14 +21,17 @@ use App\Helpers\Icono;
 $t = $avance['total'];
 $enProyecto = $usuario['activo'] !== null && $avance['proyectos'] !== [];
 $porcentaje = fn (int $n, int $de): int => $de === 0 ? 0 : (int) round($n / $de * 100);
+// Hoy: casos creados o anotados hoy. 0 no se muestra.
 $cifras = [
-    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : count($avance['proyectos']) . ' proyecto(s)', '', ''],
-    ['OK', 'circle-check', $t['ok'], $t['aprobacion'] . ' % de aprobación', '1', 'cifra-exito'],
-    ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2', 'cifra-peligro'],
-    ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0', 'cifra-aviso'],
+    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : count($avance['proyectos']) . ' proyecto(s)', '', '', $t['casos_hoy']],
+    ['OK', 'circle-check', $t['ok'], 'Pasaron la prueba', '1', 'cifra-exito', $t['ok_hoy']],
+    ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2', 'cifra-peligro', $t['fault_hoy']],
+    ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0', 'cifra-aviso', 0],
 ];
 // Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre. Stoppers en la alerta de arriba.
 $tareas = [];
+// Listas vacías: no ocupan tarjeta. Van juntas en una línea "Todo al día".
+$alDia = [];
 foreach ($avance['proyectos'] as $p) {
     foreach ([
         ['fault_sin_incidente', 'bug', 'FAULT sin incidente'],
@@ -56,11 +59,16 @@ foreach ($avance['proyectos'] as $p) {
     </div>
   <?php endif; ?>
   <div class="cifras">
-    <?php foreach ($cifras as [$etiqueta, $icono, $valor, $nota, $estado, $tono]): ?>
+    <a class="tarjeta cifra cifra-enlace cifra-principal" href="/reportes/cierre">
+      <p class="cifra-etiqueta">Aprobación <?= Icono::svg('chart-column') ?></p>
+      <p class="cifra-valor"><?= (int) $t['aprobacion'] ?> %</p>
+      <p class="cifra-nota"><?= (int) $t['ok'] ?> OK de <?= (int) ($t['ok'] + $t['fault']) ?> con resultado</p>
+    </a>
+    <?php foreach ($cifras as [$etiqueta, $icono, $valor, $nota, $estado, $tono, $hoy]): ?>
       <a class="tarjeta cifra cifra-enlace <?= $tono ?>" href="/casos/listar<?= $estado === '' ? '' : '?estado=' . $estado ?>">
         <p class="cifra-etiqueta"><?= Html::e($etiqueta) ?> <?= Icono::svg($icono) ?></p>
         <p class="cifra-valor"><?= (int) $valor ?></p>
-        <p class="cifra-nota"><?= Html::e($nota) ?></p>
+        <p class="cifra-nota"><?php if ($hoy > 0): ?><span class="cifra-hoy">+<?= (int) $hoy ?> hoy</span> · <?php endif; ?><?= Html::e($nota) ?></p>
       </a>
     <?php endforeach; ?>
   </div>
@@ -72,83 +80,79 @@ foreach ($avance['proyectos'] as $p) {
       <p>Un administrador lo agrega como miembro.</p>
     </div>
   <?php else: ?>
-    <section class="tarjeta" aria-labelledby="h-atender">
-      <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-atender">Por atender</h2></header>
-      <div class="tarjeta-contenido">
-        <?php if (!$tareas): ?>
-          <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Todo al día.</p>
-        <?php else: ?>
+    <?php
+    if (!$tareas) { $alDia[] = 'nada por atender'; }
+    if (!$asignados) { $alDia[] = 'ningún incidente asignado'; }
+    if (!$atrasados) { $alDia[] = 'ningún caso atrasado'; }
+    if ($usuario['rol'] !== 1 && !$misPendientes) { $alDia[] = 'todos sus casos tienen resultado'; }
+    if ($usuario['rol'] === 1 && !$incompletos) { $alDia[] = 'todos los proyectos tienen miembros y plan'; }
+    ?>
+    <?php if ($alDia): ?>
+      <p class="tarjeta tarea-vacia al-dia"><?= Icono::svg('circle-check') ?> Todo al día: <?= Html::e(implode(' · ', $alDia)) ?>.</p>
+    <?php endif; ?>
+    <?php if ($tareas): ?>
+      <section class="tarjeta" aria-labelledby="h-atender">
+        <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-atender">Por atender</h2></header>
+        <div class="tarjeta-contenido">
           <ul class="tareas">
             <?php foreach ($tareas as [$icono, $texto, $proyecto, $ruta]): ?>
               <li><a href="<?= Html::e($ruta) ?>"><?= Icono::svg($icono) ?> <span><?= Html::e($texto) ?></span><?php if ($proyecto !== ''): ?> <small><?= Html::e($proyecto) ?></small><?php endif; ?></a></li>
             <?php endforeach; ?>
           </ul>
-        <?php endif; ?>
-      </div>
-    </section>
+        </div>
+      </section>
+    <?php endif; ?>
 
     <div class="rejilla-panel">
-      <section class="tarjeta" aria-labelledby="h-asignados">
-        <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-asignados">Incidentes asignados a mí</h2></header>
-        <div class="tarjeta-contenido">
-          <?php if (!$asignados): ?>
-            <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Ninguno abierto.</p>
-          <?php else: ?>
+      <?php if ($asignados): ?>
+        <section class="tarjeta" aria-labelledby="h-asignados">
+          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-asignados">Incidentes asignados a mí</h2></header>
+          <div class="tarjeta-contenido">
             <ul class="tareas">
               <?php foreach ($asignados as $i): ?>
                 <li><a href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><span class="codigo"><?= Html::e($i['codigo']) ?></span> <span><?= Html::e($i['titulo']) ?></span> <?= Catalogo::insignia('severidad', $i['severidad']) ?></a></li>
               <?php endforeach; ?>
             </ul>
-          <?php endif; ?>
-        </div>
-      </section>
-      <section class="tarjeta" aria-labelledby="h-atrasados">
-        <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-atrasados">Casos atrasados</h2></header>
-        <div class="tarjeta-contenido">
-          <?php if (!$atrasados): ?>
-            <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Ninguno pasó su fecha final.</p>
-          <?php else: ?>
+          </div>
+        </section>
+      <?php endif; ?>
+      <?php if ($atrasados): ?>
+        <section class="tarjeta" aria-labelledby="h-atrasados">
+          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-atrasados">Casos atrasados</h2></header>
+          <div class="tarjeta-contenido">
             <ul class="tareas">
               <?php foreach ($atrasados as $c): ?>
                 <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small>Vencía el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
               <?php endforeach; ?>
             </ul>
-          <?php endif; ?>
-        </div>
-      </section>
-      <?php if ($usuario['rol'] !== 1): ?>
+          </div>
+        </section>
+      <?php endif; ?>
+      <?php if ($usuario['rol'] !== 1 && $misPendientes): ?>
         <section class="tarjeta" aria-labelledby="h-mis-pendientes">
           <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-mis-pendientes">Mis casos sin resultado</h2></header>
           <div class="tarjeta-contenido">
-            <?php if (!$misPendientes): ?>
-              <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Todos tienen resultado.</p>
-            <?php else: ?>
-              <ul class="tareas">
-                <?php foreach ($misPendientes as $c): ?>
-                  <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small>Hasta el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
-                <?php endforeach; ?>
-              </ul>
-            <?php endif; ?>
+            <ul class="tareas">
+              <?php foreach ($misPendientes as $c): ?>
+                <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small>Hasta el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
+              <?php endforeach; ?>
+            </ul>
           </div>
         </section>
-      <?php else: ?>
+      <?php elseif ($usuario['rol'] === 1 && $incompletos): ?>
         <section class="tarjeta" aria-labelledby="h-incompletos">
           <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-incompletos">Proyectos por completar</h2></header>
           <div class="tarjeta-contenido">
-            <?php if (!$incompletos): ?>
-              <p class="tarea-vacia"><?= Icono::svg('circle-check') ?> Todos tienen miembros y plan.</p>
-            <?php else: ?>
-              <ul class="tareas">
-                <?php foreach ($incompletos as $p): ?>
-                  <?php if ($p['sin_miembros']): ?>
-                    <li><a href="/admin/proyectos/editar?id=<?= $p['id'] ?>"><?= Icono::svg('users') ?> <span>Sin miembros</span> <small><?= Html::e($p['nombre']) ?></small></a></li>
-                  <?php endif; ?>
-                  <?php if ($p['sin_plan']): ?>
-                    <li><a href="/formularios/plan_pruebas?proyecto=<?= $p['id'] ?>"><?= Icono::svg('file-text') ?> <span>Sin plan de pruebas</span> <small><?= Html::e($p['nombre']) ?></small></a></li>
-                  <?php endif; ?>
-                <?php endforeach; ?>
-              </ul>
-            <?php endif; ?>
+            <ul class="tareas">
+              <?php foreach ($incompletos as $p): ?>
+                <?php if ($p['sin_miembros']): ?>
+                  <li><a href="/admin/proyectos/editar?id=<?= $p['id'] ?>"><?= Icono::svg('users') ?> <span>Sin miembros</span> <small><?= Html::e($p['nombre']) ?></small></a></li>
+                <?php endif; ?>
+                <?php if ($p['sin_plan']): ?>
+                  <li><a href="/formularios/plan_pruebas?proyecto=<?= $p['id'] ?>"><?= Icono::svg('file-text') ?> <span>Sin plan de pruebas</span> <small><?= Html::e($p['nombre']) ?></small></a></li>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </ul>
           </div>
         </section>
       <?php endif; ?>

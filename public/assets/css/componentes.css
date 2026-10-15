@@ -92,6 +92,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 
 .codigo {
   font-family: var(--fuente-mono);
+  color: var(--tenue-texto);
   font-size: 0.8125rem;
   letter-spacing: 0;
   white-space: nowrap;
@@ -438,6 +439,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   width: 100%;
   border-collapse: collapse;
   font-size: var(--letra-sm);
+  font-variant-numeric: tabular-nums;
 }
 .tabla th,
 .tabla td {
@@ -679,12 +681,16 @@ kbd {
 .cifra-valor {
   margin: 0;
   font-size: var(--letra-2xl);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 .cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* Cifra principal: más grande y en dos columnas si hay espacio */
+.cifra-principal .cifra-valor { font-size: var(--letra-3xl); }
+@media (min-width: 40rem) { .cifra-principal { grid-column: span 2; } }
+.cifra-hoy { color: var(--texto); font-weight: 500; }
 /* Ícono de la cifra con el color del estado */
 .cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
 .cifra-peligro .cifra-etiqueta svg { color: var(--peligro-fuerte); }
