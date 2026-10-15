@@ -74,6 +74,12 @@ final class ReporteServicio
         $p['aprobacion'] = $ejecutados === 0 ? 0 : (int) round($p['ok'] / $ejecutados * 100);
         $p['go'] = $p['casos'] > 0 && !in_array(false, array_column($p['criterios'], 'cumple'), true);
 
+        // Proyección: ritmo de los últimos 7 días. Sin ritmo o sin pendientes: sin fecha.
+        $p['ritmo'] = round($p['anotados_7d'] / 7, 1);
+        $p['fin_estimado'] = $p['pendientes'] === 0 || $p['anotados_7d'] === 0
+            ? null
+            : (new \DateTimeImmutable('today'))->modify('+' . (int) ceil($p['pendientes'] * 7 / $p['anotados_7d']) . ' days')->format('Y-m-d');
+
         return $p;
     }
 }

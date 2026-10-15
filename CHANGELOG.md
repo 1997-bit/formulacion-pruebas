@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Panel: cuadrícula con un cuadro por caso y fecha estimada de fin según el ritmo de 7 días.
 - Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
 - Ajustes: densidad compacta.
 - Esqueleto de carga si una página tarda más de 150 ms.

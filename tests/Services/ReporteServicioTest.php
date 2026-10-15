@@ -159,4 +159,32 @@ final class ReporteServicioTest extends BaseDatos
 
         ReporteServicio::cierre($proyecto, $this->sesion($tester));
     }
+
+    // Ritmo de 7 días: 1 anotado hoy, 2 pendientes. 2 × 7 / 1 = 14 días.
+    public function testProyeccionSaleDelRitmoDeSieteDias(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->casosCon($proyecto, $tester, 0, 0, 1);
+        Conexion::pdo()->prepare('UPDATE casos_prueba SET anotado_en = NOW() WHERE proyecto_id = ? AND estado = 1')->execute([$proyecto]);
+        Conexion::pdo()->prepare("UPDATE casos_prueba SET fecha_fin = '2026-12-31' WHERE proyecto_id = ? AND codigo = 'SIS-002'")->execute([$proyecto]);
+
+        $p = ReporteServicio::avance($this->sesion($tester))['proyectos'][0];
+
+        $this->assertSame(
+            [0.1, (new \DateTimeImmutable('today +14 days'))->format('Y-m-d'), '2026-12-31'],
+            [$p['ritmo'], $p['fin_estimado'], $p['fin_plan']],
+        );
+    }
+
+    public function testSinRitmoNoHayFechaEstimada(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->casosCon($proyecto, $tester, 0);
+
+        $p = ReporteServicio::avance($this->sesion($tester))['proyectos'][0];
+
+        $this->assertNull($p['fin_estimado']);
+    }
 }

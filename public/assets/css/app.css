@@ -489,6 +489,12 @@ button.sidebar-boton {
 .tarea-vacia { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .tarea-vacia svg { color: var(--exito-fuerte); }
 .al-dia { margin: 0; }
+/* Cuadrícula: un cuadro por caso, color del estado */
+.cuadricula { display: grid; grid-template-columns: repeat(auto-fill, minmax(10px, 1fr)); gap: 3px; }
+.cuadricula > span { aspect-ratio: 1; border-radius: 3px; }
+.proyeccion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.proyeccion .numero { color: var(--texto); font-variant-numeric: tabular-nums; }
+.proyeccion .proyeccion-tarde { color: var(--peligro-fuerte); }
 .barra-apilada { display: flex; gap: 3px; height: 12px; border-radius: var(--radio-total); overflow: hidden; background: var(--secundario); }
 .barra-apilada > span { border-radius: var(--radio-total); }
 .barra-exito { background: var(--exito); }
