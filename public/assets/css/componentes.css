@@ -19,7 +19,7 @@
   border: 1px solid transparent;
 }
 .btn-primario { background: var(--primario); color: var(--primario-texto); }
-.btn-secundario { background: var(--fondo); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
+.btn-secundario { background: var(--tarjeta); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
 .btn-peligro { background: var(--peligro); color: var(--peligro-texto); }
 .btn-fantasma { background: transparent; color: var(--texto); }
 .btn-primario:hover { background: color-mix(in oklch, var(--primario), black 12%); }
@@ -644,7 +644,7 @@ kbd {
 .tarjeta-encabezado:last-child { margin-bottom: 0; }
 .tarjeta-encabezado > :not(.acciones) { grid-column: 1; }
 .tarjeta-encabezado > .acciones { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
-.tarjeta-titulo { margin: 0; font-size: var(--letra-base); font-weight: 600; line-height: 1.3; letter-spacing: 0; }
+.tarjeta-titulo { margin: 0; font-size: var(--letra-lg); font-weight: 600; line-height: 1.3; letter-spacing: 0; }
 .tarjeta-descripcion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .tarjeta-pie {
   display: flex;
@@ -684,6 +684,10 @@ kbd {
   font-variant-numeric: tabular-nums;
 }
 .cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* Ícono de la cifra con el color del estado */
+.cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
+.cifra-peligro .cifra-etiqueta svg { color: var(--peligro-fuerte); }
+.cifra-aviso .cifra-etiqueta svg { color: var(--aviso-fuerte); }
 
 /* <progress> para avance, <meter> para medidas. Siempre con el número al lado */
 

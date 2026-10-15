@@ -22,10 +22,10 @@ $t = $avance['total'];
 $enProyecto = $usuario['activo'] !== null && $avance['proyectos'] !== [];
 $porcentaje = fn (int $n, int $de): int => $de === 0 ? 0 : (int) round($n / $de * 100);
 $cifras = [
-    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : count($avance['proyectos']) . ' proyecto(s)', ''],
-    ['OK', 'circle-check', $t['ok'], $t['aprobacion'] . ' % de aprobación', '1'],
-    ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2'],
-    ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0'],
+    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : count($avance['proyectos']) . ' proyecto(s)', '', ''],
+    ['OK', 'circle-check', $t['ok'], $t['aprobacion'] . ' % de aprobación', '1', 'cifra-exito'],
+    ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2', 'cifra-peligro'],
+    ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0', 'cifra-aviso'],
 ];
 // Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre. Stoppers en la alerta de arriba.
 $tareas = [];
@@ -56,8 +56,8 @@ foreach ($avance['proyectos'] as $p) {
     </div>
   <?php endif; ?>
   <div class="cifras">
-    <?php foreach ($cifras as [$etiqueta, $icono, $valor, $nota, $estado]): ?>
-      <a class="tarjeta cifra cifra-enlace" href="/casos/listar<?= $estado === '' ? '' : '?estado=' . $estado ?>">
+    <?php foreach ($cifras as [$etiqueta, $icono, $valor, $nota, $estado, $tono]): ?>
+      <a class="tarjeta cifra cifra-enlace <?= $tono ?>" href="/casos/listar<?= $estado === '' ? '' : '?estado=' . $estado ?>">
         <p class="cifra-etiqueta"><?= Html::e($etiqueta) ?> <?= Icono::svg($icono) ?></p>
         <p class="cifra-valor"><?= (int) $valor ?></p>
         <p class="cifra-nota"><?= Html::e($nota) ?></p>
