@@ -24,11 +24,11 @@
 :root[data-tema="dark"]  { color-scheme: dark; }
 
 :root {
-  --fondo: light-dark(oklch(100% 0 0), oklch(15.5% 0 0));
+  --fondo: light-dark(oklch(100% 0 0), oklch(14.5% 0 0));
   --texto: light-dark(oklch(17.8% 0 0), oklch(95% 0 0));
-  --tarjeta: light-dark(oklch(100% 0 0), oklch(19% 0 0));
+  --tarjeta: light-dark(oklch(100% 0 0), oklch(20.5% 0 0));
   --tarjeta-texto: var(--texto);
-  --flotante: light-dark(oklch(100% 0 0), oklch(22% 0 0));
+  --flotante: light-dark(oklch(100% 0 0), oklch(27% 0 0));
   --flotante-texto: var(--texto);
 
   --primario: oklch(54.5% 0.252 264);
@@ -37,7 +37,7 @@
   --secundario-texto: var(--texto);
   --tenue: light-dark(oklch(97% 0 0), oklch(25% 0 0));
   --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0 0));
-  --acento: light-dark(oklch(95% 0.03 262), oklch(32% 0.07 262));   /* hover y selección */
+  --acento: light-dark(oklch(95% 0.03 262), oklch(31% 0 0));   /* hover y selección */
   --acento-texto: var(--texto);
 
   --destacado: oklch(73.2% 0.186 53);
