@@ -24,7 +24,6 @@ $nivel = fn (int $p): int => min(5 - $p, 3);
   <div>
     <p class="antetitulo"><?= Html::e($proyecto['nombre']) ?></p>
     <h1>Rúbrica de evaluación</h1>
-    <p class="solo-impresion">Formulario 7 · Rúbrica de evaluación</p>
   </div>
   <?php if ($rubrica !== null): ?>
     <div class="acciones">
@@ -66,5 +65,4 @@ $nivel = fn (int $p): int => min(5 - $p, 3);
     <?php $fecha = new DateTime($rubrica['guardado_en']); ?>
     <p class="campo-ayuda">Evaluado por <?= Html::e($rubrica['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
   <?php endif; ?>
-  <?= Vista::capturar('partials/firmas') ?>
 </div>

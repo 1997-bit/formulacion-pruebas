@@ -23,7 +23,6 @@ $editar = '/formularios/clases_equivalencia/editar?requerimiento=' . (int) $requ
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Matriz de clases de equivalencia</h1>
     <p><?= Html::e($requerimiento['descripcion']) ?></p>
-    <p class="solo-impresion">Formulario 2 · Matriz de clases de equivalencia</p>
   </div>
   <?php if ($filas): ?>
     <div class="acciones">
@@ -69,5 +68,4 @@ $editar = '/formularios/clases_equivalencia/editar?requerimiento=' . (int) $requ
       <p class="campo-ayuda">Guardada por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
-  <?= Vista::capturar('partials/firmas') ?>
 </div>

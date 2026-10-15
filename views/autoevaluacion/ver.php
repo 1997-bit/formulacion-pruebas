@@ -24,7 +24,6 @@ $numero = fn (?float $n): string => $n === null ? '—' : number_format($n, 1);
     <p class="antetitulo"><?= Html::e($proyecto['nombre']) ?></p>
     <h1>Autoevaluación y coevaluación</h1>
     <?php if ($evaluacion !== null): ?><p>Coevaluación de <?= Html::e($evaluacion['evaluado']) ?>.</p><?php endif; ?>
-    <p class="solo-impresion">Formulario 8 · Autoevaluación y coevaluación</p>
   </div>
   <?php if ($evaluacion !== null): ?>
     <div class="acciones">
@@ -84,5 +83,4 @@ $numero = fn (?float $n): string => $n === null ? '—' : number_format($n, 1);
     </div>
     <p class="campo-ayuda">Sin dato, la persona aún no se evalúa o nadie la ha evaluado.</p>
   </section>
-  <?= Vista::capturar('partials/firmas') ?>
 </div>

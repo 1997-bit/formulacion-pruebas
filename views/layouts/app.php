@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Log;
 use App\Core\Vista;
 use App\Helpers\Html;
 use App\Helpers\Icono;
+use App\Helpers\Impresion;
 use App\Services\RequerimientoServicio;
 
 /**
@@ -20,10 +22,10 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 // Para el selector de proyecto y la paleta.
 $proyectos = RequerimientoServicio::proyectos($usuario);
 $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
-// Impresión: @page lee estas variables para el encabezado y el pie. Texto como cadena CSS.
-$cadena = fn (string $texto): string => "'" . addcslashes($texto, "'\\") . "'";
-$hoja = isset($documento) ? '--doc-titulo:' . $cadena($documento['titulo']) . ';--doc-proyecto:' . $cadena($documento['proyecto'])
-    . ';--doc-pie:' . $cadena('Impreso el ' . date('d/m/Y H:i') . ' por ' . $usuario['nombre']) : '';
+// Documento imprimible: encabezado y pie de cada hoja. Al final, firmas y metadatos para un postmortem.
+$ahora = new DateTimeImmutable();
+$hoja = isset($documento) ? Impresion::variables($documento, $usuario['nombre'], $ahora, Log::uid()) : '';
+$metadatos = isset($documento) ? Impresion::metadatos($documento, $usuario, $ahora, $_SERVER['REQUEST_URI'] ?? '', Log::uid(), Impresion::version(RAIZ), (string) ($_SERVER['HTTP_USER_AGENT'] ?? '')) : [];
 ?>
 <!doctype html>
 <html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>"<?= $hoja !== '' ? ' style="' . Html::e($hoja) . '"' : '' ?>>
@@ -33,7 +35,13 @@ $hoja = isset($documento) ? '--doc-titulo:' . $cadena($documento['titulo']) . ';
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)">
-<title><?= Html::e($titulo) ?> · Casos de Prueba</title>
+<title><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Casos de Prueba</title>
+<?php if ($metadatos): ?>
+<?php // Guardar como PDF toma el <title> como título del archivo. ?>
+<meta name="author" content="<?= Html::e($usuario['nombre']) ?>">
+<meta name="dcterms.created" content="<?= $ahora->format('c') ?>">
+<meta name="generator" content="<?= Html::e('Casos de Prueba ' . $metadatos['Versión de la app']) ?>">
+<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
@@ -87,6 +95,7 @@ $hoja = isset($documento) ? '--doc-titulo:' . $cadena($documento['titulo']) . ';
 
   <main class="app-principal" id="principal" tabindex="-1">
     <?= $contenido ?>
+    <?php if (isset($documento)): ?><?= Vista::capturar('partials/firmas') ?><?= Vista::capturar('partials/metadatos', ['metadatos' => $metadatos]) ?><?php endif; ?>
   </main>
 </div>
 <?= Vista::capturar('partials/paleta', ['usuario' => $usuario, 'proyectos' => $proyectos]) ?>

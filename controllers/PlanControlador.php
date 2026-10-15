@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Services\PlanServicio;
 
 // RF-13
@@ -35,8 +36,7 @@ final class PlanControlador
         $proyecto = PlanServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('plan_pruebas/ver', [
             'titulo' => 'Plan de pruebas · ' . $proyecto['nombre'],
-            // Encabezado de cada hoja al imprimir.
-            'documento' => ['titulo' => 'Formulario 6 · Plan de pruebas', 'proyecto' => $proyecto['nombre']],
+            'documento' => Impresion::documento(6, $proyecto['nombre']),
             'proyecto' => $proyecto,
             'plan' => PlanServicio::plan($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),

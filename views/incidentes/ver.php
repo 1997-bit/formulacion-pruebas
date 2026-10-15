@@ -55,6 +55,18 @@ foreach ($asignables as $a) {
   ]]) ?>
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="vista-detalle">
+    <aside class="tarjeta" aria-label="Datos del incidente">
+      <dl class="detalle detalle-apilado">
+        <dt>Estado</dt><dd><?= Catalogo::insignia('estado_incidente', $incidente['estado']) ?></dd>
+        <dt>Severidad</dt><dd><?= Catalogo::insignia('severidad', $incidente['severidad']) ?></dd>
+        <dt>Prioridad</dt><dd><?= Catalogo::insignia('prioridad', $incidente['prioridad']) ?></dd>
+        <dt>Caso</dt><dd><a class="codigo" href="/casos/resultado?id=<?= (int) $incidente['caso_id'] ?>"><?= Html::e($incidente['caso']) ?></a> <?= Html::e($incidente['caso_objetivo']) ?></dd>
+        <dt>Proyecto</dt><dd><?= Html::e($incidente['proyecto']) ?></dd>
+        <dt>Módulo</dt><dd><?= Html::e($incidente['modulo']) ?></dd>
+        <dt>Asignado a</dt><dd><?= Html::e($incidente['asignado'] ?? 'Sin asignar') ?></dd>
+        <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= $creado->format('H:i') ?></dd>
+      </dl>
+    </aside>
     <div class="pila">
       <section class="tarjeta" aria-labelledby="dt-defecto">
         <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="dt-defecto">Defecto</h2></header>
@@ -99,18 +111,5 @@ foreach ($asignables as $a) {
         </form>
       </section>
     </div>
-
-    <aside class="tarjeta" aria-label="Datos del incidente">
-      <dl class="detalle detalle-apilado">
-        <dt>Estado</dt><dd><?= Catalogo::insignia('estado_incidente', $incidente['estado']) ?></dd>
-        <dt>Severidad</dt><dd><?= Catalogo::insignia('severidad', $incidente['severidad']) ?></dd>
-        <dt>Prioridad</dt><dd><?= Catalogo::insignia('prioridad', $incidente['prioridad']) ?></dd>
-        <dt>Caso</dt><dd><a class="codigo" href="/casos/resultado?id=<?= (int) $incidente['caso_id'] ?>"><?= Html::e($incidente['caso']) ?></a> <?= Html::e($incidente['caso_objetivo']) ?></dd>
-        <dt>Proyecto</dt><dd><?= Html::e($incidente['proyecto']) ?></dd>
-        <dt>Módulo</dt><dd><?= Html::e($incidente['modulo']) ?></dd>
-        <dt>Asignado a</dt><dd><?= Html::e($incidente['asignado'] ?? 'Sin asignar') ?></dd>
-        <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= $creado->format('H:i') ?></dd>
-      </dl>
-    </aside>
   </div>
 </div>

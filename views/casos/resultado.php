@@ -38,7 +38,6 @@ $pasos = match ($caso['estado']) {
   <div>
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?></p>
     <h1><?= Html::e($caso['modulo']) ?></h1>
-    <p class="solo-impresion">Formulario 1 · Registro de caso de prueba</p>
   </div>
   <div class="acciones">
     <?php foreach ([[$vecinos[0], 'k', 'Caso anterior', 'chevron-left'], [$vecinos[1], 'j', 'Caso siguiente', 'chevron-right']] as [$v, $tecla, $etiqueta, $icono]): ?>
@@ -74,6 +73,29 @@ $pasos = match ($caso['estado']) {
   <?= Vista::capturar('partials/pasos', ['pasos' => $pasos, 'etiqueta' => 'Avance del caso']) ?>
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="vista-detalle">
+    <aside class="tarjeta" aria-label="Datos del caso">
+      <dl class="detalle detalle-apilado">
+        <dt>Estado</dt><dd><?= Catalogo::insignia('estado_caso', $caso['estado']) ?></dd>
+        <dt>Proyecto</dt><dd><?= Html::e($caso['proyecto']) ?></dd>
+        <dt>Requerimiento</dt><dd><?= Html::e($caso['requerimiento'] . ' · ' . $caso['requerimiento_descripcion']) ?></dd>
+        <dt>Tipo de prueba</dt><dd><?= Html::e(Catalogo::texto('tipo_prueba', $caso['tipo_prueba'])) ?></dd>
+        <dt>Plataforma</dt><dd><?= Html::e(Catalogo::texto('plataforma', $caso['plataforma']) . ($caso['entorno'] !== null ? ' · ' . $caso['entorno'] : '')) ?></dd>
+        <dt>Técnica</dt><dd><?= $caso['subtecnica'] > 10 ? 'Caja blanca' : 'Caja negra' ?> · <?= Html::e(Catalogo::texto('subtecnica', $caso['subtecnica'])) ?></dd>
+        <dt>Fechas</dt><dd><?= Fecha::legible(new DateTime($caso['fecha_inicio'])) ?> al <?= Fecha::legible(new DateTime($caso['fecha_fin'])) ?></dd>
+        <?php if ($caso['anotador'] !== null): ?>
+          <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
+        <?php endif; ?>
+        <dt>Creado por</dt><dd><?= Html::e($caso['autor']) ?> · <?= $hora($caso['creado_en']) ?></dd>
+        <dt>Solicitado por</dt><dd><?= $caso['solicitante'] === null ? '—' : Html::e($caso['solicitante']) ?></dd>
+        <dt>Aprobado por</dt><dd><?= $caso['aprobador'] === null ? '—' : Html::e($caso['aprobador']) ?></dd>
+        <?php if ($caso['incidentes']): ?>
+          <dt>Incidentes</dt>
+          <?php foreach ($caso['incidentes'] as $i): ?>
+            <dd><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a> <?= Catalogo::insignia('estado_incidente', $i['estado']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?> <?= Html::e($i['titulo']) ?></dd>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </dl>
+    </aside>
     <div class="pila">
       <section class="tarjeta" aria-labelledby="dt-prueba">
         <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="dt-prueba">Prueba</h2></header>
@@ -131,30 +153,5 @@ $pasos = match ($caso['estado']) {
         <?= Vista::capturar('partials/historial', ['historial' => $historial, 'codigo' => $caso['codigo']]) ?>
       </section>
     </div>
-
-    <aside class="tarjeta" aria-label="Datos del caso">
-      <dl class="detalle detalle-apilado">
-        <dt>Estado</dt><dd><?= Catalogo::insignia('estado_caso', $caso['estado']) ?></dd>
-        <dt>Proyecto</dt><dd><?= Html::e($caso['proyecto']) ?></dd>
-        <dt>Requerimiento</dt><dd><?= Html::e($caso['requerimiento'] . ' · ' . $caso['requerimiento_descripcion']) ?></dd>
-        <dt>Tipo de prueba</dt><dd><?= Html::e(Catalogo::texto('tipo_prueba', $caso['tipo_prueba'])) ?></dd>
-        <dt>Plataforma</dt><dd><?= Html::e(Catalogo::texto('plataforma', $caso['plataforma']) . ($caso['entorno'] !== null ? ' · ' . $caso['entorno'] : '')) ?></dd>
-        <dt>Técnica</dt><dd><?= $caso['subtecnica'] > 10 ? 'Caja blanca' : 'Caja negra' ?> · <?= Html::e(Catalogo::texto('subtecnica', $caso['subtecnica'])) ?></dd>
-        <dt>Fechas</dt><dd><?= Fecha::legible(new DateTime($caso['fecha_inicio'])) ?> al <?= Fecha::legible(new DateTime($caso['fecha_fin'])) ?></dd>
-        <?php if ($caso['anotador'] !== null): ?>
-          <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
-        <?php endif; ?>
-        <dt>Creado por</dt><dd><?= Html::e($caso['autor']) ?> · <?= $hora($caso['creado_en']) ?></dd>
-        <dt>Solicitado por</dt><dd><?= $caso['solicitante'] === null ? '—' : Html::e($caso['solicitante']) ?></dd>
-        <dt>Aprobado por</dt><dd><?= $caso['aprobador'] === null ? '—' : Html::e($caso['aprobador']) ?></dd>
-        <?php if ($caso['incidentes']): ?>
-          <dt>Incidentes</dt>
-          <?php foreach ($caso['incidentes'] as $i): ?>
-            <dd><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a> <?= Catalogo::insignia('estado_incidente', $i['estado']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?> <?= Html::e($i['titulo']) ?></dd>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </dl>
-    </aside>
   </div>
-  <?= Vista::capturar('partials/firmas') ?>
 </div>

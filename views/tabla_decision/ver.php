@@ -22,7 +22,6 @@ $editar = '/formularios/tabla_decision/editar?requerimiento=' . (int) $requerimi
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Tabla de decisión</h1>
     <p><?= Html::e($requerimiento['descripcion']) ?></p>
-    <p class="solo-impresion">Formulario 4 · Tabla de decisión</p>
   </div>
   <?php if ($tabla): ?>
     <div class="acciones">
@@ -72,5 +71,4 @@ $editar = '/formularios/tabla_decision/editar?requerimiento=' . (int) $requerimi
       <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
-  <?= Vista::capturar('partials/firmas') ?>
 </div>

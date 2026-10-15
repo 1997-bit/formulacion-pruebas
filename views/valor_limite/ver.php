@@ -23,7 +23,6 @@ $editar = '/formularios/valor_limite/editar?requerimiento=' . (int) $requerimien
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Análisis de valor límite</h1>
     <p><?= Html::e($requerimiento['descripcion']) ?></p>
-    <p class="solo-impresion">Formulario 3 · Análisis de valor límite</p>
   </div>
   <?php if ($filas): ?>
     <div class="acciones">
@@ -69,5 +68,4 @@ $editar = '/formularios/valor_limite/editar?requerimiento=' . (int) $requerimien
       <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
-  <?= Vista::capturar('partials/firmas') ?>
 </div>

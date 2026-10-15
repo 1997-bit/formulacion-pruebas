@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Caso e incidente: barra de pasos. Caso: historial como línea de tiempo también en el detalle.
 - Casos: filtro Desde y Hasta con atajos Esta semana, Próximos 7 días y Este mes.
 - Cronograma: tramo rayado si el resultado llegó tarde o el caso sigue atrasado.
-- Impresión en hoja carta: encabezado con formulario y proyecto, pie con fecha, usuario y número de página, datos del caso primero, secciones sin cortes y firmas al final.
+- Impresión en hoja carta: encabezado con formulario y proyecto, pie con fecha, usuario, ID de la petición y número de página, datos primero, secciones y tablas cortas sin cortes, firmas y datos del documento al final para un postmortem.
 - Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
 - Ajustes: densidad compacta.
 - Esqueleto de carga si una página tarda más de 150 ms.

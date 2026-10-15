@@ -188,7 +188,8 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 /* Línea sobre el h1 */
 .encabezado .antetitulo { margin: 0 0 6px; }
 
-/* Detalle: contenido y datos a la derecha. Una columna en celular e impresión */
+/* Detalle: el <aside> de datos va primero en el HTML, para imprimirlo primero.
+   En pantalla queda a la derecha. En celular, debajo del contenido. */
 
 .vista-detalle {
   display: grid;
@@ -196,8 +197,10 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   align-items: start;
   gap: 16px;
 }
+.vista-detalle > aside { grid-column: 2; grid-row: 1; }
 @media (max-width: 56rem) {
   .vista-detalle { grid-template-columns: 1fr; }
+  .vista-detalle > aside { grid-column: auto; grid-row: auto; order: 1; }
 }
 
 /* Filtros: form GET, en la URL */
@@ -1118,7 +1121,11 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .btn-secundario { box-shadow: none; }
   .control::placeholder { color: transparent; }
   .tabla-contenedor { overflow: visible; }
-  .vista-detalle { grid-template-columns: 1fr; }
+  /* Bloques normales en papel: flex y grid con break-inside se enciman en Firefox, bug 1695475 */
+  .pila,
+  .vista-detalle { display: block; }
+  .pila > * + *,
+  .vista-detalle > * + * { margin-top: 12pt; }
   /* En papel, nombre y valor lado a lado */
   .detalle-apilado { grid-template-columns: max-content 1fr; gap: 6px 20px; }
   .detalle-apilado dd { margin: 0; }
@@ -1163,14 +1170,15 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .pasos,
   .pestanas { display: none; }
 
-  /* Datos del caso primero: identifican el documento */
-  .vista-detalle > aside { order: -1; padding-bottom: 12pt; border-bottom: 1px solid oklch(80% 0 0); }
+  /* Datos primero: identifican el documento */
+  .vista-detalle > aside { padding-bottom: 12pt; border-bottom: 1px solid oklch(80% 0 0); }
+  /* Párrafos: sin una línea sola al pie o al inicio de hoja */
+  p, dd { orphans: 3; widows: 3; }
 
   /* Cifras y gráficos en filas fijas */
   .cifras { grid-template-columns: repeat(5, 1fr); }
   .cifra-principal { grid-column: auto; }
   .cifra { padding: 8pt; border: 1px solid oklch(80% 0 0); border-radius: 0; }
-  .graficos { grid-template-columns: 1fr 1fr; }
   .grafico,
   .vista-detalle > aside,
   .tarjeta-encabezado,
@@ -1183,11 +1191,19 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .tabla td { padding: 4pt 6pt; white-space: normal; }
   .tabla .celda-larga { min-width: 0; }
   .tabla-contenedor { border-radius: 0; }
+  /* Tabla corta, menos de 15 filas: entera en una hoja. Las largas se parten y repiten el thead. */
+  .tabla-contenedor:not(:has(tbody tr:nth-child(15))) { break-inside: avoid; }
 
   /* Firmas */
   .firmas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24pt; margin-top: 28pt; }
   .firma p { margin: 2pt 0 0; font-size: 8pt; }
   .firma-linea { display: block; height: 32pt; border-bottom: 1px solid oklch(20% 0 0); }
+
+  /* Metadatos para un postmortem: chicos, al final */
+  .metadatos { margin-top: 20pt; padding-top: 8pt; border-top: 1px solid oklch(80% 0 0); break-inside: avoid; font-size: 7pt; color: oklch(35% 0 0); }
+  .metadatos h2 { margin: 0 0 4pt; font-size: 8pt; }
+  .metadatos dl { display: grid; grid-template-columns: max-content 1fr; gap: 1pt 12pt; margin: 0; }
+  .metadatos dd { margin: 0; font-family: var(--fuente-mono); overflow-wrap: anywhere; }
 
   /* Panel con curvas: en papel, flujo normal */
   .app-cuerpo { height: auto; margin: 0; overflow: visible; border: 0; border-radius: 0; }

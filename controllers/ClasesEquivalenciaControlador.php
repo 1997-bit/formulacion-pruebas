@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\FilasModelo;
 use App\Services\ClasesEquivalenciaServicio;
 use App\Services\RequerimientoServicio;
@@ -35,8 +36,7 @@ final class ClasesEquivalenciaControlador
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('clases_equivalencia/ver', [
             'titulo' => 'Clases de equivalencia · ' . $requerimiento['codigo'],
-            // Encabezado de cada hoja al imprimir.
-            'documento' => ['titulo' => 'Formulario 2 · Matriz de clases de equivalencia · ' . $requerimiento['codigo'], 'proyecto' => $requerimiento['proyecto']],
+            'documento' => Impresion::documento(2, $requerimiento['proyecto'], $requerimiento['codigo']),
             'requerimiento' => $requerimiento,
             'filas' => ClasesEquivalenciaServicio::filas($requerimiento['id'], $usuario),
             'guardado' => ClasesEquivalenciaServicio::guardado($requerimiento['id'], $usuario),

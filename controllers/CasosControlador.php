@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\CasoModelo;
 use App\Models\FilasModelo;
 use App\Services\CasoServicio;
@@ -122,8 +123,7 @@ final class CasosControlador
         $caso = CasoServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
         Vista::pagina('casos/resultado', [
             'titulo' => $caso['codigo'],
-            // Encabezado de cada hoja al imprimir.
-            'documento' => ['titulo' => 'Formulario 1 · Registro de caso de prueba · ' . $caso['codigo'], 'proyecto' => $caso['proyecto']],
+            'documento' => Impresion::documento(1, $caso['proyecto'], $caso['codigo']),
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'vecinos' => CasoModelo::vecinos($caso),
