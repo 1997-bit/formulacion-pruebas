@@ -606,4 +606,49 @@ button.sidebar-boton {
 .paleta-lista [role="option"]::after { content: attr(data-grupo); font-size: var(--letra-xs); color: var(--tenue-texto); white-space: nowrap; }
 .paleta-lista [aria-selected="true"] { background: var(--acento); color: var(--acento-texto); }
 .dialogo .paleta-vacio { margin: 0; padding: 16px; text-align: center; }
+
+/* Gráficos del cierre. --v: valor. --max: tope. Altura = v / max. */
+
+.graficos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); }
+.grafico-ancho { grid-column: 1 / -1; }
+.grafico-cifra { margin: 0; font-size: var(--letra-3xl); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.grafico-nota { margin: 4px 0 16px; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.grafico-nota .numero { color: var(--texto); font-variant-numeric: tabular-nums; }
+.grafico-bien { color: var(--exito-fuerte) !important; }
+.grafico-mal { color: var(--peligro-fuerte) !important; }
+
+.grafico-barras { position: relative; display: flex; align-items: flex-end; gap: 3px; height: 10rem; padding-top: 1.5rem; border-bottom: 1px solid var(--borde); }
+.grafico-barras > span:not(.grafico-promedio) { position: relative; flex: 1; min-height: 2px; height: calc(var(--v) / var(--max) * 100%); background: light-dark(oklch(87% 0 0), oklch(34% 0 0)); border-radius: 3px 3px 0 0; }
+.grafico-barras > .pico { background: var(--exito); }
+.grafico-etiqueta { position: absolute; bottom: calc(100% + 4px); left: 0; white-space: nowrap; font-size: var(--letra-xs); color: var(--exito-fuerte); font-variant-numeric: tabular-nums; }
+.grafico-etiqueta.al-fin { left: auto; right: 0; }
+/* Línea de promedio: abajo del todo + v / max del alto sin el padding */
+.grafico-promedio { position: absolute; left: 0; right: 0; bottom: calc((100% - 1.5rem) * var(--v) / var(--max)); border-top: 1px dashed var(--tenue-texto); }
+.grafico-promedio > span { position: absolute; right: 0; bottom: 2px; padding: 0 6px; font-size: var(--letra-xs); background: var(--texto); color: var(--fondo); border-radius: var(--radio-total); font-variant-numeric: tabular-nums; }
+
+.grafico-pilas > span { display: flex; flex-direction: column; gap: 1px; overflow: hidden; background: transparent !important; min-height: 0 !important; }
+.grafico-pilas > span > span { border-radius: 2px; }
+.barra-destacado { background: var(--destacado); }
+/* Stopper: rayas, para no confundirlo con Crítica */
+.barra-stopper { background: repeating-linear-gradient(-45deg, var(--peligro) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--peligro); }
+.grafico-stoppers { display: flex; align-items: flex-start; gap: 3px; height: 2.5rem; padding-top: 3px; }
+.grafico-stoppers > span { flex: 1; height: calc(var(--v) / var(--max) * 100%); border-radius: 0 0 3px 3px; background: repeating-linear-gradient(-45deg, var(--peligro) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--peligro); }
+
+.grafico-linea { display: block; width: 100%; height: 10rem; overflow: visible; border-bottom: 1px solid var(--borde); }
+.grafico-linea polyline { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.grafico-plan { stroke: var(--tenue-texto); stroke-dasharray: 4 3; }
+.grafico-real { stroke: var(--exito); }
+.grafico-area { fill: color-mix(in oklch, var(--exito), transparent 82%); }
+.grafico-muestra-plan { background: var(--tenue-texto); }
+
+.grafico-eje { display: flex; justify-content: space-between; margin: 6px 0 12px; font-family: var(--fuente-mono); font-size: var(--letra-xs); color: var(--tenue-texto); }
+.grafico .leyenda { margin-bottom: 12px; }
+.grafico-pie { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--borde); }
+.grafico-pie dt { font-size: var(--letra-xs); color: var(--tenue-texto); }
+.grafico-pie dd { margin: 2px 0 0; font-family: var(--fuente-mono); font-size: var(--letra-sm); }
+
+@media print {
+  .grafico-barras span, .grafico-stoppers span, .grafico-promedio span, .leyenda-muestra { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 }

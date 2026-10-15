@@ -187,4 +187,21 @@ final class ReporteServicioTest extends BaseDatos
 
         $this->assertNull($p['fin_estimado']);
     }
+
+    // Un caso con fecha final hoy, anotado hoy: real y plan a hoy en 1, sin diferencia.
+    public function testCierreTraeSeriesHastaHoy(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->casosCon($proyecto, $tester, 1);
+        Conexion::pdo()->prepare('UPDATE casos_prueba SET fecha_fin = CURDATE(), anotado_en = NOW() WHERE proyecto_id = ?')->execute([$proyecto]);
+
+        $g = ReporteServicio::cierre($proyecto, $this->sesion($tester))['graficos'];
+        $hoy = end($g['dias']);
+
+        $this->assertSame(
+            [date('Y-m-d'), 1, 1, 1, 0, 0],
+            [$hoy['dia'], $hoy['anotados'], $hoy['real_acum'], $hoy['plan_acum'], $g['diferencia'], $g['incidentes']],
+        );
+    }
 }

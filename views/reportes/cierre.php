@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Vista;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
@@ -41,6 +42,10 @@ $listas = [
       </div>
     <?php endforeach; ?>
   </div>
+
+  <?php if ($p['graficos'] !== null): ?>
+    <?= Vista::capturar('reportes/graficos', ['g' => $p['graficos'], 'p' => $p]) ?>
+  <?php endif; ?>
 
   <section class="tarjeta" aria-labelledby="ci-criterios">
     <header class="tarjeta-encabezado">
