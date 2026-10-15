@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Listas de casos, incidentes, requerimientos y logs: encabezado de tabla fijo al bajar.
+- Gráficos del cierre: tooltip con el dato al pasar el mouse.
+- Historial y evidencias: tiempo relativo ("hace 2 h", "ayer") con la fecha exacta al pasar el mouse.
 - Panel: cuadrícula con un cuadro por caso y fecha estimada de fin según el ritmo de 7 días.
 - Reporte de cierre: resultados por día con promedio y pico, avance contra el plan e incidentes por día con stoppers.
 - Requerimientos: matriz de cobertura por tipo de prueba, con huecos y FAULT marcados.
@@ -27,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Pestañas como control segmentado en píldora.
 - Superficies por capas en claro y oscuro. Oscuro neutro, sin tinte azul.
 - Tarjetas con sombra suave. Íconos de cifras con el color del estado.
 - Números de tablas alineados a la derecha.

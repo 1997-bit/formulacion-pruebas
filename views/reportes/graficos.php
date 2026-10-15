@@ -2,10 +2,11 @@
 declare(strict_types=1);
 
 use App\Helpers\Catalogo;
+use App\Helpers\Html;
 
 /**
  * RF-23. Gráficos del cierre: resultados por día, avance acumulado e incidentes por día.
- * Barras con CSS: --v es el valor y --max el tope. Curvas con SVG. Cada gráfico tiene su tabla para lector de pantalla. RNF-07.
+ * Barras con CSS: --v es el valor y --max el tope. data-dato: tooltip al pasar el mouse; con teclado o lector, la tabla de abajo. Curvas con SVG. Cada gráfico tiene su tabla para lector de pantalla. RNF-07.
  *
  * @var array<string, mixed> $g  ReporteServicio::graficos()
  * @var array<string, mixed> $p  proyecto del cierre
@@ -50,7 +51,7 @@ $horas = $g['horas_cierre'];
          aria-label="<?= $pico['anotados'] > 0 ? 'Pico el ' . $dm($pico['dia']) . ' con ' . $pico['anotados'] . '. ' : '' ?>Promedio <?= $coma($g['promedio']) ?> por día.">
       <?php foreach ($dias as $i => $d): ?>
         <?php $esPico = $pico['anotados'] > 0 && $d['dia'] === $pico['dia']; ?>
-        <span style="--v:<?= $d['anotados'] ?>"<?= $esPico ? ' class="pico"' : '' ?> title="<?= $dm($d['dia']) ?> · <?= $d['anotados'] ?>"><?php if ($esPico): ?><span class="grafico-etiqueta<?= $i > $n * 2 / 3 ? ' al-fin' : '' ?>"><?= $dm($d['dia']) ?> · <?= $d['anotados'] ?></span><?php endif; ?></span>
+        <span style="--v:<?= $d['anotados'] ?>"<?= $esPico ? ' class="pico"' : '' ?> data-dato="<?= $dm($d['dia']) ?> · <?= $d['anotados'] ?> resultado(s)"><?php if ($esPico): ?><span class="grafico-etiqueta<?= $i > $n * 2 / 3 ? ' al-fin' : '' ?>"><?= $dm($d['dia']) ?> · <?= $d['anotados'] ?></span><?php endif; ?></span>
       <?php endforeach; ?>
       <?php if ($g['promedio'] > 0): ?><span class="grafico-promedio" style="--v:<?= $g['promedio'] ?>"><span>prom. <?= $coma($g['promedio']) ?></span></span><?php endif; ?>
     </div>
@@ -103,7 +104,8 @@ $horas = $g['horas_cierre'];
     </ul>
     <div class="grafico-barras grafico-pilas" style="--max:<?= $maxIncidentes ?>" role="img" aria-label="Incidentes por día y severidad. El detalle está en la tabla.">
       <?php foreach ($dias as $d): ?>
-        <span style="--v:<?= $totalDia($d) ?>" title="<?= $dm($d['dia']) ?> · <?= $totalDia($d) ?>">
+        <?php $detalle = implode(', ', array_filter(array_map(fn (int $sv): string => $d['severidad'][$sv] > 0 ? $severidades[$sv]['texto'] . ' ' . $d['severidad'][$sv] : '', [4, 3, 2, 1]))); ?>
+        <span style="--v:<?= $totalDia($d) ?>" data-dato="<?= Html::e($dm($d['dia']) . ' · ' . $totalDia($d) . ' incidente(s)' . ($detalle !== '' ? ': ' . $detalle : '') . ($d['stoppers'] > 0 ? '. Stoppers ' . $d['stoppers'] : '')) ?>">
           <?php foreach ([4, 3, 2, 1] as $s): ?><?php if ($d['severidad'][$s] > 0): ?><span class="barra-<?= $severidades[$s]['variante'] ?>" style="flex-grow:<?= $d['severidad'][$s] ?>"></span><?php endif; ?><?php endforeach; ?>
         </span>
       <?php endforeach; ?>

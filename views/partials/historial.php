@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Helpers\Fecha;
 use App\Helpers\Html;
 
 /**
@@ -10,6 +11,8 @@ use App\Helpers\Html;
  * @var list<array<string, mixed>> $historial  Historial::deCaso()
  * @var string $codigo
  */
+
+$ahora = new DateTimeImmutable();
 ?>
 <?php if (!$historial): ?>
   <p class="campo-ayuda">Sin cambios todavía.</p>
@@ -18,7 +21,7 @@ use App\Helpers\Html;
     <?php foreach ($historial as $h): ?>
       <?php $fecha = new DateTime($h['fecha']); ?>
       <li<?= $h['campo'] === 'estado' ? ' class="linea-tiempo-estado"' : '' ?>>
-        <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>"><?= $fecha->format('d/m H:i') ?></time>
+        <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>" title="<?= Fecha::legible($fecha) . ' ' . $fecha->format('H:i') ?>"><?= Fecha::relativa($fecha, $ahora) ?></time>
         <div>
           <p class="linea-tiempo-cabeza"><strong><?= Html::e($h['usuario']) ?></strong> cambió <?= Html::e($h['etiqueta']) ?></p>
           <p><span class="solo-lector">Antes: </span><del class="cambio"><?= Html::e($h['antes']) ?></del> <span aria-hidden="true">→</span><span class="solo-lector">. Después: </span> <ins class="cambio"><?= Html::e($h['despues']) ?></ins></p>

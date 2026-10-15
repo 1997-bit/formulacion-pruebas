@@ -40,7 +40,7 @@ $todos = $usuario['activo'] === null;
       <a class="btn btn-primario" href="/requerimientos/registrar"><?= Icono::svg('plus') ?> Registrar requerimiento</a>
     </div>
   <?php else: ?>
-    <div class="tabla-contenedor">
+    <div class="tabla-contenedor encabezado-fijo">
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Requerimientos</caption>
         <thead>

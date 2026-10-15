@@ -463,6 +463,9 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
 }
+/* Lista larga: el encabezado queda fijo bajo la barra al bajar. clip y no auto: auto crea un scroll propio y sticky no ve el de la página */
+.encabezado-fijo { overflow-x: clip; contain: none; }
+.encabezado-fijo thead th { position: sticky; top: calc(3.5rem + 1px); z-index: 1; }
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -906,16 +909,17 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   object-fit: contain;
 }
 
-/* Pestañas: enlaces, la actual con aria-current="page" */
+/* Pestañas: control segmentado. Enlaces, la actual con aria-current="page" en una píldora */
 
-.pestanas { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--borde); overflow-x: auto; }
+.pestanas { display: inline-flex; max-width: 100%; gap: 2px; margin-bottom: 16px; padding: 3px; overflow-x: auto; background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
 .pestanas a {
-  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; margin-bottom: -1px;
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
   color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
-  border-bottom: 2px solid transparent;
+  border-radius: var(--radio-md);
 }
 .pestanas a:hover { color: var(--texto); }
-.pestanas a[aria-current="page"] { color: var(--texto); border-bottom-color: var(--primario); }
+.pestanas a[aria-current="page"] { color: var(--texto); background: var(--fondo); box-shadow: var(--sombra-xs); }
+@media (forced-colors: active) { .pestanas a[aria-current="page"] { outline: 2px solid Highlight; } }
 
 /* Ajustes */
 

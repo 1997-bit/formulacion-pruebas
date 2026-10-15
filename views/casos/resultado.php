@@ -127,7 +127,7 @@ $pasos = match ($caso['estado']) {
                   <p class="archivo-nombre"><?= Html::e($e['descripcion']) ?></p>
                   <p class="archivo-detalle">
                     <span class="codigo"><?= Html::e($e['nombre_original'] ?? $e['enlace']) ?></span>
-                    · <?= Html::e($e['autor']) ?> · <?= $hora($e['subido_en']) ?>
+                    · <?= Html::e($e['autor']) ?> · <time datetime="<?= (new DateTime($e['subido_en']))->format('Y-m-d\TH:i') ?>" title="<?= $hora($e['subido_en']) ?>"><?= Fecha::relativa(new DateTime($e['subido_en']), new DateTimeImmutable()) ?></time>
                   </p>
                   <div class="acciones">
                     <a class="btn btn-fantasma btn-icono" href="/evidencias/ver?id=<?= (int) $e['id'] ?>" target="_blank" rel="noopener"

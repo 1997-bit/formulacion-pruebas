@@ -94,7 +94,7 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
         <p>Cambie el día o los filtros.</p>
       </div>
     <?php else: ?>
-      <div class="tabla-contenedor">
+      <div class="tabla-contenedor encabezado-fijo">
         <table class="tabla">
           <caption class="solo-lector">Líneas del log</caption>
           <thead>

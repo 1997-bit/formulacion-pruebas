@@ -147,7 +147,7 @@ $chips = array_filter([
   <?php elseif ($vista === 'tablero'): ?>
     <?= Vista::capturar('casos/tablero', ['casos' => $casos]) ?>
   <?php else: ?>
-    <div class="tabla-contenedor">
+    <div class="tabla-contenedor encabezado-fijo">
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Casos de prueba</caption>
         <thead>

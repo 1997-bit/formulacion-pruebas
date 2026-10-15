@@ -117,7 +117,7 @@ $chips = array_filter([
       <?php endforeach; ?>
     </div>
   <?php else: ?>
-    <div class="tabla-contenedor">
+    <div class="tabla-contenedor encabezado-fijo">
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Incidentes</caption>
         <thead>
