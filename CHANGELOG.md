@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
+- Ajustes: densidad compacta.
+- Esqueleto de carga si una página tarda más de 150 ms.
+- Precarga de páginas al pasar el mouse y Atrás instantáneo.
+
+### Changed
+
+- Superficies por capas en claro y oscuro. Oscuro neutro, sin tinte azul.
+- Tarjetas con sombra suave. Íconos de cifras con el color del estado.
+- Números de tablas alineados a la derecha.
+
+### Fixed
+
+- Cerrar sesión desde la paleta de comandos.
+- Botón secundario hundido en oscuro.
+
 ## [1.6.0] - 2026-10-13
 
 ### Added
