@@ -70,18 +70,19 @@ if (sidebar && alternar) {
   sincronizarAria();
 }
 
-// Menú del usuario y selector de proyecto: cierran con clic fuera o Escape.
-document.querySelectorAll('.usuario-menu, .proyecto-menu').forEach((menu) => {
-  document.addEventListener('click', (e) => {
-    if (menu.open && !menu.contains(e.target)) menu.open = false;
+// Menús popover sin anchor positioning: se ubican junto a su botón al abrir. data-lado: abajo o arriba.
+if (!CSS.supports('anchor-name: --a')) {
+  document.querySelectorAll('[popover][data-lado]').forEach((menu) => {
+    menu.addEventListener('toggle', (e) => {
+      if (e.newState !== 'open') return;
+      const r = document.querySelector(`[popovertarget="${menu.id}"]`).getBoundingClientRect();
+      const colapsado = document.documentElement.dataset.sidebar === 'colapsado' && matchMedia('(min-width: 48rem)').matches;
+      Object.assign(menu.style, colapsado
+        ? { left: `${r.right + 8}px`, top: menu.dataset.lado === 'abajo' ? `${r.top}px` : 'auto', bottom: menu.dataset.lado === 'arriba' ? `${innerHeight - r.bottom}px` : 'auto', width: 'auto' }
+        : { left: `${r.left}px`, width: `${r.width}px`, top: menu.dataset.lado === 'abajo' ? `${r.bottom + 4}px` : 'auto', bottom: menu.dataset.lado === 'arriba' ? `${innerHeight - r.top + 4}px` : 'auto' });
+    });
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menu.open) {
-      menu.open = false;
-      menu.querySelector('summary').focus();
-    }
-  });
-});
+}
 
 // <button command="show-modal" commandfor="id"> abre <dialog id="id"> sin JS. Respaldo para navegadores sin command.
 if (!('command' in HTMLButtonElement.prototype)) {
@@ -257,6 +258,16 @@ if (panelRecientes && recientes.length) {
 
 document.querySelectorAll('[data-imprimir]').forEach((boton) => {
   boton.addEventListener('click', () => window.print());
+});
+
+// Al imprimir: abre los <details> cerrados del contenido y los cierra después. push: beforeprint puede llegar dos veces.
+const plegados = [];
+addEventListener('beforeprint', () => {
+  plegados.push(...document.querySelectorAll('.app-principal details:not([open])'));
+  plegados.forEach((d) => { d.open = true; });
+});
+addEventListener('afterprint', () => {
+  plegados.splice(0).forEach((d) => { d.open = false; });
 });
 
 // data-desde="id-inicio": fecha final no anterior.

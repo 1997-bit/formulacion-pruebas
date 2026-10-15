@@ -4,7 +4,6 @@ declare(strict_types=1);
 use App\Core\Csrf;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
-use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -121,18 +120,22 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
         <?php endif; ?>
       </div>
       <?= $campo('modulo', 'Módulo o funcionalidad', ['atributos' => 'maxlength="100"']) ?>
+    </div>
+
+    <?php // Grupos de 4 y de 3: en escritorio llenan su fila, sin huecos. ?>
+    <div class="campos">
       <?= $campo('plataforma', 'Plataforma', ['tipo' => 'select', 'opciones' => Catalogo::opciones('plataforma', $datos['plataforma'] ?? null)]) ?>
+      <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>
+      <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
+      <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
+    </div>
+
+    <div class="campos">
       <?= $campo('entorno', 'Entorno', [
           'requerido' => false,
           'atributos' => 'maxlength="255"',
           'ayuda' => 'Detalle de la plataforma: sistema operativo, navegador y versión probada.',
       ]) ?>
-    </div>
-
-    <div class="campos">
-      <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>
-      <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
-      <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
       <?= $campo('solicitado_por', 'Solicitado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('solicitado_por'), 'ayuda' => 'Quién pidió el caso. Solo informativo.']) ?>
       <?= $campo('aprobado_por', 'Aprobado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('aprobado_por'), 'ayuda' => 'Quién lo aprueba. Solo informativo: no bloquea anotar OK ni FAULT.']) ?>
     </div>
@@ -169,20 +172,7 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
   <?php if ($caso !== null): ?>
     <section class="pila" aria-labelledby="h-historial">
       <h2 class="titulo-seccion" id="h-historial">Historial</h2>
-      <?php if (!$historial): ?>
-        <p class="campo-ayuda">Sin cambios todavía.</p>
-      <?php else: ?>
-        <ol class="linea-tiempo" aria-label="<?= Html::e('Cambios de ' . $caso['codigo']) ?>">
-          <?php foreach ($historial as $h): ?>
-            <?php $fecha = new DateTime($h['fecha']); ?>
-            <li>
-              <p class="linea-tiempo-cabeza"><strong><?= Html::e($h['usuario']) ?></strong> cambió <?= Html::e($h['etiqueta']) ?>
-                <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>"><?= Fecha::legible($fecha) ?> <?= $fecha->format('H:i') ?></time></p>
-              <p><span class="solo-lector">Antes: </span><del class="cambio"><?= Html::e($h['antes']) ?></del> <span aria-hidden="true">→</span><span class="solo-lector">. Después: </span> <ins class="cambio"><?= Html::e($h['despues']) ?></ins></p>
-            </li>
-          <?php endforeach; ?>
-        </ol>
-      <?php endif; ?>
+      <?= Vista::capturar('partials/historial', ['historial' => $historial, 'codigo' => $caso['codigo']]) ?>
     </section>
   <?php endif; ?>
 </div>

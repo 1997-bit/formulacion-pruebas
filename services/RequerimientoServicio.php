@@ -66,6 +66,39 @@ final class RequerimientoServicio
     }
 
     /**
+     * Matriz por proyecto. Columnas: tipos de prueba con casos en el proyecto.
+     * celdas[tipo] = [casos, fault]. Cobertura: celdas con casos sobre filas × columnas.
+     *
+     * @param array{id: int, rol: int} $usuario
+     * @return list<array{id: int, nombre: string, tipos: list<int>, filas: list<array<string, mixed>>, cubiertas: int, total: int, sin_casos: list<string>}>
+     */
+    public static function matriz(array $usuario): array
+    {
+        $proyectos = [];
+        foreach (RequerimientoModelo::matriz(Permisos::proyectos($usuario)) as $f) {
+            $id = (int) $f['proyecto_id'];
+            $proyectos[$id] ??= ['id' => $id, 'nombre' => $f['proyecto'], 'tipos' => [], 'filas' => []];
+            $proyectos[$id]['filas'][$f['id']] ??= ['id' => (int) $f['id'], 'codigo' => $f['codigo'], 'descripcion' => $f['descripcion'], 'celdas' => []];
+            if ($f['tipo_prueba'] !== null) {
+                $tipo = (int) $f['tipo_prueba'];
+                $proyectos[$id]['tipos'][$tipo] = true;
+                $proyectos[$id]['filas'][$f['id']]['celdas'][$tipo] = ['casos' => (int) $f['casos'], 'fault' => (int) $f['fault']];
+            }
+        }
+
+        return array_values(array_map(static function (array $p): array {
+            $p['tipos'] = array_keys($p['tipos']);
+            sort($p['tipos']);
+            $p['filas'] = array_values($p['filas']);
+            $p['cubiertas'] = array_sum(array_map(fn (array $f): int => count($f['celdas']), $p['filas']));
+            $p['total'] = count($p['filas']) * count($p['tipos']);
+            $p['sin_casos'] = array_column(array_filter($p['filas'], fn (array $f): bool => $f['celdas'] === []), 'codigo');
+
+            return $p;
+        }, $proyectos));
+    }
+
+    /**
      * Null si no existe.
      *
      * @param array{id: int, rol: int} $usuario

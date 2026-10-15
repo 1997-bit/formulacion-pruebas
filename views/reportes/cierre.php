@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Vista;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
@@ -28,7 +29,7 @@ $listas = [
     <p class="fila">Decisión <?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></p>
   </div>
   <div class="acciones">
-    <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+    <?= Vista::capturar('partials/imprimir') ?>
   </div>
 </header>
 
@@ -41,6 +42,10 @@ $listas = [
       </div>
     <?php endforeach; ?>
   </div>
+
+  <?php if ($p['graficos'] !== null): ?>
+    <?= Vista::capturar('reportes/graficos', ['g' => $p['graficos'], 'p' => $p]) ?>
+  <?php endif; ?>
 
   <section class="tarjeta" aria-labelledby="ci-criterios">
     <header class="tarjeta-encabezado">

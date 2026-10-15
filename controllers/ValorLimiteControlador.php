@@ -9,9 +9,10 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\FilasModelo;
-use App\Services\ValorLimiteServicio;
 use App\Services\RequerimientoServicio;
+use App\Services\ValorLimiteServicio;
 
 // RF-10
 final class ValorLimiteControlador
@@ -35,6 +36,7 @@ final class ValorLimiteControlador
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('valor_limite/ver', [
             'titulo' => 'Valor límite · ' . $requerimiento['codigo'],
+            'documento' => Impresion::documento(3, $requerimiento['proyecto'], $requerimiento['codigo']),
             'requerimiento' => $requerimiento,
             'filas' => ValorLimiteServicio::filas($requerimiento['id'], $usuario),
             'guardado' => ValorLimiteServicio::guardado($requerimiento['id'], $usuario),

@@ -17,9 +17,13 @@ final class RequerimientosControlador
 
     public function listar(): void
     {
-        [$requerimientos, $paginacion] = RequerimientoServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
+        // Vista matriz: cobertura requerimiento × tipo de prueba, sin paginar.
+        $matriz = ($_GET['vista'] ?? null) === 'matriz';
+        [$requerimientos, $paginacion] = $matriz ? [[], null] : RequerimientoServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1));
         Vista::pagina('requerimientos/listar', [
-            'titulo' => 'Requerimientos',
+            'titulo' => $matriz ? 'Matriz de cobertura' : 'Requerimientos',
+            'vista' => $matriz ? 'matriz' : 'lista',
+            'matriz' => $matriz ? RequerimientoServicio::matriz(Sesion::usuario()) : [],
             'requerimientos' => $requerimientos,
             'paginacion' => $paginacion,
             'flash' => Sesion::tomar('flash'),

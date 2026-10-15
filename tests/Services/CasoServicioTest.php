@@ -460,6 +460,21 @@ final class CasoServicioTest extends BaseDatos
         $this->assertSame(['SIS-001'], $codigos);
     }
 
+    // Casos del 06/10: entran si el rango los cruza. Fecha inválida: sin filtro.
+    public function testListarPorRangoDeFechas(): void
+    {
+        $e = $this->escenario();
+
+        $this->assertSame(
+            [[], ['SIS-001', 'SIS-002', 'UNI-001'], ['SIS-001', 'SIS-002', 'UNI-001']],
+            [
+                $this->codigos($e['usuario'], ['desde' => '2026-10-07']),
+                $this->codigos($e['usuario'], ['desde' => '2026-10-01', 'hasta' => '2026-10-06']),
+                $this->codigos($e['usuario'], ['desde' => '2026-02-30']),
+            ],
+        );
+    }
+
     // RF-21
     public function testListarTesterSoloSusProyectos(): void
     {

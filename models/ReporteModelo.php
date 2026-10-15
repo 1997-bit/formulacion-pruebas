@@ -27,6 +27,8 @@ final class ReporteModelo
                     COALESCE(SUM(c.creado_en >= CURDATE()), 0) AS casos_hoy,
                     COALESCE(SUM(c.estado = 1 AND c.anotado_en >= CURDATE()), 0) AS ok_hoy,
                     COALESCE(SUM(c.estado = 2 AND c.anotado_en >= CURDATE()), 0) AS fault_hoy,
+                    COALESCE(SUM(c.anotado_en >= CURDATE() - INTERVAL 6 DAY), 0) AS anotados_7d,
+                    MAX(c.fecha_fin) AS fin_plan,
                     COALESCE(SUM(c.estado <> 0 AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)), 0) AS sin_evidencia,
                     COALESCE(SUM(c.estado = 2 AND NOT EXISTS (SELECT 1 FROM incidentes i WHERE i.caso_id = c.id)), 0) AS fault_sin_incidente,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2) AS incidentes_abiertos,
@@ -42,7 +44,7 @@ final class ReporteModelo
         // SUM da DECIMAL: PDO lo trae como texto.
         $filas = $sql->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($filas as &$f) {
-            foreach (['pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
+            foreach (['pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'anotados_7d', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
                 $f[$columna] = (int) $f[$columna];
             }
         }
@@ -84,6 +86,59 @@ final class ReporteModelo
         $sql->execute([$proyectoId]);
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Por día: casos con fecha final ese día y resultados anotados ese día.
+     *
+     * @return array{plan: array<string, int>, anotados: array<string, int>}
+     */
+    public static function casosPorDia(int $proyectoId): array
+    {
+        $porDia = function (string $columna) use ($proyectoId): array {
+            $sql = Conexion::pdo()->prepare(
+                "SELECT DATE($columna) AS dia, COUNT(*) FROM casos_prueba WHERE proyecto_id = ? AND $columna IS NOT NULL GROUP BY dia"
+            );
+            $sql->execute([$proyectoId]);
+
+            return array_map('intval', $sql->fetchAll(\PDO::FETCH_KEY_PAIR));
+        };
+
+        return ['plan' => $porDia('fecha_fin'), 'anotados' => $porDia('anotado_en')];
+    }
+
+    /**
+     * Incidentes creados por día y severidad. Stoppers aparte.
+     *
+     * @return list<array{dia: string, severidad: int, es_stopper: int, n: int}>
+     */
+    public static function incidentesPorDia(int $proyectoId): array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT DATE(creado_en) AS dia, severidad, es_stopper, COUNT(*) AS n FROM incidentes
+             WHERE proyecto_id = ? GROUP BY dia, severidad, es_stopper'
+        );
+        $sql->execute([$proyectoId]);
+
+        return array_map(fn (array $f): array => ['dia' => $f['dia'], 'severidad' => (int) $f['severidad'], 'es_stopper' => (int) $f['es_stopper'], 'n' => (int) $f['n']], $sql->fetchAll(\PDO::FETCH_ASSOC));
+    }
+
+    /**
+     * Horas promedio de creado a cerrado. El cierre sale del primer cambio de estado a 2 en el historial. Null sin cerrados.
+     */
+    public static function horasDeCierre(int $proyectoId): ?float
+    {
+        $sql = Conexion::pdo()->prepare(
+            "SELECT AVG(TIMESTAMPDIFF(MINUTE, i.creado_en, l.fecha)) / 60
+             FROM incidentes i
+             JOIN (SELECT registro_id, MIN(fecha) AS fecha FROM logs_cambios
+                   WHERE tabla = 'incidentes' AND campo = 'estado' AND despues = '2' GROUP BY registro_id) l ON l.registro_id = i.id
+             WHERE i.proyecto_id = ? AND i.estado = 2"
+        );
+        $sql->execute([$proyectoId]);
+        $horas = $sql->fetchColumn();
+
+        return $horas === null ? null : (float) $horas;
     }
 
     /**

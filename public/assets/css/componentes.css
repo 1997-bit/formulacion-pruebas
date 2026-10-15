@@ -188,7 +188,8 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 /* Línea sobre el h1 */
 .encabezado .antetitulo { margin: 0 0 6px; }
 
-/* Detalle: contenido y datos a la derecha. Una columna en celular e impresión */
+/* Detalle: el <aside> de datos va primero en el HTML, para imprimirlo primero.
+   En pantalla queda a la derecha. En celular, debajo del contenido. */
 
 .vista-detalle {
   display: grid;
@@ -196,8 +197,10 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   align-items: start;
   gap: 16px;
 }
+.vista-detalle > aside { grid-column: 2; grid-row: 1; }
 @media (max-width: 56rem) {
   .vista-detalle { grid-template-columns: 1fr; }
+  .vista-detalle > aside { grid-column: auto; grid-row: auto; order: 1; }
 }
 
 /* Filtros: form GET, en la URL */
@@ -214,6 +217,12 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   border-radius: var(--radio-xl);
 }
 .filtros .acciones { justify-content: flex-start; }
+/* Sin dato en una columna de números: raya tenue, el lector oye el texto */
+.sin-dato { color: var(--tenue-texto); }
+/* Fila de abajo: atajos a la izquierda, botones a la derecha */
+.filtros-pie { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.filtros-atajos { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.filtros-atajos [aria-current] { background: var(--acento); color: var(--acento-texto); }
 
 /* Filtros activos: chips con ✕ */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
@@ -454,6 +463,9 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
 }
+/* Lista larga: el encabezado queda fijo bajo la barra al bajar. clip y no auto: auto crea un scroll propio y sticky no ve el de la página */
+.encabezado-fijo { overflow-x: clip; contain: none; }
+.encabezado-fijo thead th { position: sticky; top: calc(3.5rem + 1px); z-index: 1; }
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -686,7 +698,8 @@ kbd {
 .cifras {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  /* 5 cifras, la principal ocupa 2: 6 columnas exactas, una fila. Contar cuántas caben dejaba filas cojas con zoom */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 .cifra { display: flex; flex-direction: column; gap: 4px; }
 .cifra-etiqueta {
@@ -710,7 +723,15 @@ kbd {
 .cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
 /* Cifra principal: más grande y en dos columnas si hay espacio */
 .cifra-principal .cifra-valor { font-size: var(--letra-3xl); }
-@media (min-width: 40rem) { .cifra-principal { grid-column: span 2; } }
+/* Container queries: dependen del ancho del contenido, no de la ventana. Sin filas de 3 + 1 ni 3 + 2.
+   Ancho: una fila, la principal ocupa 2. Medio: la principal sola y las otras de 2 en 2. Angosto: una por fila. */
+.app-principal { container: principal / inline-size; }
+.cifra-principal { grid-column: span 2; }
+@container principal (width < 60rem) {
+  .cifras { grid-template-columns: repeat(2, 1fr); }
+  .cifra-principal { grid-column: 1 / -1; }
+}
+@container principal (width < 28rem) { .cifras { grid-template-columns: 1fr; } }
 .cifra-hoy { color: var(--texto); font-weight: 500; }
 /* Ícono de la cifra con el color del estado */
 .cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
@@ -813,29 +834,43 @@ del.cambio::after,
 ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; }
 
 /* Línea de tiempo: un punto por cambio, reciente arriba */
-.linea-tiempo { margin: 0; padding: 0; list-style: none; }
-.linea-tiempo li { position: relative; padding: 0 0 16px 22px; }
+/* Línea de tiempo: hora | punto y línea | cambio */
+.linea-tiempo { --hora: 5.5rem; margin: 0; padding: 0; list-style: none; }
+.linea-tiempo li { position: relative; display: grid; grid-template-columns: var(--hora) 1fr; column-gap: 24px; padding-bottom: 16px; }
 .linea-tiempo li::before {
   content: "";
   position: absolute;
-  left: 0;
+  left: calc(var(--hora) + 8px);
   top: 0.45em;
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--primario);
+  background: var(--tenue-texto);
 }
+.linea-tiempo .linea-tiempo-estado::before { background: var(--primario); box-shadow: 0 0 0 3px color-mix(in oklch, var(--primario), transparent 70%); }
 .linea-tiempo li:not(:last-child)::after {
   content: "";
   position: absolute;
-  left: 4px;
+  left: calc(var(--hora) + 12px);
   top: calc(0.45em + 13px);
   bottom: 2px;
   width: 1px;
   background: var(--borde);
 }
 .linea-tiempo p { margin: 0 0 4px; font-size: var(--letra-sm); }
-.linea-tiempo time { margin-left: 6px; font-size: var(--letra-xs); color: var(--tenue-texto); }
+.linea-tiempo time { font-family: var(--fuente-mono); font-size: var(--letra-xs); line-height: 1.7; color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+.linea-tiempo-estado time { color: var(--texto); }
+
+/* Pasos: un segmento por paso, el texto debajo */
+.pasos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); }
+.paso { display: flex; flex-direction: column; gap: 6px; color: var(--tenue-texto); }
+.paso::before { content: ""; height: 4px; border-radius: var(--radio-total); background: var(--secundario); }
+.paso-hecho { color: var(--texto); }
+.paso-hecho::before { background: var(--tenue-texto); }
+.paso-actual { color: var(--texto); font-weight: 600; }
+.paso-actual::before { background: var(--primario); }
+.paso-mal { color: var(--peligro-fuerte); font-weight: 600; }
+.paso-mal::before { background: var(--peligro); }
 
 /* Archivos de evidencia */
 
@@ -883,16 +918,17 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   object-fit: contain;
 }
 
-/* Pestañas: enlaces, la actual con aria-current="page" */
+/* Pestañas: control segmentado. Enlaces, la actual con aria-current="page" en una píldora */
 
-.pestanas { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--borde); overflow-x: auto; }
+.pestanas { display: inline-flex; max-width: 100%; gap: 2px; margin-bottom: 16px; padding: 3px; overflow-x: auto; background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
 .pestanas a {
-  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; margin-bottom: -1px;
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
   color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
-  border-bottom: 2px solid transparent;
+  border-radius: var(--radio-md);
 }
 .pestanas a:hover { color: var(--texto); }
-.pestanas a[aria-current="page"] { color: var(--texto); border-bottom-color: var(--primario); }
+.pestanas a[aria-current="page"] { color: var(--texto); background: var(--fondo); box-shadow: var(--sombra-xs); }
+@media (forced-colors: active) { .pestanas a[aria-current="page"] { outline: 2px solid Highlight; } }
 
 /* Ajustes */
 
@@ -1102,7 +1138,11 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .btn-secundario { box-shadow: none; }
   .control::placeholder { color: transparent; }
   .tabla-contenedor { overflow: visible; }
-  .vista-detalle { grid-template-columns: 1fr; }
+  /* Bloques normales en papel: flex y grid con break-inside se enciman en Firefox, bug 1695475 */
+  .pila,
+  .vista-detalle { display: block; }
+  .pila > * + *,
+  .vista-detalle > * + * { margin-top: 12pt; }
   /* En papel, nombre y valor lado a lado */
   .detalle-apilado { grid-template-columns: max-content 1fr; gap: 6px 20px; }
   .detalle-apilado dd { margin: 0; }
@@ -1111,6 +1151,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   /* Sin esto se pierden fondos de insignias y barras */
   .insignia,
   .progreso,
+  .paso::before,
   .tabla th,
   .tabla tfoot td {
     -webkit-print-color-adjust: exact;
@@ -1126,7 +1167,81 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .archivo { break-inside: avoid; }
   h1, h2, h3, .tarjeta-encabezado { break-after: avoid; }
 
-  @page { margin: 1.5cm; }
+  /* Hoja carta. Encabezado y pie en cada hoja: variables --doc-* del <html>, ver layouts/app.php. */
+  @page {
+    size: letter;
+    margin: 2cm 1.5cm 1.8cm;
+    @top-left { content: var(--doc-titulo, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @top-right { content: var(--doc-proyecto, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @bottom-left { content: var(--doc-pie, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    /* Marca del estado: BORRADOR, NO-GO. Vacía en el resto */
+    @top-center { content: var(--doc-marca, ""); font: 700 10pt var(--fuente); letter-spacing: 2pt; color: oklch(50% 0.2 25); }
+  }
+  /* Hoja 1: el título ya está en el cuerpo. Sin encabezado, más aire arriba */
+  @page :first {
+    margin-top: 2.5cm;
+    @top-left { content: none; }
+    @top-right { content: none; }
+  }
+  /* Doble cara: margen interior más ancho para engrapar */
+  @page :left { margin-left: 1.5cm; margin-right: 2cm; }
+  @page :right { margin-left: 2cm; margin-right: 1.5cm; }
+  /* Página con tabla ancha: todo el documento en hoja horizontal, sin hojas sueltas antes y después */
+  @page horizontal { size: letter landscape; }
+  .app-principal:has(.tabla-ancha, .matriz-contenedor, .cronograma-contenedor) { page: horizontal; }
+
+  /* Texto: sin palabra sola al final, cortes en español, títulos parejos */
+  p, dd { text-wrap: pretty; hyphens: auto; }
+  h1, h2, h3 { text-wrap: balance; }
+  /* Enlaces externos: la dirección en papel */
+  .app-principal a[href^="http"]:not(.btn)::after { content: " (" attr(href) ")"; font-size: 0.85em; overflow-wrap: anywhere; hyphens: none; color: oklch(40% 0 0); }
+  /* Caja partida entre hojas: cada parte con su borde */
+  .alerta,
+  .archivo,
+  .tabla-contenedor { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+  /* Documento plano: sin tarjetas, secciones separadas por una línea */
+  body { font-size: 10pt; }
+  h1 { font-size: 18pt; }
+  .tarjeta { padding: 0; border: 0; border-radius: 0; background: none; }
+  .pila > .tarjeta + .tarjeta,
+  .vista-detalle .pila > .tarjeta + .tarjeta { padding-top: 12pt; border-top: 1px solid oklch(80% 0 0); }
+  .tarjeta-titulo { font-size: 12pt; }
+  .pasos,
+  .pestanas { display: none; }
+
+  /* Datos primero: identifican el documento */
+  .vista-detalle > aside { padding-bottom: 12pt; border-bottom: 1px solid oklch(80% 0 0); }
+  /* Párrafos: sin una línea sola al pie o al inicio de hoja */
+  p, dd { orphans: 3; widows: 3; }
+
+  /* Cifras y gráficos en filas fijas */
+  .cifras { grid-template-columns: repeat(5, 1fr); }
+  .cifra-principal { grid-column: auto; }
+  .cifra { padding: 8pt; border: 1px solid oklch(80% 0 0); border-radius: 0; }
+  .grafico,
+  .vista-detalle > aside,
+  .tarjeta-encabezado,
+  .tarjeta:not(:has(table, .detalle)),
+  .firmas { break-inside: avoid; }
+
+  /* Tablas: ajustan al ancho de la hoja, el texto baja de línea */
+  .tabla { font-size: 9pt; }
+  .tabla th,
+  .tabla td { padding: 4pt 6pt; white-space: normal; }
+  .tabla .celda-larga { min-width: 0; }
+  .tabla-contenedor { border-radius: 0; }
+  /* Tabla corta, menos de 15 filas: entera en una hoja. Las largas se parten y repiten el thead. */
+  .tabla-contenedor:not(:has(tbody tr:nth-child(15))) { break-inside: avoid; }
+
+  /* Firmas */
+  .firmas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24pt; margin-top: 28pt; }
+  .firma p { margin: 2pt 0 0; font-size: 8pt; }
+  .firma-linea { display: block; height: 32pt; border-bottom: 1px solid oklch(20% 0 0); }
+
+  /* Panel con curvas: en papel, flujo normal */
+  .app-cuerpo { height: auto; margin: 0; overflow: visible; border: 0; border-radius: 0; }
 }
 
 /* Detalle de una línea de log, RNF-11 */

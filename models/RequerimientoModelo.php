@@ -54,6 +54,30 @@ final class RequerimientoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Matriz de cobertura: una fila por requerimiento y tipo de prueba. Sin casos: tipo_prueba null.
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function matriz(?array $proyectos): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('r.proyecto_id', $proyectos);
+        $sql = Conexion::pdo()->prepare(
+            'SELECT r.id, r.proyecto_id, p.nombre AS proyecto, r.codigo, r.descripcion, c.tipo_prueba,
+                    COUNT(c.id) AS casos, COALESCE(SUM(c.estado = 2), 0) AS fault
+             FROM requerimientos r
+             JOIN proyectos p ON p.id = r.proyecto_id
+             LEFT JOIN casos_prueba c ON c.requerimiento_id = r.id
+             WHERE ' . $permiso . '
+             GROUP BY r.id, c.tipo_prueba
+             ORDER BY p.nombre, r.no_funcional, r.numero'
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** @param list<int>|null $proyectos Permisos::proyectos() */
     public static function contar(?array $proyectos): int
     {

@@ -27,13 +27,13 @@ use App\Helpers\Icono;
     <table class="tabla tabla-tarjetas">
       <caption class="solo-lector">Evaluaciones por proyecto</caption>
       <thead>
-        <tr><th scope="col">Proyecto</th><th scope="col">Personas que la llenaron</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+        <tr><th scope="col">Proyecto</th><th scope="col" class="num">Personas que la llenaron</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
       </thead>
       <tbody>
         <?php foreach ($proyectos as $p): ?>
           <tr>
             <th scope="row" data-columna="Proyecto"><?= Html::e($p['nombre']) ?></th>
-            <td data-columna="Personas que la llenaron"><?= $p['guardadas'] ? (int) $p['guardadas'] : '<span class="insignia insignia-borde">Ninguna</span>' ?></td>
+            <td data-columna="Personas que la llenaron" class="num"><?= $p['guardadas'] ? (int) $p['guardadas'] : '<span class="sin-dato"><span aria-hidden="true">—</span><span class="solo-lector">Ninguna</span></span>' ?></td>
             <td class="celda-acciones">
               <a class="btn btn-secundario" href="/formularios/autoevaluacion?proyecto=<?= (int) $p['id'] ?>"
                 aria-label="<?= Html::e('Ver evaluación de ' . $p['nombre']) ?>">Ver evaluación</a>

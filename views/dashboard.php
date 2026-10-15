@@ -13,9 +13,9 @@ use App\Helpers\Icono;
  * @var array{total: array<string, int>, proyectos: list<array<string, mixed>>} $avance
  * @var list<array<string, mixed>> $asignados  incidentes abiertos asignados al usuario
  * @var list<array<string, mixed>> $atrasados  casos pendientes con la fecha final pasada
- * @var list<array<string, mixed>> $misPendientes  tester: sus casos sin resultado
+ * @var list<array<string, mixed>> $misPendientes  tester: sus casos sin resultado que no han vencido
  * @var list<array{id: int, nombre: string, sin_miembros: bool, sin_plan: bool}> $incompletos  admin
- * @var array{rol: int, activo: ?int} $usuario
+ * @var array{id: int, rol: int, activo: ?int} $usuario
  */
 
 $t = $avance['total'];
@@ -122,7 +122,7 @@ foreach ($avance['proyectos'] as $p) {
           <div class="tarjeta-contenido">
             <ul class="tareas">
               <?php foreach ($atrasados as $c): ?>
-                <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small>Vencía el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
+                <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small><?= (int) $c['creado_por'] === $usuario['id'] ? 'Tuyo · ' : '' ?>Vencía el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
               <?php endforeach; ?>
             </ul>
           </div>
@@ -130,7 +130,7 @@ foreach ($avance['proyectos'] as $p) {
       <?php endif; ?>
       <?php if ($usuario['rol'] !== 1 && $misPendientes): ?>
         <section class="tarjeta" aria-labelledby="h-mis-pendientes">
-          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-mis-pendientes">Mis casos sin resultado</h2></header>
+          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-mis-pendientes">Mis casos por vencer</h2></header>
           <div class="tarjeta-contenido">
             <ul class="tareas">
               <?php foreach ($misPendientes as $c): ?>
@@ -177,9 +177,11 @@ foreach ($avance['proyectos'] as $p) {
             <div class="acciones"><?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></div>
           </header>
           <div class="tarjeta-contenido pila">
-            <div class="barra-apilada" role="img" aria-label="<?= Html::e($resumen) ?>">
+            <?php // Un cuadro por caso. Más de 200: un cuadro por cada $por casos. ?>
+            <?php $por = max(1, (int) ceil($p['casos'] / 200)); ?>
+            <div class="cuadricula" role="img" aria-label="<?= Html::e($resumen . ($por > 1 ? ". Cada cuadro: $por casos" : '')) ?>">
               <?php foreach ($partes as [, $clave, $variante]): ?>
-                <?php if ($p[$clave] > 0): ?><span class="barra-<?= $variante ?>" style="flex-grow:<?= (int) $p[$clave] ?>"></span><?php endif; ?>
+                <?= str_repeat('<span class="barra-' . $variante . '"></span>', (int) ceil($p[$clave] / $por)) ?>
               <?php endforeach; ?>
             </div>
             <ul class="leyenda" aria-hidden="true">
@@ -187,6 +189,16 @@ foreach ($avance['proyectos'] as $p) {
                 <li><span class="leyenda-muestra barra-<?= $variante ?>"></span><?= $estado ?> <?= (int) $p[$clave] ?> · <?= $porcentaje($p[$clave], $p['casos']) ?> %</li>
               <?php endforeach; ?>
             </ul>
+            <?php if ($p['pendientes'] > 0): ?>
+              <?php $plan = new DateTime($p['fin_plan']); ?>
+              <?php if ($p['fin_estimado'] === null): ?>
+                <p class="proyeccion">Nadie anotó resultados en 7 días · plan: <span class="numero<?= $plan < new DateTime('today') ? ' proyeccion-tarde' : '' ?>"><?= Fecha::legible($plan) ?></span></p>
+              <?php else: ?>
+                <?php $estimado = new DateTime($p['fin_estimado']); $tarde = (int) $plan->diff($estimado)->format('%r%a'); ?>
+                <p class="proyeccion">A <span class="numero"><?= str_replace('.', ',', (string) $p['ritmo']) ?></span> casos/día termina el <span class="numero<?= $tarde > 0 ? ' proyeccion-tarde' : '' ?>"><?= Fecha::legible($estimado) ?></span>
+                  · plan: <?= Fecha::legible($plan) ?><?= $tarde > 0 ? " · <span class=\"proyeccion-tarde\">$tarde d tarde</span>" : '' ?></p>
+              <?php endif; ?>
+            <?php endif; ?>
           </div>
           <footer class="tarjeta-pie">
             <?php // Abrir = elegirlo en el selector del sidebar. ?>

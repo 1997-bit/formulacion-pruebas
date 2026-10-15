@@ -22,12 +22,11 @@ $editar = '/formularios/cobertura_blanca/editar?requerimiento=' . (int) $requeri
   <div>
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Cobertura de caja blanca</h1>
-    <p class="solo-impresion">Formulario 5 · Cobertura de caja blanca</p>
   </div>
   <?php if ($filas): ?>
     <div class="acciones">
       <a class="btn btn-secundario" href="<?= $editar ?>"><?= Icono::svg('pencil') ?> Editar</a>
-      <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+      <?= Vista::capturar('partials/imprimir') ?>
     </div>
   <?php endif; ?>
 </header>
@@ -72,5 +71,4 @@ $editar = '/formularios/cobertura_blanca/editar?requerimiento=' . (int) $requeri
       <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
 </div>

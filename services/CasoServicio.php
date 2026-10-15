@@ -374,17 +374,25 @@ final class CasoServicio
 
     /**
      * @param array<string, string> $filtros
-     * @return array{proyecto: ?int, requerimiento: ?int, estado: ?int}
+     * @return array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string}
      */
     private static function filtros(array $filtros): array
     {
         $numero = fn (string $clave): ?int => ctype_digit($filtros[$clave] ?? '') ? (int) $filtros[$clave] : null;
+        // Fecha ISO válida o null: 2026-02-30 no pasa.
+        $fecha = function (string $clave) use ($filtros): ?string {
+            $f = \DateTimeImmutable::createFromFormat('!Y-m-d', $filtros[$clave] ?? '');
+
+            return $f !== false && $f->format('Y-m-d') === $filtros[$clave] ? $filtros[$clave] : null;
+        };
         $estado = $numero('estado');
 
         return [
             'proyecto' => $numero('proyecto'),
             'requerimiento' => $numero('requerimiento'),
             'estado' => Catalogo::existe('estado_caso', $estado) ? $estado : null,
+            'desde' => $fecha('desde'),
+            'hasta' => $fecha('hasta'),
         ];
     }
 

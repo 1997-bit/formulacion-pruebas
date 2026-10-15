@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 use App\Core\Vista;
 use App\Helpers\Catalogo;
-use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -25,12 +24,11 @@ $numero = fn (?float $n): string => $n === null ? '—' : number_format($n, 1);
     <p class="antetitulo"><?= Html::e($proyecto['nombre']) ?></p>
     <h1>Autoevaluación y coevaluación</h1>
     <?php if ($evaluacion !== null): ?><p>Coevaluación de <?= Html::e($evaluacion['evaluado']) ?>.</p><?php endif; ?>
-    <p class="solo-impresion">Formulario 8 · Autoevaluación y coevaluación</p>
   </div>
   <?php if ($evaluacion !== null): ?>
     <div class="acciones">
       <a class="btn btn-secundario" href="<?= $editar ?>"><?= Icono::svg('pencil') ?> Editar</a>
-      <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+      <?= Vista::capturar('partials/imprimir') ?>
     </div>
   <?php endif; ?>
 </header>
@@ -85,5 +83,4 @@ $numero = fn (?float $n): string => $n === null ? '—' : number_format($n, 1);
     </div>
     <p class="campo-ayuda">Sin dato, la persona aún no se evalúa o nadie la ha evaluado.</p>
   </section>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
 </div>

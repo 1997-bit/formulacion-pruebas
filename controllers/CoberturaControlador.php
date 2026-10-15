@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\FilasModelo;
 use App\Services\CoberturaServicio;
 use App\Services\RequerimientoServicio;
@@ -34,6 +35,7 @@ final class CoberturaControlador
         $requerimiento = RequerimientoServicio::ver((int) $_GET['requerimiento'], $usuario) ?? Respuesta::error(404);
         Vista::pagina('cobertura/ver', [
             'titulo' => 'Cobertura de caja blanca · ' . $requerimiento['codigo'],
+            'documento' => Impresion::documento(5, $requerimiento['proyecto'], $requerimiento['codigo']),
             'requerimiento' => $requerimiento,
             'filas' => CoberturaServicio::filas($requerimiento['id'], $usuario),
             'guardado' => CoberturaServicio::guardado($requerimiento['id'], $usuario),

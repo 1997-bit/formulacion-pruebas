@@ -34,7 +34,7 @@ use App\Services\RubricaServicio;
         <?php foreach ($proyectos as $p): ?>
           <tr>
             <th scope="row" data-columna="Proyecto"><?= Html::e($p['nombre']) ?></th>
-            <td data-columna="Total" class="num"><?= $p['total'] === null ? '<span class="insignia insignia-borde">Sin evaluar</span>' : (int) $p['total'] . ' / ' . RubricaServicio::MAXIMO ?></td>
+            <td data-columna="Total" class="num"><?= $p['total'] === null ? '<span class="sin-dato"><span aria-hidden="true">—</span><span class="solo-lector">Sin evaluar</span></span>' : (int) $p['total'] . ' / ' . RubricaServicio::MAXIMO ?></td>
             <td class="celda-acciones">
               <a class="btn btn-secundario" href="/formularios/rubrica?proyecto=<?= (int) $p['id'] ?>"
                 aria-label="<?= Html::e('Ver rúbrica de ' . $p['nombre']) ?>">Ver rúbrica</a>

@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\CasoModelo;
 use App\Models\FilasModelo;
 use App\Services\CasoServicio;
@@ -32,7 +33,7 @@ final class CasosControlador
     public function listar(): void
     {
         $filtros = [];
-        foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
+        foreach (['proyecto', 'requerimiento', 'estado', 'desde', 'hasta'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
         // Lista por defecto: g c y el menú llevan a la lista.
@@ -122,9 +123,11 @@ final class CasosControlador
         $caso = CasoServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
         Vista::pagina('casos/resultado', [
             'titulo' => $caso['codigo'],
+            'documento' => Impresion::documento(1, $caso['proyecto'], $caso['codigo']),
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'vecinos' => CasoModelo::vecinos($caso),
+            'historial' => Historial::deCaso($caso['id']),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [

@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Services\AutoevaluacionServicio;
 
 // RF-15
@@ -33,6 +34,7 @@ final class AutoevaluacionControlador
         $proyecto = AutoevaluacionServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('autoevaluacion/ver', [
             'titulo' => 'Auto y coevaluación · ' . $proyecto['nombre'],
+            'documento' => Impresion::documento(8, $proyecto['nombre']),
             'proyecto' => $proyecto,
             'puedeLlenar' => AutoevaluacionServicio::puedeLlenar($proyecto['id'], $usuario['id']),
             'evaluacion' => AutoevaluacionServicio::evaluacion($proyecto['id'], $usuario),

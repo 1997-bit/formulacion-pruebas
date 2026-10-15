@@ -52,8 +52,70 @@ final class ReporteServicio
         $proyecto['casos_sin_evidencia'] = ReporteModelo::casosSinEvidencia($proyectoId);
         $proyecto['casos_fault_sin_incidente'] = ReporteModelo::faultSinIncidente($proyectoId);
         $proyecto['stoppers_abiertos'] = ReporteModelo::stoppersAbiertos($proyectoId);
+        $proyecto['graficos'] = self::graficos($proyectoId);
 
         return $proyecto;
+    }
+
+    /**
+     * Series por día del cierre. Rango: del primer al último dato, máximo 60 días. Null sin datos.
+     * plan_acum: casos con fecha final hasta ese día. real_acum: anotados hasta ese día, null después de hoy.
+     *
+     * @return array<string, mixed>|null
+     */
+    private static function graficos(int $proyectoId): ?array
+    {
+        $casos = ReporteModelo::casosPorDia($proyectoId);
+        $incidentes = ReporteModelo::incidentesPorDia($proyectoId);
+        $fechas = [...array_keys($casos['plan']), ...array_keys($casos['anotados']), ...array_column($incidentes, 'dia')];
+        if ($fechas === []) {
+            return null;
+        }
+
+        $hoy = date('Y-m-d');
+        // Hasta hoy o el último dato si es después: el avance se mide a hoy.
+        $hasta = new \DateTimeImmutable(max([...$fechas, $hoy]));
+        $desde = max(new \DateTimeImmutable(min($fechas)), $hasta->modify('-59 days'));
+        // Lo de antes del rango cuenta en los acumulados.
+        $antes = fn (array $porDia): int => array_sum(array_filter($porDia, fn (string $d): bool => $d < $desde->format('Y-m-d'), ARRAY_FILTER_USE_KEY));
+        $plan = $antes($casos['plan']);
+        $real = $antes($casos['anotados']);
+
+        $porDia = [];
+        foreach ($incidentes as $i) {
+            $porDia[$i['dia']]['severidad'][$i['severidad']] = ($porDia[$i['dia']]['severidad'][$i['severidad']] ?? 0) + $i['n'];
+            $porDia[$i['dia']]['stoppers'] = ($porDia[$i['dia']]['stoppers'] ?? 0) + $i['n'] * $i['es_stopper'];
+        }
+
+        $dias = [];
+        for ($d = $desde; $d <= $hasta; $d = $d->modify('+1 day')) {
+            $dia = $d->format('Y-m-d');
+            $anotados = $casos['anotados'][$dia] ?? 0;
+            $plan += $casos['plan'][$dia] ?? 0;
+            $real += $anotados;
+            $dias[] = [
+                'dia' => $dia,
+                'anotados' => $anotados,
+                'plan_acum' => $plan,
+                'real_acum' => $dia <= $hoy ? $real : null,
+                'severidad' => ($porDia[$dia]['severidad'] ?? []) + [1 => 0, 2 => 0, 3 => 0, 4 => 0],
+                'stoppers' => $porDia[$dia]['stoppers'] ?? 0,
+            ];
+        }
+
+        $pasados = array_values(array_filter($dias, fn (array $d): bool => $d['real_acum'] !== null));
+        $pico = $dias[array_search(max(array_column($dias, 'anotados')), array_column($dias, 'anotados'), true)];
+        $ultimo = end($pasados);
+
+        return [
+            'dias' => $dias,
+            'pico' => $pico,
+            'promedio' => $pasados === [] ? 0.0 : round(array_sum(array_column($pasados, 'anotados')) / count($pasados), 1),
+            'sin_anotar' => count(array_filter($pasados, fn (array $d): bool => $d['anotados'] === 0)),
+            'diferencia' => $ultimo === false ? 0 : $ultimo['real_acum'] - $ultimo['plan_acum'],
+            'incidentes' => array_sum(array_column($incidentes, 'n')),
+            'horas_cierre' => ReporteModelo::horasDeCierre($proyectoId),
+        ];
     }
 
     /**
@@ -73,6 +135,12 @@ final class ReporteServicio
         $ejecutados = $p['ok'] + $p['fault'];
         $p['aprobacion'] = $ejecutados === 0 ? 0 : (int) round($p['ok'] / $ejecutados * 100);
         $p['go'] = $p['casos'] > 0 && !in_array(false, array_column($p['criterios'], 'cumple'), true);
+
+        // Proyección: ritmo de los últimos 7 días. Sin ritmo o sin pendientes: sin fecha.
+        $p['ritmo'] = round($p['anotados_7d'] / 7, 1);
+        $p['fin_estimado'] = $p['pendientes'] === 0 || $p['anotados_7d'] === 0
+            ? null
+            : (new \DateTimeImmutable('today'))->modify('+' . (int) ceil($p['pendientes'] * 7 / $p['anotados_7d']) . ' days')->format('Y-m-d');
 
         return $p;
     }
