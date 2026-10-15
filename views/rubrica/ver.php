@@ -28,7 +28,7 @@ $nivel = fn (int $p): int => min(5 - $p, 3);
   <?php if ($rubrica !== null): ?>
     <div class="acciones">
       <a class="btn btn-secundario" href="<?= $editar ?>"><?= Icono::svg('pencil') ?> Editar</a>
-      <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+      <?= Vista::capturar('partials/imprimir') ?>
     </div>
   <?php endif; ?>
 </header>

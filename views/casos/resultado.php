@@ -52,7 +52,7 @@ $pasos = match ($caso['estado']) {
     <?php if ($editable): ?>
       <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>" data-atajo="e"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
-    <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+    <?= Vista::capturar('partials/imprimir') ?>
     <?php if ($usuario['rol'] === 1): ?>
       <button class="btn btn-secundario btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
       <dialog closedby="any" class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">

@@ -27,7 +27,7 @@ $editar = '/formularios/valor_limite/editar?requerimiento=' . (int) $requerimien
   <?php if ($filas): ?>
     <div class="acciones">
       <a class="btn btn-secundario" href="<?= $editar ?>"><?= Icono::svg('pencil') ?> Editar</a>
-      <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+      <?= Vista::capturar('partials/imprimir') ?>
     </div>
   <?php endif; ?>
 </header>

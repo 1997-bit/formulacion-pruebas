@@ -29,7 +29,7 @@ $listas = [
     <p class="fila">Decisión <?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></p>
   </div>
   <div class="acciones">
-    <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+    <?= Vista::capturar('partials/imprimir') ?>
   </div>
 </header>
 
