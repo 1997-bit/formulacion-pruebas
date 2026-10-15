@@ -28,20 +28,20 @@
 :root[data-tema="dark"]  { color-scheme: dark; }
 
 :root {
-  --fondo: light-dark(oklch(100% 0 0), oklch(14.5% 0 0));
+  --fondo: light-dark(oklch(100% 0 0), oklch(21% 0.006 285));
   --texto: light-dark(oklch(17.8% 0 0), oklch(95% 0 0));
-  --tarjeta: light-dark(oklch(100% 0 0), oklch(20.5% 0 0));
+  --tarjeta: light-dark(oklch(100% 0 0), oklch(23.5% 0.006 285));
   --tarjeta-texto: var(--texto);
-  --flotante: light-dark(oklch(100% 0 0), oklch(27% 0 0));
+  --flotante: light-dark(oklch(100% 0 0), oklch(27% 0.006 285));
   --flotante-texto: var(--texto);
 
   --primario: oklch(54.5% 0.252 264);
   --primario-texto: oklch(100% 0 0);
-  --secundario: light-dark(oklch(97% 0 0), oklch(30% 0 0));
+  --secundario: light-dark(oklch(97% 0 0), oklch(29% 0.006 285));
   --secundario-texto: var(--texto);
-  --tenue: light-dark(oklch(97% 0 0), oklch(30% 0 0));
-  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0 0));
-  --acento: light-dark(oklch(95% 0 0), oklch(34% 0 0));   /* hover y selección */
+  --tenue: light-dark(oklch(97% 0 0), oklch(29% 0.006 285));
+  --tenue-texto: light-dark(oklch(50% 0 0), oklch(65% 0.01 285));
+  --acento: light-dark(oklch(95% 0 0), oklch(31% 0.006 285));   /* hover y selección */
   --acento-texto: var(--texto);
 
   --destacado: oklch(73.2% 0.186 53);
@@ -68,7 +68,7 @@
   --error: var(--peligro-fuerte);
   --correcto: var(--exito-fuerte);
 
-  --borde: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 12%));
+  --borde: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 8%));
   --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, mínimo 3:1 */
   --anillo: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
   --enlace: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
@@ -81,9 +81,9 @@
   --velo-desenfoque: blur(8px);
   --velo-respaldo: oklch(0% 0 0 / 0.4); /* sin backdrop-filter */
 
-  --lateral: light-dark(oklch(97.5% 0 0), oklch(13% 0 0));
+  --lateral: light-dark(oklch(97.5% 0 0), oklch(19% 0.006 285));
   --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));
-  --lateral-acento: light-dark(oklch(94% 0 0), oklch(27% 0 0));
+  --lateral-acento: light-dark(oklch(94% 0 0), oklch(27% 0.006 285));
   --lateral-acento-texto: var(--acento-texto);
   --lateral-borde: var(--borde);
   --lateral-ancho: 16rem;
