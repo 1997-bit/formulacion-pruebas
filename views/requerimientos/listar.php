@@ -7,8 +7,10 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
+ * @var string $vista lista o matriz
+ * @var list<array<string, mixed>> $matriz  RequerimientoServicio::matriz()
  * @var list<array<string, mixed>> $requerimientos
- * @var Paginacion $paginacion
+ * @var ?Paginacion $paginacion
  * @var ?string $flash
  * @var array{activo: ?int} $usuario
  */
@@ -22,9 +24,15 @@ $todos = $usuario['activo'] === null;
   </div>
   <div class="acciones"><a class="btn btn-primario" href="/requerimientos/registrar" data-atajo="c"><?= Icono::svg('plus') ?> Registrar requerimiento</a></div>
 </header>
+<nav class="pestanas" aria-label="Vistas de requerimientos">
+  <a href="/requerimientos/listar"<?= $vista === 'lista' ? ' aria-current="page"' : '' ?>><?= Icono::svg('list-checks') ?> Lista</a>
+  <a href="/requerimientos/listar?vista=matriz"<?= $vista === 'matriz' ? ' aria-current="page"' : '' ?>><?= Icono::svg('layout-grid') ?> Matriz de cobertura</a>
+</nav>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
-  <?php if (!$requerimientos): ?>
+  <?php if ($vista === 'matriz'): ?>
+    <?= Vista::capturar('requerimientos/matriz', ['matriz' => $matriz]) ?>
+  <?php elseif (!$requerimientos): ?>
     <div class="vacio">
       <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
       <h2>Todavía no hay requerimientos</h2>
@@ -51,6 +59,6 @@ $todos = $usuario['activo'] === null;
         </tbody>
       </table>
     </div>
-    <?= Vista::capturar('partials/paginacion', ['paginacion' => $paginacion]) ?>
+    <?php if ($paginacion !== null): ?><?= Vista::capturar('partials/paginacion', ['paginacion' => $paginacion]) ?><?php endif; ?>
   <?php endif; ?>
 </div>

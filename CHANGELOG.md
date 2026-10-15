@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Panel: cuadrícula con un cuadro por caso y fecha estimada de fin según el ritmo de 7 días.
 - Reporte de cierre: resultados por día con promedio y pico, avance contra el plan e incidentes por día con stoppers.
+- Requerimientos: matriz de cobertura por tipo de prueba, con huecos y FAULT marcados.
 - Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
 - Ajustes: densidad compacta.
 - Esqueleto de carga si una página tarda más de 150 ms.

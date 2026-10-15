@@ -145,4 +145,23 @@ final class RequerimientoServicioTest extends BaseDatos
 
         RequerimientoServicio::ver($requerimiento, $this->sesion($this->usuario()));
     }
+
+    // RF-01 con 2 casos tipo 1, uno FAULT. RF-02 sin casos: 1 de 2 celdas.
+    public function testMatrizCuentaCasosPorTipoYHuecos(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $rf1 = $this->requerimiento($proyecto, 'RF-01');
+        $this->requerimiento($proyecto, 'RF-02');
+        $this->caso($proyecto, $rf1, $tester, 'UNI-001');
+        $fault = $this->caso($proyecto, $rf1, $tester, 'UNI-002');
+        \App\Config\Conexion::pdo()->prepare('UPDATE casos_prueba SET estado = 2 WHERE id = ?')->execute([$fault]);
+
+        $p = RequerimientoServicio::matriz($this->sesion($tester))[0];
+
+        $this->assertSame(
+            [[1], ['casos' => 2, 'fault' => 1], 1, 2, ['RF-02']],
+            [$p['tipos'], $p['filas'][0]['celdas'][1], $p['cubiertas'], $p['total'], $p['sin_casos']],
+        );
+    }
 }

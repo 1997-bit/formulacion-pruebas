@@ -651,4 +651,27 @@ button.sidebar-boton {
   .grafico-barras span, .grafico-stoppers span, .grafico-promedio span, .leyenda-muestra { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
+/* Matriz de cobertura: celda = casos de un requerimiento y un tipo. Relleno por cantidad. */
+
+.matriz-contenedor { overflow-x: auto; margin-bottom: 12px; }
+.matriz { border-collapse: separate; border-spacing: 4px; font-size: var(--letra-sm); }
+.matriz thead th { font-family: var(--fuente-mono); font-size: var(--letra-xs); font-weight: 500; color: var(--tenue-texto); text-align: center; }
+.matriz abbr { text-decoration: none; cursor: help; }
+.matriz tbody th { max-width: 22rem; padding-right: 12px; text-align: left; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.matriz-descripcion { color: var(--tenue-texto); }
+.matriz td { padding: 0; }
+.matriz-celda { position: relative; display: grid; place-items: center; width: 2.5rem; height: 2rem; overflow: hidden; border-radius: var(--radio-sm); font-family: var(--fuente-mono); font-size: var(--letra-xs); color: var(--texto); text-decoration: none; }
+a.matriz-celda:hover { outline: 2px solid var(--anillo); outline-offset: 1px; }
+.matriz-vacia { border: 1px dashed var(--entrada); }
+.matriz-nivel-1 { background: color-mix(in oklch, var(--primario), transparent 82%); }
+.matriz-nivel-2 { background: color-mix(in oklch, var(--primario), transparent 60%); }
+.matriz-nivel-3 { background: var(--primario); color: var(--primario-texto); }
+.matriz-fault::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--peligro); }
+.matriz-fault-muestra { background: linear-gradient(transparent 60%, var(--peligro) 60%); border: 1px solid var(--borde); }
+.leyenda-muestra.matriz-vacia { border-width: 1px; }
+.matriz-pie { justify-content: space-between; }
+.matriz-pie p { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.matriz-pie .icono { width: 16px; height: 16px; color: var(--aviso-fuerte); }
+@media print { .matriz-celda, .matriz-fault::after { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
 }
