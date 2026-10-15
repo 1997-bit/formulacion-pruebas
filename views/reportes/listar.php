@@ -27,17 +27,17 @@ use App\Helpers\Icono;
     <table class="tabla tabla-tarjetas">
       <caption class="solo-lector">Decisión por proyecto</caption>
       <thead>
-        <tr><th scope="col">Proyecto</th><th scope="col">Casos</th><th scope="col">Pendientes</th><th scope="col">Sin evidencia</th><th scope="col">FAULT sin incidente</th><th scope="col">Stoppers abiertos</th><th scope="col">Decisión</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+        <tr><th scope="col">Proyecto</th><th scope="col" class="num">Casos</th><th scope="col" class="num">Pendientes</th><th scope="col" class="num">Sin evidencia</th><th scope="col" class="num">FAULT sin incidente</th><th scope="col" class="num">Stoppers abiertos</th><th scope="col">Decisión</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
       </thead>
       <tbody>
         <?php foreach ($proyectos as $p): ?>
           <tr>
             <th scope="row" data-columna="Proyecto"><?= Html::e($p['nombre']) ?></th>
-            <td data-columna="Casos"><?= (int) $p['casos'] ?></td>
-            <td data-columna="Pendientes"><?= (int) $p['pendientes'] ?></td>
-            <td data-columna="Sin evidencia"><?= (int) $p['sin_evidencia'] ?></td>
-            <td data-columna="FAULT sin incidente"><?= (int) $p['fault_sin_incidente'] ?></td>
-            <td data-columna="Stoppers abiertos"><?= (int) $p['stoppers'] ?></td>
+            <td data-columna="Casos" class="num"><?= (int) $p['casos'] ?></td>
+            <td data-columna="Pendientes" class="num"><?= (int) $p['pendientes'] ?></td>
+            <td data-columna="Sin evidencia" class="num"><?= (int) $p['sin_evidencia'] ?></td>
+            <td data-columna="FAULT sin incidente" class="num"><?= (int) $p['fault_sin_incidente'] ?></td>
+            <td data-columna="Stoppers abiertos" class="num"><?= (int) $p['stoppers'] ?></td>
             <td data-columna="Decisión"><?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></td>
             <td class="celda-acciones">
               <a class="btn btn-secundario" href="/reportes/cierre?proyecto=<?= (int) $p['id'] ?>"

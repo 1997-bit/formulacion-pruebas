@@ -442,12 +442,31 @@ button.sidebar-boton {
   }
 }
 
-/* Hover suave. Sin movimiento si el usuario lo pide */
+/* Hover suave, cambio de página, entrada de diálogos y menús. Sin movimiento si el usuario lo pide */
 @media (prefers-reduced-motion: no-preference) {
   .btn, .cifra-enlace, .tarjeta-caso, .tareas a, .sidebar-boton, .sidebar-subboton {
     transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
   }
+  /* Cambio de página con fundido. Firefox navega sin él */
+  @view-transition { navigation: auto; }
+  .encabezado h1 { view-transition-name: titulo; }
+  dialog[open], .usuario-flotante, .proyecto-flotante { animation: entrar 0.15s ease-out; }
+  /* <details> abre y cierra con altura animada. Sin soporte: abre al instante */
+  :root { interpolate-size: allow-keywords; }
+  .sidebar-desplegable::details-content { height: 0; overflow: clip; transition: height 0.2s, content-visibility 0.2s allow-discrete; }
+  .sidebar-desplegable[open]::details-content { height: auto; }
 }
+@keyframes entrar { from { opacity: 0; scale: 0.97; } }
+:root[data-movimiento="reducido"]::view-transition-group(*),
+:root[data-movimiento="reducido"]::view-transition-old(*),
+:root[data-movimiento="reducido"]::view-transition-new(*) { animation: none; }
+[data-movimiento="reducido"] ::details-content { transition: none; }
+
+/* Sombra de la barra superior solo al bajar */
+@supports (animation-timeline: scroll()) {
+  .app-barra { animation: barra-sombra linear both; animation-timeline: scroll(); animation-range: 0 24px; }
+}
+@keyframes barra-sombra { to { box-shadow: var(--sombra-sm); } }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
@@ -518,6 +537,11 @@ button.sidebar-boton {
 /* Enlace en texto: subrayado tenue siempre, no solo color. WCAG 1.4.1 */
 .app-principal :is(p, dd) a:not(.btn) { text-decoration: underline; text-decoration-color: color-mix(in oklch, currentColor, transparent 60%); text-underline-offset: 3px; }
 [data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }
+
+/* Ajustes → Densidad compacta */
+[data-densidad="compacta"] .tabla :is(th, td) { padding-block: 6px; }
+[data-densidad="compacta"] .tareas a { padding-block: 5px; }
+[data-densidad="compacta"] .tarjeta { padding: 16px; }
 
 /* Casos → Tablero: una columna por estado */
 .tablero { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); align-items: start; }

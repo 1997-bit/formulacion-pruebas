@@ -36,7 +36,7 @@ $todos = $usuario['activo'] === null;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Requerimientos</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Descripción</th><th scope="col">Tipo</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col">Casos</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Descripción</th><th scope="col">Tipo</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col" class="num">Casos</th></tr>
         </thead>
         <tbody>
           <?php foreach ($requerimientos as $r): ?>
@@ -45,7 +45,7 @@ $todos = $usuario['activo'] === null;
               <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
               <td data-columna="Tipo"><span class="insignia insignia-borde"><?= $r['no_funcional'] ? 'No funcional' : 'Funcional' ?></span></td>
               <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td><?php endif; ?>
-              <td data-columna="Casos"><?= (int) $r['casos'] ?></td>
+              <td data-columna="Casos" class="num"><?= (int) $r['casos'] ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
