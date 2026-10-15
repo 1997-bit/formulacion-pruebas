@@ -24,19 +24,19 @@
 :root[data-tema="dark"]  { color-scheme: dark; }
 
 :root {
-  --fondo: light-dark(oklch(100% 0 0), oklch(18% 0.03 231));
+  --fondo: light-dark(oklch(100% 0 0), oklch(15.5% 0 0));
   --texto: light-dark(oklch(17.8% 0 0), oklch(95% 0 0));
-  --tarjeta: light-dark(oklch(100% 0 0), oklch(21% 0.03 231));
+  --tarjeta: light-dark(oklch(100% 0 0), oklch(19% 0 0));
   --tarjeta-texto: var(--texto);
-  --flotante: light-dark(oklch(100% 0 0), oklch(23% 0.03 231));
+  --flotante: light-dark(oklch(100% 0 0), oklch(22% 0 0));
   --flotante-texto: var(--texto);
 
   --primario: oklch(54.5% 0.252 264);
   --primario-texto: oklch(100% 0 0);
-  --secundario: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
+  --secundario: light-dark(oklch(97% 0 0), oklch(25% 0 0));
   --secundario-texto: var(--texto);
-  --tenue: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
-  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0.01 231));
+  --tenue: light-dark(oklch(97% 0 0), oklch(25% 0 0));
+  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0 0));
   --acento: light-dark(oklch(95% 0.03 262), oklch(32% 0.07 262));   /* hover y selección */
   --acento-texto: var(--texto);
 
@@ -80,9 +80,9 @@
   --velo-desenfoque: blur(8px);
   --velo-respaldo: oklch(0% 0 0 / 0.4); /* sin backdrop-filter */
 
-  --lateral: light-dark(oklch(97.5% 0 0), oklch(20% 0.03 231));
+  --lateral: light-dark(oklch(97.5% 0 0), oklch(13% 0 0));
   --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));
-  --lateral-acento: light-dark(oklch(94% 0 0), oklch(32% 0.07 262));
+  --lateral-acento: light-dark(oklch(94% 0 0), oklch(27% 0 0));
   --lateral-acento-texto: var(--acento-texto);
   --lateral-borde: var(--borde);
   --lateral-ancho: 16rem;
