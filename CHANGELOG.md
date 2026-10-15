@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Panel: las tarjetas llenan el ancho; en pantallas anchas ya no quedan pegadas a la izquierda.
 - Diálogo de atajos (?): cierra con clic afuera, como los demás.
 - Panel del tester: "Mis casos por vencer" ya no repite los atrasados; en atrasados, los suyos dicen "Tuyo".
 - Tablero: cada columna con alto máximo y scroll propio.
