@@ -106,7 +106,7 @@ final class CasoModelo
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
+            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin, c.creado_por
              FROM casos_prueba c
              WHERE ' . $permiso . ' AND c.estado = 0 AND c.fecha_fin < CURDATE()
              ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
@@ -117,7 +117,7 @@ final class CasoModelo
     }
 
     /**
-     * Pendientes que creó el usuario, el de fecha final más próxima primero.
+     * Pendientes que creó el usuario y no han vencido, el más próximo primero. Los vencidos van en atrasados().
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -128,7 +128,7 @@ final class CasoModelo
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
              FROM casos_prueba c
-             WHERE ' . $permiso . ' AND c.estado = 0 AND c.creado_por = ?
+             WHERE ' . $permiso . ' AND c.estado = 0 AND c.creado_por = ? AND c.fecha_fin >= CURDATE()
              ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
         );
         $sql->execute([...$valores, $usuarioId]);

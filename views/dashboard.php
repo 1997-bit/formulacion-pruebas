@@ -13,9 +13,9 @@ use App\Helpers\Icono;
  * @var array{total: array<string, int>, proyectos: list<array<string, mixed>>} $avance
  * @var list<array<string, mixed>> $asignados  incidentes abiertos asignados al usuario
  * @var list<array<string, mixed>> $atrasados  casos pendientes con la fecha final pasada
- * @var list<array<string, mixed>> $misPendientes  tester: sus casos sin resultado
+ * @var list<array<string, mixed>> $misPendientes  tester: sus casos sin resultado que no han vencido
  * @var list<array{id: int, nombre: string, sin_miembros: bool, sin_plan: bool}> $incompletos  admin
- * @var array{rol: int, activo: ?int} $usuario
+ * @var array{id: int, rol: int, activo: ?int} $usuario
  */
 
 $t = $avance['total'];
@@ -122,7 +122,7 @@ foreach ($avance['proyectos'] as $p) {
           <div class="tarjeta-contenido">
             <ul class="tareas">
               <?php foreach ($atrasados as $c): ?>
-                <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small>Vencía el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
+                <li><a href="/casos/resultado?id=<?= (int) $c['id'] ?>"><span class="codigo"><?= Html::e($c['codigo']) ?></span> <span><?= Html::e($c['objetivo']) ?></span> <small><?= (int) $c['creado_por'] === $usuario['id'] ? 'Tuyo · ' : '' ?>Vencía el <?= Fecha::legible(new DateTime($c['fecha_fin'])) ?></small></a></li>
               <?php endforeach; ?>
             </ul>
           </div>
@@ -130,7 +130,7 @@ foreach ($avance['proyectos'] as $p) {
       <?php endif; ?>
       <?php if ($usuario['rol'] !== 1 && $misPendientes): ?>
         <section class="tarjeta" aria-labelledby="h-mis-pendientes">
-          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-mis-pendientes">Mis casos sin resultado</h2></header>
+          <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="h-mis-pendientes">Mis casos por vencer</h2></header>
           <div class="tarjeta-contenido">
             <ul class="tareas">
               <?php foreach ($misPendientes as $c): ?>

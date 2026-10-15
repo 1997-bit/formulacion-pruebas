@@ -40,7 +40,7 @@ use App\Helpers\Icono;
               <td data-columna="Requerimiento"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
               <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
               <td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td>
-              <td data-columna="Filas" class="num"><?= $r['filas'] ? (int) $r['filas'] : '<span class="insignia insignia-borde">Sin matriz</span>' ?></td>
+              <td data-columna="Filas" class="num"><?= $r['filas'] ? (int) $r['filas'] : '<span class="sin-dato"><span aria-hidden="true">—</span><span class="solo-lector">Sin matriz</span></span>' ?></td>
               <td class="celda-acciones">
                 <?php if ($r['filas']): ?>
                   <a class="btn btn-secundario" href="/formularios/clases_equivalencia?requerimiento=<?= (int) $r['id'] ?>"

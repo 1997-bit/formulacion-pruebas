@@ -51,7 +51,7 @@ $todos = $usuario['activo'] === null;
             <tr>
               <td data-columna="Código"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
               <td data-columna="Descripción" class="celda-larga"><?= Html::e($r['descripcion']) ?></td>
-              <td data-columna="Tipo"><span class="insignia insignia-borde"><?= $r['no_funcional'] ? 'No funcional' : 'Funcional' ?></span></td>
+              <td data-columna="Tipo"><?= $r['no_funcional'] ? '<span class="insignia insignia-borde">No funcional</span>' : '<span class="sin-dato">Funcional</span>' ?></td>
               <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td><?php endif; ?>
               <td data-columna="Casos" class="num"><?= (int) $r['casos'] ?></td>
             </tr>

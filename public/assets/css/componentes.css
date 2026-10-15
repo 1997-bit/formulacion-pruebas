@@ -217,7 +217,11 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   border-radius: var(--radio-xl);
 }
 .filtros .acciones { justify-content: flex-start; }
-.filtros-atajos { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+/* Sin dato en una columna de números: raya tenue, el lector oye el texto */
+.sin-dato { color: var(--tenue-texto); }
+/* Fila de abajo: atajos a la izquierda, botones a la derecha */
+.filtros-pie { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.filtros-atajos { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .filtros-atajos [aria-current] { background: var(--acento); color: var(--acento-texto); }
 
 /* Filtros activos: chips con ✕ */

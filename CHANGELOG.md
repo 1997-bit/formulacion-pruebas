@@ -33,6 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Panel del tester: "Mis casos por vencer" ya no repite los atrasados; en atrasados, los suyos dicen "Tuyo".
+- Tablero: cada columna con alto máximo y scroll propio.
+- Filtros de casos: atajos de fecha y botones en la misma fila.
+- Listas de formularios: "—" en las columnas de números sin dato, en vez de una insignia.
+- Requerimientos: solo "No funcional" lleva insignia.
+- Registrar caso: campos en filas completas, sin huecos.
 - Cerrar sesión desde la paleta de comandos.
 - Botón secundario hundido en oscuro.
 

@@ -32,14 +32,14 @@ use App\Helpers\Icono;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Coberturas por requerimiento</caption>
         <thead>
-          <tr><th scope="col">Requerimiento</th><th scope="col">Proyecto</th><th scope="col">Métricas</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
+          <tr><th scope="col">Requerimiento</th><th scope="col">Proyecto</th><th scope="col" class="num">Métricas</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
         </thead>
         <tbody>
           <?php foreach ($requerimientos as $r): ?>
             <tr>
               <td data-columna="Requerimiento"><span class="codigo"><?= Html::e($r['codigo']) ?></span></td>
               <td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td>
-              <td data-columna="Métricas"><?= $r['filas'] ? (int) $r['filas'] : '<span class="insignia insignia-borde">Sin cobertura</span>' ?></td>
+              <td data-columna="Métricas" class="num"><?= $r['filas'] ? (int) $r['filas'] : '<span class="sin-dato"><span aria-hidden="true">—</span><span class="solo-lector">Sin cobertura</span></span>' ?></td>
               <td class="celda-acciones">
                 <?php if ($r['filas']): ?>
                   <a class="btn btn-secundario" href="/formularios/cobertura_blanca?requerimiento=<?= (int) $r['id'] ?>"

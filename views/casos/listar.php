@@ -108,16 +108,18 @@ $chips = array_filter([
         <label for="fl-hasta">Hasta</label>
         <input class="control" type="date" id="fl-hasta" name="hasta" value="<?= Html::e($filtros['hasta']) ?>">
       </div>
-      <div class="acciones">
-        <button class="btn btn-secundario" type="submit">Filtrar</button>
-        <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
+      <div class="filtros-pie">
+        <p class="filtros-atajos"><span>Fechas:</span>
+          <?php foreach ($atajos as $texto => $r): ?>
+            <?php $activo = $filtros['desde'] === $r[0]->format('Y-m-d') && $filtros['hasta'] === $r[1]->format('Y-m-d'); ?>
+            <a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceAtajo($r)) ?>"<?= $activo ? ' aria-current="true"' : '' ?>><?= $texto ?></a>
+          <?php endforeach; ?>
+        </p>
+        <div class="acciones">
+          <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
+          <button class="btn btn-secundario" type="submit">Filtrar</button>
+        </div>
       </div>
-      <p class="filtros-atajos"><span>Fechas:</span>
-        <?php foreach ($atajos as $texto => $r): ?>
-          <?php $activo = $filtros['desde'] === $r[0]->format('Y-m-d') && $filtros['hasta'] === $r[1]->format('Y-m-d'); ?>
-          <a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceAtajo($r)) ?>"<?= $activo ? ' aria-current="true"' : '' ?>><?= $texto ?></a>
-        <?php endforeach; ?>
-      </p>
     </form>
     <?= Vista::capturar('partials/filtros_activos', [
         'ruta' => '/casos/listar',
