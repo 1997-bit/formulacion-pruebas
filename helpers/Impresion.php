@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// Documentos imprimibles: encabezado y pie de cada hoja. layouts/app.php pone las firmas al final.
+// Impresión: encabezado, marca y pie de cada hoja. Documentos: además firmas al final, ver layouts/app.php.
 final class Impresion
 {
     // Número de formulario de la guía => título. 0: el reporte de cierre, sin número.
@@ -22,20 +22,21 @@ final class Impresion
 
     /**
      * Para el controlador: 'documento' => Impresion::documento(2, $proyecto, 'RF-01').
+     * $marca: texto en el centro de arriba de cada hoja, como BORRADOR. Vacío: sin marca.
      *
-     * @return array{titulo: string, proyecto: string}
+     * @return array{titulo: string, proyecto: string, marca: string}
      */
-    public static function documento(int $formulario, string $proyecto, string $codigo = ''): array
+    public static function documento(int $formulario, string $proyecto, string $codigo = '', string $marca = ''): array
     {
         $titulo = ($formulario === 0 ? '' : "Formulario {$formulario} · ") . self::FORMULARIOS[$formulario];
 
-        return ['titulo' => $titulo . ($codigo === '' ? '' : " · {$codigo}"), 'proyecto' => $proyecto];
+        return ['titulo' => $titulo . ($codigo === '' ? '' : " · {$codigo}"), 'proyecto' => $proyecto, 'marca' => $marca];
     }
 
     /**
      * Atributo style del <html>. @page lee estas variables en sus márgenes, ver componentes.css.
      *
-     * @param array{titulo: string, proyecto: string} $documento
+     * @param array{titulo: string, proyecto: string, marca: string} $documento
      */
     public static function variables(array $documento, string $usuario, \DateTimeInterface $ahora): string
     {
@@ -43,6 +44,7 @@ final class Impresion
 
         return '--doc-titulo:' . $cadena($documento['titulo'])
             . ';--doc-proyecto:' . $cadena($documento['proyecto'])
+            . ';--doc-marca:' . $cadena($documento['marca'])
             . ';--doc-pie:' . $cadena('Impreso el ' . Fecha::legible($ahora) . ' ' . $ahora->format('H:i') . ' por ' . $usuario);
     }
 }

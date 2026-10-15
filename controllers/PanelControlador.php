@@ -55,7 +55,7 @@ final class PanelControlador
         $proyecto = ReporteServicio::cierre((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('reportes/cierre', [
             'titulo' => 'Reporte de cierre · ' . $proyecto['nombre'],
-            'documento' => Impresion::documento(0, $proyecto['nombre']),
+            'documento' => Impresion::documento(0, $proyecto['nombre'], '', $proyecto['go'] ? '' : 'NO-GO'),
             'proyecto' => $proyecto,
             'migas' => [
                 ['texto' => 'Reporte de cierre', 'ruta' => '/reportes/cierre'],

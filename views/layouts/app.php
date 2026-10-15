@@ -12,7 +12,7 @@ use App\Services\RequerimientoServicio;
  * @var string $contenido
  * @var array{nombre: string, usuario: string, rol: int} $usuario
  * @var list<array{texto: string, ruta?: string}> $migas
- * @var array{titulo: string, proyecto: string}|null $documento  encabezado y pie de cada hoja al imprimir
+ * @var array{titulo: string, proyecto: string, marca: string}|null $documento  documento imprimible: además firmas al final
  */
 
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
@@ -21,11 +21,11 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 // Para el selector de proyecto y la paleta.
 $proyectos = RequerimientoServicio::proyectos($usuario);
 $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
-// Documento imprimible: encabezado y pie de cada hoja, firmas al final.
-$hoja = isset($documento) ? Impresion::variables($documento, $usuario['nombre'], new DateTimeImmutable()) : '';
+// Encabezado y pie de cada hoja al imprimir, en toda página. Sin documento: título de la página y proyecto activo.
+$hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $activo['nombre'] ?? 'Todos los proyectos', 'marca' => ''], $usuario['nombre'], new DateTimeImmutable());
 ?>
 <!doctype html>
-<html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>"<?= $hoja !== '' ? ' style="' . Html::e($hoja) . '"' : '' ?>>
+<html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>" style="<?= Html::e($hoja) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

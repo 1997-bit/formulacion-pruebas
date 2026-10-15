@@ -259,6 +259,16 @@ document.querySelectorAll('[data-imprimir]').forEach((boton) => {
   boton.addEventListener('click', () => window.print());
 });
 
+// Al imprimir: abre los <details> cerrados del contenido y los cierra después. push: beforeprint puede llegar dos veces.
+const plegados = [];
+addEventListener('beforeprint', () => {
+  plegados.push(...document.querySelectorAll('.app-principal details:not([open])'));
+  plegados.forEach((d) => { d.open = true; });
+});
+addEventListener('afterprint', () => {
+  plegados.splice(0).forEach((d) => { d.open = false; });
+});
+
 // data-desde="id-inicio": fecha final no anterior.
 document.querySelectorAll('input[data-desde]').forEach((fin) => {
   const inicio = document.getElementById(fin.dataset.desde);

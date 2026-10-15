@@ -42,7 +42,8 @@ $editar = '/formularios/tabla_decision/editar?requerimiento=' . (int) $requerimi
     </div>
   <?php else: ?>
     <?php $reglas = 2 ** count($tabla['condiciones']); ?>
-    <div class="tabla-contenedor">
+    <?php // Más de 8 reglas: no cabe en vertical, se imprime en horizontal. ?>
+    <div class="tabla-contenedor<?= $reglas > 8 ? ' tabla-ancha' : '' ?>">
       <table class="tabla">
         <caption class="solo-lector">Condiciones y acciones por regla</caption>
         <thead>

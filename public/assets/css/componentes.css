@@ -1158,7 +1158,31 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
     @top-right { content: var(--doc-proyecto, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
     @bottom-left { content: var(--doc-pie, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
     @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    /* Marca del estado: BORRADOR, NO-GO. Vacía en el resto */
+    @top-center { content: var(--doc-marca, ""); font: 700 10pt var(--fuente); letter-spacing: 2pt; color: oklch(50% 0.2 25); }
   }
+  /* Hoja 1: el título ya está en el cuerpo. Sin encabezado, más aire arriba */
+  @page :first {
+    margin-top: 2.5cm;
+    @top-left { content: none; }
+    @top-right { content: none; }
+  }
+  /* Doble cara: margen interior más ancho para engrapar */
+  @page :left { margin-left: 1.5cm; margin-right: 2cm; }
+  @page :right { margin-left: 2cm; margin-right: 1.5cm; }
+  /* Página con tabla ancha: todo el documento en hoja horizontal, sin hojas sueltas antes y después */
+  @page horizontal { size: letter landscape; }
+  .app-principal:has(.tabla-ancha, .matriz-contenedor, .cronograma-contenedor) { page: horizontal; }
+
+  /* Texto: sin palabra sola al final, cortes en español, títulos parejos */
+  p, dd { text-wrap: pretty; hyphens: auto; }
+  h1, h2, h3 { text-wrap: balance; }
+  /* Enlaces externos: la dirección en papel */
+  .app-principal a[href^="http"]:not(.btn)::after { content: " (" attr(href) ")"; font-size: 0.85em; overflow-wrap: anywhere; hyphens: none; color: oklch(40% 0 0); }
+  /* Caja partida entre hojas: cada parte con su borde */
+  .alerta,
+  .archivo,
+  .tabla-contenedor { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
   /* Documento plano: sin tarjetas, secciones separadas por una línea */
   body { font-size: 10pt; }

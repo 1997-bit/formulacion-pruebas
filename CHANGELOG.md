@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Casos: filtro Desde y Hasta con atajos Esta semana, Próximos 7 días y Este mes.
 - Cronograma: tramo rayado si el resultado llegó tarde o el caso sigue atrasado.
 - Impresión en hoja carta: encabezado con formulario y proyecto, pie con fecha, usuario y número de página, datos primero, secciones y tablas cortas sin cortes, firmas al final. Al guardar como PDF, el título del archivo es el del documento.
+- Impresión: marca BORRADOR o NO-GO en cada hoja, hoja 1 sin encabezado, márgenes para doble cara, cronograma, matriz y tablas de decisión de más de 8 reglas en horizontal, URL de los enlaces externos, secciones plegadas abiertas, mejor corte de texto, y encabezado con título y proyecto también en las listas.
 - Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
 - Ajustes: densidad compacta.
 - Esqueleto de carga si una página tarda más de 150 ms.

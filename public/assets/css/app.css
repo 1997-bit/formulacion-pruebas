@@ -651,6 +651,10 @@ button.sidebar-boton {
 
 @media print {
   .grafico-barras span, .grafico-stoppers span, .grafico-promedio span, .leyenda-muestra { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Cronograma en hoja horizontal: los 31 días caben, sin scroll */
+  .cronograma-contenedor { overflow: visible; border-radius: 0; }
+  .cronograma-tramo, .cronograma-atraso, .cronograma-dia.finde { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cronograma { min-width: 0; grid-template-columns: 6rem repeat(var(--dias), minmax(0, 1fr)); }
   /* En papel: uno debajo de otro y más bajos. Bloque normal, ver componentes.css */
   .graficos, .rejilla-panel { display: block; }
   .graficos > * + *, .rejilla-panel > * + * { margin-top: 12pt; }

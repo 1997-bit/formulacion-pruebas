@@ -34,11 +34,13 @@ final class PlanControlador
         }
 
         $proyecto = PlanServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
+        $plan = PlanServicio::plan($proyecto['id'], $usuario);
         Vista::pagina('plan_pruebas/ver', [
             'titulo' => 'Plan de pruebas · ' . $proyecto['nombre'],
-            'documento' => Impresion::documento(6, $proyecto['nombre']),
+            // Sin plan o en borrador: BORRADOR en cada hoja.
+            'documento' => Impresion::documento(6, $proyecto['nombre'], '', ($plan['estado'] ?? 0) === 0 ? 'BORRADOR' : ''),
             'proyecto' => $proyecto,
-            'plan' => PlanServicio::plan($proyecto['id'], $usuario),
+            'plan' => $plan,
             'flash' => Sesion::tomar('flash'),
             'migas' => Vista::migas('Plan de pruebas', '/formularios/plan_pruebas', $proyecto['nombre']),
         ]);
