@@ -77,12 +77,12 @@ final class Impresion
      *
      * @param array{titulo: string, proyecto: string} $documento
      */
-    public static function variables(array $documento, string $usuario, \DateTimeInterface $ahora, string $peticion): string
+    public static function variables(array $documento, string $usuario, \DateTimeInterface $ahora): string
     {
         $cadena = static fn (string $texto): string => "'" . addcslashes($texto, "'\\") . "'";
 
         return '--doc-titulo:' . $cadena($documento['titulo'])
             . ';--doc-proyecto:' . $cadena($documento['proyecto'])
-            . ';--doc-pie:' . $cadena('Impreso el ' . Fecha::legible($ahora) . ' ' . $ahora->format('H:i') . ' por ' . $usuario . ' · ID ' . $peticion);
+            . ';--doc-pie:' . $cadena('Impreso el ' . Fecha::legible($ahora) . ' ' . $ahora->format('H:i') . ' por ' . $usuario);
     }
 }

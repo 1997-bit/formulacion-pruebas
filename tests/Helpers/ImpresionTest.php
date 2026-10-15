@@ -27,9 +27,9 @@ final class ImpresionTest extends TestCase
     // Una comilla del nombre no cierra la cadena CSS.
     public function testVariablesEscapanComillas(): void
     {
-        $css = Impresion::variables(['titulo' => 'T', 'proyecto' => "O'Hara"], 'Ana', new \DateTimeImmutable('2026-10-15 09:05'), 'abc123');
+        $css = Impresion::variables(['titulo' => 'T', 'proyecto' => "O'Hara"], 'Ana', new \DateTimeImmutable('2026-10-15 09:05'));
 
-        $this->assertSame("--doc-titulo:'T';--doc-proyecto:'O\\'Hara';--doc-pie:'Impreso el 15/10/2026 09:05 por Ana · ID abc123'", $css);
+        $this->assertSame("--doc-titulo:'T';--doc-proyecto:'O\\'Hara';--doc-pie:'Impreso el 15/10/2026 09:05 por Ana'", $css);
     }
 
     // Postmortem: el ID de la petición cruza la hoja con los logs. Sin .git ni navegador: "sin dato".

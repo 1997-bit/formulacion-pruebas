@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use App\Core\Log;
 use App\Core\Vista;
 use App\Helpers\Html;
 use App\Helpers\Icono;
@@ -22,10 +21,8 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 // Para el selector de proyecto y la paleta.
 $proyectos = RequerimientoServicio::proyectos($usuario);
 $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
-// Documento imprimible: encabezado y pie de cada hoja. Al final, firmas y metadatos para un postmortem.
-$ahora = new DateTimeImmutable();
-$hoja = isset($documento) ? Impresion::variables($documento, $usuario['nombre'], $ahora, Log::uid()) : '';
-$metadatos = isset($documento) ? Impresion::metadatos($documento, $usuario, $ahora, $_SERVER['REQUEST_URI'] ?? '', Log::uid(), Impresion::version(RAIZ), (string) ($_SERVER['HTTP_USER_AGENT'] ?? '')) : [];
+// Documento imprimible: encabezado y pie de cada hoja, firmas al final.
+$hoja = isset($documento) ? Impresion::variables($documento, $usuario['nombre'], new DateTimeImmutable()) : '';
 ?>
 <!doctype html>
 <html lang="es" data-sidebar="<?= $colapsado ? 'colapsado' : 'expandido' ?>"<?= $hoja !== '' ? ' style="' . Html::e($hoja) . '"' : '' ?>>
@@ -35,13 +32,8 @@ $metadatos = isset($documento) ? Impresion::metadatos($documento, $usuario, $aho
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)">
+<?php // Guardar como PDF: el navegador usa el <title> como título del archivo, el único metadato que copia. ?>
 <title><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Casos de Prueba</title>
-<?php if ($metadatos): ?>
-<?php // Guardar como PDF toma el <title> como título del archivo. ?>
-<meta name="author" content="<?= Html::e($usuario['nombre']) ?>">
-<meta name="dcterms.created" content="<?= $ahora->format('c') ?>">
-<meta name="generator" content="<?= Html::e('Casos de Prueba ' . $metadatos['Versión de la app']) ?>">
-<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
@@ -95,7 +87,7 @@ $metadatos = isset($documento) ? Impresion::metadatos($documento, $usuario, $aho
 
   <main class="app-principal" id="principal" tabindex="-1">
     <?= $contenido ?>
-    <?php if (isset($documento)): ?><?= Vista::capturar('partials/firmas') ?><?= Vista::capturar('partials/metadatos', ['metadatos' => $metadatos]) ?><?php endif; ?>
+    <?php if (isset($documento)): ?><?= Vista::capturar('partials/firmas') ?><?php endif; ?>
   </main>
 </div>
 <?= Vista::capturar('partials/paleta', ['usuario' => $usuario, 'proyectos' => $proyectos]) ?>

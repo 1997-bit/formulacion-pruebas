@@ -1199,12 +1199,6 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .firma p { margin: 2pt 0 0; font-size: 8pt; }
   .firma-linea { display: block; height: 32pt; border-bottom: 1px solid oklch(20% 0 0); }
 
-  /* Metadatos para un postmortem: chicos, al final */
-  .metadatos { margin-top: 20pt; padding-top: 8pt; border-top: 1px solid oklch(80% 0 0); break-inside: avoid; font-size: 7pt; color: oklch(35% 0 0); }
-  .metadatos h2 { margin: 0 0 4pt; font-size: 8pt; }
-  .metadatos dl { display: grid; grid-template-columns: max-content 1fr; gap: 1pt 12pt; margin: 0; }
-  .metadatos dd { margin: 0; font-family: var(--fuente-mono); overflow-wrap: anywhere; }
-
   /* Panel con curvas: en papel, flujo normal */
   .app-cuerpo { height: auto; margin: 0; overflow: visible; border: 0; border-radius: 0; }
 }
