@@ -24,6 +24,10 @@ $grupos = [
             'expandido' => ['Expandido', 'Íconos y nombres.'],
             'colapsado' => ['Colapsado', 'Solo íconos. También con Ctrl/⌘+B.'],
         ]],
+        'densidad' => ['Densidad', [
+            'comoda' => ['Cómoda', ''],
+            'compacta' => ['Compacta', 'Filas más bajas en tablas y listas. Más datos en pantalla.'],
+        ]],
     ],
     'accesibilidad' => [
         'movimiento' => ['Movimiento', [

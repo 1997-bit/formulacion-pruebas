@@ -52,8 +52,8 @@ use App\Helpers\Icono;
             <td class="celda-acciones">
               <div class="acciones">
                 <a class="btn btn-fantasma btn-icono" href="/admin/proyectos/editar?id=<?= (int) $p['id'] ?>" aria-label="Editar <?= Html::e($p['nombre']) ?>" data-tooltip="Editar"><?= Icono::svg('pencil') ?></a>
-                <button class="btn btn-fantasma btn-icono" type="button" data-abrir-dialogo="dlg-eliminar-<?= (int) $p['id'] ?>" aria-label="Eliminar <?= Html::e($p['nombre']) ?>" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-                <dialog class="dialogo" id="dlg-eliminar-<?= (int) $p['id'] ?>" aria-labelledby="dlg-eliminar-<?= (int) $p['id'] ?>-titulo">
+                <button class="btn btn-fantasma btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar-<?= (int) $p['id'] ?>" aria-label="Eliminar <?= Html::e($p['nombre']) ?>" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
+                <dialog closedby="any" class="dialogo" id="dlg-eliminar-<?= (int) $p['id'] ?>" aria-labelledby="dlg-eliminar-<?= (int) $p['id'] ?>-titulo">
                   <h2 id="dlg-eliminar-<?= (int) $p['id'] ?>-titulo">¿Eliminar <?= Html::e($p['nombre']) ?>?</h2>
                   <p>Si tiene requerimientos o casos no se elimina. Esta acción no se puede deshacer.</p>
                   <form method="post" action="/admin/proyectos/eliminar" class="acciones">

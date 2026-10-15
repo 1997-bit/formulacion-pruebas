@@ -16,9 +16,10 @@ use App\Helpers\Html;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#03141C" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)">
 <title><?= Html::e($titulo) ?> · Casos de Prueba</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
+<link rel="manifest" href="/manifest.webmanifest">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/tokens.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/base.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">

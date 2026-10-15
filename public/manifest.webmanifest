@@ -1,0 +1,11 @@
+{
+  "name": "Casos de Prueba",
+  "short_name": "Casos",
+  "lang": "es",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

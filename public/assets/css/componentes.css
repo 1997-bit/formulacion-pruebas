@@ -1,4 +1,5 @@
 /* Componentes. Requiere tokens.css y base.css. */
+@layer componentes {
 
 /* Botones */
 
@@ -19,7 +20,7 @@
   border: 1px solid transparent;
 }
 .btn-primario { background: var(--primario); color: var(--primario-texto); }
-.btn-secundario { background: var(--fondo); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
+.btn-secundario { background: var(--tarjeta); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
 .btn-peligro { background: var(--peligro); color: var(--peligro-texto); }
 .btn-fantasma { background: transparent; color: var(--texto); }
 .btn-primario:hover { background: color-mix(in oklch, var(--primario), black 12%); }
@@ -92,6 +93,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 
 .codigo {
   font-family: var(--fuente-mono);
+  color: var(--tenue-texto);
   font-size: 0.8125rem;
   letter-spacing: 0;
   white-space: nowrap;
@@ -173,6 +175,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 }
 .encabezado h1 {
   font-size: var(--letra-2xl);
+  font-weight: 600;
   margin: 0;
 }
 .encabezado p {
@@ -273,8 +276,9 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   background: var(--tarjeta);
   color: var(--tarjeta-texto);
   border: 1px solid var(--borde);
-  border-radius: var(--radio-xl);
-  padding: 16px;
+  border-radius: var(--radio-2xl);
+  padding: 20px;
+  box-shadow: var(--sombra-xs);
 }
 
 /* Campos: ayuda y error con aria-describedby */
@@ -344,6 +348,24 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   background: var(--tenue-texto);
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
   pointer-events: none;
+}
+
+/* <select> con los tokens de la app: lista flotante como los menús. Sin soporte: el select del sistema */
+@supports (appearance: base-select) {
+  .select .control, .select .control::picker(select) { appearance: base-select; }
+  .select .control::picker-icon { display: none; }
+  .select .control::picker(select) {
+    margin-top: 4px;
+    padding: 4px;
+    background: var(--flotante);
+    color: var(--flotante-texto);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-md);
+  }
+  .select option { padding: 6px 8px; border-radius: var(--radio-md); font-size: var(--letra-sm); }
+  .select option:is(:hover, :focus-visible) { background: var(--acento); color: var(--acento-texto); outline: none; }
+  .select option:checked { font-weight: 500; }
 }
 
 .control[type="file"] { padding: 4px; cursor: pointer; }
@@ -436,6 +458,7 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
   width: 100%;
   border-collapse: collapse;
   font-size: var(--letra-sm);
+  font-variant-numeric: tabular-nums;
 }
 .tabla th,
 .tabla td {
@@ -448,6 +471,8 @@ textarea.control { min-height: 5rem; padding-block: 8px; }
 .tabla tbody tr:hover { background: color-mix(in oklch, var(--acento), transparent 50%); }
 .tabla tbody tr:last-child :is(td, th) { border-bottom: 0; }
 .tabla .celda-acciones { width: 1%; text-align: right; }
+/* Números a la derecha: las cifras se comparan por columna */
+.tabla .num { text-align: right; }
 .tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: 4px; }
 .tabla .celda-larga { white-space: normal; min-width: 16rem; }
 
@@ -643,7 +668,7 @@ kbd {
 .tarjeta-encabezado:last-child { margin-bottom: 0; }
 .tarjeta-encabezado > :not(.acciones) { grid-column: 1; }
 .tarjeta-encabezado > .acciones { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
-.tarjeta-titulo { margin: 0; font-size: var(--letra-base); font-weight: 600; line-height: 1.3; letter-spacing: 0; }
+.tarjeta-titulo { margin: 0; font-size: var(--letra-lg); font-weight: 600; line-height: 1.3; letter-spacing: 0; }
 .tarjeta-descripcion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .tarjeta-pie {
   display: flex;
@@ -677,12 +702,20 @@ kbd {
 .cifra-valor {
   margin: 0;
   font-size: var(--letra-2xl);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 .cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* Cifra principal: más grande y en dos columnas si hay espacio */
+.cifra-principal .cifra-valor { font-size: var(--letra-3xl); }
+@media (min-width: 40rem) { .cifra-principal { grid-column: span 2; } }
+.cifra-hoy { color: var(--texto); font-weight: 500; }
+/* Ícono de la cifra con el color del estado */
+.cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
+.cifra-peligro .cifra-etiqueta svg { color: var(--peligro-fuerte); }
+.cifra-aviso .cifra-etiqueta svg { color: var(--aviso-fuerte); }
 
 /* <progress> para avance, <meter> para medidas. Siempre con el número al lado */
 
@@ -1098,3 +1131,4 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 /* Detalle de una línea de log, RNF-11 */
 .log-detalle { margin: 8px 0 0; padding: 12px; overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); white-space: pre-wrap; word-break: break-all; background: var(--tenue); border-radius: var(--radio-md); }
+}

@@ -70,11 +70,11 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
       </div>
       <div class="campo">
         <label for="fl-evento">Mensaje</label>
-        <input class="control" id="fl-evento" name="evento" value="<?= Html::e($filtros['evento']) ?>" placeholder="authz_fail">
+        <input class="control" id="fl-evento" name="evento" enterkeyhint="search" value="<?= Html::e($filtros['evento']) ?>" placeholder="authz_fail">
       </div>
       <div class="campo">
         <label for="fl-uid">Código del error</label>
-        <input class="control codigo" id="fl-uid" name="uid" value="<?= Html::e($filtros['uid']) ?>" placeholder="be45d3e3" maxlength="8">
+        <input class="control codigo" id="fl-uid" name="uid" enterkeyhint="search" value="<?= Html::e($filtros['uid']) ?>" placeholder="be45d3e3" maxlength="8">
       </div>
     <?php endif; ?>
     <div class="acciones">
@@ -127,10 +127,10 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
     <div class="tabla-contenedor">
       <table class="tabla">
         <caption>Eventos de seguridad del día</caption>
-        <thead><tr><th scope="col">Evento</th><th scope="col">Veces</th></tr></thead>
+        <thead><tr><th scope="col">Evento</th><th scope="col" class="num">Veces</th></tr></thead>
         <tbody>
           <?php foreach ($seguridad['eventos'] as $evento => $n): ?>
-            <tr><td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'seguridad', 'evento' => $evento])) ?>"><?= Html::e($evento) ?></a></td><td><?= $n ?></td></tr>
+            <tr><td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'seguridad', 'evento' => $evento])) ?>"><?= Html::e($evento) ?></a></td><td class="num"><?= $n ?></td></tr>
           <?php endforeach; ?>
           <?php if (!$seguridad['eventos']): ?><tr><td colspan="2">Sin eventos.</td></tr><?php endif; ?>
         </tbody>
@@ -139,10 +139,10 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
     <div class="tabla-contenedor">
       <table class="tabla">
         <caption>Login fallido por IP, top 10</caption>
-        <thead><tr><th scope="col">IP</th><th scope="col">Fallos</th></tr></thead>
+        <thead><tr><th scope="col">IP</th><th scope="col" class="num">Fallos</th></tr></thead>
         <tbody>
           <?php foreach ($seguridad['ips'] as $ip => $n): ?>
-            <tr><td><span class="codigo"><?= Html::e((string) $ip) ?></span></td><td><?= $n ?></td></tr>
+            <tr><td><span class="codigo"><?= Html::e((string) $ip) ?></span></td><td class="num"><?= $n ?></td></tr>
           <?php endforeach; ?>
           <?php if (!$seguridad['ips']): ?><tr><td colspan="2">Sin fallos.</td></tr><?php endif; ?>
         </tbody>
@@ -153,15 +153,15 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
     <div class="tabla-contenedor">
       <table class="tabla">
         <caption>Golden signals por ruta. Tiempos en ms.</caption>
-        <thead><tr><th scope="col">Ruta</th><th scope="col">Peticiones</th><th scope="col">p50</th><th scope="col">p95</th><th scope="col">5xx %</th></tr></thead>
+        <thead><tr><th scope="col">Ruta</th><th scope="col" class="num">Peticiones</th><th scope="col" class="num">p50</th><th scope="col" class="num">p95</th><th scope="col" class="num">5xx %</th></tr></thead>
         <tbody>
           <?php foreach ($rendimiento as $r): ?>
             <tr>
               <td><span class="codigo"><?= Html::e($r['ruta']) ?></span></td>
-              <td><?= $r['peticiones'] ?></td>
-              <td><?= $r['p50'] ?></td>
-              <td><?= $r['p95'] ?></td>
-              <td><?= $r['errores'] > 0 ? '<span class="insignia insignia-peligro">' . $r['errores'] . '</span>' : '0' ?></td>
+              <td class="num"><?= $r['peticiones'] ?></td>
+              <td class="num"><?= $r['p50'] ?></td>
+              <td class="num"><?= $r['p95'] ?></td>
+              <td class="num"><?= $r['errores'] > 0 ? '<span class="insignia insignia-peligro">' . $r['errores'] . '</span>' : '0' ?></td>
             </tr>
           <?php endforeach; ?>
           <?php if (!$rendimiento): ?><tr><td colspan="5">Sin peticiones.</td></tr><?php endif; ?>

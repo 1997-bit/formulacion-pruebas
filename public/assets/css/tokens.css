@@ -1,5 +1,8 @@
 /* Variables de diseño. --x: fondo. --x-texto: lo de encima. */
 
+/* Orden de la cascada: lo de abajo gana. !important al revés: base gana */
+@layer tokens, base, componentes, app;
+
 /* Inter local, sin internet. */
 @font-face {
   font-family: "Inter";
@@ -16,6 +19,7 @@
   font-display: swap;
 }
 
+@layer tokens {
 /* Tema del sistema, salvo <html data-tema>. light-dark(claro, oscuro). */
 :root {
   color-scheme: light dark;
@@ -24,24 +28,23 @@
 :root[data-tema="dark"]  { color-scheme: dark; }
 
 :root {
-  --fondo: light-dark(oklch(100% 0 0), oklch(18% 0.03 231));
+  --fondo: light-dark(oklch(100% 0 0), oklch(14.5% 0 0));
   --texto: light-dark(oklch(17.8% 0 0), oklch(95% 0 0));
-  --tarjeta: light-dark(oklch(100% 0 0), oklch(21% 0.03 231));
+  --tarjeta: light-dark(oklch(100% 0 0), oklch(20.5% 0 0));
   --tarjeta-texto: var(--texto);
-  --flotante: light-dark(oklch(100% 0 0), oklch(23% 0.03 231));
+  --flotante: light-dark(oklch(100% 0 0), oklch(27% 0 0));
   --flotante-texto: var(--texto);
 
   --primario: oklch(54.5% 0.252 264);
   --primario-texto: oklch(100% 0 0);
-  --secundario: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
+  --secundario: light-dark(oklch(97% 0 0), oklch(30% 0 0));
   --secundario-texto: var(--texto);
-  --tenue: light-dark(oklch(97% 0 0), oklch(27% 0.03 231));
-  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0.01 231));
-  --acento: light-dark(oklch(95% 0.03 262), oklch(32% 0.07 262));   /* hover y selección */
+  --tenue: light-dark(oklch(97% 0 0), oklch(30% 0 0));
+  --tenue-texto: light-dark(oklch(50% 0 0), oklch(72% 0 0));
+  --acento: light-dark(oklch(95% 0 0), oklch(34% 0 0));   /* hover y selección */
   --acento-texto: var(--texto);
 
   --destacado: oklch(73.2% 0.186 53);
-  --destacado-texto: oklch(17.8% 0 0);
 
   /* Estados. Sólido: resultado marcado y barras en oscuro. */
   --peligro: oklch(58% 0.204 25);                                   /* FAULT */
@@ -49,9 +52,7 @@
   --exito: oklch(75% 0.166 156);                                    /* OK */
   --exito-texto: oklch(17.8% 0 0);
   --aviso: oklch(88.6% 0.17 94);                                    /* Atención */
-  --aviso-texto: oklch(17.8% 0 0);
   --info: oklch(54.5% 0.252 264);                                   /* En progreso */
-  --info-texto: oklch(100% 0 0);
 
   /* Suave: fondo de insignia. Fuerte: texto sobre fondo, mínimo 4.5:1. */
   --exito-suave: light-dark(oklch(96.1% 0.026 166), oklch(30% 0.06 155));
@@ -67,7 +68,7 @@
   --error: var(--peligro-fuerte);
   --correcto: var(--exito-fuerte);
 
-  --borde: light-dark(oklch(92% 0 0), oklch(100% 0 0 / 12%));
+  --borde: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 12%));
   --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, mínimo 3:1 */
   --anillo: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
   --enlace: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
@@ -80,9 +81,9 @@
   --velo-desenfoque: blur(8px);
   --velo-respaldo: oklch(0% 0 0 / 0.4); /* sin backdrop-filter */
 
-  --lateral: light-dark(oklch(98.5% 0 0), oklch(20% 0.03 231));
+  --lateral: light-dark(oklch(97.5% 0 0), oklch(13% 0 0));
   --lateral-texto: light-dark(oklch(25% 0 0), oklch(92% 0 0));
-  --lateral-acento: var(--acento);
+  --lateral-acento: light-dark(oklch(94% 0 0), oklch(27% 0 0));
   --lateral-acento-texto: var(--acento-texto);
   --lateral-borde: var(--borde);
   --lateral-ancho: 16rem;
@@ -94,8 +95,6 @@
   --radio-lg: var(--radio);
   --radio-xl: calc(var(--radio) + 4px);
   --radio-2xl: calc(var(--radio) + 8px);
-  --radio-3xl: calc(var(--radio) + 12px);
-  --radio-4xl: calc(var(--radio) + 16px);
   --radio-total: 9999px;
 
   /* Sombras más fuertes en oscuro. */
@@ -126,4 +125,5 @@
     --entrada: light-dark(oklch(45% 0 0), oklch(100% 0 0 / 60%));
     --tenue-texto: light-dark(oklch(35% 0 0), oklch(85% 0 0));
   }
+}
 }

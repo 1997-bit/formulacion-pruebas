@@ -27,16 +27,20 @@ $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#03141C" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)">
 <title><?= Html::e($titulo) ?> · Casos de Prueba</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/tokens.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/base.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/app.css') ?>">
 <script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
-<script src="<?= Vista::estatico('/assets/js/app.js') ?>" defer></script>
-<script src="<?= Vista::estatico('/assets/js/atajos.js') ?>" defer></script>
+<script type="module" src="<?= Vista::estatico('/assets/js/app.js') ?>"></script>
+<script type="module" src="<?= Vista::estatico('/assets/js/atajos.js') ?>"></script>
+<?php // Chrome y Edge piden la página al pasar el mouse por un enlace. Solo GET: todo cambio es POST. ?>
+<script type="speculationrules">{"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/evidencias/*"}}, {"not": {"selector_matches": "[target], [download]"}}]}, "eagerness": "moderate"}]}</script>
 </head>
 <body class="app">
 <a class="saltar" href="#principal">Saltar al contenido</a>

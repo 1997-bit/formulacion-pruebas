@@ -1,4 +1,5 @@
 /* Estructura: sidebar, barra superior y contenido */
+@layer app {
 
 .app {
   display: flex;
@@ -33,7 +34,6 @@
   color: var(--lateral-texto);
   border-right: 1px solid var(--lateral-borde);
   z-index: 30;
-  transition: width 0.2s ease;
 }
 
 .sidebar-cabecera,
@@ -442,8 +442,26 @@ button.sidebar-boton {
   }
 }
 
+/* Esqueleto: app.js pone aria-busy si la página nueva tarda más de 150 ms */
+.app-principal { position: relative; }
+.app-principal[aria-busy="true"] > * { visibility: hidden; }
+.app-principal[aria-busy="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  background:
+    linear-gradient(var(--tenue) 0 0) 0 0 / 30% 2.25rem,
+    linear-gradient(var(--tenue) 0 0) 0 3rem / 45% 1rem,
+    linear-gradient(var(--tenue) 0 0) 0 5.5rem / 100% 6.5rem,
+    linear-gradient(var(--tenue) 0 0) 0 13.5rem / 100% 18rem;
+  background-repeat: no-repeat;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app-principal[aria-busy="true"]::before { animation: pulso 1.2s ease-in-out infinite; }
+}
+@keyframes pulso { 50% { opacity: 0.5; } }
+
 @media (prefers-reduced-motion: reduce) {
-  .sidebar,
   .flecha {
     transition: none;
   }
@@ -459,7 +477,7 @@ button.sidebar-boton {
 
 /* Panel: cifras con enlace, listas de tareas y barra apilada */
 .cifra-enlace { color: inherit; text-decoration: none; }
-.cifra-enlace:hover { background: var(--acento); }
+.cifra-enlace:hover { background: var(--acento); box-shadow: var(--sombra-sm); }
 .tareas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .tareas a {
   display: flex; align-items: center; gap: 8px; padding: 8px; margin: 0 -8px;
@@ -469,7 +487,10 @@ button.sidebar-boton {
 .tareas a > span:not(.codigo):not(.insignia) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tareas small { color: var(--tenue-texto); white-space: nowrap; }
 .tarea-vacia { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
-.barra-apilada { display: flex; gap: 2px; height: 10px; border-radius: var(--radio-total); overflow: hidden; background: var(--secundario); }
+.tarea-vacia svg { color: var(--exito-fuerte); }
+.al-dia { margin: 0; }
+.barra-apilada { display: flex; gap: 3px; height: 12px; border-radius: var(--radio-total); overflow: hidden; background: var(--secundario); }
+.barra-apilada > span { border-radius: var(--radio-total); }
 .barra-exito { background: var(--exito); }
 .barra-peligro { background: var(--peligro); }
 .barra-aviso { background: var(--aviso); }
@@ -509,6 +530,11 @@ button.sidebar-boton {
 .app-principal :is(p, dd) a:not(.btn) { text-decoration: underline; text-decoration-color: color-mix(in oklch, currentColor, transparent 60%); text-underline-offset: 3px; }
 [data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }
 
+/* Ajustes → Densidad compacta */
+[data-densidad="compacta"] .tabla :is(th, td) { padding-block: 6px; }
+[data-densidad="compacta"] .tareas a { padding-block: 5px; }
+[data-densidad="compacta"] .tarjeta { padding: 16px; }
+
 /* Casos → Tablero: una columna por estado */
 .tablero { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); align-items: start; }
 .tablero-columna { background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-xl); padding: 12px; }
@@ -517,7 +543,7 @@ button.sidebar-boton {
 .tablero-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .tablero-vacio { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .tarjeta-caso { display: flex; flex-direction: column; gap: 6px; padding: 12px; color: inherit; text-decoration: none; font-size: var(--letra-sm); }
-.tarjeta-caso:hover { border-color: var(--anillo); }
+.tarjeta-caso:hover { border-color: var(--anillo); box-shadow: var(--sombra-sm); }
 .tarjeta-caso-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .tarjeta-caso-texto { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tarjeta-caso-pie { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; font-size: var(--letra-xs); color: var(--tenue-texto); }
@@ -574,3 +600,4 @@ button.sidebar-boton {
 .paleta-lista [role="option"]::after { content: attr(data-grupo); font-size: var(--letra-xs); color: var(--tenue-texto); white-space: nowrap; }
 .paleta-lista [aria-selected="true"] { background: var(--acento); color: var(--acento-texto); }
 .dialogo .paleta-vacio { margin: 0; padding: 16px; text-align: center; }
+}
