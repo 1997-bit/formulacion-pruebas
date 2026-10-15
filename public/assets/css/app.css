@@ -193,42 +193,36 @@ button.sidebar-boton {
   font-weight: 600;
 }
 
-/* Menú del usuario, hacia arriba */
-.usuario-menu {
-  position: relative;
-}
-.usuario-flotante {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% + 4px);
-  padding: 4px;
-  background: var(--flotante);
-  color: var(--flotante-texto);
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-md);
-  z-index: 50;
-}
-
-/* Selector de proyecto, hacia abajo */
-.proyecto-menu {
-  position: relative;
-}
+/* Menús de proyecto y de usuario: popover en la capa superior, pegado a su botón con anchor positioning */
+.sidebar-marca { anchor-name: --menu-proyecto; }
+.sidebar-usuario { anchor-name: --menu-usuario; }
+.usuario-flotante,
 .proyecto-flotante {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 4px);
-  max-height: 60vh;
-  overflow-y: auto;
+  inset: auto;
+  margin: 0;
   padding: 4px;
+  overflow-y: auto;
   background: var(--flotante);
   color: var(--flotante-texto);
   border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-xl);
   box-shadow: var(--sombra-md);
-  z-index: 50;
+  position-try-fallbacks: flip-block;
+}
+/* Usuario: hacia arriba */
+.usuario-flotante {
+  position-anchor: --menu-usuario;
+  bottom: calc(anchor(top) + 4px);
+  left: anchor(left);
+  width: anchor-size(width);
+}
+/* Proyecto: hacia abajo */
+.proyecto-flotante {
+  position-anchor: --menu-proyecto;
+  top: calc(anchor(bottom) + 4px);
+  left: anchor(left);
+  width: anchor-size(width);
+  max-height: 60vh;
 }
 .proyecto-flotante-titulo {
   margin: 0;
@@ -378,9 +372,9 @@ button.sidebar-boton {
     padding: 4px 8px;
   }
   [data-sidebar="colapsado"] .proyecto-flotante {
-    left: calc(100% + 8px);
-    right: auto;
-    top: 0;
+    top: anchor(top);
+    left: calc(anchor(right) + 8px);
+    width: auto;
     min-width: 14rem;
   }
   /* El flotante sale del sidebar: nombres visibles aunque esté colapsado */
@@ -394,9 +388,9 @@ button.sidebar-boton {
     clip-path: none;
   }
   [data-sidebar="colapsado"] .usuario-flotante {
-    left: calc(100% + 8px);
-    right: auto;
-    bottom: 0;
+    bottom: anchor(bottom);
+    left: calc(anchor(right) + 8px);
+    width: auto;
     min-width: 12rem;
   }
 
@@ -460,6 +454,17 @@ button.sidebar-boton {
   .app-principal[aria-busy="true"]::before { animation: pulso 1.2s ease-in-out infinite; }
 }
 @keyframes pulso { 50% { opacity: 0.5; } }
+
+/* Cambio de página: fundido corto solo del contenido. Sidebar y barra con nombre propio: no parpadean */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .sidebar { view-transition-name: sidebar; }
+  .app-barra { view-transition-name: barra; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0.1s; }
+}
+:root[data-movimiento="reducido"]::view-transition-group(*),
+:root[data-movimiento="reducido"]::view-transition-old(*),
+:root[data-movimiento="reducido"]::view-transition-new(*) { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .flecha {

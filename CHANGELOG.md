@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Menús de proyecto y de usuario con Popover API y anchor positioning: Esc y clic afuera nativos.
+- Cifras con container queries: una fila en ancho, 2 × 2 en medio, una por fila en angosto.
+- Cambio de página con un fundido de 100 ms del contenido. Sin él con "Reducir movimiento".
 - Pestañas como control segmentado en píldora.
 - Superficies por capas en claro y oscuro. Oscuro neutro, sin tinte azul.
 - Tarjetas con sombra suave. Íconos de cifras con el color del estado.
