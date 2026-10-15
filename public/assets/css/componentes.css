@@ -698,7 +698,8 @@ kbd {
 .cifras {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  /* 5 cifras, la principal ocupa 2: 6 columnas exactas, una fila. Contar cuántas caben dejaba filas cojas con zoom */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 .cifra { display: flex; flex-direction: column; gap: 4px; }
 .cifra-etiqueta {

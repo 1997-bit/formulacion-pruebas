@@ -41,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Reporte de cierre: gráficos en 2 columnas sin hueco; el título oculto de la tabla de datos ya no se ve encima.
+- Cifras en 6 columnas exactas: con zoom ya no queda la principal sola.
+- Matriz de cobertura: llena el ancho con la descripción completa; sin subrayado en las celdas.
 - Panel: las tarjetas llenan el ancho; en pantallas anchas ya no quedan pegadas a la izquierda.
 - Diálogo de atajos (?): cierra con clic afuera, como los demás.
 - Panel del tester: "Mis casos por vencer" ya no repite los atrasados; en atrasados, los suyos dicen "Tuyo".

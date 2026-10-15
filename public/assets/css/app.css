@@ -540,7 +540,7 @@ button.sidebar-boton {
 [data-movimiento="si"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 /* Enlace en texto: subrayado tenue siempre, no solo color. WCAG 1.4.1 */
 .app-principal :is(p, dd) a:not(.btn) { text-decoration: underline; text-decoration-color: color-mix(in oklch, currentColor, transparent 60%); text-underline-offset: 3px; }
-[data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }
+[data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso, .matriz-celda) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }
 
 /* Ajustes → Densidad compacta */
 [data-densidad="compacta"] .tabla :is(th, td) { padding-block: 6px; }
@@ -620,7 +620,9 @@ button.sidebar-boton {
 
 /* Gráficos del cierre. --v: valor. --max: tope. Altura = v / max. */
 
-.graficos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); }
+/* Dos columnas fijas, sin columna vacía. Contenido angosto: una */
+.graficos { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container principal (width < 50rem) { .graficos { grid-template-columns: minmax(0, 1fr); } }
 .grafico-ancho { grid-column: 1 / -1; }
 .grafico-cifra { margin: 0; font-size: var(--letra-3xl); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
 .grafico-nota { margin: 4px 0 16px; font-size: var(--letra-sm); color: var(--tenue-texto); }
@@ -684,13 +686,15 @@ button.sidebar-boton {
 /* Matriz de cobertura: celda = casos de un requerimiento y un tipo. Relleno por cantidad. */
 
 .matriz-contenedor { overflow-x: auto; margin-bottom: 12px; }
-.matriz { border-collapse: separate; border-spacing: 4px; font-size: var(--letra-sm); }
+/* Llena el ancho: la columna del requerimiento toma el resto y muestra más descripción. Celdas fijas */
+.matriz { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: var(--letra-sm); }
+.matriz td { min-width: 3.5rem; }
 .matriz thead th { font-family: var(--fuente-mono); font-size: var(--letra-xs); font-weight: 500; color: var(--tenue-texto); text-align: center; }
 .matriz abbr { text-decoration: none; cursor: help; }
-.matriz tbody th { max-width: 22rem; padding-right: 12px; text-align: left; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.matriz tbody th { width: 100%; max-width: 0; padding-right: 12px; text-align: left; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .matriz-descripcion { color: var(--tenue-texto); }
 .matriz td { padding: 0; }
-.matriz-celda { position: relative; display: grid; place-items: center; width: 2.5rem; height: 2rem; overflow: hidden; border-radius: var(--radio-sm); font-family: var(--fuente-mono); font-size: var(--letra-xs); color: var(--texto); text-decoration: none; }
+.matriz-celda { position: relative; display: grid; place-items: center; width: 100%; height: 2rem; overflow: hidden; border-radius: var(--radio-sm); font-family: var(--fuente-mono); font-size: var(--letra-xs); color: var(--texto); text-decoration: none; }
 a.matriz-celda:hover { outline: 2px solid var(--anillo); outline-offset: 1px; }
 .matriz-vacia { border: 1px dashed var(--entrada); }
 .matriz-nivel-1 { background: color-mix(in oklch, var(--primario), transparent 82%); }

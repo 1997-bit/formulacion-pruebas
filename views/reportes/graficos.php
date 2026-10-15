@@ -123,7 +123,9 @@ $horas = $g['horas_cierre'];
     </dl>
   </section>
 
-  <table class="solo-lector">
+  <?php // El <caption> se dibuja fuera de la tabla: el div es el que se oculta. ?>
+  <div class="solo-lector">
+  <table>
     <caption>Datos por día de los gráficos</caption>
     <thead><tr><th scope="col">Día</th><th scope="col">Resultados</th><th scope="col">Real acumulado</th><th scope="col">Plan acumulado</th><th scope="col">Incidentes</th><th scope="col">Stoppers</th></tr></thead>
     <tbody>
@@ -132,4 +134,5 @@ $horas = $g['horas_cierre'];
       <?php endforeach; ?>
     </tbody>
   </table>
+  </div>
 </div>
