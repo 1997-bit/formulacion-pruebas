@@ -24,6 +24,9 @@ final class ReporteModelo
                     COALESCE(SUM(c.estado = 0), 0) AS pendientes,
                     COALESCE(SUM(c.estado = 1), 0) AS ok,
                     COALESCE(SUM(c.estado = 2), 0) AS fault,
+                    COALESCE(SUM(c.creado_en >= CURDATE()), 0) AS casos_hoy,
+                    COALESCE(SUM(c.estado = 1 AND c.anotado_en >= CURDATE()), 0) AS ok_hoy,
+                    COALESCE(SUM(c.estado = 2 AND c.anotado_en >= CURDATE()), 0) AS fault_hoy,
                     COALESCE(SUM(c.estado <> 0 AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)), 0) AS sin_evidencia,
                     COALESCE(SUM(c.estado = 2 AND NOT EXISTS (SELECT 1 FROM incidentes i WHERE i.caso_id = c.id)), 0) AS fault_sin_incidente,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2) AS incidentes_abiertos,
@@ -39,7 +42,7 @@ final class ReporteModelo
         // SUM da DECIMAL: PDO lo trae como texto.
         $filas = $sql->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($filas as &$f) {
-            foreach (['pendientes', 'ok', 'fault', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
+            foreach (['pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
                 $f[$columna] = (int) $f[$columna];
             }
         }
