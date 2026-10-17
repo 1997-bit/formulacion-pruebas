@@ -88,7 +88,7 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | ID | Tema | Regla |
 | --- | --- | --- |
 | RNF-01 | Seguridad | Argon2id. PDO preparado. Credenciales en `.env`. |
-| RNF-02 | Acceso | Rol y sesión en cada página. Sesión nueva al entrar. Login fallido no dice si el usuario existe. |
+| RNF-02 | Acceso | Rol y sesión en cada página. Sesión nueva al entrar. Login fallido no dice si el usuario existe. La sesión vence tras 30 min sin uso o 8 h en total, ASVS 7.3.1 y 7.3.2: riesgo bajo y una jornada de trabajo. |
 | RNF-03 | Evidencias | png, jpg, txt, log o enlace. 5 MB. Renombrado, fuera de la raíz pública. |
 | RNF-04 | Fiabilidad | Borrar pide confirmación. Un caso se puede repetir. |
 | RNF-05 | Datos | InnoDB, `utf8mb4`. Nombre en un campo. Sin género obligatorio. |

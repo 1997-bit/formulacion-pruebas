@@ -6,15 +6,16 @@ namespace App\Core;
 
 final class Sesion
 {
-    // 8 h: alcanza para un formulario largo.
-    private const DURACION = 28800;
+    // ASVS 7.3.1 y 7.3.2, RNF-02. OWASP: 15 a 30 min sin uso para riesgo bajo, 4 a 8 h para una jornada.
+    private const INACTIVA = 1800;
+    private const MAXIMA = 28800;
 
     public static function iniciar(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
-        ini_set('session.gc_maxlifetime', (string) self::DURACION);
+        ini_set('session.gc_maxlifetime', (string) self::MAXIMA);
         ini_set('session.use_strict_mode', '1');
         session_name('casos_sesion');
         session_set_cookie_params([
@@ -35,6 +36,30 @@ final class Sesion
     {
         session_regenerate_id(true);
         $_SESSION['usuario'] = $usuario;
+        $_SESSION['inicio'] = $_SESSION['uso'] = time();
+    }
+
+    // Motivo si la sesión venció: inactiva o maxima. Si no, marca el uso y da null.
+    public static function vencida(): ?string
+    {
+        $ahora = time();
+        if ($ahora - ($_SESSION['inicio'] ?? 0) > self::MAXIMA) {
+            return 'maxima';
+        }
+        if ($ahora - ($_SESSION['uso'] ?? 0) > self::INACTIVA) {
+            return 'inactiva';
+        }
+        $_SESSION['uso'] = $ahora;
+
+        return null;
+    }
+
+    // Sesión sin usuario ni datos, con id nuevo. Queda solo el aviso para el login.
+    public static function vencer(string $aviso): void
+    {
+        session_regenerate_id(true);
+        $_SESSION = [];
+        self::flash($aviso);
     }
 
     // Datos nuevos de la base, sin regenerar el id. Ejemplo: nombre cambiado.

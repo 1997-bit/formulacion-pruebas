@@ -64,6 +64,51 @@ final class SesionTest extends TestCase
         $this->assertNull(Sesion::usuario());
     }
 
+    // ASVS 7.3.1 y 7.3.2
+    public function testRecienEntradaNoVence(): void
+    {
+        Sesion::entrar(['id' => 1]);
+
+        $this->assertNull(Sesion::vencida());
+    }
+
+    public function testVenceTras30MinSinUso(): void
+    {
+        Sesion::entrar(['id' => 1]);
+        $_SESSION['uso'] = time() - 1801;
+
+        $this->assertSame('inactiva', Sesion::vencida());
+    }
+
+    public function testVenceTras8HorasAunqueSeUse(): void
+    {
+        Sesion::entrar(['id' => 1]);
+        $_SESSION['inicio'] = time() - 28801;
+
+        $this->assertSame('maxima', Sesion::vencida());
+    }
+
+    public function testUsarRenuevaElTiempoSinUso(): void
+    {
+        Sesion::entrar(['id' => 1]);
+        $_SESSION['uso'] = time() - 1700;
+
+        Sesion::vencida();
+
+        $this->assertGreaterThan(time() - 60, $_SESSION['uso']);
+    }
+
+    public function testVencerDejaSoloElAvisoConIdNuevo(): void
+    {
+        Sesion::entrar(['id' => 1]);
+        $antes = session_id();
+
+        Sesion::vencer('Venció.');
+
+        $this->assertSame(['flash' => 'Venció.', 'flash_accion' => null], $_SESSION);
+        $this->assertNotSame($antes, session_id());
+    }
+
     public function testRefrescarCambiaDatosSinPerderCsrf(): void
     {
         $_SESSION['csrf'] = 'abc';

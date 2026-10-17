@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radios propios. Ajustes con opciones en fila e íconos en Tema.
 - Curvas iguales en tarjetas, alertas y menús flotantes. Insignias en píldora.
 
+### Security
+
+- Docker deja al usuario de la app solo con SELECT, INSERT, UPDATE y DELETE. ASVS 13.2.2.
+- La sesión vence tras 30 min sin uso o 8 h en total. ASVS 7.3.1 y 7.3.2.
+
 ## [1.7.0] - 2026-10-17
 
 ### Added
