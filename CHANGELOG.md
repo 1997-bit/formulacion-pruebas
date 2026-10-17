@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radios propios. Ajustes con opciones en fila e íconos en Tema.
 - Curvas iguales en tarjetas, alertas y menús flotantes. Insignias en píldora.
 
+### Fixed
+
+- iPhone Duo cerrado: la paginación ya no se sale de la pantalla. Abierto: la lista de casos entra sin deslizar.
+
 ## [1.7.0] - 2026-10-17
 
 ### Added

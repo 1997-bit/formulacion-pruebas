@@ -538,6 +538,8 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 }
 /* Tablet: la primera columna queda fija y una sombra a la derecha avisa que hay más */
 @media (37.5rem <= width < 64rem) {
+  /* Caso más angosto: en el iPhone Duo abierto la tabla entra sin deslizar */
+  .tabla .celda-larga { min-width: 12rem; }
   .tabla-contenedor {
     background:
       linear-gradient(to left, var(--fondo) 30%, transparent) right / 2rem 100% no-repeat local,
@@ -568,6 +570,7 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
   margin: 0;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--esp-1);
 }
 .paginacion a,
@@ -1208,6 +1211,8 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .btn-sm { min-height: var(--alto-lg); }
   .paginacion a,
   .paginacion span[aria-disabled] { min-width: var(--alto-tactil); height: var(--alto-tactil); }
+  /* Sin espacio: los 44px ya separan. Así las páginas entran en 466px, iPhone Duo cerrado */
+  .paginacion ul { gap: 0; }
   .control { min-height: var(--alto-tactil); font-size: 1rem; }
   .opcion { min-height: var(--alto-lg); }
   .pestanas a { min-height: var(--alto-lg); }
