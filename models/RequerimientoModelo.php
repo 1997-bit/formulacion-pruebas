@@ -152,10 +152,9 @@ final class RequerimientoModelo
         return (bool) $sql->fetchColumn();
     }
 
-    // Requerimiento e historial juntos: sin logs huérfanos.
+    // El historial queda, ASVS 16.4.2.
     public static function eliminar(int $id): void
     {
         Conexion::pdo()->prepare('DELETE FROM requerimientos WHERE id = ?')->execute([$id]);
-        Conexion::pdo()->prepare("DELETE FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ?")->execute([$id]);
     }
 }

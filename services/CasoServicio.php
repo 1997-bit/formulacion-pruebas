@@ -204,8 +204,16 @@ final class CasoServicio
     {
         Permisos::exigirAdmin($usuario);
         $caso = CasoModelo::porId($id) ?? throw new ErrorNoEncontrado();
-        // Caso e historial juntos: sin logs huérfanos.
-        if (!Conexion::transaccion(fn () => CasoModelo::eliminar($id))) {
+        // El borrado y su fila en el historial van juntos.
+        $eliminado = Conexion::transaccion(function () use ($id, $caso, $usuario): bool {
+            if (!CasoModelo::eliminar($id)) {
+                return false;
+            }
+            Historial::eliminado('casos_prueba', $id, $caso['codigo'], $usuario['id']);
+
+            return true;
+        });
+        if (!$eliminado) {
             throw new ErrorValidacion(['general' => 'Tiene evidencias o incidentes: no se puede eliminar.']);
         }
 

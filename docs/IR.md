@@ -75,7 +75,7 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | RF-17 | Formulario 10 | Registro de Incidentes. | Alta |
 | RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example`, `docs/recrear_ambiente.md`. | Alta |
 | RF-19 | Incidentes | Defectos de un caso en el formulario 10. Commit afectado obligatorio, commit corregido al cerrar. | Alta |
-| RF-20 | Historial | Campo, antes, después, usuario y fecha. | Media |
+| RF-20 | Historial | Campo, antes, después, usuario y fecha. No se cambia ni se borra, ASVS 16.4.2. | Media |
 | RF-21 | Permisos | Rol validado en el servidor, según 7.1. | Alta |
 | RF-22 | Consultar | Filtro por proyecto, requerimiento y estado. | Alta |
 | RF-23 | Reportes | Avance en el panel. Cierre aparte. | Alta |
