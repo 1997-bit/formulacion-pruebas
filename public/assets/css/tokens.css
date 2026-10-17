@@ -88,8 +88,9 @@
   --lateral-borde: var(--borde);
   --lateral-ancho: 16rem;
   --lateral-ancho-icono: 3rem;
+  --barra-alto: 3.5rem;
 
-  /* Espacio: escala de 4px. Gap, padding y margin usan solo estos. */
+  /* Espacio: escala de 4px. Gap, padding y margin usan solo estos. px: el espacio no crece con la letra, el alto sí */
   --esp-1: 4px;
   --esp-2: 8px;
   --esp-3: 12px;
@@ -142,6 +143,14 @@
   --letra-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
   --letra-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
   --letra-3xl: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+}
+
+/* Táctil: rail y barra crecen con los botones de 44px */
+@media (pointer: coarse) {
+  :root {
+    --lateral-ancho-icono: 3.75rem;
+    --barra-alto: calc(var(--alto-tactil) + 2 * var(--esp-2) + 1px);
+  }
 }
 
 /* Ajustes del sistema → más contraste. Bordes y texto tenue más fuertes. */

@@ -146,10 +146,6 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   opacity: 1;
   visibility: visible;
 }
-/* Al tocar: capa del color del texto al 10 %, el estado pressed de Material 3. Sirve sobre cualquier fondo */
-:is(.btn, .chip-quitar, .paginacion a, .pestanas a, .resultado-opcion, .tabla tbody tr, .tareas a, .cifra-enlace, .tarjeta-caso, .sidebar-boton, .sidebar-subboton, .barra-boton):active {
-  background-image: linear-gradient(color-mix(in oklch, currentColor 10%, transparent) 0 0);
-}
 /* Sin hover, táctil: el globo solo con teclado. Un toque no lo deja pegado. También el del rail, app.css */
 @media (hover: none) {
   :is([data-tooltip], [data-etiqueta]):not(:focus-visible)::after { display: none; }
@@ -203,7 +199,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .encabezado .antetitulo { margin: 0 0 var(--esp-2); }
 
 /* Detalle: el <aside> de datos va primero en el HTML, para imprimirlo primero.
-   En pantalla queda a la derecha. En celular, debajo del contenido. */
+   En pantalla queda a la derecha. Contenido angosto: debajo. El ancho del contenido decide, no la ventana */
 
 .vista-detalle {
   display: grid;
@@ -212,7 +208,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   gap: var(--esp-4);
 }
 .vista-detalle > aside { grid-column: 2; grid-row: 1; }
-@media (max-width: 56rem) {
+@container principal (width < 48rem) {
   .vista-detalle { grid-template-columns: 1fr; }
   .vista-detalle > aside { grid-column: auto; grid-row: auto; order: 1; }
 }
@@ -290,7 +286,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .detalle-apilado { grid-template-columns: 1fr; gap: 2px; }
 .detalle-apilado dd { margin-bottom: var(--esp-3); }
 .detalle-apilado dd:last-child { margin-bottom: 0; }
-@media (max-width: 30rem) {
+@media (width < 30rem) {
   .detalle { grid-template-columns: 1fr; gap: 2px; }
   .detalle dd { margin-bottom: var(--esp-3); }
 }
@@ -361,11 +357,11 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 
 /* Flecha propia con el color del texto */
 .select { position: relative; }
-.select .control { appearance: none; padding-right: 36px; cursor: pointer; }
+.select .control { appearance: none; padding-right: var(--esp-10); cursor: pointer; }
 .select::after {
   content: "";
   position: absolute;
-  right: 12px;
+  right: var(--esp-3);
   top: 50%;
   width: 16px;
   height: 16px;
@@ -380,23 +376,23 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   .select .control, .select .control::picker(select) { appearance: base-select; }
   .select .control::picker-icon { display: none; }
   .select .control::picker(select) {
-    margin-top: 4px;
-    padding: 4px;
+    margin-top: var(--esp-1);
+    padding: var(--esp-1);
     background: var(--flotante);
     color: var(--flotante-texto);
     border: 1px solid var(--borde);
     border-radius: var(--radio-lg);
     box-shadow: var(--sombra-md);
   }
-  .select option { padding: 6px 8px; border-radius: var(--radio-md); font-size: var(--letra-sm); }
+  .select option { padding: var(--esp-2); border-radius: var(--radio-md); font-size: var(--letra-sm); }
   .select option:is(:hover, :focus-visible) { background: var(--acento); color: var(--acento-texto); outline: none; }
   .select option:checked { font-weight: 500; }
 }
 
-.control[type="file"] { padding: 4px; cursor: pointer; }
+.control[type="file"] { padding: var(--esp-1); cursor: pointer; }
 .control[type="file"]::file-selector-button {
-  margin-right: 12px;
-  padding: 4px 12px;
+  margin-right: var(--esp-3);
+  padding: var(--esp-1) var(--esp-3);
   font: inherit;
   font-weight: 500;
   color: var(--secundario-texto);
@@ -468,7 +464,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 .resultado-fault:has(input:checked) { background: var(--peligro); color: var(--peligro-texto); border-color: var(--peligro); }
 .resultado-opcion .icono { width: 20px; height: 20px; }
 /* Celular: una debajo de otra */
-@media (max-width: 30rem) {
+@media (width < 30rem) {
   .resultado { grid-template-columns: 1fr; }
 }
 
@@ -483,7 +479,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 }
 /* Lista larga: el encabezado queda fijo bajo la barra al bajar. clip y no auto: auto crea un scroll propio y sticky no ve el de la página */
 .encabezado-fijo { overflow-x: clip; contain: none; }
-.encabezado-fijo thead th { position: sticky; top: calc(3.5rem + 1px); z-index: 1; }
+.encabezado-fijo thead th { position: sticky; top: var(--barra-alto); z-index: 1; }
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -508,10 +504,13 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 .tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: var(--esp-1); }
 .tabla .celda-larga { white-space: normal; min-width: 16rem; }
 
-/* Tablet: la tabla se desliza de lado. La primera columna queda fija y una sombra a la derecha avisa que hay más */
-@media (min-width: 37.5rem) and (max-width: 63.99rem) {
+/* Menos de 64rem: la tabla ancha se desliza de lado. Sin encabezado fijo, el scroll propio lo rompe */
+@media (width < 64rem) {
   .encabezado-fijo { overflow-x: auto; contain: paint; }
   .encabezado-fijo thead th { position: static; top: auto; }
+}
+/* Tablet: la primera columna queda fija y una sombra a la derecha avisa que hay más */
+@media (37.5rem <= width < 64rem) {
   .tabla-contenedor {
     background:
       linear-gradient(to left, var(--fondo) 30%, transparent) right / 2rem 100% no-repeat local,
@@ -519,7 +518,8 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
       var(--fondo);
   }
   .tabla-contenedor .tabla :is(th, td):first-child { position: sticky; left: 0; z-index: 2; background: var(--fondo); }
-  .tabla-contenedor .tabla th:first-child { background: var(--tenue); }
+  .tabla-contenedor .tabla :is(thead, tfoot) th:first-child,
+  .tabla-contenedor .tabla .fila-grupo th { background: var(--tenue); }
   @media (hover: hover) {
     .tabla-contenedor .tabla tbody tr:hover > :first-child { background: color-mix(in oklch, var(--acento), var(--fondo)); }
   }
@@ -564,7 +564,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 /* Diálogo nativo: showModal() atrapa el foco, Escape cierra */
 
 .dialogo {
-  width: min(28rem, calc(100% - 32px));
+  width: min(28rem, calc(100% - var(--esp-8)));
   padding: var(--esp-5);
   background: var(--flotante);
   color: var(--flotante-texto);
@@ -580,7 +580,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   .dialogo::backdrop { background: var(--velo-respaldo); backdrop-filter: none; }
 }
 /* Móvil: el diálogo es una hoja desde abajo, al alcance del pulgar. HIG Sheets. La paleta queda arriba por el teclado */
-@media (max-width: 37.49rem) {
+@media (width < 37.5rem) {
   .dialogo:not(.paleta) {
     width: 100%;
     max-width: 100%;
@@ -625,7 +625,7 @@ kbd {
 .atajos-lista dt { display: flex; gap: var(--esp-1); }
 .atajos-lista dd { margin: 0; }
 .atajos-grupo { margin: var(--esp-4) 0 0; font-size: var(--letra-xs); font-weight: 600; color: var(--tenue-texto); text-transform: uppercase; letter-spacing: 0.04em; }
-.dialogo-atajos { max-height: calc(100dvh - 32px); overflow-y: auto; }
+.dialogo-atajos { max-height: calc(100dvh - var(--esp-8)); overflow-y: auto; }
 .dialogo-atajos .acciones { margin-top: var(--esp-5); justify-content: flex-end; }
 
 /* Alertas: role="status", role="alert" en errores */
@@ -663,7 +663,7 @@ kbd {
 .alerta-titulo { font-weight: 500; }
 .alerta-descripcion { color: var(--tenue-texto); }
 .alerta-descripcion p { margin: 0; }
-.alerta-descripcion ul { margin: var(--esp-2) 0 0; padding-left: 18px; }
+.alerta-descripcion ul { margin: var(--esp-2) 0 0; padding-left: var(--esp-5); }
 .alerta-descripcion a { color: inherit; text-underline-offset: 3px; }
 .alerta code { font-family: var(--fuente-mono); font-size: var(--letra-xs); }
 .alerta-accion {
@@ -691,10 +691,10 @@ kbd {
 /* Aviso flotante tipo sonner, abajo a la derecha. app.js lo cierra */
 .aviso-flotante {
   position: fixed;
-  right: calc(16px + env(safe-area-inset-right, 0px));
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  right: calc(var(--esp-4) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--esp-4) + env(safe-area-inset-bottom, 0px));
   z-index: 70;
-  width: min(24rem, calc(100% - 32px));
+  width: min(24rem, calc(100% - var(--esp-8)));
   align-items: center;
   box-shadow: var(--sombra-lg);
   animation: subir var(--dur-media) var(--curva-entrar);
@@ -702,6 +702,10 @@ kbd {
 .aviso-flotante > .icono { margin-top: 0; }
 .aviso-flotante .alerta-accion { grid-row: 1; }
 @keyframes subir { from { opacity: 0; translate: 0 8px; } }
+@media (prefers-reduced-motion: reduce) {
+  .aviso-flotante,
+  .dialogo:not(.paleta)[open] { animation: none; }
+}
 
 /* Estado vacío */
 
@@ -1076,7 +1080,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 /* Celular y táctil */
 
 /* Tabla como tarjetas: cada <td> necesita data-columna. Solo móvil: en tablet la tabla se desliza */
-@media (max-width: 37.49rem) {
+@media (width < 37.5rem) {
   .tabla-tarjetas thead {
     position: absolute;
     width: 1px;
@@ -1126,32 +1130,8 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
   /* Botones bajo el título */
   .encabezado > .acciones { justify-content: flex-start; }
-}
 
-/* La acción baja bajo el texto */
-@media (max-width: 30rem) {
-  .alerta-accion {
-    grid-column: contenido;
-    grid-row: auto;
-    margin: var(--esp-2) 0 0;
-  }
-  .alerta:has(> .icono) .alerta-accion { margin-left: var(--esp-3); }
-}
-
-/* Táctil: targets de 44px. btn-sm y opciones: 40px, van en grupos con espacio. 16px evita el zoom de iOS */
-@media (pointer: coarse) {
-  .btn { min-height: var(--alto-tactil); }
-  .btn-icono { width: var(--alto-tactil); min-height: var(--alto-tactil); }
-  .btn-sm { min-height: var(--alto-lg); }
-  .paginacion a,
-  .paginacion span[aria-disabled] { min-width: var(--alto-tactil); height: var(--alto-tactil); }
-  .control { min-height: var(--alto-tactil); font-size: 1rem; }
-  .opcion { min-height: var(--alto-lg); }
-  .pestanas a { min-height: var(--alto-lg); }
-}
-
-/* Filas editables como tarjetas */
-@media (max-width: 37.49rem) {
+  /* Filas editables como tarjetas */
   .tabla-tarjetas tfoot { display: block; }
   .tabla-tarjetas tbody th,
   .tabla-tarjetas tfoot th {
@@ -1170,6 +1150,29 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
     text-align: left;
   }
   .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
+}
+
+/* La acción baja bajo el texto */
+@media (width < 30rem) {
+  .alerta-accion {
+    grid-column: contenido;
+    grid-row: auto;
+    margin: var(--esp-2) 0 0;
+  }
+  .alerta:has(> .icono) .alerta-accion { margin-left: var(--esp-3); }
+}
+
+/* Táctil: targets de 44px. btn-sm y opciones: 40px, van en grupos con espacio. 16px evita el zoom de iOS */
+@media (pointer: coarse) {
+  .btn { min-height: var(--alto-tactil); }
+  .btn-icono,
+  .btn-secundario.btn-icono { width: var(--alto-tactil); min-height: var(--alto-tactil); }
+  .btn-sm { min-height: var(--alto-lg); }
+  .paginacion a,
+  .paginacion span[aria-disabled] { min-width: var(--alto-tactil); height: var(--alto-tactil); }
+  .control { min-height: var(--alto-tactil); font-size: 1rem; }
+  .opcion { min-height: var(--alto-lg); }
+  .pestanas a { min-height: var(--alto-lg); }
 }
 
 /* Alto contraste de Windows: el sistema quita los fondos. Marcar con colores del sistema. */

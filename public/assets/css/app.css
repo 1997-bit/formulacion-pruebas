@@ -8,7 +8,7 @@
 
 .saltar {
   position: absolute;
-  left: 8px;
+  left: var(--esp-2);
   top: -100px;
   z-index: 100;
   padding: var(--esp-2) var(--esp-3);
@@ -17,7 +17,7 @@
   border-radius: var(--radio-md);
 }
 .saltar:focus {
-  top: 8px;
+  top: var(--esp-2);
 }
 
 /* Sidebar */
@@ -40,6 +40,8 @@
 .sidebar-pie {
   padding: var(--esp-2);
 }
+/* La barra de inicio del iPhone no tapa el usuario */
+.sidebar-pie { padding-bottom: calc(var(--esp-2) + env(safe-area-inset-bottom, 0px)); }
 
 .sidebar-contenido {
   flex: 1;
@@ -181,7 +183,7 @@ button.sidebar-boton {
   display: grid;
   place-items: center;
   border-radius: var(--radio-lg);
-  margin-left: -4px;
+  margin-left: calc(-1 * var(--esp-1));
 }
 .marca-icono {
   background: var(--primario);
@@ -214,14 +216,14 @@ button.sidebar-boton {
 /* Usuario: hacia arriba */
 .usuario-flotante {
   position-anchor: --menu-usuario;
-  bottom: calc(anchor(top) + 4px);
+  bottom: calc(anchor(top) + var(--esp-1));
   left: anchor(left);
   width: anchor-size(width);
 }
 /* Proyecto: hacia abajo */
 .proyecto-flotante {
   position-anchor: --menu-proyecto;
-  top: calc(anchor(bottom) + 4px);
+  top: calc(anchor(bottom) + var(--esp-1));
   left: anchor(left);
   width: anchor-size(width);
   max-height: 60vh;
@@ -259,7 +261,7 @@ button.sidebar-boton {
   display: flex;
   align-items: center;
   gap: var(--esp-2);
-  min-height: 3.5rem;
+  min-height: var(--barra-alto);
   padding: var(--esp-2) var(--esp-4);
   background: var(--fondo);
   border-bottom: 1px solid var(--borde);
@@ -327,12 +329,14 @@ button.sidebar-boton {
 }
 
 .app-principal {
+  --margen: var(--esp-4);
+  position: relative;
   flex: 1;
-  padding: var(--esp-4);
-  padding-bottom: calc(var(--esp-4) + env(safe-area-inset-bottom, 0px));
+  padding: var(--margen);
+  padding-bottom: calc(var(--margen) + env(safe-area-inset-bottom, 0px));
 }
-@media (min-width: 37.5rem) {
-  .app-principal { padding: var(--esp-6); padding-bottom: calc(var(--esp-6) + env(safe-area-inset-bottom, 0px)); }
+@media (width >= 37.5rem) {
+  .app-principal { --margen: var(--esp-6); }
 }
 .app-principal:focus {
   outline: none;
@@ -340,91 +344,81 @@ button.sidebar-boton {
 
 /* Rail de íconos: escritorio colapsado, o tablet de 600 a 1023 px. data-medio: tema.js. Tablet con el menú abierto: completo encima */
 
-@media (min-width: 37.5rem) {
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar {
-    width: var(--lateral-ancho-icono);
-  }
+@media (width >= 37.5rem) {
+  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) {
+    .sidebar { width: var(--lateral-ancho-icono); }
 
-  /* Ocultos a la vista, no al lector */
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-texto,
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .flecha,
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .flecha-usuario,
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-grupo-titulo {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-submenu {
-    display: none;
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-contenido {
-    overflow: visible;
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-boton {
-    width: 100%; /* el rail menos su padding: 32px, 44px en táctil */
-    padding: 0 var(--esp-2);
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-marca,
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-usuario {
-    padding: 0;
-    min-height: var(--alto-sm);
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .marca-icono,
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .avatar-cuadrado {
-    margin-left: 0;
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .sidebar-grupo {
-    padding: var(--esp-1) var(--esp-2);
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .proyecto-flotante {
-    top: anchor(top);
-    left: calc(anchor(right) + 8px);
-    width: auto;
-    min-width: 14rem;
-  }
-  /* El flotante sale del sidebar: nombres visibles aunque esté colapsado */
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .proyecto-flotante .sidebar-boton {
-    width: 100%;
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .proyecto-flotante .sidebar-texto {
-    position: static;
-    width: auto;
-    height: auto;
-    clip-path: none;
-  }
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) .usuario-flotante {
-    bottom: anchor(bottom);
-    left: calc(anchor(right) + 8px);
-    width: auto;
-    min-width: 12rem;
-  }
+    /* Ocultos a la vista, no al lector */
+    :is(.sidebar-texto, .flecha, .flecha-usuario, .sidebar-grupo-titulo) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .sidebar-submenu,
+    .sidebar-atajo { display: none; }
+    .sidebar-contenido { overflow: visible; }
+    .sidebar-grupo { padding: var(--esp-1) var(--esp-2); }
+    :is(.sidebar-marca, .sidebar-usuario) {
+      padding: 0;
+      min-height: var(--alto-sm);
+    }
+    :is(.marca-icono, .avatar-cuadrado) { margin-left: 0; }
 
-  /* Globo con el nombre */
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) [data-etiqueta]:hover::after,
-  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) [data-etiqueta]:focus-visible::after {
-    content: attr(data-etiqueta);
-    position: absolute;
-    left: calc(100% + 12px);
-    top: 50%;
-    translate: 0 -50%;
-    padding: var(--esp-1) var(--esp-2);
-    background: var(--texto);
-    color: var(--fondo);
-    border-radius: var(--radio-sm);
-    font-size: var(--letra-xs);
-    font-weight: 500;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 60;
+    .proyecto-flotante {
+      top: anchor(top);
+      left: calc(anchor(right) + var(--esp-2));
+      width: auto;
+      min-width: 14rem;
+    }
+    /* El flotante sale del sidebar: nombres visibles aunque esté colapsado */
+    .proyecto-flotante .sidebar-texto {
+      position: static;
+      width: auto;
+      height: auto;
+      clip-path: none;
+    }
+    .usuario-flotante {
+      bottom: anchor(bottom);
+      left: calc(anchor(right) + var(--esp-2));
+      width: auto;
+      min-width: 12rem;
+    }
+
+    /* Globo con el nombre */
+    [data-etiqueta]:is(:hover, :focus-visible)::after {
+      content: attr(data-etiqueta);
+      position: absolute;
+      left: calc(100% + var(--esp-3));
+      top: 50%;
+      translate: 0 -50%;
+      padding: var(--esp-1) var(--esp-2);
+      background: var(--texto);
+      color: var(--fondo);
+      border-radius: var(--radio-sm);
+      font-size: var(--letra-xs);
+      font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    @media (pointer: coarse) {
+      :is(.sidebar-marca, .sidebar-usuario) { min-height: var(--alto-tactil); }
+    }
   }
 }
 
-/* Móvil: sidebar encima del contenido */
+/* Menú encima del contenido: móvil siempre, tablet solo abierto. El fondo solo existe con el menú abierto */
+.sidebar-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+}
 
-@media (max-width: 37.49rem) {
+@media (width < 37.5rem) {
   .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
@@ -439,23 +433,10 @@ button.sidebar-boton {
     translate: 0 0;
     transition-timing-function: var(--curva-entrar);
   }
-  .sidebar-fondo {
-    position: fixed;
-    inset: 0;
-    z-index: 35;
-  }
 }
 
-/* Táctil: menú lateral y botón de la barra de 44px. En el rail el ancho sigue igual */
-@media (pointer: coarse) {
-  .sidebar-boton { min-height: var(--alto-tactil); }
-  .sidebar-subboton { min-height: var(--alto-lg); }
-  .barra-boton { width: var(--alto-tactil); height: var(--alto-tactil); }
-  :root { --lateral-ancho-icono: 3.75rem; }
-}
-
-/* Tablet: el menú abierto va encima. El padding guarda el lugar del rail, el contenido no salta */
-@media (min-width: 37.5rem) and (max-width: 63.99rem) {
+/* Tablet: el padding guarda el lugar del rail. Así el contenido no salta */
+@media (37.5rem <= width < 64rem) {
   [data-sidebar-movil="abierto"] .app { padding-left: var(--lateral-ancho-icono); }
   [data-sidebar-movil="abierto"] .sidebar {
     position: fixed;
@@ -465,20 +446,21 @@ button.sidebar-boton {
     box-shadow: var(--sombra-xl);
     z-index: 40;
   }
-  .sidebar-fondo {
-    position: fixed;
-    inset: 0;
-    z-index: 35;
-  }
+}
+
+/* Táctil: menú lateral y botón de la barra de 44px */
+@media (pointer: coarse) {
+  .sidebar-boton { min-height: var(--alto-tactil); }
+  .sidebar-subboton { min-height: var(--alto-lg); }
+  .barra-boton { width: var(--alto-tactil); height: var(--alto-tactil); }
 }
 
 /* Esqueleto: app.js pone aria-busy si la página nueva tarda más de 150 ms */
-.app-principal { position: relative; }
 .app-principal[aria-busy="true"] > * { visibility: hidden; }
 .app-principal[aria-busy="true"]::before {
   content: "";
   position: absolute;
-  inset: 16px;
+  inset: var(--margen);
   background:
     linear-gradient(var(--tenue) 0 0) 0 0 / 30% 2.25rem,
     linear-gradient(var(--tenue) 0 0) 0 3rem / 45% 1rem,
@@ -503,7 +485,8 @@ button.sidebar-boton {
 :root[data-movimiento="si"]::view-transition-new(*) { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .flecha {
+  .flecha,
+  .sidebar {
     transition: none;
   }
 }
@@ -582,7 +565,6 @@ button.sidebar-boton {
   font-size: 0.6875rem;
 }
 :is(.sidebar-boton, .sidebar-subboton):is(:hover, :focus-visible) .sidebar-atajo { opacity: 1; }
-[data-sidebar="colapsado"] .sidebar-atajo { display: none; }
 [data-atajos="no"] .sidebar-atajo { display: none; }
 
 /* Ajustes → Accesibilidad. Movimiento reducido a mano, igual que prefers-reduced-motion */
@@ -658,7 +640,7 @@ button.sidebar-boton {
 .tabla tbody tr:focus-within { background: var(--acento); }
 
 /* Paleta de comandos (Ctrl/⌘+K) */
-.paleta { width: min(36rem, calc(100% - 32px)); padding: 0; margin-top: 12vh; overflow: hidden; }
+.paleta { width: min(36rem, calc(100% - var(--esp-8))); padding: 0; margin-top: 12vh; overflow: hidden; }
 .paleta-campo { display: flex; align-items: center; gap: var(--esp-3); padding: 0 var(--esp-4); border-bottom: 1px solid var(--borde); color: var(--tenue-texto); }
 .paleta-entrada { flex: 1; min-width: 0; height: 3rem; border: 0; background: transparent; color: var(--texto); font: inherit; font-size: var(--letra-base); outline: none; }
 .paleta-lista { list-style: none; margin: 0; padding: var(--esp-2); max-height: min(24rem, 60dvh); overflow-y: auto; }
@@ -690,7 +672,7 @@ button.sidebar-boton {
 .grafico-barras > [data-dato]:hover { filter: brightness(1.25); }
 .grafico-barras > [data-dato]:hover::after {
   content: attr(data-dato); position: absolute; bottom: calc(100% + 6px); left: 50%; translate: -50% 0; z-index: 3;
-  padding: 4px 8px; white-space: nowrap; font-size: var(--letra-xs); font-family: var(--fuente-mono);
+  padding: var(--esp-1) var(--esp-2); white-space: nowrap; font-size: var(--letra-xs); font-family: var(--fuente-mono);
   background: var(--flotante); color: var(--flotante-texto); border: 1px solid var(--borde); border-radius: var(--radio-md); box-shadow: var(--sombra-md); pointer-events: none;
 }
 .grafico-barras > [data-dato]:hover .grafico-etiqueta { visibility: hidden; }
@@ -760,5 +742,11 @@ a.matriz-celda:hover { outline: 2px solid var(--anillo); outline-offset: 1px; }
 .matriz-pie p { display: flex; align-items: center; gap: var(--esp-2); margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .matriz-pie .icono { width: 16px; height: 16px; color: var(--aviso-fuerte); }
 @media print { .matriz-celda, .matriz-fault::after { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
+/* Al tocar: capa del color del texto al 10 %, el estado pressed de Material 3.
+   Al final de la última capa: un background de hover o de página actual no la borra */
+:is(.btn, .chip-quitar, .paginacion a, .pestanas a, .resultado-opcion, .tareas a, .cifra-enlace, .tarjeta-caso, .sidebar-boton, .sidebar-subboton, .barra-boton):active {
+  background-image: linear-gradient(color-mix(in oklch, currentColor 10%, transparent) 0 0);
+}
 
 }

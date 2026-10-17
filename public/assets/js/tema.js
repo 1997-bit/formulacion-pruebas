@@ -18,7 +18,7 @@ function aplicarPreferencias() {
 aplicarPreferencias();
 
 // Tablet de 600 a 1023 px: sidebar en rail de íconos. El CSS lee data-medio.
-const medio = matchMedia('(min-width: 37.5rem) and (max-width: 63.99rem)');
+const medio = matchMedia('(37.5rem <= width < 64rem)');
 const marcarMedio = () => document.documentElement.toggleAttribute('data-medio', medio.matches);
 marcarMedio();
 medio.addEventListener('change', marcarMedio);
