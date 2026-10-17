@@ -99,6 +99,12 @@
   --esp-8: 32px;
   --esp-10: 40px;
 
+  /* Alto de botones y campos. md: el normal. lg: táctil y opciones grandes. */
+  --alto-xs: 1.75rem;
+  --alto-sm: 2rem;
+  --alto-md: 2.25rem;
+  --alto-lg: 2.5rem;
+
   --radio: 0.625rem;
   --radio-sm: calc(var(--radio) - 4px);
   --radio-md: calc(var(--radio) - 2px);

@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--esp-2);
-  min-height: 2.25rem;
+  min-height: var(--alto-md);
   padding: 0 var(--esp-4);
   font: inherit;
   font-size: var(--letra-sm);
@@ -30,7 +30,7 @@
 .btn:disabled,
 .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
-.btn-sm { min-height: 1.75rem; padding: 0 var(--esp-3); font-size: var(--letra-xs); border-radius: var(--radio-sm); }
+.btn-sm { min-height: var(--alto-xs); padding: 0 var(--esp-3); font-size: var(--letra-xs); border-radius: var(--radio-sm); }
 
 /* Enviando, app.js. El botón gira, salvo con movimiento reducido */
 form[data-enviando] .btn[aria-disabled="true"]::before {
@@ -46,7 +46,9 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 @keyframes girar { to { rotate: 1turn; } }
 
 /* Solo ícono: siempre con aria-label */
-.btn-icono { min-height: 2rem; width: 2rem; padding: 0; }
+.btn-icono { min-height: var(--alto-sm); width: var(--alto-sm); padding: 0; }
+/* Con borde va junto a otros .btn: mismo alto */
+.btn-secundario.btn-icono { min-height: var(--alto-md); width: var(--alto-md); }
 
 .acciones { display: flex; gap: var(--esp-2); flex-wrap: wrap; justify-content: flex-end; }
 .acciones-separadas { justify-content: space-between; }
@@ -328,7 +330,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 
 .control {
   width: 100%;
-  min-height: 2.25rem;
+  min-height: var(--alto-md);
   padding: 6px var(--esp-3); /* 6px: centra el texto del select en 2.25rem */
   font: inherit;
   font-size: var(--letra-sm);
@@ -431,7 +433,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   align-items: center;
   justify-content: center;
   gap: var(--esp-2);
-  min-height: 3.5rem;
+  min-height: var(--alto-lg);
   padding: var(--esp-2) var(--esp-4);
   font-weight: 600;
   cursor: pointer;
@@ -512,8 +514,8 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 .paginacion .salto {
   display: grid;
   place-items: center;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: var(--alto-sm);
+  height: var(--alto-sm);
   padding: 0 var(--esp-2);
   color: var(--texto);
   text-decoration: none;
@@ -779,7 +781,7 @@ meter.progreso { --progreso-pista: var(--secundario); }
 .tabla-editable tbody th { vertical-align: top; padding-top: 14px; }
 .tabla-editable tbody tr:hover { background: none; }
 .tabla-editable :is(td, th) .control { min-width: 9rem; }
-.tabla-editable textarea.control { min-height: 2.25rem; padding-block: 6px; }
+.tabla-editable textarea.control { min-height: var(--alto-md); padding-block: 6px; }
 .tabla-editable .celda-corta .control { min-width: 5rem; }
 .tabla-editable td.celda-acciones { vertical-align: top; padding-top: 8px; }
 .tabla-editable td:has(> input[type="checkbox"]) { vertical-align: middle; }
@@ -838,7 +840,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 /* Línea de tiempo: un punto por cambio, reciente arriba */
 /* Línea de tiempo: hora | punto y línea | cambio */
 .linea-tiempo { --hora: 5.5rem; margin: 0; padding: 0; list-style: none; }
-.linea-tiempo li { position: relative; display: grid; grid-template-columns: var(--hora) 1fr; column-gap: var(--esp-6); padding-bottom: var(--esp-4); }
+.linea-tiempo li { position: relative; display: grid; align-items: baseline; grid-template-columns: var(--hora) 1fr; column-gap: var(--esp-6); padding-bottom: var(--esp-4); }
 .linea-tiempo li::before {
   content: "";
   position: absolute;
@@ -924,7 +926,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 .pestanas { display: inline-flex; max-width: 100%; gap: 2px; margin-bottom: var(--esp-4); padding: var(--esp-1); overflow-x: auto; background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
 .pestanas a {
-  display: inline-flex; align-items: center; gap: var(--esp-2); min-height: 2rem; padding: var(--esp-1) var(--esp-3);
+  display: inline-flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-sm); padding: var(--esp-1) var(--esp-3);
   color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
   border-radius: var(--radio-md);
 }
@@ -1014,8 +1016,8 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 /* Celular y táctil */
 
-/* Tabla como tarjetas: cada <td> necesita data-columna */
-@media (max-width: 40rem) {
+/* Tabla como tarjetas: cada <td> necesita data-columna. Por el ancho del contenido: tablet vertical también */
+@container principal (width < 50rem) {
   .tabla-tarjetas thead {
     position: absolute;
     width: 1px;
@@ -1079,17 +1081,17 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 /* Táctil: targets grandes. 16px evita el zoom de iOS */
 @media (pointer: coarse) {
-  .btn { min-height: 2.5rem; }
-  .btn-icono { width: 2.5rem; min-height: 2.5rem; }
-  .btn-sm { min-height: 2.25rem; }
+  .btn { min-height: var(--alto-lg); }
+  .btn-icono { width: var(--alto-lg); min-height: var(--alto-lg); }
+  .btn-sm { min-height: var(--alto-md); }
   .paginacion a,
-  .paginacion span[aria-disabled] { min-width: 2.5rem; height: 2.5rem; }
-  .control { min-height: 2.5rem; font-size: 1rem; }
-  .opcion { min-height: 2rem; }
+  .paginacion span[aria-disabled] { min-width: var(--alto-lg); height: var(--alto-lg); }
+  .control { min-height: var(--alto-lg); font-size: 1rem; }
+  .opcion { min-height: var(--alto-sm); }
 }
 
 /* Filas editables como tarjetas */
-@media (max-width: 40rem) {
+@container principal (width < 50rem) {
   .tabla-tarjetas tfoot { display: block; }
   .tabla-tarjetas tbody th,
   .tabla-tarjetas tfoot th {
