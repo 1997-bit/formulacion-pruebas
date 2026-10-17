@@ -30,7 +30,7 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
         <span class="marca-icono" aria-hidden="true"><?= $activo ? Html::e(Html::iniciales($activo['nombre'])) : Icono::svg('flask-conical') ?></span>
         <span class="sidebar-texto sidebar-dos-lineas">
           <strong><?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?></strong>
-          <small><?= $activo ? 'Proyecto' : count($proyectos) . ' proyecto(s)' ?></small>
+          <small><?= $activo ? 'Proyecto' : Html::cantidad(count($proyectos), 'proyecto', 'proyectos') ?></small>
         </span>
         <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
       </button>

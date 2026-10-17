@@ -23,9 +23,9 @@ $enProyecto = $usuario['activo'] !== null && $avance['proyectos'] !== [];
 $porcentaje = fn (int $n, int $de): int => $de === 0 ? 0 : (int) round($n / $de * 100);
 // Hoy: casos creados o anotados hoy. 0 no se muestra.
 $cifras = [
-    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : count($avance['proyectos']) . ' proyecto(s)', '', '', $t['casos_hoy']],
+    ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : Html::cantidad(count($avance['proyectos']), 'proyecto', 'proyectos'), '', '', $t['casos_hoy']],
     ['OK', 'circle-check', $t['ok'], 'Pasaron la prueba', '1', 'cifra-exito', $t['ok_hoy']],
-    ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2', 'cifra-peligro', $t['fault_hoy']],
+    ['FAULT', 'circle-x', $t['fault'], Html::cantidad((int) $t['incidentes_abiertos'], 'incidente abierto', 'incidentes abiertos'), '2', 'cifra-peligro', $t['fault_hoy']],
     ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0', 'cifra-aviso', 0],
 ];
 // Por atender: lo que impide el Go y los incidentes sin dueño, por proyecto. Stoppers en la alerta de arriba.
@@ -40,7 +40,7 @@ foreach ($avance['proyectos'] as $p) {
         }
     }
     if ($p['sin_asignar'] > 0) {
-        $tareas[] = ['users', $p['sin_asignar'] . ' incidente(s) abierto(s) sin asignar', $enProyecto ? '' : $p['nombre'], '/formularios/incidentes?estado=0'];
+        $tareas[] = ['users', Html::cantidad((int) $p['sin_asignar'], 'incidente abierto', 'incidentes abiertos') . ' sin asignar', $enProyecto ? '' : $p['nombre'], '/formularios/incidentes?estado=0'];
     }
 }
 ?>
@@ -54,7 +54,7 @@ foreach ($avance['proyectos'] as $p) {
 <div class="pila">
   <?php if ($t['stoppers'] > 0): ?>
     <div class="alerta alerta-error"><?= Icono::svg('triangle-alert') ?>
-      <p class="alerta-titulo"><?= (int) $t['stoppers'] ?> stopper(s) abierto(s)</p>
+      <p class="alerta-titulo"><?= Html::cantidad((int) $t['stoppers'], 'stopper abierto', 'stoppers abiertos') ?></p>
       <p class="alerta-descripcion">Con un stopper abierto el proyecto es No-Go.</p>
       <a class="btn btn-secundario btn-sm alerta-accion" href="/formularios/incidentes?stopper=1">Ver stoppers</a>
     </div>
@@ -168,7 +168,7 @@ foreach ($avance['proyectos'] as $p) {
         <section class="tarjeta" aria-labelledby="av-<?= (int) $p['id'] ?>">
           <header class="tarjeta-encabezado">
             <h3 class="tarjeta-titulo" id="av-<?= (int) $p['id'] ?>"><?= Html::e($p['nombre']) ?></h3>
-            <p class="tarjeta-descripcion"><?= (int) $p['casos'] ?> caso(s) · <?= (int) $p['stoppers'] ?> stopper(s) abierto(s)</p>
+            <p class="tarjeta-descripcion"><?= Html::cantidad((int) $p['casos'], 'caso', 'casos') ?> · <?= Html::cantidad((int) $p['stoppers'], 'stopper abierto', 'stoppers abiertos') ?></p>
             <div class="acciones"><?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></div>
           </header>
           <div class="tarjeta-contenido pila">

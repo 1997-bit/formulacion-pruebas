@@ -12,6 +12,12 @@ final class Html
         return htmlspecialchars($texto ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
+    // 1 caso, 2 casos, 0 casos. Sin "caso(s)".
+    public static function cantidad(int $n, string $uno, string $varios): string
+    {
+        return $n . ' ' . ($n === 1 ? $uno : $varios);
+    }
+
     // "Juan Garcia" -> "JG"
     public static function iniciales(string $nombre): string
     {

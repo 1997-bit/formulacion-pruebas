@@ -86,7 +86,7 @@ final class ReporteServicioTest extends BaseDatos
 
         $p = ReporteServicio::avance($this->sesion($tester))['proyectos'][0];
 
-        $this->assertSame('2 pendiente(s)', $p['criterios'][0]['detalle']);
+        $this->assertSame('2 pendientes', $p['criterios'][0]['detalle']);
     }
 
     /** @return array<string, array{list<int>, int}> */

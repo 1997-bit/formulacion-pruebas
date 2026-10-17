@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\Html;
 use App\Models\ProyectoModelo;
 use App\Models\ReporteModelo;
 
@@ -127,10 +128,10 @@ final class ReporteServicio
     private static function evaluar(array $p): array
     {
         $p['criterios'] = [
-            ['texto' => 'Todos los casos tienen resultado', 'cumple' => $p['pendientes'] === 0, 'detalle' => "{$p['pendientes']} pendiente(s)"],
+            ['texto' => 'Todos los casos tienen resultado', 'cumple' => $p['pendientes'] === 0, 'detalle' => Html::cantidad($p['pendientes'], 'pendiente', 'pendientes')],
             ['texto' => 'Los casos con resultado tienen evidencia', 'cumple' => $p['sin_evidencia'] === 0, 'detalle' => "{$p['sin_evidencia']} sin evidencia"],
             ['texto' => 'Los casos FAULT tienen incidente', 'cumple' => $p['fault_sin_incidente'] === 0, 'detalle' => "{$p['fault_sin_incidente']} sin incidente"],
-            ['texto' => 'Sin incidentes stopper abiertos', 'cumple' => $p['stoppers'] === 0, 'detalle' => "{$p['stoppers']} abierto(s)"],
+            ['texto' => 'Sin incidentes stopper abiertos', 'cumple' => $p['stoppers'] === 0, 'detalle' => Html::cantidad($p['stoppers'], 'abierto', 'abiertos')],
         ];
         $ejecutados = $p['ok'] + $p['fault'];
         $p['aprobacion'] = $ejecutados === 0 ? 0 : (int) round($p['ok'] / $ejecutados * 100);

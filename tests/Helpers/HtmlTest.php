@@ -51,6 +51,20 @@ final class HtmlTest extends TestCase
         ];
     }
 
+    /** @return array<string, array{int, string}> */
+    public static function cantidades(): array
+    {
+        return ['cero' => [0, '0 casos'], 'uno' => [1, '1 caso'], 'varios' => [2, '2 casos']];
+    }
+
+    #[DataProvider('cantidades')]
+    public function testCantidad(int $n, string $esperado): void
+    {
+        $texto = Html::cantidad($n, 'caso', 'casos');
+
+        $this->assertSame($esperado, $texto);
+    }
+
     #[DataProvider('nombres')]
     public function testIniciales(string $nombre, string $esperado): void
     {
