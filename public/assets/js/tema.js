@@ -16,3 +16,9 @@ function aplicarPreferencias() {
   if (raiz.dataset.tema === 'sistema') raiz.dataset.tema = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 aplicarPreferencias();
+
+// Tablet de 600 a 1023 px: sidebar en rail de íconos. El CSS lee data-medio.
+const medio = matchMedia('(37.5rem <= width < 64rem)');
+const marcarMedio = () => document.documentElement.toggleAttribute('data-medio', medio.matches);
+marcarMedio();
+medio.addEventListener('change', marcarMedio);

@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cabeceras de seguridad: CSP, Referrer-Policy, Permissions-Policy y COOP.
 - Manifest: la app se puede instalar.
 - Diálogos con `closedby` y botones `command`. `<select>` con los colores de la app donde hay soporte.
+- Tokens de espacio en escala de 4 px, de alto de controles y de movimiento de Material 3: duraciones de 100, 150 y 250 ms, y curvas para entrar y salir.
+- Tablet de 600 a 1023 px: sidebar como rail de íconos. El botón abre el menú completo encima.
+- Móvil: los diálogos salen como hoja desde abajo, con Cancelar al final.
+- Táctil: botones, campos, paginación y menú de 44 px. Al tocar, una capa del 10 % marca el toque.
+- Áreas seguras de iPhone: el notch y la barra de inicio no tapan el contenido.
 
 ### Changed
 
@@ -39,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Superficies por capas en claro y oscuro. Oscuro neutro, sin tinte azul.
 - Tarjetas con sombra suave. Íconos de cifras con el color del estado.
 - Números de tablas alineados a la derecha.
+- Espaciado: página con 24 px de margen desde tablet, título de sección junto a su contenido, el mismo gap entre cifras y tarjetas, y filtros con el padding de las tarjetas.
+- Opciones Pendiente, OK y FAULT de 40 px de alto.
+- Tablet: tablas con scroll de lado, la primera columna fija y una sombra si hay más columnas. Tarjetas solo en móvil.
+- El hover solo pinta con mouse. En táctil los globos de ayuda salen solo con teclado.
 
 ### Fixed
 
@@ -58,6 +67,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Requerimientos: solo "No funcional" lleva insignia.
 - Registrar caso: campos en filas completas, sin huecos.
 - Cerrar sesión desde la paleta de comandos.
+- Panel: en las tarjetas de proyecto, los botones van al fondo. Códigos y fechas en la misma línea que su texto.
+- Panel en móvil: las tareas muestran el texto completo y el dato debajo.
+- Números sin huecos en el texto: "22 %" y fechas.
+- Botón de borrar del caso con el mismo alto que los demás botones.
+- iOS: el texto ya no crece al girar a horizontal.
+- El fondo de los diálogos respeta "Reducir transparencia".
 - Botón secundario hundido en oscuro.
 
 ## [1.6.0] - 2026-10-13

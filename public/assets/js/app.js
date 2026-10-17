@@ -3,7 +3,7 @@ const raiz = document.documentElement;
 const sidebar = document.getElementById('sidebar');
 const alternar = document.getElementById('sidebar-alternar');
 const fondo = document.getElementById('sidebar-fondo');
-const escritorio = window.matchMedia('(min-width: 48rem)');
+const escritorio = window.matchMedia('(width >= 64rem)');
 
 if (sidebar && alternar) {
   const colapsado = () => raiz.dataset.sidebar === 'colapsado';
@@ -54,6 +54,11 @@ if (sidebar && alternar) {
         e.preventDefault();
         fijarColapsado(false);
         summary.parentElement.open = true;
+      } else if ('medio' in raiz.dataset && !movilAbierto()) {
+        // Tablet en rail: abre el menú completo con el grupo abierto.
+        e.preventDefault();
+        summary.parentElement.open = true;
+        abrirMovil();
       }
     });
   });
@@ -76,7 +81,8 @@ if (!CSS.supports('anchor-name: --a')) {
     menu.addEventListener('toggle', (e) => {
       if (e.newState !== 'open') return;
       const r = document.querySelector(`[popovertarget="${menu.id}"]`).getBoundingClientRect();
-      const colapsado = document.documentElement.dataset.sidebar === 'colapsado' && matchMedia('(min-width: 48rem)').matches;
+      // Rail: escritorio colapsado o tablet. Se mide en lugar de repetir las reglas del CSS.
+      const colapsado = (sidebar?.offsetWidth ?? 0) < 100;
       Object.assign(menu.style, colapsado
         ? { left: `${r.right + 8}px`, top: menu.dataset.lado === 'abajo' ? `${r.top}px` : 'auto', bottom: menu.dataset.lado === 'arriba' ? `${innerHeight - r.bottom}px` : 'auto', width: 'auto' }
         : { left: `${r.left}px`, width: `${r.width}px`, top: menu.dataset.lado === 'abajo' ? `${r.bottom + 4}px` : 'auto', bottom: menu.dataset.lado === 'arriba' ? `${innerHeight - r.top + 4}px` : 'auto' });
