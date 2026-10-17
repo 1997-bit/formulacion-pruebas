@@ -678,7 +678,7 @@ kbd {
   grid-column: accion;
   grid-row: 1 / span 2;
   margin-left: var(--esp-3);
-  align-self: start;
+  align-self: center;
 }
 
 /* Estilo Jira: fondo suave, borde y texto fuerte del mismo tono */
