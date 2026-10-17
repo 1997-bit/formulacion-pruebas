@@ -6,7 +6,7 @@ No borrar el caso FAULT ni el incidente: son el registro de la prueba (#91).
 2. Ejecutar otra vez el caso: prueba de regresión.
 3. Anotar OK con el nuevo resultado, evidencia con el PR y el PR en observaciones. El historial se escribe solo.
 
-En `database/seed.sql`, la tabla temporal `corregidos` lista cada bug con PR, fecha y resultado. Un commit de seed por fase.
+En `database/seed.sql`, la tabla temporal `corregidos` lista cada bug con PR, commit, fecha, resultado y quién repite el caso. Un commit de seed por fase.
 
 | Fase | PR | Bugs |
 | --- | --- | --- |
@@ -15,3 +15,7 @@ En `database/seed.sql`, la tabla temporal `corregidos` lista cada bug con PR, fe
 | 2, escrituras | #133 | BUG-001, BUG-007, BUG-018, BUG-019, BUG-031, BUG-033 |
 | 4, integridad | #134 | BUG-020, BUG-035, BUG-048 |
 | 5, servidor | #135 | BUG-017, BUG-053, BUG-054 |
+| 1.1.0 y 1.6.0 | #140, #189 | BUG-047, BUG-021 |
+| 1.3.0 a Unreleased | #164, #166, #196 | BUG-055, BUG-056, BUG-057 |
+
+BUG-002 sigue En progreso: el arreglo está en `3426060` y falta repetir SIS-004.
