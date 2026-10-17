@@ -106,6 +106,15 @@
   --alto-lg: 2.5rem;
   --alto-tactil: 2.75rem; /* 44px: Apple HIG y WCAG 2.5.5 */
 
+  /* Movimiento, Material 3. Duración: mínima 100 ms, corta 150 ms, media 250 ms.
+     Curva: la estándar. Entrar desacelera: llega suave. Salir acelera: se va rápido */
+  --dur-minima: 100ms;
+  --dur-corta: 150ms;
+  --dur-media: 250ms;
+  --curva: cubic-bezier(0.2, 0, 0, 1);
+  --curva-entrar: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --curva-salir: cubic-bezier(0.3, 0, 0.8, 0.15);
+
   --radio: 0.625rem;
   --radio-sm: calc(var(--radio) - 4px);
   --radio-md: calc(var(--radio) - 2px);
