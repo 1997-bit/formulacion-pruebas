@@ -362,6 +362,22 @@ final class CasoServicioTest extends BaseDatos
         $this->assertNull(CasoModelo::porId($caso));
     }
 
+    // ASVS 16.4.2
+    public function testEliminarDejaElHistorialYSuBorrado(): void
+    {
+        $usuario = $this->usuario();
+        $requerimiento = $this->requerimiento($this->proyecto($usuario));
+        [$caso] = $this->registrar($usuario, $requerimiento);
+        CasoServicio::editar($caso, self::datos($requerimiento, ['modulo' => 'Otro']), self::huella($caso), $this->sesion($usuario));
+
+        CasoServicio::eliminar($caso, $this->sesion($this->usuario(1)));
+
+        $this->assertSame([2, 1], [
+            $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'casos_prueba' AND registro_id = ?", $caso),
+            $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'casos_prueba' AND registro_id = ? AND campo = 'eliminado'", $caso),
+        ]);
+    }
+
     public function testNoEliminaCasoConEvidencia(): void
     {
         $usuario = $this->usuario();

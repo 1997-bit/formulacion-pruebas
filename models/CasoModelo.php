@@ -254,12 +254,11 @@ final class CasoModelo
         return (int) Conexion::pdo()->lastInsertId();
     }
 
-    // False si tiene evidencias o incidentes. El historial se borra con él.
+    // False si tiene evidencias o incidentes. El historial queda, ASVS 16.4.2.
     public static function eliminar(int $id): bool
     {
         try {
             Conexion::pdo()->prepare('DELETE FROM casos_prueba WHERE id = ?')->execute([$id]);
-            Conexion::pdo()->prepare("DELETE FROM logs_cambios WHERE tabla = 'casos_prueba' AND registro_id = ?")->execute([$id]);
         } catch (\PDOException $e) {
             if (ErrorValidacion::esLlaveForanea($e)) {
                 return false;
