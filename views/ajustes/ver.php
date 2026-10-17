@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Helpers\Html;
+use App\Helpers\Icono;
 
 /**
  * Sin formulario: cada opción se guarda al marcarla, app.js y data-ajuste. Una página por pestaña.
@@ -39,6 +40,8 @@ $interruptores = [
         'movimiento' => ['Movimiento', 'Reducir movimiento', 'Sin animaciones ni transiciones. Si el sistema operativo pide menos movimiento, ya están apagadas.', false],
     ],
 ];
+// Ícono de cada opción del tema.
+$iconos = ['sistema' => 'monitor', 'light' => 'sun', 'dark' => 'moon'];
 // Los switches se agrupan por su título en un fieldset cada uno.
 $porTitulo = [];
 foreach ($interruptores[$pestana] ?? [] as $nombre => [$titulo, $texto, $ayuda, $defecto]) {
@@ -63,8 +66,9 @@ foreach ($interruptores[$pestana] ?? [] as $nombre => [$titulo, $texto, $ayuda, 
       <legend><?= $titulo ?></legend>
       <?php foreach ($valores as $valor => [$texto, $ayuda]): ?>
         <label class="opcion">
-          <input type="radio" name="<?= $nombre ?>" value="<?= $valor ?>" data-ajuste>
+          <?php if ($nombre === 'tema'): ?><span class="opcion-icono"><?= Icono::svg($iconos[$valor]) ?></span><?php endif; ?>
           <span><?= $texto ?><?php if ($ayuda !== ''): ?><small><?= $ayuda ?></small><?php endif; ?></span>
+          <input type="radio" name="<?= $nombre ?>" value="<?= $valor ?>" data-ajuste>
         </label>
       <?php endforeach; ?>
     </fieldset>
