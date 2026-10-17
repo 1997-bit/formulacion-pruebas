@@ -148,7 +148,7 @@ CREATE TABLE evidencias (
 -- RF-20
 CREATE TABLE logs_cambios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    tabla VARCHAR(30) NOT NULL, -- casos_prueba, incidentes o plan_pruebas
+    tabla VARCHAR(30) NOT NULL, -- casos_prueba, incidentes, plan_pruebas o requerimientos
     registro_id INT UNSIGNED NOT NULL, -- id del registro; en plan_pruebas, el proyecto
     usuario_id INT UNSIGNED NOT NULL,
     campo VARCHAR(50) NOT NULL,

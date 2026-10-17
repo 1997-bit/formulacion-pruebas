@@ -37,6 +37,9 @@ final class Historial
         'commit_probado' => ['Commit probado', null],
     ];
 
+    // Etiquetas de requerimientos. motivo: por qué cambió, el change request.
+    private const ETIQUETAS = ['codigo' => 'Código', 'descripcion' => 'Descripción', 'motivo' => 'Motivo'];
+
     /**
      * Una fila por campo cambiado, un INSERT. En la transacción del UPDATE: si falla, nada cambia.
      * Casos: campos de CAMPOS. Incidentes y plan: los de $despues.
@@ -58,11 +61,11 @@ final class Historial
     }
 
     /**
-     * Con etiqueta y valores legibles.
+     * Con etiqueta y valores legibles. Casos y requerimientos.
      *
      * @return list<array<string, mixed>>
      */
-    public static function deCaso(int $casoId): array
+    public static function de(string $tabla, int $id): array
     {
         // 'usuario' no es catálogo: guarda el id, el historial muestra el nombre.
         $nombres = [];
@@ -76,7 +79,7 @@ final class Historial
         };
 
         return array_map(static function (array $fila) use ($nombreUsuario): array {
-            [$etiqueta, $catalogo] = self::CAMPOS[$fila['campo']] ?? [$fila['campo'], null];
+            [$etiqueta, $catalogo] = self::CAMPOS[$fila['campo']] ?? [self::ETIQUETAS[$fila['campo']] ?? $fila['campo'], null];
             $texto = static fn (?string $valor): string => match (true) {
                 $valor === null => '',
                 $catalogo === 'usuario' => $nombreUsuario($valor),
@@ -86,6 +89,6 @@ final class Historial
             };
 
             return ['etiqueta' => $etiqueta, 'antes' => $texto($fila['antes']), 'despues' => $texto($fila['despues'])] + $fila;
-        }, HistorialModelo::de('casos_prueba', $casoId));
+        }, HistorialModelo::de($tabla, $id));
     }
 }

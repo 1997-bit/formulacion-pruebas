@@ -44,7 +44,7 @@ $todos = $usuario['activo'] === null;
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Requerimientos</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Descripción</th><th scope="col">Tipo</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col" class="num">Casos</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Descripción</th><th scope="col">Tipo</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col" class="num">Casos</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
         </thead>
         <tbody>
           <?php foreach ($requerimientos as $r): ?>
@@ -54,6 +54,7 @@ $todos = $usuario['activo'] === null;
               <td data-columna="Tipo"><?= $r['no_funcional'] ? '<span class="insignia insignia-borde">No funcional</span>' : '<span class="sin-dato">Funcional</span>' ?></td>
               <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($r['proyecto']) ?></td><?php endif; ?>
               <td data-columna="Casos" class="num"><?= (int) $r['casos'] ?></td>
+              <td class="celda-acciones"><div class="acciones"><a class="btn btn-fantasma btn-icono" href="/requerimientos/editar?id=<?= (int) $r['id'] ?>" aria-label="Editar <?= Html::e($r['codigo']) ?>" data-tooltip="Editar" data-tooltip-alinear="fin"><?= Icono::svg('pencil') ?></a></div></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

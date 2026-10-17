@@ -32,7 +32,7 @@ Toda petición entra por `public/index.php`. Rutas en `config/rutas.php`.
 | --- | --- |
 | Acceso | `/` login. `/registro` cuentas `tester`. `/dashboard` avance. |
 | Administración | `/admin/usuarios`, `/admin/proyectos`. |
-| Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`. |
+| Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`, `/requerimientos/editar`, `/requerimientos/eliminar`. |
 | Casos | `/casos/registrar`, `/casos/listar`, `/casos/resultado`, `/casos/editar`, `/casos/eliminar`, `/evidencias/ver`. `/casos/resultado` anota e imprime el formulario 1. |
 | Formularios | `/formularios/` + `clases_equivalencia` 2, `valor_limite` 3, `tabla_decision` 4, `cobertura_blanca` 5, `plan_pruebas` 6, `rubrica` 7, `autoevaluacion` 8, `portafolio` 9, `incidentes` 10. |
 | Reportes | `/reportes/cierre`. |
@@ -113,6 +113,8 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | --- | --- | --- |
 | Usuarios y roles | Sí | No |
 | Proyectos y miembros | Sí | No |
+| Editar requerimiento | Sí | Sus proyectos |
+| Eliminar requerimiento | Sí | No |
 | Registrar caso | Sí | Sus proyectos |
 | Editar caso | Sí | Propios |
 | Eliminar caso | Sí | No |

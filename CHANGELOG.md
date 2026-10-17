@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Requerimientos: editar con motivo obligatorio, casos afectados e historial. Eliminar solo admin y solo sin casos ni formularios de técnicas.
 - Commit probado en el resultado del caso. Commit afectado y commit corregido en el incidente, con los commits ya usados como sugerencia.
 - Listas de casos, incidentes, requerimientos y logs: encabezado de tabla fijo al bajar.
 - Gráficos del cierre: tooltip con el dato al pasar el mouse.

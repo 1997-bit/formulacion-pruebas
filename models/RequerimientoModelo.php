@@ -117,4 +117,45 @@ final class RequerimientoModelo
 
         return (int) Conexion::pdo()->lastInsertId();
     }
+
+    public static function actualizar(int $id, string $codigo, string $descripcion, int $noFuncional): void
+    {
+        Conexion::pdo()->prepare('UPDATE requerimientos SET codigo = ?, descripcion = ?, no_funcional = ? WHERE id = ?')
+            ->execute([$codigo, $descripcion, $noFuncional, $id]);
+    }
+
+    /**
+     * Casos que validan el requerimiento: el impacto del cambio.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function casos(int $id): array
+    {
+        $sql = Conexion::pdo()->prepare('SELECT id, codigo, estado FROM casos_prueba WHERE requerimiento_id = ? ORDER BY codigo');
+        $sql->execute([$id]);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Casos o filas de los formularios 2 a 5. Los formularios borran en cascada: sin este control se pierden.
+    public static function enUso(int $id): bool
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT EXISTS (SELECT 1 FROM casos_prueba WHERE requerimiento_id = ?)
+                 OR EXISTS (SELECT 1 FROM clases_equivalencia WHERE requerimiento_id = ?)
+                 OR EXISTS (SELECT 1 FROM valor_limite WHERE requerimiento_id = ?)
+                 OR EXISTS (SELECT 1 FROM decision_filas WHERE requerimiento_id = ?)
+                 OR EXISTS (SELECT 1 FROM cobertura_blanca WHERE requerimiento_id = ?)'
+        );
+        $sql->execute(array_fill(0, 5, $id));
+
+        return (bool) $sql->fetchColumn();
+    }
+
+    // Requerimiento e historial juntos: sin logs huérfanos.
+    public static function eliminar(int $id): void
+    {
+        Conexion::pdo()->prepare('DELETE FROM requerimientos WHERE id = ?')->execute([$id]);
+        Conexion::pdo()->prepare("DELETE FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ?")->execute([$id]);
+    }
 }

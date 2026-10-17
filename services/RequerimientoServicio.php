@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Config\Conexion;
+use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorValidacion;
 use App\Core\Paginacion;
 use App\Core\Validador;
+use App\Models\FilasModelo;
 use App\Models\RequerimientoModelo;
 
 final class RequerimientoServicio
 {
+    private const FORMATO = '/^RN?F-\d{2,3}$/';
+
     /**
      * RNF-xx es no funcional.
      *
@@ -23,7 +28,7 @@ final class RequerimientoServicio
         $codigo = strtoupper(trim($datos['codigo']));
         $descripcion = trim($datos['descripcion']);
         $proyectos = array_column(self::proyectos($usuario), null, 'id');
-        $formato = (bool) preg_match('/^RN?F-\d{2,3}$/', $codigo);
+        $formato = (bool) preg_match(self::FORMATO, $codigo);
 
         (new Validador())
             ->requerido('proyecto_id', $proyectoId)
@@ -40,6 +45,67 @@ final class RequerimientoServicio
         }
 
         return $codigo;
+    }
+
+    /**
+     * Change request básico: motivo obligatorio y rastro en el historial. Sin cambios no escribe nada.
+     * El proyecto no cambia: la llave de casos_prueba lo ata.
+     *
+     * @param array<string, string> $datos codigo, descripcion y motivo
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function editar(int $id, array $datos, string $huella, array $usuario): string
+    {
+        $requerimiento = self::ver($id, $usuario) ?? throw new ErrorNoEncontrado();
+        $codigo = strtoupper(trim($datos['codigo']));
+        $descripcion = trim($datos['descripcion']);
+        $motivo = trim($datos['motivo']);
+
+        (new Validador())
+            ->requerido('codigo', $codigo)
+            ->regla('codigo', $codigo === '' || preg_match(self::FORMATO, $codigo) === 1, 'Use RF-01 o RNF-01.')
+            ->requerido('descripcion', $descripcion)
+            ->requerido('motivo', $motivo)
+            ->comprobar();
+
+        if ($codigo === $requerimiento['codigo'] && $descripcion === $requerimiento['descripcion']) {
+            return $codigo;
+        }
+        try {
+            Conexion::transaccion(function () use ($id, $huella, $requerimiento, $codigo, $descripcion, $motivo, $usuario): void {
+                if (FilasModelo::huella(['requerimientos'], 'id', $id) !== $huella) {
+                    throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
+                }
+                RequerimientoModelo::actualizar($id, $codigo, $descripcion, str_starts_with($codigo, 'RNF') ? 1 : 0);
+                // El motivo va como un campo más: antes null, después el texto.
+                Historial::registrar('requerimientos', $id, $requerimiento + ['motivo' => null], [
+                    'codigo' => $codigo, 'descripcion' => $descripcion, 'motivo' => $motivo,
+                ], $usuario['id']);
+            });
+        } catch (\PDOException $e) {
+            throw ErrorValidacion::siDuplicado($e, ['codigo' => 'Ese código ya existe en el proyecto.']);
+        }
+
+        return $codigo;
+    }
+
+    /**
+     * Solo admin. Con casos o formularios 2 a 5 no se elimina.
+     *
+     * @param array{id: int, rol: int} $usuario
+     */
+    public static function eliminar(int $id, array $usuario): string
+    {
+        Permisos::exigirAdmin($usuario);
+        $requerimiento = RequerimientoModelo::porId($id) ?? throw new ErrorNoEncontrado();
+        Conexion::transaccion(function () use ($id): void {
+            if (RequerimientoModelo::enUso($id)) {
+                throw new ErrorValidacion(['general' => 'Tiene casos o formularios de técnicas: no se puede eliminar.']);
+            }
+            RequerimientoModelo::eliminar($id);
+        });
+
+        return $requerimiento['codigo'];
     }
 
     /**

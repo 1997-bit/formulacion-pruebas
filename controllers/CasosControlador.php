@@ -92,7 +92,7 @@ final class CasosControlador
         Vista::pagina('casos/formulario', [
             'titulo' => 'Editar ' . $caso['codigo'],
             'caso' => $caso,
-            'historial' => Historial::deCaso($caso['id']),
+            'historial' => Historial::de('casos_prueba', $caso['id']),
             'huella' => FilasModelo::huella(['casos_prueba'], 'id', $caso['id']),
             'requerimientos' => $requerimientos,
             'miembros' => CasoServicio::miembrosPorProyecto($requerimientos),
@@ -127,7 +127,7 @@ final class CasosControlador
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'vecinos' => CasoModelo::vecinos($caso),
-            'historial' => Historial::deCaso($caso['id']),
+            'historial' => Historial::de('casos_prueba', $caso['id']),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [
