@@ -30,6 +30,7 @@ final class RequerimientosControlador
             'requerimientos' => $requerimientos,
             'paginacion' => $paginacion,
             'flash' => Sesion::tomar('flash'),
+            'accion' => Sesion::tomar('flash_accion'),
             'migas' => [['texto' => 'Requerimientos'], ['texto' => 'Listar']],
         ]);
     }
@@ -49,11 +50,11 @@ final class RequerimientosControlador
     {
         $datos = Entrada::textos(self::CAMPOS);
         try {
-            $codigo = RequerimientoServicio::registrar($datos, Sesion::usuario());
+            [$id, $codigo] = RequerimientoServicio::registrar($datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {
             Respuesta::errores($e->errores, $datos, '/requerimientos/registrar');
         }
-        Respuesta::exito("Requerimiento {$codigo} guardado.", '/requerimientos/listar');
+        Respuesta::exito("Requerimiento {$codigo} guardado.", '/requerimientos/listar', ['texto' => 'Registrar caso', 'ruta' => '/casos/registrar?requerimiento=' . $id]);
     }
 
     public function editar(): void

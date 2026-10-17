@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Formularios con errores: resumen con un enlace por campo y "Error:" en el título de la pestaña.
+- Registrar caso sin requerimientos: aviso con el paso que falta y botón para registrar uno.
+- Requerimiento guardado: aviso con "Registrar caso", que abre el formulario con ese requerimiento elegido.
+- Formulario del caso en tres secciones: Qué se prueba, Cómo y cuándo, Diseño de la prueba.
+- Campos de contraseña: botón Mostrar y Ocultar.
 - Requerimientos: editar con motivo obligatorio, casos afectados e historial. Eliminar solo admin y solo sin casos ni formularios de técnicas.
 - Commit probado en el resultado del caso. Commit afectado y commit corregido en el incidente, con los commits ya usados como sugerencia.
 - Listas de casos, incidentes, requerimientos y logs: encabezado de tabla fijo al bajar.

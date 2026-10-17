@@ -33,7 +33,7 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)">
 <?php // Guardar como PDF: el navegador usa el <title> como título del archivo, el único metadato que copia. ?>
-<title><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Casos de Prueba</title>
+<title><?= empty($errores) ? '' : 'Error: ' ?><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Casos de Prueba</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
@@ -42,6 +42,7 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/app.css') ?>">
 <script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
+<script type="module" src="<?= Vista::estatico('/assets/js/clave.js') ?>"></script>
 <script type="module" src="<?= Vista::estatico('/assets/js/app.js') ?>"></script>
 <script type="module" src="<?= Vista::estatico('/assets/js/atajos.js') ?>"></script>
 <?php // Chrome y Edge piden la página al pasar el mouse por un enlace. Solo GET: todo cambio es POST. ?>
