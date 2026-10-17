@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Services;
 
+use App\Config\Conexion;
 use App\Core\ErrorNoEncontrado;
+use App\Core\ErrorPermiso;
+use App\Core\ErrorValidacion;
+use App\Models\FilasModelo;
 use App\Services\RequerimientoServicio;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Medium;
 use Tests\Apoyo\BaseDatos;
 
-// RF-04
+// RF-04, RF-20
 #[CoversClass(RequerimientoServicio::class)]
 #[Medium]
 final class RequerimientoServicioTest extends BaseDatos
@@ -163,5 +167,136 @@ final class RequerimientoServicioTest extends BaseDatos
             [[1], ['casos' => 2, 'fault' => 1], 1, 2, ['RF-02']],
             [$p['tipos'], $p['filas'][0]['celdas'][1], $p['cubiertas'], $p['total'], $p['sin_casos']],
         );
+    }
+
+    /** @return array<string, string> */
+    private static function cambio(string $codigo = 'RF-01', string $descripcion = 'Nueva', string $motivo = 'Cambió el alcance'): array
+    {
+        return ['codigo' => $codigo, 'descripcion' => $descripcion, 'motivo' => $motivo];
+    }
+
+    private static function huella(int $id): string
+    {
+        return FilasModelo::huella(['requerimientos'], 'id', $id);
+    }
+
+    public function testEditarGuardaCambiosYMotivoEnElHistorial(): void
+    {
+        $tester = $this->usuario();
+        $id = $this->requerimiento($this->proyecto($tester));
+
+        RequerimientoServicio::editar($id, self::cambio('RNF-01'), self::huella($id), $this->sesion($tester));
+
+        $sql = Conexion::pdo()->prepare("SELECT campo, antes, despues FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ? ORDER BY id");
+        $sql->execute([$id]);
+        $this->assertSame([
+            ['campo' => 'codigo', 'antes' => 'RF-01', 'despues' => 'RNF-01'],
+            ['campo' => 'descripcion', 'antes' => 'Requerimiento', 'despues' => 'Nueva'],
+            ['campo' => 'motivo', 'antes' => null, 'despues' => 'Cambió el alcance'],
+        ], $sql->fetchAll(\PDO::FETCH_ASSOC));
+        $this->assertSame(1, $this->contar('SELECT no_funcional FROM requerimientos WHERE id = ?', $id));
+    }
+
+    public function testEditarSinMotivoDaError(): void
+    {
+        $tester = $this->usuario();
+        $id = $this->requerimiento($this->proyecto($tester));
+
+        $errores = $this->errores(fn () => RequerimientoServicio::editar($id, self::cambio(motivo: ' '), self::huella($id), $this->sesion($tester)));
+
+        $this->assertArrayHasKey('motivo', $errores);
+    }
+
+    public function testEditarSinCambiosNoEscribe(): void
+    {
+        $tester = $this->usuario();
+        $id = $this->requerimiento($this->proyecto($tester));
+
+        RequerimientoServicio::editar($id, self::cambio(descripcion: 'Requerimiento'), self::huella($id), $this->sesion($tester));
+
+        $this->assertSame(0, $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ?", $id));
+    }
+
+    public function testEditarACodigoRepetidoDaErrorDeCampo(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->requerimiento($proyecto, 'RF-01');
+        $id = $this->requerimiento($proyecto, 'RF-02');
+
+        $errores = $this->errores(fn () => RequerimientoServicio::editar($id, self::cambio('RF-01'), self::huella($id), $this->sesion($tester)));
+
+        $this->assertSame(['codigo' => 'Ese código ya existe en el proyecto.'], $errores);
+    }
+
+    // #100
+    public function testEditarConHuellaViejaDaError(): void
+    {
+        $tester = $this->usuario();
+        $id = $this->requerimiento($this->proyecto($tester));
+
+        $errores = $this->errores(fn () => RequerimientoServicio::editar($id, self::cambio(), 'vieja', $this->sesion($tester)));
+
+        $this->assertSame(ErrorValidacion::OTRO_GUARDO, $errores);
+    }
+
+    // BUG-026
+    public function testEditarAjenoNoSeEncuentra(): void
+    {
+        $id = $this->requerimiento($this->proyecto($this->usuario()));
+
+        $this->expectException(ErrorNoEncontrado::class);
+
+        RequerimientoServicio::editar($id, self::cambio(), self::huella($id), $this->sesion($this->usuario()));
+    }
+
+    public function testEliminarBorraRequerimientoEHistorial(): void
+    {
+        $admin = $this->usuario(1);
+        $id = $this->requerimiento($this->proyecto());
+        RequerimientoServicio::editar($id, self::cambio(), self::huella($id), $this->sesion($admin));
+
+        RequerimientoServicio::eliminar($id, $this->sesion($admin));
+
+        $this->assertSame([0, 0], [
+            $this->contar('SELECT COUNT(*) FROM requerimientos WHERE id = ?', $id),
+            $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ?", $id),
+        ]);
+    }
+
+    public function testEliminarConCasosDaErrorYNoBorra(): void
+    {
+        $admin = $this->usuario(1);
+        $proyecto = $this->proyecto($admin);
+        $id = $this->requerimiento($proyecto);
+        $this->caso($proyecto, $id, $admin);
+
+        $errores = $this->errores(fn () => RequerimientoServicio::eliminar($id, $this->sesion($admin)));
+
+        $this->assertSame([['general' => 'Tiene casos o formularios de técnicas: no se puede eliminar.'], 1], [
+            $errores, $this->contar('SELECT COUNT(*) FROM requerimientos WHERE id = ?', $id),
+        ]);
+    }
+
+    public function testEliminarConFormularioDaError(): void
+    {
+        $admin = $this->usuario(1);
+        $id = $this->requerimiento($this->proyecto());
+        $columnas = ['campo', 'clase_valida', 'clases_invalidas', 'valores_representativos', 'resultado_esperado'];
+        FilasModelo::guardar('clases_equivalencia', $id, $columnas, [array_combine($columnas, ['Edad', '18 a 60', 'Menor de 18', '17, 18', 'Acepta'])], $admin);
+
+        $errores = $this->errores(fn () => RequerimientoServicio::eliminar($id, $this->sesion($admin)));
+
+        $this->assertArrayHasKey('general', $errores);
+    }
+
+    public function testTesterNoElimina(): void
+    {
+        $tester = $this->usuario();
+        $id = $this->requerimiento($this->proyecto($tester));
+
+        $this->expectException(ErrorPermiso::class);
+
+        RequerimientoServicio::eliminar($id, $this->sesion($tester));
     }
 }
