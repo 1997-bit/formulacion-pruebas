@@ -323,8 +323,11 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   font-weight: 500;
 }
 .requerido { color: var(--error); }
-.control-con-boton { display: flex; gap: var(--esp-2); }
-.control-con-boton > .control { flex: 1; min-width: 0; }
+/* Botón de ícono dentro del control, a la derecha: ojo de la contraseña */
+.control-con-boton { position: relative; }
+.control-con-boton > .control { padding-right: calc(var(--alto-sm) + var(--esp-2)); }
+.control-con-boton > .control-boton { position: absolute; top: 50%; right: 4px; translate: 0 -50%; color: var(--tenue-texto); }
+.control-con-boton > .control-boton:hover { color: var(--texto); }
 .campo-ayuda {
   margin: 0;
   font-size: var(--letra-xs);
