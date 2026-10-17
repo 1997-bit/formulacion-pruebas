@@ -1695,111 +1695,23 @@ WHERE c.estado <> 0;
 
 -- RF-24. Un caso OK lleva al menos 1 evidencia.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
-    (110, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/EnvTest.php en verde en CI, PR #151', 2, '2026-10-13 15:07:21'),
-    (111, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/ErrorValidacionTest.php en verde en CI, PR #151', 3, '2026-10-13 15:07:11'),
-    (112, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/SesionTest.php en verde en CI, PR #151', 2, '2026-10-13 15:20:35'),
-    (113, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/VistaTest.php en verde en CI, PR #151', 3, '2026-10-13 15:40:51'),
-    (114, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/155', 'tests/Helpers/FechaTest.php en verde en CI, PR #155', 2, '2026-10-13 16:23:48'),
-    (115, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/155', 'tests/Helpers/HtmlTest.php en verde en CI, PR #155', 3, '2026-10-13 16:31:55'),
-    (116, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/155', 'tests/Helpers/IconoTest.php en verde en CI, PR #155', 2, '2026-10-13 16:51:33'),
-    (117, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/157', 'tests/Http/AccesoTest.php en verde en CI, PR #157', 3, '2026-10-13 17:25:24'),
-    (118, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/157', 'tests/Http/EnviosTest.php en verde en CI, PR #157', 2, '2026-10-13 17:43:06'),
-    (119, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/157', 'tests/Http/EvidenciasTest.php en verde en CI, PR #157', 3, '2026-10-13 18:19:38'),
-    (120, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/157', 'tests/Http/IncidentesTest.php en verde en CI, PR #157', 2, '2026-10-13 18:35:01'),
-    (121, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/157', 'tests/Http/RutasTest.php en verde en CI, PR #157', 3, '2026-10-14 09:00:15'),
-    (122, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/153', 'tests/Models/CasoModeloTest.php en verde en CI, PR #153', 2, '2026-10-14 09:33:27'),
-    (123, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/154', 'tests/Models/FilasModeloTest.php en verde en CI, PR #154', 3, '2026-10-14 10:11:54'),
-    (124, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/153', 'tests/Models/IncidenteModeloTest.php en verde en CI, PR #153', 2, '2026-10-14 10:25:08'),
-    (125, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/153', 'tests/Models/IntentoModeloTest.php en verde en CI, PR #153', 3, '2026-10-14 10:55:13'),
-    (126, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/153', 'tests/Models/PlanModeloTest.php en verde en CI, PR #153', 2, '2026-10-14 11:23:55'),
-    (127, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/153', 'tests/Models/ProyectoModeloTest.php en verde en CI, PR #153', 3, '2026-10-14 13:36:49'),
-    (128, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/153', 'tests/Models/UsuarioModeloTest.php en verde en CI, PR #153', 2, '2026-10-14 13:50:45'),
-    (129, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/AutoevaluacionServicioTest.php en verde en CI, PR #152', 3, '2026-10-14 15:21:08'),
-    (130, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/ClasesEquivalenciaServicioTest.php en verde en CI, PR #152', 2, '2026-10-14 15:33:43'),
-    (131, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/ValorLimiteServicioTest.php en verde en CI, PR #152', 3, '2026-10-14 16:11:54'),
-    (132, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/CoberturaServicioTest.php en verde en CI, PR #152', 2, '2026-10-14 16:26:23'),
     (133, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/IncidenteServicioTest.php en verde en CI, PR #159', 3, '2026-10-14 17:11:25'),
-    (134, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/PlanServicioTest.php en verde en CI, PR #152', 2, '2026-10-14 18:03:39'),
-    (135, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/ProyectoServicioTest.php en verde en CI, PR #159', 3, '2026-10-14 18:28:34'),
     (136, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/158', 'tests/Services/ReporteServicioTest.php en verde en CI, PR #158', 2, '2026-10-15 08:47:09'),
-    (137, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/RequerimientoServicioTest.php en verde en CI, PR #159', 3, '2026-10-15 08:58:35'),
-    (138, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/RubricaServicioTest.php en verde en CI, PR #152', 2, '2026-10-15 09:28:09'),
-    (139, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/152', 'tests/Services/TablaDecisionServicioTest.php en verde en CI, PR #152', 3, '2026-10-15 09:49:09'),
     (140, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/UsuarioServicioTest.php en verde en CI, PR #159', 2, '2026-10-15 10:04:51'),
-    (28, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/138', 'tests/Core/PaginacionTest.php en verde en CI, PR #138', 2, '2026-10-13 10:40:19'),
-    (29, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/ValidadorTest.php en verde en CI, PR #151', 3, '2026-10-13 10:45:30'),
-    (30, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/ValidadorTest.php en verde en CI, PR #151', 2, '2026-10-13 11:02:39'),
-    (31, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/155', 'tests/Helpers/CatalogoTest.php en verde en CI, PR #155', 3, '2026-10-13 11:03:05'),
-    (32, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/RuteadorTest.php en verde en CI, PR #151', 2, '2026-10-13 11:31:54'),
     (33, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/151', 'tests/Core/CsrfTest.php en verde en CI, PR #151', 3, '2026-10-13 12:27:32'),
-    (34, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/158', 'tests/Services/HistorialTest.php en verde en CI, PR #158', 2, '2026-10-13 13:30:33'),
     (35, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/PermisosTest.php en verde en CI, PR #159', 3, '2026-10-13 13:39:38'),
     (36, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/AccesoServicioTest.php en verde en CI, PR #159', 2, '2026-10-13 13:39:20'),
     (37, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/158', 'tests/Services/SubidaTest.php en verde en CI, PR #158', 3, '2026-10-13 14:25:31'),
     (38, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/156', 'tests/Services/CasoServicioTest.php en verde en CI, PR #156', 2, '2026-10-13 14:44:20'),
-    (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-01 10:35:07'),
-    (7, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/CasoServicio.php', 'Línea de campos(): entorno y precondiciones con ?: null, que trata "0" como vacío.', 2, '2026-10-05 17:36:29'),
-    (8, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/views/casos/resultado.php', 'Vista del detalle: no incluye el historial.', 3, '2026-10-05 17:50:55'),
-    (58, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/Sesion.php', 'Sesion::usuario() devuelve el rol guardado al entrar.', 2, '2026-10-05 18:08:22'),
-    (59, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/componentes.css', 'Bloque @media print: .vista-detalle sigue en grid al imprimir.', 2, '2026-10-06 08:36:26'),
-    (60, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/Validador.php', 'Validador::fecha() revisa el formato, no el rango de DATE.', 2, '2026-10-06 18:19:18'),
-    (61, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/Subida.php', 'Subida::error(): un archivo de 0 bytes no empieza con text/.', 3, '2026-10-07 09:57:40'),
-    (62, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/models/ProyectoModelo.php', 'ProyectoModelo::guardar: DELETE FROM proyecto_miembros al editar.', 1, '2026-10-07 10:56:01'),
-    (63, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/CasoServicio.php', 'validarCaso(): objetivo, entrada, pasos y resultado esperado sin máximo.', 2, '2026-10-07 11:54:21'),
-    (64, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/models/CasoModelo.php', 'CasoModelo::anotar: anotado_por = ? sin mirar el estado.', 3, '2026-10-07 14:14:21'),
-    (65, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/IncidenteServicio.php', 'validarSeguimiento(): asignado_id debe ser miembro actual del proyecto.', 1, '2026-10-07 14:31:49'),
-    (66, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/config/rutas.php', 'Ruta GET /salir sin CSRF.', 3, '2026-10-07 15:08:58'),
-    (67, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/app.css', '@media (max-width: 47.99rem): .sidebar con translate, sin visibility ni inert.', 2, '2026-10-07 15:25:40'),
-    (68, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/app.css', 'Media queries 48rem y 47.99rem: queda un hueco de 0.16 px.', 2, '2026-10-07 16:35:48'),
-    (69, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/views/partials/resultado.php', 'Bloque de evidencias: sin aviso para volver a elegir el archivo.', 2, '2026-10-07 18:17:13'),
-    (70, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/UsuarioServicio.php', 'validar(): "Ese usuario ya existe." también en el registro público.', 2, '2026-10-08 08:24:41'),
-    (71, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/AccesoServicio.php', 'entrar(): sin contador de intentos.', 2, '2026-10-08 09:01:59'),
-    (72, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/index.php', 'Sin header() de X-Frame-Options ni CSP.', 2, '2026-10-08 09:48:11'),
-    (73, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/CasoServicio.php', 'editar(): UPDATE de todos los campos sin comparar con lo que se abrió.', 1, '2026-10-08 10:43:35'),
-    (74, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/models/FilasModelo.php', 'reemplazar(): DELETE de todas las filas e INSERT de las enviadas.', 3, '2026-10-08 10:46:08'),
-    (75, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/database/schema.sql', 'autoevaluaciones: FK a proyecto_miembros con ON DELETE CASCADE.', 1, '2026-10-08 11:04:41'),
-    (76, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/tokens.css', '--entrada: oklch(88% 0 0) en claro y blanco al 18 % en oscuro.', 2, '2026-10-08 12:01:53'),
-    (77, 4, 'https://github.com/1997-bit/formulacion-pruebas/tree/a1cf4c8/docs', 'Carpeta docs: IR.md, arquitectura.md y enunciado.md.', 3, '2026-10-08 13:49:30'),
-    (78, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/UsuarioServicio.php', 'editar(): cambia la clave sin invalidar sesiones.', 2, '2026-10-08 14:15:30'),
-    (79, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/AccesoServicio.php', 'entrar(): password_verify solo si el usuario existe.', 2, '2026-10-08 14:41:02'),
-    (80, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/controllers/AccesoControlador.php', 'registrar(): sin límite de cuentas por tiempo.', 3, '2026-10-08 15:11:40'),
-    (81, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/Permisos.php', 'exigirMiembro() tras encontrar el registro: 403 en vez de 404.', 3, '2026-10-08 15:29:54'),
-    (82, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/Validador.php', 'requerido(): trim() solo quita espacios ASCII.', 2, '2026-10-08 15:45:01'),
-    (83, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/UsuarioServicio.php', 'validar(): sin revisar letras de otro alfabeto.', 3, '2026-10-08 16:04:50'),
-    (84, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/.htaccess', 'Sin php_value upload_max_filesize ni post_max_size.', 2, '2026-10-08 17:09:17'),
-    (85, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/index.php', 'Csrf::valido() con $_POST vacío responde 403.', 2, '2026-10-08 18:27:23'),
-    (86, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/Csrf.php', 'Un token por sesión, reutilizable.', 2, '2026-10-09 08:11:44'),
-    (87, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/Ruteador.php', 'buscar(): método y ruta juntos; sin 405 ni HEAD.', 3, '2026-10-09 08:57:49'),
-    (88, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/controllers/UsuariosControlador.php', 'eliminar(): Respuesta::errores con datos [] a una lista que no toma datos.', 1, '2026-10-09 09:20:09'),
-    (89, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/AutoevaluacionServicio.php', 'guardar(): mb_strlen del comentario con \\r\\n.', 3, '2026-10-09 09:40:29'),
-    (90, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/PlanServicio.php', 'guardar(): stoppersAbiertos solo al guardar el plan.', 2, '2026-10-09 10:33:43'),
-    (91, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/TablaDecisionServicio.php', 'guardar(): sin revisar reglas repetidas.', 2, '2026-10-09 11:02:19'),
-    (92, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/CoberturaServicio.php', 'guardar(): preg_match de 1 a 9 dígitos con el mensaje "Número entero.".', 1, '2026-10-09 11:37:26'),
-    (93, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/models/CasoModelo.php', 'listar(): ORDER BY p.nombre, c.codigo.', 3, '2026-10-09 12:04:43'),
-    (94, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/index.php', 'Csrf::valido($_POST[''csrf''] ?? null) sin revisar que sea texto.', 2, '2026-10-09 13:32:08'),
-    (95, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/Sesion.php', 'salir(): $_SESSION = [] borra también el token CSRF.', 3, '2026-10-09 14:17:17'),
-    (96, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/index.php', 'Sin usuario: redirigir(''/'') sin guardar la ruta ni lo enviado.', 2, '2026-10-09 14:58:11'),
-    (97, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/views/partials/campo.php', 'Fechas con type="date": el formato lo pone el navegador.', 2, '2026-10-09 15:43:32'),
-    (98, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/js/app.js', 'data-abrir-dialogo, data-agregar-fila, sidebar y data-suma solo con JavaScript.', 1, '2026-10-09 16:57:30'),
-    (99, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/componentes.css', '@media print: .tabla-contenedor { overflow: visible } sin achicar la tabla.', 1, '2026-10-09 17:46:21'),
-    (100, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/componentes.css', '.tabla td sin overflow-wrap para palabras largas.', 1, '2026-10-09 18:26:20'),
-    (101, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/public/assets/css/base.css', '.solo-lector absolute; .tabla-contenedor sin position: relative.', 2, '2026-10-12 08:27:16'),
-    (102, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/views/evidencias/portafolio.php', 'span.codigo con el enlace completo, sin partir.', 2, '2026-10-12 09:23:20'),
-    (103, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/CasoServicio.php', 'anotar(): sin revisar incidentes abiertos del caso.', 2, '2026-10-12 10:12:02'),
-    (104, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/views/partials/paginacion.php', 'for de 1 a paginas(): un enlace por página.', 1, '2026-10-12 10:49:08'),
-    (105, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/controllers/IncidentesControlador.php', 'registrar() sin caso: CasoModelo::listar sin offset.', 1, '2026-10-12 11:41:51'),
-    (106, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/Subida.php', 'mime(): text/plain; charset=utf-8 para todo .txt y .log.', 3, '2026-10-12 13:43:53'),
-    (107, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/services/Subida.php', 'guardar(): move_uploaded_file sin quitar metadatos.', 3, '2026-10-12 14:12:12'),
-    (108, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/core/bootstrap.php', 'Sin manejador de errores ni configuración de display_errors.', 2, '2026-10-12 14:25:32'),
-    (109, 4, 'https://github.com/1997-bit/formulacion-pruebas/blob/a1cf4c8/storage/.htaccess', 'Único .htaccess fuera de public/: la raíz no niega nada.', 3, '2026-10-12 15:25:25'),
-    (141, 4, 'https://github.com/1997-bit/formulacion-pruebas/commit/8896a17', 'Build 8896a17 donde falla', 2, '2026-10-15 14:12:41'),
-    (142, 4, 'https://github.com/1997-bit/formulacion-pruebas/commit/59afde1', 'Build 59afde1 donde falla', 3, '2026-10-15 14:42:15'),
-    (143, 4, 'https://github.com/1997-bit/formulacion-pruebas/commit/daf501c', 'Build daf501c donde falla', 3, '2026-10-15 17:27:46'),
-    (144, 4, 'https://drive.google.com/file/d/1BqSIS0014e1a9c2/view', 'Video del intento en el mostrador', 2, '2026-10-06 10:05:09'),
-    (145, 4, 'https://drive.google.com/file/d/1BqSIS0024e1a9c2/view', 'Video del intento en el mostrador', 3, '2026-10-07 14:15:09'),
-    (146, 4, 'https://drive.google.com/file/d/1BqSIS0037d03f58/view', 'Video del intento en el mostrador', 2, '2026-10-08 11:30:09'),
-    (147, 4, 'https://drive.google.com/file/d/1BqSIS0047d03f58/view', 'Video del intento en el mostrador', 2, '2026-10-09 09:10:09'),
-    (148, 4, 'https://drive.google.com/file/d/1BqACE001a96c4be/view', 'Video del intento en el mostrador', 3, '2026-10-13 15:40:09');
+    (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-01 10:35:07');
+
+-- Evidencias reproducidas en el commit del bug.
+INSERT INTO evidencias (caso_id, tipo, archivo, nombre_original, descripcion, subido_por, subido_en) VALUES
+    (8, 1, '9c4b520d7ff2bb85017d09c2fa04f924f4fdc2b3466cb0295ebeb6a3c08c7fc0.png', 'bug-002-sin-historial.png', 'SIS-001 visto como pan: no sale la sección Historial', 3, '2026-10-05 17:50:59'),
+    (63, 2, '8924485d4b07ce510277b2351eb11ca6b879e042130a6276db98f26c108bc300.log', 'bug-008-500.log', 'POST con un objetivo de 70 000 caracteres: 500 y página vacía', 2, '2026-10-07 11:54:26'),
+    (71, 2, '577cce2f895c5f7719ffa2c264d997e036bde36713adb9666c43962df4c740e1.log', 'bug-016-intentos.log', '10 claves malas seguidas: todas responden igual, sin espera', 2, '2026-10-08 09:02:04'),
+    (72, 2, '7a0153901b59704da4f4656f5cc62f2652cad3106c86d71ff683b68b043af829.log', 'bug-017-cabeceras.log', 'Cabeceras de la respuesta: sin X-Frame-Options ni CSP', 2, '2026-10-08 09:48:16'),
+    (103, 1, 'acdc05743538996447c2d079b279fde99ec0b49351744d2835ad3336f4e0a6cf.png', 'bug-048-ok-con-incidente.png', 'SIS-004 queda en OK con BUG-002 abierto', 2, '2026-10-12 10:12:07');
 
 -- RF-19. Los FAULT de arriba con su incidente. BUG-008 es stopper y sigue abierto.
 -- BUG-041 está En progreso. BUG-003 es stopper, pero el bloque de corregidos lo cierra.
@@ -2548,10 +2460,11 @@ SET c.estado = 1, c.resultado_obtenido = k.obtenido, c.observaciones = CONCAT(c.
     c.impacto = 'Ninguno después de la corrección.', c.commit_probado = k.hash, c.anotado_por = k.usuario, c.anotado_en = k.fecha
 WHERE i.proyecto_id = 1;
 
--- Paso 4: evidencia con el enlace al PR.
+-- Paso 4: evidencia con el enlace al PR, solo en los más graves.
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en)
 SELECT i.caso_id, 4, CONCAT('https://github.com/1997-bit/formulacion-pruebas/pull/', k.pr), CONCAT('Regresión de ', k.bug, ' en verde, commit ', k.hash), k.usuario, k.fecha + INTERVAL 6 SECOND
-FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
+FROM incidentes i JOIN corregidos k ON k.bug = i.codigo
+WHERE i.proyecto_id = 1 AND k.bug IN ('BUG-003', 'BUG-007', 'BUG-016', 'BUG-017', 'BUG-023', 'BUG-031', 'BUG-048', 'BUG-054');
 
 DROP TABLE corregidos;
 
