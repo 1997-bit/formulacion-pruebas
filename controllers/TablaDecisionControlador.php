@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\FilasModelo;
 use App\Services\RequerimientoServicio;
 use App\Services\TablaDecisionServicio;
@@ -35,6 +36,7 @@ final class TablaDecisionControlador
         $guardado = TablaDecisionServicio::guardado($requerimiento['id'], $usuario);
         Vista::pagina('tabla_decision/ver', [
             'titulo' => 'Tabla de decisión · ' . $requerimiento['codigo'],
+            'documento' => Impresion::documento(4, $requerimiento['proyecto'], $requerimiento['codigo']),
             'requerimiento' => $requerimiento,
             'tabla' => $guardado !== null ? TablaDecisionServicio::tabla($requerimiento['id'], $usuario) : null,
             'guardado' => $guardado,

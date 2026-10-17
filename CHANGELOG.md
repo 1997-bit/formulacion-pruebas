@@ -5,6 +5,83 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-10-17
+
+### Added
+
+- Formularios con errores: resumen con un enlace por campo y "Error:" en el título de la pestaña.
+- Registrar caso sin requerimientos: aviso con el paso que falta y botón para registrar uno.
+- Requerimiento guardado: aviso con "Registrar caso", que abre el formulario con ese requerimiento elegido.
+- Formulario del caso en tres secciones: Qué se prueba, Cómo y cuándo, Diseño de la prueba.
+- Campos de contraseña: ojo para mostrar u ocultar.
+- Cantidades en singular o plural: "1 stopper abierto", "2 casos", sin "(s)".
+- Requerimientos: editar con motivo obligatorio, casos afectados e historial. Eliminar solo admin y solo sin casos ni formularios de técnicas.
+- Commit probado en el resultado del caso. Commit afectado y commit corregido en el incidente, con los commits ya usados como sugerencia.
+- Listas de casos, incidentes, requerimientos y logs: encabezado de tabla fijo al bajar.
+- Gráficos del cierre: tooltip con el dato al pasar el mouse.
+- Historial y evidencias: tiempo relativo ("hace 2 h", "ayer") con la fecha exacta al pasar el mouse.
+- Panel: cuadrícula con un cuadro por caso y fecha estimada de fin según el ritmo de 7 días.
+- Reporte de cierre: resultados por día con promedio y pico, avance contra el plan e incidentes por día con stoppers.
+- Requerimientos: matriz de cobertura por tipo de prueba, con huecos y FAULT marcados.
+- Caso e incidente: barra de pasos. Caso: historial como línea de tiempo también en el detalle.
+- Casos: filtro Desde y Hasta con atajos Esta semana, Próximos 7 días y Este mes.
+- Cronograma: tramo rayado si el resultado llegó tarde o el caso sigue atrasado.
+- Impresión en hoja carta: encabezado con formulario y proyecto, pie con fecha, usuario y número de página, datos primero, secciones y tablas cortas sin cortes, firmas al final. Al guardar como PDF, el título del archivo es el del documento.
+- Impresión: marca BORRADOR o NO-GO en cada hoja, hoja 1 sin encabezado, márgenes para doble cara, cronograma, matriz y tablas de decisión de más de 8 reglas en horizontal, URL de los enlaces externos, secciones plegadas abiertas, mejor corte de texto, y encabezado con título y proyecto también en las listas.
+- Panel: aprobación como cifra principal, casos y resultados de hoy, y "Todo al día" en una línea.
+- Ajustes: densidad compacta.
+- Esqueleto de carga si una página tarda más de 150 ms.
+- Precarga de páginas al pasar el mouse y Atrás instantáneo.
+- Cabeceras de seguridad: CSP, Referrer-Policy, Permissions-Policy y COOP.
+- Manifest: la app se puede instalar.
+- Diálogos con `closedby` y botones `command`. `<select>` con los colores de la app donde hay soporte.
+- Tokens de espacio en escala de 4 px, de alto de controles y de movimiento de Material 3: duraciones de 100, 150 y 250 ms, y curvas para entrar y salir.
+- Tablet de 600 a 1023 px: sidebar como rail de íconos. El botón abre el menú completo encima.
+- Móvil: los diálogos salen como hoja desde abajo, con Cancelar al final.
+- Táctil: botones, campos, paginación y menú de 44 px. Al tocar, una capa del 10 % marca el toque.
+- Áreas seguras de iPhone: el notch y la barra de inicio no tapan el contenido.
+
+### Changed
+
+- Ajustes → Accesibilidad: "Reducir movimiento" es un interruptor sí/no, sin la opción Sistema. La preferencia del sistema operativo se respeta siempre.
+- Menús de proyecto y de usuario con Popover API y anchor positioning: Esc y clic afuera nativos.
+- Cifras con container queries: una fila en ancho, 2 × 2 en medio, una por fila en angosto.
+- Cambio de página con un fundido de 100 ms del contenido. Sin él con "Reducir movimiento".
+- Pestañas como control segmentado en píldora.
+- Superficies por capas en claro y oscuro. Oscuro neutro, sin tinte azul.
+- Tarjetas con sombra suave. Íconos de cifras con el color del estado.
+- Números de tablas alineados a la derecha.
+- Espaciado: página con 24 px de margen desde tablet, título de sección junto a su contenido, el mismo gap entre cifras y tarjetas, y filtros con el padding de las tarjetas.
+- Opciones Pendiente, OK y FAULT de 40 px de alto.
+- Tablet: tablas con scroll de lado, la primera columna fija y una sombra si hay más columnas. Tarjetas solo en móvil.
+- El hover solo pinta con mouse. En táctil los globos de ayuda salen solo con teclado.
+
+### Fixed
+
+- Panel: "Todo al día" solo cuando no queda nada pendiente. Incidentes abiertos sin asignar en Por atender.
+- Reporte de cierre: la cifra que impide el Go sale en rojo.
+- Caso: insignia de atraso, pasos con lo que falta y, con un incidente abierto, el botón principal lleva a él.
+- Pruebas: misma zona horaria que la app.
+- Reporte de cierre: gráficos en 2 columnas sin hueco; el título oculto de la tabla de datos ya no se ve encima.
+- Cifras en 6 columnas exactas: con zoom ya no queda la principal sola.
+- Matriz de cobertura: llena el ancho con la descripción completa; sin subrayado en las celdas.
+- Panel: las tarjetas llenan el ancho; en pantallas anchas ya no quedan pegadas a la izquierda.
+- Diálogo de atajos (?): cierra con clic afuera, como los demás.
+- Panel del tester: "Mis casos por vencer" ya no repite los atrasados; en atrasados, los suyos dicen "Tuyo".
+- Tablero: cada columna con alto máximo y scroll propio.
+- Filtros de casos: atajos de fecha y botones en la misma fila.
+- Listas de formularios: "—" en las columnas de números sin dato, en vez de una insignia.
+- Requerimientos: solo "No funcional" lleva insignia.
+- Registrar caso: campos en filas completas, sin huecos.
+- Cerrar sesión desde la paleta de comandos.
+- Panel: en las tarjetas de proyecto, los botones van al fondo. Códigos y fechas en la misma línea que su texto.
+- Panel en móvil: las tareas muestran el texto completo y el dato debajo.
+- Números sin huecos en el texto: "22 %" y fechas.
+- Botón de borrar del caso con el mismo alto que los demás botones.
+- iOS: el texto ya no crece al girar a horizontal.
+- El fondo de los diálogos respeta "Reducir transparencia".
+- Botón secundario hundido en oscuro.
+
 ## [1.6.0] - 2026-10-13
 
 ### Added
@@ -154,6 +231,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Estructura del proyecto.
 - Tablas base.
 
+[1.7.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.3.0...v1.4.0

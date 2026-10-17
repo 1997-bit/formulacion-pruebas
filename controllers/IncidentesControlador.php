@@ -19,7 +19,7 @@ final class IncidentesControlador
 {
     private const CAMPOS = [
         'titulo', 'modulo', 'severidad', 'prioridad', 'descripcion', 'pasos',
-        'resultado_esperado', 'resultado_obtenido', 'estado', 'asignado_id', 'es_stopper',
+        'resultado_esperado', 'resultado_obtenido', 'commit_afectado', 'estado', 'asignado_id', 'es_stopper',
     ];
 
     public function listar(): void
@@ -77,8 +77,10 @@ final class IncidentesControlador
                 'pasos' => $caso['pasos'],
                 'resultado_esperado' => $caso['resultado_esperado'],
                 'resultado_obtenido' => (string) $caso['resultado_obtenido'],
+                'commit_afectado' => (string) $caso['commit_probado'],
                 'estado' => '0',
             ],
+            'commits' => CasoModelo::commits($caso['proyecto_id']),
             'migas' => [
                 ['texto' => 'Incidentes', 'ruta' => '/formularios/incidentes'],
                 ['texto' => $caso['codigo'], 'ruta' => '/casos/resultado?id=' . $caso['id']],
@@ -112,7 +114,9 @@ final class IncidentesControlador
                 'estado' => (string) $incidente['estado'],
                 'asignado_id' => (string) $incidente['asignado_id'],
                 'es_stopper' => (string) $incidente['es_stopper'],
+                'commit_corregido' => (string) $incidente['commit_corregido'],
             ],
+            'commits' => CasoModelo::commits($incidente['proyecto_id']),
             'migas' => [['texto' => 'Incidentes', 'ruta' => '/formularios/incidentes'], ['texto' => $incidente['codigo']]],
         ]);
     }
@@ -120,7 +124,7 @@ final class IncidentesControlador
     public function actualizar(): void
     {
         $id = (int) ($_POST['id'] ?? 0);
-        $datos = Entrada::textos(['estado', 'asignado_id', 'es_stopper']);
+        $datos = Entrada::textos(['estado', 'asignado_id', 'es_stopper', 'commit_corregido']);
         try {
             $codigo = IncidenteServicio::seguimiento($id, $datos, Sesion::usuario());
         } catch (ErrorValidacion $e) {

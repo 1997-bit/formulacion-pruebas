@@ -12,7 +12,7 @@ final class CasoModelo
 {
     /**
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
      */
     public static function contar(?array $proyectos, array $filtros): int
     {
@@ -28,7 +28,7 @@ final class CasoModelo
      * La subconsulta lee solo el índice. El resto, 20 filas. #107.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
      * @return list<array<string, mixed>>
      */
     public static function listar(?array $proyectos, array $filtros, int $offset): array
@@ -71,7 +71,7 @@ final class CasoModelo
      * Tablero y cronograma. Sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
      * @param array{0: string, 1: string}|null $rango fechas ISO, inicio y fin
      * @return list<array<string, mixed>>
      */
@@ -83,7 +83,7 @@ final class CasoModelo
             $valores = [...$valores, $rango[1], $rango[0]];
         }
         $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.objetivo, c.estado, c.fecha_inicio, c.fecha_fin,
+            'SELECT c.id, c.codigo, c.objetivo, c.estado, c.fecha_inicio, c.fecha_fin, DATE(c.anotado_en) AS anotado,
                     p.nombre AS proyecto, r.codigo AS requerimiento, r.descripcion AS requerimiento_descripcion,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.caso_id = c.id AND i.estado <> 2) AS incidentes
              FROM casos_prueba c
@@ -106,7 +106,7 @@ final class CasoModelo
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $sql = Conexion::pdo()->prepare(
-            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
+            'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin, c.creado_por
              FROM casos_prueba c
              WHERE ' . $permiso . ' AND c.estado = 0 AND c.fecha_fin < CURDATE()
              ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
@@ -117,7 +117,7 @@ final class CasoModelo
     }
 
     /**
-     * Pendientes que creó el usuario, el de fecha final más próxima primero.
+     * Pendientes que creó el usuario y no han vencido, el más próximo primero. Los vencidos van en atrasados().
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -128,7 +128,7 @@ final class CasoModelo
         $sql = Conexion::pdo()->prepare(
             'SELECT c.id, c.codigo, c.objetivo, c.fecha_fin
              FROM casos_prueba c
-             WHERE ' . $permiso . ' AND c.estado = 0 AND c.creado_por = ?
+             WHERE ' . $permiso . ' AND c.estado = 0 AND c.creado_por = ? AND c.fecha_fin >= CURDATE()
              ORDER BY c.fecha_fin, c.id LIMIT ' . $limite
         );
         $sql->execute([...$valores, $usuarioId]);
@@ -204,11 +204,31 @@ final class CasoModelo
         )->execute([...array_values($campos), $id]);
     }
 
-    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, ?string $impacto, int $usuarioId): void
+    /** @param array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string, commit_probado: ?string} $r */
+    public static function anotar(int $id, array $r, int $usuarioId): void
     {
         Conexion::pdo()->prepare(
-            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, impacto = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
-        )->execute([$estado, $obtenido, $observaciones, $impacto, $usuarioId, $id]);
+            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, impacto = ?, commit_probado = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
+        )->execute([$r['estado'], $r['resultado_obtenido'], $r['observaciones'], $r['impacto'], $r['commit_probado'], $usuarioId, $id]);
+    }
+
+    /**
+     * Commits ya usados en el proyecto, el más reciente primero. Para el datalist.
+     *
+     * @return list<string>
+     */
+    public static function commits(int $proyectoId): array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT h FROM (
+                SELECT commit_probado AS h, anotado_en AS f FROM casos_prueba WHERE proyecto_id = ? AND commit_probado IS NOT NULL
+                UNION ALL SELECT commit_afectado, creado_en FROM incidentes WHERE proyecto_id = ?
+                UNION ALL SELECT commit_corregido, creado_en FROM incidentes WHERE proyecto_id = ? AND commit_corregido IS NOT NULL
+             ) t GROUP BY h ORDER BY MAX(f) DESC LIMIT 10'
+        );
+        $sql->execute([$proyectoId, $proyectoId, $proyectoId]);
+
+        return $sql->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     // Dentro de una transacción.
@@ -254,16 +274,17 @@ final class CasoModelo
      * RF-22. Filtros usados + permiso.
      *
      * @param list<int>|null $proyectos
-     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int} $filtros
-     * @return array{0: string, 1: list<int>}
+     * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
+     * @return array{0: string, 1: list<int|string>}
      */
     private static function donde(?array $proyectos, array $filtros): array
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $condiciones = [$permiso];
-        foreach (['proyecto' => 'c.proyecto_id', 'requerimiento' => 'c.requerimiento_id', 'estado' => 'c.estado'] as $filtro => $columna) {
+        // Fechas: el caso entra si su rango cruza el del filtro.
+        foreach (['proyecto' => 'c.proyecto_id = ?', 'requerimiento' => 'c.requerimiento_id = ?', 'estado' => 'c.estado = ?', 'desde' => 'c.fecha_fin >= ?', 'hasta' => 'c.fecha_inicio <= ?'] as $filtro => $condicion) {
             if ($filtros[$filtro] !== null) {
-                $condiciones[] = "{$columna} = ?";
+                $condiciones[] = $condicion;
                 $valores[] = $filtros[$filtro];
             }
         }

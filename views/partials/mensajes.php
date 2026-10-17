@@ -6,13 +6,17 @@ use App\Helpers\Icono;
 
 /**
  * @var ?string $flash
+ * @var ?array{texto: string, ruta: string} $accion  siguiente paso. Con acción el aviso no se cierra solo.
  * @var ?array<string, string> $errores
  */
 ?>
 <?php if (!empty($flash)): ?>
-  <?php // Aviso flotante: app.js lo cierra a los 5 s. Sin JS queda visible. ?>
+  <?php // Aviso flotante: app.js lo cierra a los 5 s, salvo con acción. Sin JS queda visible. ?>
   <div class="alerta alerta-exito aviso-flotante" role="status"><?= Icono::svg('circle-check') ?>
     <p class="alerta-titulo"><?= Html::e($flash) ?></p>
+    <?php if (!empty($accion)): ?>
+      <p class="alerta-descripcion"><a href="<?= Html::e($accion['ruta']) ?>" data-aviso-accion><?= Html::e($accion['texto']) ?></a></p>
+    <?php endif; ?>
     <button class="btn btn-fantasma btn-icono btn-sm alerta-accion" type="button" data-cerrar-aviso aria-label="Cerrar aviso" data-tooltip="Cerrar" data-tooltip-alinear="fin"><?= Icono::svg('x') ?></button>
   </div>
 <?php endif; ?>

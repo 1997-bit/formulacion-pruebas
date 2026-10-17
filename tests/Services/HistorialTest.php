@@ -93,30 +93,30 @@ final class HistorialTest extends BaseDatos
     }
 
     #[DataProvider('legibles')]
-    public function testDeCasoMuestraEtiquetaYValoresLegibles(string $campo, string $antes, string $despues, string $etiqueta, string $textoAntes, string $textoDespues): void
+    public function testDeMuestraEtiquetaYValoresLegibles(string $campo, string $antes, string $despues, string $etiqueta, string $textoAntes, string $textoDespues): void
     {
         Historial::registrar('casos_prueba', $this->casoId, [$campo => $antes], [$campo => $despues], $this->autor);
 
-        $fila = Historial::deCaso($this->casoId)[0];
+        $fila = Historial::de('casos_prueba', $this->casoId)[0];
 
         $this->assertSame([$etiqueta, $textoAntes, $textoDespues], [$fila['etiqueta'], $fila['antes'], $fila['despues']]);
     }
 
-    public function testDeCasoMuestraElNombreDelUsuario(): void
+    public function testDeMuestraElNombreDelUsuario(): void
     {
         Historial::registrar('casos_prueba', $this->casoId, ['solicitado_por' => null], ['solicitado_por' => $this->autor], $this->autor);
 
-        $fila = Historial::deCaso($this->casoId)[0];
+        $fila = Historial::de('casos_prueba', $this->casoId)[0];
 
         $this->assertSame(['Solicitado por', '', 'Ana Autora'], [$fila['etiqueta'], $fila['antes'], $fila['despues']]);
     }
 
-    public function testDeCasoVaDelMasNuevoAlMasViejo(): void
+    public function testDeVaDelMasNuevoAlMasViejo(): void
     {
         Historial::registrar('casos_prueba', $this->casoId, ['modulo' => 'A'], ['modulo' => 'B'], $this->autor);
         Historial::registrar('casos_prueba', $this->casoId, ['modulo' => 'B'], ['modulo' => 'C'], $this->autor);
 
-        $historial = Historial::deCaso($this->casoId);
+        $historial = Historial::de('casos_prueba', $this->casoId);
 
         $this->assertSame(['C', 'B'], array_column($historial, 'despues'));
     }

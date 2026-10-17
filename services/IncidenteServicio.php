@@ -42,7 +42,9 @@ final class IncidenteServicio
             ->requerido('descripcion', $d['descripcion'])
             ->requerido('pasos', $d['pasos'])
             ->requerido('resultado_esperado', $d['resultado_esperado'])
-            ->requerido('resultado_obtenido', $d['resultado_obtenido']);
+            ->requerido('resultado_obtenido', $d['resultado_obtenido'])
+            ->requerido('commit_afectado', $d['commit_afectado'] ?? '')
+            ->commit('commit_afectado', $d['commit_afectado'] ?? '');
         self::validarSeguimiento($v, $d, $asignables);
         $v->comprobar();
 
@@ -64,6 +66,8 @@ final class IncidenteServicio
                 'prioridad' => (int) $d['prioridad'],
                 'estado' => (int) $d['estado'],
                 'es_stopper' => (int) ($d['es_stopper'] === '1'),
+                'commit_afectado' => strtolower($d['commit_afectado']),
+                'commit_corregido' => self::commitCorregido($d),
                 'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
                 'creado_por' => $usuario['id'],
             ]);
@@ -73,7 +77,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Estado, asignado y stopper. Cualquiera del proyecto.
+     * Estado, asignado, stopper y commit corregido. Cualquiera del proyecto.
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -91,9 +95,10 @@ final class IncidenteServicio
             'estado' => (int) $d['estado'],
             'asignado_id' => $d['asignado_id'] === '' ? null : (int) $d['asignado_id'],
             'es_stopper' => (int) ($d['es_stopper'] === '1'),
+            'commit_corregido' => self::commitCorregido($d),
         ];
         Conexion::transaccion(function () use ($id, $incidente, $despues, $usuario): void {
-            IncidenteModelo::actualizar($id, $despues['estado'], $despues['asignado_id'], $despues['es_stopper']);
+            IncidenteModelo::actualizar($id, $despues);
             Historial::registrar('incidentes', $id, $incidente, $despues, $usuario['id']);
         });
 
@@ -113,6 +118,7 @@ final class IncidenteServicio
             'estado' => (string) $estado,
             'asignado_id' => (string) $incidente['asignado_id'],
             'es_stopper' => (string) $incidente['es_stopper'],
+            'commit_corregido' => (string) $incidente['commit_corregido'],
         ], $usuario);
     }
 
@@ -210,6 +216,13 @@ final class IncidenteServicio
     {
         $v->requerido('estado', $d['estado'])
             ->catalogo('estado', 'estado_incidente', $d['estado'])
-            ->regla('asignado_id', $d['asignado_id'] === '' || in_array((int) $d['asignado_id'], $asignables, true), 'Valor no válido.');
+            ->regla('asignado_id', $d['asignado_id'] === '' || in_array((int) $d['asignado_id'], $asignables, true), 'Valor no válido.')
+            ->commit('commit_corregido', $d['commit_corregido'] ?? '');
+    }
+
+    /** @param array<string, string> $d */
+    private static function commitCorregido(array $d): ?string
+    {
+        return ($d['commit_corregido'] ?? '') === '' ? null : strtolower($d['commit_corregido']);
     }
 }

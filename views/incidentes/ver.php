@@ -17,6 +17,7 @@ use App\Helpers\Icono;
  * @var array<string, string> $errores
  * @var array<string, string> $datos
  * @var array{id: int} $usuario
+ * @var list<string> $commits  ya usados en el proyecto
  */
 
 $creado = new DateTime($incidente['creado_en']);
@@ -47,8 +48,30 @@ foreach ($asignables as $a) {
 </header>
 
 <div class="pila">
+  <?php $estado = $incidente['estado']; ?>
+  <?= Vista::capturar('partials/pasos', ['etiqueta' => 'Avance del incidente', 'pasos' => [
+      ['Abierto', $estado === 0 ? 'actual' : 'hecho'],
+      ['En progreso', $estado === 1 ? 'actual' : ($estado === 2 ? 'hecho' : 'pendiente')],
+      ['Cerrado', $estado === 2 ? 'hecho' : 'pendiente'],
+  ]]) ?>
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="vista-detalle">
+    <aside class="tarjeta" aria-label="Datos del incidente">
+      <dl class="detalle detalle-apilado">
+        <dt>Estado</dt><dd><?= Catalogo::insignia('estado_incidente', $incidente['estado']) ?></dd>
+        <dt>Severidad</dt><dd><?= Catalogo::insignia('severidad', $incidente['severidad']) ?></dd>
+        <dt>Prioridad</dt><dd><?= Catalogo::insignia('prioridad', $incidente['prioridad']) ?></dd>
+        <dt>Caso</dt><dd><a class="codigo" href="/casos/resultado?id=<?= (int) $incidente['caso_id'] ?>"><?= Html::e($incidente['caso']) ?></a> <?= Html::e($incidente['caso_objetivo']) ?></dd>
+        <dt>Proyecto</dt><dd><?= Html::e($incidente['proyecto']) ?></dd>
+        <dt>Módulo</dt><dd><?= Html::e($incidente['modulo']) ?></dd>
+        <dt>Asignado a</dt><dd><?= Html::e($incidente['asignado'] ?? 'Sin asignar') ?></dd>
+        <dt>Commit afectado</dt><dd><span class="codigo" title="<?= Html::e($incidente['commit_afectado']) ?>"><?= Html::e(substr($incidente['commit_afectado'], 0, 7)) ?></span></dd>
+        <?php if ($incidente['commit_corregido'] !== null): ?>
+          <dt>Commit corregido</dt><dd><span class="codigo" title="<?= Html::e($incidente['commit_corregido']) ?>"><?= Html::e(substr($incidente['commit_corregido'], 0, 7)) ?></span></dd>
+        <?php endif; ?>
+        <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= $creado->format('H:i') ?></dd>
+      </dl>
+    </aside>
     <div class="pila">
       <section class="tarjeta" aria-labelledby="dt-defecto">
         <header class="tarjeta-encabezado"><h2 class="tarjeta-titulo" id="dt-defecto">Defecto</h2></header>
@@ -82,7 +105,17 @@ foreach ($asignables as $a) {
                 'ayuda' => 'Miembros del proyecto. Vacío: sin asignar.',
                 'error' => $errores['asignado_id'] ?? '',
             ]) ?>
+            <?= Vista::capturar('partials/campo', [
+                'nombre' => 'commit_corregido',
+                'etiqueta' => 'Commit corregido',
+                'valor' => $datos['commit_corregido'] ?? '',
+                'clase' => 'codigo',
+                'ayuda' => 'Hash que lo corrige. Al cerrar.',
+                'error' => $errores['commit_corregido'] ?? '',
+                'atributos' => 'list="commits-proyecto" maxlength="40" pattern="[0-9a-fA-F]{7,40}" autocomplete="off" spellcheck="false"',
+            ]) ?>
           </div>
+          <datalist id="commits-proyecto"><?php foreach ($commits as $c): ?><option value="<?= Html::e($c) ?>"><?php endforeach; ?></datalist>
           <fieldset class="grupo">
             <legend>Bloqueo</legend>
             <label class="opcion"><input type="checkbox" name="es_stopper" value="1"<?= $datos['es_stopper'] === '1' ? ' checked' : '' ?>> Es stopper: impide cerrar el plan</label>
@@ -93,18 +126,5 @@ foreach ($asignables as $a) {
         </form>
       </section>
     </div>
-
-    <aside class="tarjeta" aria-label="Datos del incidente">
-      <dl class="detalle detalle-apilado">
-        <dt>Estado</dt><dd><?= Catalogo::insignia('estado_incidente', $incidente['estado']) ?></dd>
-        <dt>Severidad</dt><dd><?= Catalogo::insignia('severidad', $incidente['severidad']) ?></dd>
-        <dt>Prioridad</dt><dd><?= Catalogo::insignia('prioridad', $incidente['prioridad']) ?></dd>
-        <dt>Caso</dt><dd><a class="codigo" href="/casos/resultado?id=<?= (int) $incidente['caso_id'] ?>"><?= Html::e($incidente['caso']) ?></a> <?= Html::e($incidente['caso_objetivo']) ?></dd>
-        <dt>Proyecto</dt><dd><?= Html::e($incidente['proyecto']) ?></dd>
-        <dt>Módulo</dt><dd><?= Html::e($incidente['modulo']) ?></dd>
-        <dt>Asignado a</dt><dd><?= Html::e($incidente['asignado'] ?? 'Sin asignar') ?></dd>
-        <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= $creado->format('H:i') ?></dd>
-      </dl>
-    </aside>
   </div>
 </div>

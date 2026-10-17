@@ -183,7 +183,7 @@ final class CasoServicio
                 if ($resultado['estado'] === 1 && IncidenteModelo::abiertosDeCaso($id) > 0) {
                     throw new ErrorValidacion(['estado' => 'No pasa a OK: tiene incidentes sin cerrar.']);
                 }
-                CasoModelo::anotar($id, $resultado['estado'], $resultado['resultado_obtenido'], $resultado['observaciones'], $resultado['impacto'], $usuario['id']);
+                CasoModelo::anotar($id, $resultado, $usuario['id']);
                 Historial::registrar('casos_prueba', $id, $antes, $resultado, $usuario['id']);
                 self::guardarEvidencias($id, $d, $tipos, $archivos, $usuario['id'], $guardados);
             });
@@ -357,10 +357,10 @@ final class CasoServicio
     }
 
     /**
-     * Resultado: estado, obtenido, observaciones e impacto.
+     * Resultado: estado, obtenido, observaciones, impacto y commit probado.
      *
      * @param array<string, string> $d
-     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string}
+     * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string, commit_probado: ?string}
      */
     private static function resultado(array $d): array
     {
@@ -369,22 +369,31 @@ final class CasoServicio
             'resultado_obtenido' => $d['resultado_obtenido'] === '' ? null : $d['resultado_obtenido'],
             'observaciones' => $d['observaciones'] === '' ? null : $d['observaciones'],
             'impacto' => $d['impacto'] === '' ? null : $d['impacto'],
+            'commit_probado' => ($d['commit_probado'] ?? '') === '' ? null : strtolower($d['commit_probado']),
         ];
     }
 
     /**
      * @param array<string, string> $filtros
-     * @return array{proyecto: ?int, requerimiento: ?int, estado: ?int}
+     * @return array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string}
      */
     private static function filtros(array $filtros): array
     {
         $numero = fn (string $clave): ?int => ctype_digit($filtros[$clave] ?? '') ? (int) $filtros[$clave] : null;
+        // Fecha ISO válida o null: 2026-02-30 no pasa.
+        $fecha = function (string $clave) use ($filtros): ?string {
+            $f = \DateTimeImmutable::createFromFormat('!Y-m-d', $filtros[$clave] ?? '');
+
+            return $f !== false && $f->format('Y-m-d') === $filtros[$clave] ? $filtros[$clave] : null;
+        };
         $estado = $numero('estado');
 
         return [
             'proyecto' => $numero('proyecto'),
             'requerimiento' => $numero('requerimiento'),
             'estado' => Catalogo::existe('estado_caso', $estado) ? $estado : null,
+            'desde' => $fecha('desde'),
+            'hasta' => $fecha('hasta'),
         ];
     }
 
@@ -398,7 +407,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-24. OK o FAULT: resultado, observaciones, impacto y al menos 1 evidencia, nueva o anterior.
+     * RF-24. OK o FAULT: resultado, observaciones, impacto, commit probado y al menos 1 evidencia, nueva o anterior.
      * Impacto: campo obligatorio de 29119-3.
      *
      * @param array<string, string> $d
@@ -413,6 +422,8 @@ final class CasoServicio
             ->regla('resultado_obtenido', !$anotado || $d['resultado_obtenido'] !== '', 'Es obligatorio con OK o FAULT.')
             ->regla('observaciones', !$anotado || $d['observaciones'] !== '', 'Es obligatorio con OK o FAULT.')
             ->regla('impacto', !$anotado || $d['impacto'] !== '', 'Es obligatorio con OK o FAULT.')
+            ->regla('commit_probado', !$anotado || ($d['commit_probado'] ?? '') !== '', 'Es obligatorio con OK o FAULT.')
+            ->commit('commit_probado', $d['commit_probado'] ?? '')
             ->regla('evidencias', !$anotado || $tipos !== [] || $previas > 0, 'Con OK o FAULT hace falta al menos una.');
 
         foreach ($tipos as $tipo) {

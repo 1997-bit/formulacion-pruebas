@@ -24,7 +24,10 @@ final class Sesion
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
+        // Sin no-store: Atrás restaura la página al instante, bfcache. no-cache sigue pidiendo la página al servidor.
+        session_cache_limiter('');
         session_start();
+        header('Cache-Control: private, no-cache');
     }
 
     /** @param array<string, mixed> $usuario */
@@ -54,9 +57,12 @@ final class Sesion
         return $_SESSION['usuario'] ?? null;
     }
 
-    public static function flash(string $mensaje): void
+    // $accion: botón del aviso, el siguiente paso. Material: snackbar con acción.
+    /** @param array{texto: string, ruta: string}|null $accion */
+    public static function flash(string $mensaje, ?array $accion = null): void
     {
         $_SESSION['flash'] = $mensaje;
+        $_SESSION['flash_accion'] = $accion;
     }
 
     // Lee y borra flash, errores y datos de Respuesta::errores(). Errores y datos, solo en su ruta.

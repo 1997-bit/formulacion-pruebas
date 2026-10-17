@@ -9,6 +9,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Models\CasoModelo;
 use App\Models\FilasModelo;
 use App\Services\CasoServicio;
@@ -25,14 +26,14 @@ final class CasosControlador
         'solicitado_por', 'aprobado_por',
     ];
     private const CAMPOS_RESULTADO = [
-        'estado', 'resultado_obtenido', 'observaciones', 'impacto', 'evidencia_enlace',
+        'estado', 'resultado_obtenido', 'observaciones', 'impacto', 'commit_probado', 'evidencia_enlace',
         'descripcion_captura', 'descripcion_log', 'descripcion_enlace',
     ];
 
     public function listar(): void
     {
         $filtros = [];
-        foreach (['proyecto', 'requerimiento', 'estado'] as $filtro) {
+        foreach (['proyecto', 'requerimiento', 'estado', 'desde', 'hasta'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
         // Lista por defecto: g c y el menú llevan a la lista.
@@ -67,7 +68,7 @@ final class CasosControlador
             'requerimientos' => $requerimientos,
             'miembros' => CasoServicio::miembrosPorProyecto($requerimientos),
             'errores' => Sesion::tomar('errores', []),
-            'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => []]),
+            'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => [], 'requerimiento_id' => is_string($_GET['requerimiento'] ?? null) ? $_GET['requerimiento'] : '']),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
         ]);
     }
@@ -91,7 +92,7 @@ final class CasosControlador
         Vista::pagina('casos/formulario', [
             'titulo' => 'Editar ' . $caso['codigo'],
             'caso' => $caso,
-            'historial' => Historial::deCaso($caso['id']),
+            'historial' => Historial::de('casos_prueba', $caso['id']),
             'huella' => FilasModelo::huella(['casos_prueba'], 'id', $caso['id']),
             'requerimientos' => $requerimientos,
             'miembros' => CasoServicio::miembrosPorProyecto($requerimientos),
@@ -122,9 +123,11 @@ final class CasosControlador
         $caso = CasoServicio::ver((int) ($_GET['id'] ?? 0), Sesion::usuario()) ?? Respuesta::error(404);
         Vista::pagina('casos/resultado', [
             'titulo' => $caso['codigo'],
+            'documento' => Impresion::documento(1, $caso['proyecto'], $caso['codigo']),
             'caso' => $caso,
             'editable' => Permisos::puedeEditarCaso(Sesion::usuario(), $caso),
             'vecinos' => CasoModelo::vecinos($caso),
+            'historial' => Historial::de('casos_prueba', $caso['id']),
             'flash' => Sesion::tomar('flash'),
             'errores' => Sesion::tomar('errores', []),
             'datos' => Sesion::tomar('datos') ?? [
@@ -132,8 +135,10 @@ final class CasosControlador
                 'resultado_obtenido' => (string) $caso['resultado_obtenido'],
                 'observaciones' => (string) $caso['observaciones'],
                 'impacto' => (string) $caso['impacto'],
+                'commit_probado' => (string) $caso['commit_probado'],
                 'evidencias' => [],
             ],
+            'commits' => CasoModelo::commits($caso['proyecto_id']),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => $caso['codigo']]],
         ]);
     }

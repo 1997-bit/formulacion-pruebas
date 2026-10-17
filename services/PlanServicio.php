@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Config\Conexion;
 use App\Core\Validador;
+use App\Helpers\Html;
 use App\Models\IncidenteModelo;
 use App\Models\PlanModelo;
 use App\Models\ProyectoModelo;
@@ -105,7 +106,7 @@ final class PlanServicio
         }
         if ($d['estado'] === (string) self::ESTADO_CERRADO) {
             $stoppers = IncidenteModelo::stoppersAbiertos($proyectoId);
-            $v->regla('estado', $stoppers === 0, "No se cierra: hay {$stoppers} incidente(s) stopper sin cerrar.");
+            $v->regla('estado', $stoppers === 0, 'No se cierra: hay ' . Html::cantidad($stoppers, 'incidente stopper', 'incidentes stopper') . ' sin cerrar.');
         }
         $v->comprobar();
 

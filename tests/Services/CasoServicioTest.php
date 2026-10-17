@@ -23,7 +23,7 @@ final class CasoServicioTest extends BaseDatos
 {
     private const OK = [
         'estado' => '1', 'resultado_obtenido' => 'Obtenido', 'observaciones' => 'Observaciones', 'impacto' => 'Impacto',
-        'evidencia_enlace' => 'https://ejemplo.com', 'descripcion_enlace' => 'Enlace',
+        'commit_probado' => '3426060', 'evidencia_enlace' => 'https://ejemplo.com', 'descripcion_enlace' => 'Enlace',
     ];
 
     /**
@@ -52,6 +52,7 @@ final class CasoServicioTest extends BaseDatos
             'resultado_obtenido' => '',
             'observaciones' => '',
             'impacto' => '',
+            'commit_probado' => '',
             'evidencia_enlace' => '',
             'descripcion_captura' => '',
             'descripcion_log' => '',
@@ -165,6 +166,7 @@ final class CasoServicioTest extends BaseDatos
             'resultado_obtenido' => 'Es obligatorio con OK o FAULT.',
             'observaciones' => 'Es obligatorio con OK o FAULT.',
             'impacto' => 'Es obligatorio con OK o FAULT.',
+            'commit_probado' => 'Es obligatorio con OK o FAULT.',
             'evidencias' => 'Con OK o FAULT hace falta al menos una.',
         ];
 
@@ -226,6 +228,17 @@ final class CasoServicioTest extends BaseDatos
         $errores = $this->errores(fn () => $this->registrar($usuario, $requerimiento, ['impacto' => ''] + self::OK, ['4']));
 
         $this->assertSame(['impacto' => 'Es obligatorio con OK o FAULT.'], $errores);
+    }
+
+    // Un hash de commit: 7 a 40 hexadecimales. Se guarda en minúsculas.
+    public function testCommitProbadoNoHexadecimalNoSeGuarda(): void
+    {
+        $usuario = $this->usuario();
+        $requerimiento = $this->requerimiento($this->proyecto($usuario));
+
+        $errores = $this->errores(fn () => $this->registrar($usuario, $requerimiento, ['commit_probado' => 'v1.6.0'] + self::OK, ['4']));
+
+        $this->assertSame(['commit_probado' => 'De 7 a 40 caracteres de 0 a 9 y de a a f.'], $errores);
     }
 
     public function testRegistrarGuardaElEnlace(): void
@@ -397,7 +410,7 @@ final class CasoServicioTest extends BaseDatos
         $r1 = $this->requerimiento($p);
         $r2 = $this->requerimiento($p, 'RF-02');
         $this->caso($p, $r1, $usuario, 'SIS-001');
-        CasoModelo::anotar($this->caso($p, $r2, $usuario, 'SIS-002'), 1, 'Obtenido', 'Observaciones', 'Impacto', $usuario);
+        CasoModelo::anotar($this->caso($p, $r2, $usuario, 'SIS-002'), ['estado' => 1, 'resultado_obtenido' => 'Obtenido', 'observaciones' => 'Observaciones', 'impacto' => 'Impacto', 'commit_probado' => '3426060'], $usuario);
         $this->caso($q, $this->requerimiento($q), $usuario, 'UNI-001');
 
         return ['usuario' => $usuario, 'p' => $p, 'q' => $q, 'r2' => $r2];
@@ -458,6 +471,21 @@ final class CasoServicioTest extends BaseDatos
         $codigos = $this->codigos($e['usuario'], ['proyecto' => (string) $e['p'], 'estado' => '0']);
 
         $this->assertSame(['SIS-001'], $codigos);
+    }
+
+    // Casos del 06/10: entran si el rango los cruza. Fecha inválida: sin filtro.
+    public function testListarPorRangoDeFechas(): void
+    {
+        $e = $this->escenario();
+
+        $this->assertSame(
+            [[], ['SIS-001', 'SIS-002', 'UNI-001'], ['SIS-001', 'SIS-002', 'UNI-001']],
+            [
+                $this->codigos($e['usuario'], ['desde' => '2026-10-07']),
+                $this->codigos($e['usuario'], ['desde' => '2026-10-01', 'hasta' => '2026-10-06']),
+                $this->codigos($e['usuario'], ['desde' => '2026-02-30']),
+            ],
+        );
     }
 
     // RF-21

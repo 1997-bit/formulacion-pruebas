@@ -86,7 +86,7 @@ final class ReporteServicioTest extends BaseDatos
 
         $p = ReporteServicio::avance($this->sesion($tester))['proyectos'][0];
 
-        $this->assertSame('2 pendiente(s)', $p['criterios'][0]['detalle']);
+        $this->assertSame('2 pendientes', $p['criterios'][0]['detalle']);
     }
 
     /** @return array<string, array{list<int>, int}> */
@@ -158,5 +158,50 @@ final class ReporteServicioTest extends BaseDatos
         $this->expectException(ErrorNoEncontrado::class);
 
         ReporteServicio::cierre($proyecto, $this->sesion($tester));
+    }
+
+    // Ritmo de 7 días: 1 anotado hoy, 2 pendientes. 2 × 7 / 1 = 14 días.
+    public function testProyeccionSaleDelRitmoDeSieteDias(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->casosCon($proyecto, $tester, 0, 0, 1);
+        Conexion::pdo()->prepare('UPDATE casos_prueba SET anotado_en = NOW() WHERE proyecto_id = ? AND estado = 1')->execute([$proyecto]);
+        Conexion::pdo()->prepare("UPDATE casos_prueba SET fecha_fin = '2026-12-31' WHERE proyecto_id = ? AND codigo = 'SIS-002'")->execute([$proyecto]);
+
+        $p = ReporteServicio::avance($this->sesion($tester))['proyectos'][0];
+
+        $this->assertSame(
+            [0.1, (new \DateTimeImmutable('today +14 days'))->format('Y-m-d'), '2026-12-31'],
+            [$p['ritmo'], $p['fin_estimado'], $p['fin_plan']],
+        );
+    }
+
+    public function testSinRitmoNoHayFechaEstimada(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->casosCon($proyecto, $tester, 0);
+
+        $p = ReporteServicio::avance($this->sesion($tester))['proyectos'][0];
+
+        $this->assertNull($p['fin_estimado']);
+    }
+
+    // Un caso con fecha final hoy, anotado hoy: real y plan a hoy en 1, sin diferencia.
+    public function testCierreTraeSeriesHastaHoy(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $this->casosCon($proyecto, $tester, 1);
+        Conexion::pdo()->prepare('UPDATE casos_prueba SET fecha_fin = CURDATE(), anotado_en = NOW() WHERE proyecto_id = ?')->execute([$proyecto]);
+
+        $g = ReporteServicio::cierre($proyecto, $this->sesion($tester))['graficos'];
+        $hoy = end($g['dias']);
+
+        $this->assertSame(
+            [date('Y-m-d'), 1, 1, 1, 0, 0],
+            [$hoy['dia'], $hoy['anotados'], $hoy['real_acum'], $hoy['plan_acum'], $g['diferencia'], $g['incidentes']],
+        );
     }
 }

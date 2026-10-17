@@ -4,7 +4,6 @@ declare(strict_types=1);
 use App\Core\Csrf;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
-use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -98,6 +97,16 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
     <p>Formulario 1</p>
   </div>
 </header>
+<?php if ($caso === null && !$requerimientos): ?>
+  <?php // NN/g: el estado vacío dice qué falta y lleva ahí. ?>
+  <div class="vacio">
+    <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
+    <h2>Primero registre un requerimiento</h2>
+    <p>Cada caso de prueba valida un requerimiento. Sus proyectos todavía no tienen ninguno.</p>
+    <a class="btn btn-primario" href="/requerimientos/registrar"><?= Icono::svg('plus') ?> Registrar requerimiento</a>
+  </div>
+  <?php return; ?>
+<?php endif; ?>
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <form class="tarjeta pila" method="post" action="<?= $caso === null ? '/casos/registrar' : '/casos/editar' ?>" enctype="multipart/form-data">
@@ -107,43 +116,59 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
       <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
     <?php endif; ?>
     <?php if ($caso !== null): ?><input type="hidden" name="id" value="<?= (int) $caso['id'] ?>"><?php endif; ?>
-    <div class="campos">
-      <?= $campo('requerimiento_id', 'Requerimiento', ['tipo' => 'select', 'opciones' => $opcionesReq, 'ayuda' => count($porProyecto) > 1 ? 'Agrupados por proyecto.' : '']) ?>
-      <?= $campo('tipo_prueba', 'Tipo de prueba', ['tipo' => 'select', 'opciones' => Catalogo::opciones('tipo_prueba', $datos['tipo_prueba'] ?? null)]) ?>
-      <div class="campo">
-        <label for="f-codigo">Código</label>
-        <?php if ($caso === null): ?>
-          <input class="control codigo" id="f-codigo" placeholder="SIS-001" disabled aria-describedby="f-codigo-ayuda">
-          <p class="campo-ayuda" id="f-codigo-ayuda">Se genera al guardar con la sigla del tipo: SIS-001.</p>
-        <?php else: ?>
-          <input class="control codigo" id="f-codigo" value="<?= Html::e($caso['codigo']) ?>" disabled aria-describedby="f-codigo-ayuda">
-          <p class="campo-ayuda" id="f-codigo-ayuda">No cambia aunque cambie el tipo.</p>
-        <?php endif; ?>
+    <?php // Grupos con legend: GOV.UK y WCAG 1.3.1. ?>
+    <fieldset class="seccion pila">
+      <legend class="titulo-seccion">Qué se prueba</legend>
+      <div class="campos">
+        <?= $campo('requerimiento_id', 'Requerimiento', ['tipo' => 'select', 'opciones' => $opcionesReq, 'ayuda' => count($porProyecto) > 1 ? 'Agrupados por proyecto.' : '']) ?>
+        <?= $campo('tipo_prueba', 'Tipo de prueba', ['tipo' => 'select', 'opciones' => Catalogo::opciones('tipo_prueba', $datos['tipo_prueba'] ?? null)]) ?>
+        <div class="campo">
+          <label for="f-codigo">Código</label>
+          <?php if ($caso === null): ?>
+            <input class="control codigo" id="f-codigo" placeholder="SIS-001" disabled aria-describedby="f-codigo-ayuda">
+            <p class="campo-ayuda" id="f-codigo-ayuda">Se genera al guardar con la sigla del tipo: SIS-001.</p>
+          <?php else: ?>
+            <input class="control codigo" id="f-codigo" value="<?= Html::e($caso['codigo']) ?>" disabled aria-describedby="f-codigo-ayuda">
+            <p class="campo-ayuda" id="f-codigo-ayuda">No cambia aunque cambie el tipo.</p>
+          <?php endif; ?>
+        </div>
+        <?= $campo('modulo', 'Módulo o funcionalidad', ['atributos' => 'maxlength="100"']) ?>
       </div>
-      <?= $campo('modulo', 'Módulo o funcionalidad', ['atributos' => 'maxlength="100"']) ?>
-      <?= $campo('plataforma', 'Plataforma', ['tipo' => 'select', 'opciones' => Catalogo::opciones('plataforma', $datos['plataforma'] ?? null)]) ?>
-      <?= $campo('entorno', 'Entorno', [
-          'requerido' => false,
-          'atributos' => 'maxlength="255"',
-          'ayuda' => 'Detalle de la plataforma: sistema operativo, navegador y versión probada.',
-      ]) ?>
-    </div>
+    </fieldset>
 
-    <div class="campos">
-      <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>
-      <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
-      <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
-      <?= $campo('solicitado_por', 'Solicitado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('solicitado_por'), 'ayuda' => 'Quién pidió el caso. Solo informativo.']) ?>
-      <?= $campo('aprobado_por', 'Aprobado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('aprobado_por'), 'ayuda' => 'Quién lo aprueba. Solo informativo: no bloquea anotar OK ni FAULT.']) ?>
-    </div>
+    <hr class="separador">
+    <fieldset class="seccion pila">
+      <legend class="titulo-seccion">Cómo y cuándo</legend>
+      <?php // Grupos de 4 y de 3: en escritorio llenan su fila, sin huecos. ?>
+      <div class="campos">
+        <?= $campo('plataforma', 'Plataforma', ['tipo' => 'select', 'opciones' => Catalogo::opciones('plataforma', $datos['plataforma'] ?? null)]) ?>
+        <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>
+        <?= $campo('fecha_inicio', 'Fecha de inicio', ['tipo' => 'date']) ?>
+        <?= $campo('fecha_fin', 'Fecha final', ['tipo' => 'date', 'atributos' => 'data-desde="f-fecha_inicio"', 'ayuda' => 'Igual o después de la fecha de inicio.']) ?>
+      </div>
 
-    <?= $campo('objetivo', 'Objetivo', ['tipo' => 'textarea']) ?>
-    <div class="campos">
-      <?= $campo('precondiciones', 'Precondiciones', ['tipo' => 'textarea', 'requerido' => false, 'ayuda' => 'Estado inicial requerido.']) ?>
-      <?= $campo('entrada', 'Datos de entrada', ['tipo' => 'textarea', 'ayuda' => 'Valores con los que se prueba.']) ?>
-      <?= $campo('pasos', 'Pasos de ejecución', ['tipo' => 'textarea', 'ayuda' => 'Un paso por línea.']) ?>
-      <?= $campo('resultado_esperado', 'Resultado esperado', ['tipo' => 'textarea']) ?>
-    </div>
+      <div class="campos">
+        <?= $campo('entorno', 'Entorno', [
+            'requerido' => false,
+            'atributos' => 'maxlength="255"',
+            'ayuda' => 'Detalle de la plataforma: sistema operativo, navegador y versión probada.',
+        ]) ?>
+        <?= $campo('solicitado_por', 'Solicitado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('solicitado_por'), 'ayuda' => 'Quién pidió el caso. Solo informativo.']) ?>
+        <?= $campo('aprobado_por', 'Aprobado por', ['tipo' => 'select', 'requerido' => false, 'opciones' => $opcionesPersona('aprobado_por'), 'ayuda' => 'Quién lo aprueba. Solo informativo: no bloquea anotar OK ni FAULT.']) ?>
+      </div>
+    </fieldset>
+
+    <hr class="separador">
+    <fieldset class="seccion pila">
+      <legend class="titulo-seccion">Diseño de la prueba</legend>
+      <?= $campo('objetivo', 'Objetivo', ['tipo' => 'textarea']) ?>
+      <div class="campos">
+        <?= $campo('precondiciones', 'Precondiciones', ['tipo' => 'textarea', 'requerido' => false, 'ayuda' => 'Estado inicial requerido.']) ?>
+        <?= $campo('entrada', 'Datos de entrada', ['tipo' => 'textarea', 'ayuda' => 'Valores con los que se prueba.']) ?>
+        <?= $campo('pasos', 'Pasos de ejecución', ['tipo' => 'textarea', 'ayuda' => 'Un paso por línea.']) ?>
+        <?= $campo('resultado_esperado', 'Resultado esperado', ['tipo' => 'textarea']) ?>
+      </div>
+    </fieldset>
 
     <?php if ($caso === null): ?>
     <hr class="separador">
@@ -169,20 +194,7 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
   <?php if ($caso !== null): ?>
     <section class="pila" aria-labelledby="h-historial">
       <h2 class="titulo-seccion" id="h-historial">Historial</h2>
-      <?php if (!$historial): ?>
-        <p class="campo-ayuda">Sin cambios todavía.</p>
-      <?php else: ?>
-        <ol class="linea-tiempo" aria-label="<?= Html::e('Cambios de ' . $caso['codigo']) ?>">
-          <?php foreach ($historial as $h): ?>
-            <?php $fecha = new DateTime($h['fecha']); ?>
-            <li>
-              <p class="linea-tiempo-cabeza"><strong><?= Html::e($h['usuario']) ?></strong> cambió <?= Html::e($h['etiqueta']) ?>
-                <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>"><?= Fecha::legible($fecha) ?> <?= $fecha->format('H:i') ?></time></p>
-              <p><span class="solo-lector">Antes: </span><del class="cambio"><?= Html::e($h['antes']) ?></del> <span aria-hidden="true">→</span><span class="solo-lector">. Después: </span> <ins class="cambio"><?= Html::e($h['despues']) ?></ins></p>
-            </li>
-          <?php endforeach; ?>
-        </ol>
-      <?php endif; ?>
+      <?= Vista::capturar('partials/historial', ['historial' => $historial, 'codigo' => $caso['codigo']]) ?>
     </section>
   <?php endif; ?>
 </div>

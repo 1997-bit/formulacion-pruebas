@@ -23,12 +23,11 @@ $editar = '/formularios/clases_equivalencia/editar?requerimiento=' . (int) $requ
     <p class="antetitulo fila"><span class="codigo"><?= Html::e($requerimiento['codigo']) ?></span> <?= Html::e($requerimiento['proyecto']) ?></p>
     <h1>Matriz de clases de equivalencia</h1>
     <p><?= Html::e($requerimiento['descripcion']) ?></p>
-    <p class="solo-impresion">Formulario 2 · Matriz de clases de equivalencia</p>
   </div>
   <?php if ($filas): ?>
     <div class="acciones">
       <a class="btn btn-secundario" href="<?= $editar ?>"><?= Icono::svg('pencil') ?> Editar</a>
-      <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+      <?= Vista::capturar('partials/imprimir') ?>
     </div>
   <?php endif; ?>
 </header>
@@ -69,5 +68,4 @@ $editar = '/formularios/clases_equivalencia/editar?requerimiento=' . (int) $requ
       <p class="campo-ayuda">Guardada por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
-  <p class="solo-impresion campo-ayuda">Impreso el <?= Fecha::legible(new DateTime()) ?> desde Casos de Prueba.</p>
 </div>

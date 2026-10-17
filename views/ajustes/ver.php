@@ -24,19 +24,19 @@ $grupos = [
             'expandido' => ['Expandido', 'Íconos y nombres.'],
             'colapsado' => ['Colapsado', 'Solo íconos. También con Ctrl/⌘+B.'],
         ]],
-    ],
-    'accesibilidad' => [
-        'movimiento' => ['Movimiento', [
-            'sistema' => ['Sistema', 'Igual que el sistema operativo.'],
-            'reducido' => ['Reducir', 'Sin animaciones ni transiciones.'],
+        'densidad' => ['Densidad', [
+            'comoda' => ['Cómoda', ''],
+            'compacta' => ['Compacta', 'Filas más bajas en tablas y listas. Más datos en pantalla.'],
         ]],
     ],
+    'accesibilidad' => [],
 ];
 $interruptores = [
     'accesibilidad' => [
         'atajos' => ['Teclado', 'Atajos de una tecla', '? ayuda, / filtro, C crear, G + letra ir a. Apáguelos si usa dictado por voz (WCAG 2.1.4); quedan Ctrl/⌘+B, Ctrl/⌘+K y Ctrl/⌘+Enter.', true],
         'paleta' => ['Teclado', 'Paleta de comandos', 'Ctrl/⌘+K abre una lista para ir a una página o hacer una acción escribiendo.', true],
         'subrayar' => ['Contenido', 'Subrayar enlaces', 'Los enlaces del contenido se ven sin depender del color.', false],
+        'movimiento' => ['Movimiento', 'Reducir movimiento', 'Sin animaciones ni transiciones. Si el sistema operativo pide menos movimiento, ya están apagadas.', false],
     ],
 ];
 // Los switches se agrupan por su título en un fieldset cada uno.

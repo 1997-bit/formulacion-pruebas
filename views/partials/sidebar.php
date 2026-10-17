@@ -23,17 +23,18 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-cabecera">
     <?php // Selector de proyecto, como Jira y Linear. Plataforma y Formularios: solo el activo. ?>
-    <details class="proyecto-menu">
-      <summary class="sidebar-boton sidebar-marca" data-etiqueta="<?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?>"
+    <?php // Popover: Esc y clic afuera los cierra el navegador. Posición con anchor positioning, ver app.css. ?>
+    <div class="proyecto-menu">
+      <button class="sidebar-boton sidebar-marca" type="button" popovertarget="menu-proyecto" data-etiqueta="<?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?>"
                data-atajo="p" data-atajo-texto="Cambiar de proyecto">
         <span class="marca-icono" aria-hidden="true"><?= $activo ? Html::e(Html::iniciales($activo['nombre'])) : Icono::svg('flask-conical') ?></span>
         <span class="sidebar-texto sidebar-dos-lineas">
           <strong><?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?></strong>
-          <small><?= $activo ? 'Proyecto' : count($proyectos) . ' proyecto(s)' ?></small>
+          <small><?= $activo ? 'Proyecto' : Html::cantidad(count($proyectos), 'proyecto', 'proyectos') ?></small>
         </span>
         <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
-      </summary>
-      <form class="proyecto-flotante" method="post" action="/proyecto">
+      </button>
+      <form class="proyecto-flotante" id="menu-proyecto" popover data-lado="abajo" method="post" action="/proyecto">
         <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
         <input type="hidden" name="volver" value="<?= Html::e($_SERVER['REQUEST_URI'] ?? '/') ?>">
         <p class="proyecto-flotante-titulo">Proyectos</p>
@@ -45,7 +46,7 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
           </button>
         <?php endforeach; ?>
       </form>
-    </details>
+    </div>
   </div>
 
   <nav class="sidebar-contenido" aria-label="Navegación principal">
@@ -101,16 +102,16 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
   </nav>
 
   <div class="sidebar-pie">
-    <details class="usuario-menu">
-      <summary class="sidebar-boton sidebar-usuario" data-etiqueta="<?= Html::e($usuario['nombre']) ?>">
+    <div class="usuario-menu">
+      <button class="sidebar-boton sidebar-usuario" type="button" popovertarget="menu-usuario" data-etiqueta="<?= Html::e($usuario['nombre']) ?>">
         <span class="avatar-cuadrado" aria-hidden="true"><?= Html::e(Html::iniciales($usuario['nombre'])) ?></span>
         <span class="sidebar-texto sidebar-dos-lineas">
           <strong><?= Html::e($usuario['nombre']) ?></strong>
           <small><?= Html::e($usuario['usuario']) ?> · <?= Html::e(Catalogo::texto('rol', $usuario['rol'])) ?></small>
         </span>
         <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
-      </summary>
-      <div class="usuario-flotante">
+      </button>
+      <div class="usuario-flotante" id="menu-usuario" popover data-lado="arriba">
         <a class="sidebar-boton" href="/ajustes" data-atajo="g s" data-atajo-texto="Ir a ajustes">
           <?= Icono::svg('settings') ?>
           <span>Ajustes</span>
@@ -123,6 +124,6 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
           </button>
         </form>
       </div>
-    </details>
+    </div>
   </div>
 </aside>

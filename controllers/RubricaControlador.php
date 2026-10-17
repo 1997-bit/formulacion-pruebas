@@ -8,6 +8,7 @@ use App\Core\ErrorValidacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
+use App\Helpers\Impresion;
 use App\Services\RubricaServicio;
 
 // RF-14
@@ -32,6 +33,7 @@ final class RubricaControlador
         $proyecto = RubricaServicio::proyecto((int) $id, $usuario) ?? Respuesta::error(404);
         Vista::pagina('rubrica/ver', [
             'titulo' => 'Rúbrica · ' . $proyecto['nombre'],
+            'documento' => Impresion::documento(7, $proyecto['nombre']),
             'proyecto' => $proyecto,
             'rubrica' => RubricaServicio::rubrica($proyecto['id'], $usuario),
             'flash' => Sesion::tomar('flash'),

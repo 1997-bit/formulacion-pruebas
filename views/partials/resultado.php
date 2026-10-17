@@ -13,9 +13,11 @@ use App\Services\CasoServicio;
  * @var array<string, mixed> $datos  evidencias: tipos marcados
  * @var array<string, string> $errores
  * @var ?int $previas  evidencias que ya tiene el caso
+ * @var ?list<string> $commits  ya usados en el proyecto, para el datalist
  */
 
 $previas ??= 0;
+$commits ??= [];
 $marcadas = $datos['evidencias'] ?? [];
 $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vista::capturar('partials/campo', $extra + [
     'nombre' => $nombre,
@@ -59,7 +61,14 @@ $evidencias = [
   <?= $campo('resultado_obtenido', 'Resultado obtenido', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué hizo el sistema"']) ?>
   <?= $campo('observaciones', 'Observaciones', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Notas adicionales"']) ?>
   <?= $campo('impacto', 'Impacto', ['tipo' => 'textarea', 'requerido' => false, 'atributos' => 'placeholder="Qué afecta el resultado: módulo, usuarios, otras pruebas"']) ?>
+  <?= $campo('commit_probado', 'Commit probado', [
+      'requerido' => false,
+      'clase' => 'codigo',
+      'ayuda' => 'Hash del build que probó. Obligatorio con OK o FAULT.',
+      'atributos' => 'list="commits-proyecto" maxlength="40" pattern="[0-9a-fA-F]{7,40}" autocomplete="off" spellcheck="false" placeholder="3426060"',
+  ]) ?>
 </div>
+<datalist id="commits-proyecto"><?php foreach ($commits as $c): ?><option value="<?= Html::e($c) ?>"><?php endforeach; ?></datalist>
 
 <fieldset class="grupo" aria-describedby="<?= isset($errores['evidencias']) ? 'f-evidencias-error ' : '' ?>f-evidencias-ayuda">
   <legend>Evidencias</legend>

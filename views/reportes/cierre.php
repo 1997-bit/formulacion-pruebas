@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Core\Vista;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
@@ -28,19 +29,23 @@ $listas = [
     <p class="fila">Decisión <?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></p>
   </div>
   <div class="acciones">
-    <button class="btn btn-secundario" type="button" data-imprimir><?= Icono::svg('printer') ?> Imprimir</button>
+    <?= Vista::capturar('partials/imprimir') ?>
   </div>
 </header>
 
 <div class="pila">
   <div class="cifras">
-    <?php foreach ([['Casos', 'clipboard-list', 'casos', ''], ['OK', 'circle-check', 'ok', ''], ['FAULT', 'circle-x', 'fault', ''], ['Pendientes', 'circle-alert', 'pendientes', ''], ['Aprobación', 'chart-column', 'aprobacion', ' %']] as [$etiqueta, $icono, $clave, $unidad]): ?>
-      <div class="tarjeta cifra">
+    <?php foreach ([['Casos', 'clipboard-list', 'casos', '', ''], ['OK', 'circle-check', 'ok', '', 'cifra-exito'], ['FAULT', 'circle-x', 'fault', '', 'cifra-peligro'], ['Pendientes', 'circle-alert', 'pendientes', '', 'cifra-aviso'], ['Aprobación', 'chart-column', 'aprobacion', ' %', 'cifra-principal']] as [$etiqueta, $icono, $clave, $unidad, $tono]): ?>
+      <div class="tarjeta cifra <?= $tono ?>">
         <p class="cifra-etiqueta"><?= $etiqueta ?> <?= Icono::svg($icono) ?></p>
         <p class="cifra-valor"><?= (int) $p[$clave] . $unidad ?></p>
       </div>
     <?php endforeach; ?>
   </div>
+
+  <?php if ($p['graficos'] !== null): ?>
+    <?= Vista::capturar('reportes/graficos', ['g' => $p['graficos'], 'p' => $p]) ?>
+  <?php endif; ?>
 
   <section class="tarjeta" aria-labelledby="ci-criterios">
     <header class="tarjeta-encabezado">
@@ -68,7 +73,7 @@ $listas = [
     <section class="tarjeta" aria-labelledby="<?= $id ?>">
       <header class="tarjeta-encabezado">
         <h2 class="tarjeta-titulo" id="<?= $id ?>"><?= $titulo ?></h2>
-        <p class="tarjeta-descripcion"><?= count($casos) ?> caso(s).</p>
+        <p class="tarjeta-descripcion"><?= Html::cantidad(count($casos), 'caso', 'casos') ?>.</p>
       </header>
       <?php if ($casos): ?>
         <div class="tabla-contenedor">
@@ -93,7 +98,7 @@ $listas = [
   <section class="tarjeta" aria-labelledby="ci-stoppers">
     <header class="tarjeta-encabezado">
       <h2 class="tarjeta-titulo" id="ci-stoppers">Stoppers abiertos</h2>
-      <p class="tarjeta-descripcion"><?= count($p['stoppers_abiertos']) ?> incidente(s).</p>
+      <p class="tarjeta-descripcion"><?= Html::cantidad(count($p['stoppers_abiertos']), 'incidente', 'incidentes') ?>.</p>
     </header>
     <?php if ($p['stoppers_abiertos']): ?>
       <div class="tabla-contenedor">

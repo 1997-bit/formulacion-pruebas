@@ -23,6 +23,8 @@ abstract class BaseDatos extends TestCase
     {
         if (self::$pdo === null) {
             Env::cargar(RAIZ . '/.env');
+            // Misma zona que la app en PHP y en la base, como core/bootstrap.php y Conexion.
+            date_default_timezone_set(Env::get('APP_ZONA', 'America/Panama'));
             $dsn = sprintf(
                 'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
                 Env::get('DB_HOST', '127.0.0.1'),
@@ -33,6 +35,7 @@ abstract class BaseDatos extends TestCase
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_EMULATE_PREPARES => false,
             ]);
+            self::$pdo->exec("SET time_zone = '" . date('P') . "'");
             (new \ReflectionProperty(Conexion::class, 'pdo'))->setValue(null, self::$pdo);
         }
         self::$pdo->beginTransaction();
@@ -86,7 +89,7 @@ abstract class BaseDatos extends TestCase
             'proyecto_id' => $proyectoId, 'caso_id' => $casoId, 'codigo' => 'BUG-' . ++self::$incidentes,
             'titulo' => 'Título', 'modulo' => 'Módulo', 'descripcion' => 'Descripción', 'pasos' => 'Pasos',
             'resultado_esperado' => 'Esperado', 'resultado_obtenido' => 'Obtenido',
-            'severidad' => 1, 'prioridad' => 1, 'estado' => $estado, 'es_stopper' => $stopper, 'creado_por' => $autor,
+            'severidad' => 1, 'prioridad' => 1, 'estado' => $estado, 'es_stopper' => $stopper, 'commit_afectado' => '3426060', 'creado_por' => $autor,
         ]);
     }
 

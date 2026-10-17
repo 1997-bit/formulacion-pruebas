@@ -16,8 +16,14 @@ use App\Core\Sesion;
 use App\Models\ProyectoModelo;
 use App\Services\AccesoServicio;
 
-// Ningún sitio puede cargar estas páginas en un iframe (BUG-017).
+// Ningún sitio puede cargar estas páginas en un iframe (BUG-017). frame-ancestors es el estándar, X-Frame-Options el respaldo.
 header('X-Frame-Options: DENY');
+// Solo scripts y estilos propios. style-src-attr: los style="" de las vistas. inline-speculation-rules: la precarga del layout.
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+header('Cross-Origin-Opener-Policy: same-origin');
+header('X-Content-Type-Options: nosniff');
 
 // RNF-11. Una línea http por petición, con su duración. Golden signals: latencia, tráfico y 5xx.
 $duracion = static fn (): float => round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 1);

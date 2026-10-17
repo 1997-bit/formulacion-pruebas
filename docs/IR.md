@@ -32,7 +32,7 @@ Toda petición entra por `public/index.php`. Rutas en `config/rutas.php`.
 | --- | --- |
 | Acceso | `/` login. `/registro` cuentas `tester`. `/dashboard` avance. |
 | Administración | `/admin/usuarios`, `/admin/proyectos`. |
-| Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`. |
+| Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`, `/requerimientos/editar`, `/requerimientos/eliminar`. |
 | Casos | `/casos/registrar`, `/casos/listar`, `/casos/resultado`, `/casos/editar`, `/casos/eliminar`, `/evidencias/ver`. `/casos/resultado` anota e imprime el formulario 1. |
 | Formularios | `/formularios/` + `clases_equivalencia` 2, `valor_limite` 3, `tabla_decision` 4, `cobertura_blanca` 5, `plan_pruebas` 6, `rubrica` 7, `autoevaluacion` 8, `portafolio` 9, `incidentes` 10. |
 | Reportes | `/reportes/cierre`. |
@@ -74,12 +74,12 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | RF-16 | Formulario 9 | Portafolio por persona y semana. | Media |
 | RF-17 | Formulario 10 | Registro de Incidentes. | Alta |
 | RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example`, `docs/recrear_ambiente.md`. | Alta |
-| RF-19 | Incidentes | Defectos de un caso en el formulario 10. | Alta |
+| RF-19 | Incidentes | Defectos de un caso en el formulario 10. Commit afectado obligatorio, commit corregido al cerrar. | Alta |
 | RF-20 | Historial | Campo, antes, después, usuario y fecha. | Media |
 | RF-21 | Permisos | Rol validado en el servidor, según 7.1. | Alta |
 | RF-22 | Consultar | Filtro por proyecto, requerimiento y estado. | Alta |
 | RF-23 | Reportes | Avance en el panel. Cierre aparte. | Alta |
-| RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto y evidencia. Guarda fecha, hora y usuario. | Alta |
+| RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto, commit probado y evidencia. Guarda fecha, hora y usuario. | Alta |
 
 ---
 
@@ -113,6 +113,8 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | --- | --- | --- |
 | Usuarios y roles | Sí | No |
 | Proyectos y miembros | Sí | No |
+| Editar requerimiento | Sí | Sus proyectos |
+| Eliminar requerimiento | Sí | No |
 | Registrar caso | Sí | Sus proyectos |
 | Editar caso | Sí | Propios |
 | Eliminar caso | Sí | No |

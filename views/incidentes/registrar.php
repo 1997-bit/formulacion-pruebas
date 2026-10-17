@@ -16,6 +16,7 @@ use App\Helpers\Icono;
  * @var ?list<array<string, mixed>> $asignables
  * @var ?array<string, string> $errores
  * @var ?array<string, mixed> $datos
+ * @var ?list<string> $commits  ya usados en el proyecto
  */
 
 $errores ??= [];
@@ -95,7 +96,13 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
           <p class="campo-ayuda" id="f-codigo-ayuda">Se genera al guardar: BUG y un consecutivo del proyecto.</p>
         </div>
         <?= $campo('modulo', 'Módulo', ['atributos' => 'maxlength="100"', 'ayuda' => 'Componente afectado. Sale del caso; se puede cambiar.']) ?>
+        <?= $campo('commit_afectado', 'Commit afectado', [
+            'clase' => 'codigo',
+            'ayuda' => 'Hash del build donde sale el defecto. Sale del caso; se puede cambiar.',
+            'atributos' => 'list="commits-proyecto" maxlength="40" pattern="[0-9a-fA-F]{7,40}" autocomplete="off" spellcheck="false" placeholder="3426060"',
+        ]) ?>
       </div>
+      <datalist id="commits-proyecto"><?php foreach ($commits ?? [] as $c): ?><option value="<?= Html::e($c) ?>"><?php endforeach; ?></datalist>
       <?= $campo('titulo', 'Título', ['atributos' => 'maxlength="150"']) ?>
       <?= $radios('severidad', 'Severidad') ?>
       <?= $radios('prioridad', 'Prioridad') ?>

@@ -20,11 +20,11 @@ use App\Helpers\Html;
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'errores' => $errores]) ?>
   <div class="campo">
     <label for="ac-usuario">Usuario</label>
-    <input class="control" id="ac-usuario" name="usuario" autocomplete="username" required value="<?= Html::e($datos['usuario'] ?? '') ?>">
+    <input class="control" id="ac-usuario" name="usuario" autocomplete="username" enterkeyhint="next" required value="<?= Html::e($datos['usuario'] ?? '') ?>">
   </div>
   <div class="campo">
     <label for="ac-clave">Contraseña</label>
-    <input class="control" id="ac-clave" name="clave" type="password" autocomplete="current-password" required>
+    <input class="control" id="ac-clave" name="clave" type="password" enterkeyhint="go" autocomplete="current-password" required>
   </div>
   <button class="btn btn-primario btn-bloque" type="submit">Iniciar sesión</button>
 </form>

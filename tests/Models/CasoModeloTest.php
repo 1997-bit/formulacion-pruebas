@@ -101,4 +101,21 @@ final class CasoModeloTest extends BaseDatos
 
         $this->assertFalse($eliminado);
     }
+
+    // El panel no repite: lo vencido va en atrasados, lo que no vence en pendientesDe.
+    public function testPendientesDeNoTraeLosVencidos(): void
+    {
+        $tester = $this->usuario();
+        $proyecto = $this->proyecto($tester);
+        $req = $this->requerimiento($proyecto);
+        $vencido = $this->caso($proyecto, $req, $tester, 'SIS-001');
+        $this->caso($proyecto, $req, $tester, 'SIS-002');
+        Conexion::pdo()->prepare('UPDATE casos_prueba SET fecha_inicio = CURDATE() - INTERVAL 9 DAY, fecha_fin = CURDATE() - INTERVAL 1 DAY WHERE id = ?')->execute([$vencido]);
+        Conexion::pdo()->prepare("UPDATE casos_prueba SET fecha_inicio = CURDATE(), fecha_fin = CURDATE() + INTERVAL 3 DAY WHERE codigo = 'SIS-002' AND proyecto_id = ?")->execute([$proyecto]);
+
+        $this->assertSame(
+            [['SIS-002'], ['SIS-001']],
+            [array_column(CasoModelo::pendientesDe([$proyecto], $tester, 5), 'codigo'), array_column(CasoModelo::atrasados([$proyecto], 5), 'codigo')],
+        );
+    }
 }
