@@ -104,6 +104,7 @@
   --alto-sm: 2rem;
   --alto-md: 2.25rem;
   --alto-lg: 2.5rem;
+  --alto-tactil: 2.75rem; /* 44px: Apple HIG y WCAG 2.5.5 */
 
   --radio: 0.625rem;
   --radio-sm: calc(var(--radio) - 4px);

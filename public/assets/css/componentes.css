@@ -23,10 +23,12 @@
 .btn-secundario { background: var(--tarjeta); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
 .btn-peligro { background: var(--peligro); color: var(--peligro-texto); }
 .btn-fantasma { background: transparent; color: var(--texto); }
-.btn-primario:hover { background: color-mix(in oklch, var(--primario), black 12%); }
-.btn-secundario:hover,
-.btn-fantasma:hover { background: var(--acento); color: var(--acento-texto); }
-.btn-peligro:hover { background: color-mix(in oklch, var(--peligro), black 12%); }
+@media (hover: hover) {
+  .btn-primario:hover { background: color-mix(in oklch, var(--primario), black 12%); }
+  .btn-secundario:hover,
+  .btn-fantasma:hover { background: var(--acento); color: var(--acento-texto); }
+  .btn-peligro:hover { background: color-mix(in oklch, var(--peligro), black 12%); }
+}
 .btn:disabled,
 .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
@@ -144,6 +146,10 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   opacity: 1;
   visibility: visible;
 }
+/* Sin hover, táctil: el globo solo con teclado. Un toque no lo deja pegado. También el del rail, app.css */
+@media (hover: none) {
+  :is([data-tooltip], [data-etiqueta]):not(:focus-visible)::after { display: none; }
+}
 [data-tooltip-lado="abajo"]::after {
   bottom: auto;
   top: 100%;
@@ -243,7 +249,9 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   border-radius: var(--radio-total);
 }
 .chip-quitar { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; color: var(--tenue-texto); }
-.chip-quitar:hover { background: var(--acento); color: var(--acento-texto); }
+@media (hover: hover) {
+  .chip-quitar:hover { background: var(--acento); color: var(--acento-texto); }
+}
 .chip-quitar .icono { width: 12px; height: 12px; }
 
 /* Avatar: iniciales, siempre con el nombre al lado */
@@ -447,7 +455,9 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   width: 1px;
   height: 1px;
 }
-.resultado-opcion:hover { background: var(--acento); }
+@media (hover: hover) {
+  .resultado-opcion:hover { background: var(--acento); }
+}
 .resultado-opcion:has(input:focus-visible) { outline: 2px solid var(--anillo); outline-offset: 3px; }
 .resultado-pendiente:has(input:checked) { background: var(--tenue-texto); color: var(--fondo); border-color: var(--tenue-texto); }
 .resultado-ok:has(input:checked) { background: var(--exito); color: var(--exito-texto); border-color: var(--exito); }
@@ -484,13 +494,33 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   white-space: nowrap;
 }
 .tabla th { color: var(--tenue-texto); font-weight: 500; background: var(--tenue); }
-.tabla tbody tr:hover { background: color-mix(in oklch, var(--acento), transparent 50%); }
+@media (hover: hover) {
+  .tabla tbody tr:hover { background: color-mix(in oklch, var(--acento), transparent 50%); }
+}
 .tabla tbody tr:last-child :is(td, th) { border-bottom: 0; }
 .tabla .celda-acciones { width: 1%; text-align: right; }
 /* Números a la derecha: las cifras se comparan por columna */
 .tabla .num { text-align: right; }
 .tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: var(--esp-1); }
 .tabla .celda-larga { white-space: normal; min-width: 16rem; }
+
+/* Tablet: la tabla se desliza de lado. La primera columna queda fija y una sombra a la derecha avisa que hay más */
+@media (min-width: 37.5rem) and (max-width: 63.99rem) {
+  .encabezado-fijo { overflow-x: auto; contain: paint; }
+  .encabezado-fijo thead th { position: static; top: auto; }
+  .tabla-contenedor {
+    background:
+      linear-gradient(to left, var(--fondo) 30%, transparent) right / 2rem 100% no-repeat local,
+      radial-gradient(farthest-side at 100% 50%, var(--sombra-color), transparent) right / 0.75rem 100% no-repeat scroll,
+      var(--fondo);
+  }
+  .tabla-contenedor .tabla :is(th, td):first-child { position: sticky; left: 0; z-index: 2; background: var(--fondo); }
+  .tabla-contenedor .tabla th:first-child { background: var(--tenue); }
+  @media (hover: hover) {
+    .tabla-contenedor .tabla tbody tr:hover > :first-child { background: color-mix(in oklch, var(--acento), var(--fondo)); }
+  }
+  .tabla-contenedor .tabla tbody tr:focus-within > :first-child { background: var(--acento); }
+}
 
 .paginacion {
   display: flex;
@@ -521,7 +551,9 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   text-decoration: none;
   border-radius: var(--radio-md);
 }
-.paginacion a:hover { background: var(--acento); }
+@media (hover: hover) {
+  .paginacion a:hover { background: var(--acento); }
+}
 .paginacion a[aria-current="page"] { border: 1px solid var(--entrada); font-weight: 600; box-shadow: var(--sombra-xs); }
 .paginacion span[aria-disabled] { opacity: 0.4; }
 
@@ -930,7 +962,9 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
   border-radius: var(--radio-md);
 }
-.pestanas a:hover { color: var(--texto); }
+@media (hover: hover) {
+  .pestanas a:hover { color: var(--texto); }
+}
 .pestanas a[aria-current="page"] { color: var(--texto); background: var(--fondo); box-shadow: var(--sombra-xs); }
 @media (forced-colors: active) { .pestanas a[aria-current="page"] { outline: 2px solid Highlight; } }
 
@@ -1016,8 +1050,8 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 /* Celular y táctil */
 
-/* Tabla como tarjetas: cada <td> necesita data-columna. Por el ancho del contenido: tablet vertical también */
-@container principal (width < 50rem) {
+/* Tabla como tarjetas: cada <td> necesita data-columna. Solo móvil: en tablet la tabla se desliza */
+@media (max-width: 37.49rem) {
   .tabla-tarjetas thead {
     position: absolute;
     width: 1px;
@@ -1079,19 +1113,20 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .alerta:has(> .icono) .alerta-accion { margin-left: var(--esp-3); }
 }
 
-/* Táctil: targets grandes. 16px evita el zoom de iOS */
+/* Táctil: targets de 44px. btn-sm y opciones: 40px, van en grupos con espacio. 16px evita el zoom de iOS */
 @media (pointer: coarse) {
-  .btn { min-height: var(--alto-lg); }
-  .btn-icono { width: var(--alto-lg); min-height: var(--alto-lg); }
-  .btn-sm { min-height: var(--alto-md); }
+  .btn { min-height: var(--alto-tactil); }
+  .btn-icono { width: var(--alto-tactil); min-height: var(--alto-tactil); }
+  .btn-sm { min-height: var(--alto-lg); }
   .paginacion a,
-  .paginacion span[aria-disabled] { min-width: var(--alto-lg); height: var(--alto-lg); }
-  .control { min-height: var(--alto-lg); font-size: 1rem; }
-  .opcion { min-height: var(--alto-sm); }
+  .paginacion span[aria-disabled] { min-width: var(--alto-tactil); height: var(--alto-tactil); }
+  .control { min-height: var(--alto-tactil); font-size: 1rem; }
+  .opcion { min-height: var(--alto-lg); }
+  .pestanas a { min-height: var(--alto-lg); }
 }
 
 /* Filas editables como tarjetas */
-@container principal (width < 50rem) {
+@media (max-width: 37.49rem) {
   .tabla-tarjetas tfoot { display: block; }
   .tabla-tarjetas tbody th,
   .tabla-tarjetas tfoot th {
