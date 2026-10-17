@@ -53,7 +53,7 @@ $nivel = fn (int $n): int => min(3, $n);
                     <?php else: ?>
                       <a class="matriz-celda matriz-nivel-<?= $nivel($c['casos']) ?><?= $c['fault'] > 0 ? ' matriz-fault' : '' ?>"
                          href="/casos/listar?<?= http_build_query(['proyecto' => $p['id'], 'requerimiento' => $f['id']]) ?>"
-                         title="<?= Html::e($f['codigo'] . ' · ' . $tipos[$t]['texto'] . ': ' . $c['casos'] . ' caso(s)' . ($c['fault'] > 0 ? ', ' . $c['fault'] . ' FAULT' : '')) ?>"><?= $c['casos'] ?><?= $c['fault'] > 0 ? '<span class="solo-lector">, ' . $c['fault'] . ' FAULT</span>' : '' ?></a>
+                         title="<?= Html::e($f['codigo'] . ' · ' . $tipos[$t]['texto'] . ': ' . Html::cantidad($c['casos'], 'caso', 'casos') . ($c['fault'] > 0 ? ', ' . $c['fault'] . ' FAULT' : '')) ?>"><?= $c['casos'] ?><?= $c['fault'] > 0 ? '<span class="solo-lector">, ' . $c['fault'] . ' FAULT</span>' : '' ?></a>
                     <?php endif; ?>
                   </td>
                 <?php endforeach; ?>
@@ -72,7 +72,7 @@ $nivel = fn (int $n): int => min(3, $n);
     <?php endif; ?>
     <?php if ($p['sin_casos']): ?>
       <footer class="tarjeta-pie matriz-pie">
-        <p><?= Icono::svg('triangle-alert') ?> <?= count($p['sin_casos']) ?> requerimiento(s) sin casos: <span class="codigo"><?= Html::e(implode(', ', $p['sin_casos'])) ?></span></p>
+        <p><?= Icono::svg('triangle-alert') ?> <?= Html::cantidad(count($p['sin_casos']), 'requerimiento', 'requerimientos') ?> sin casos: <span class="codigo"><?= Html::e(implode(', ', $p['sin_casos'])) ?></span></p>
         <a class="btn btn-primario btn-sm" href="/casos/registrar"><?= Icono::svg('plus') ?> Registrar caso</a>
       </footer>
     <?php endif; ?>

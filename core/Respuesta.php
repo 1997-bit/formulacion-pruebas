@@ -12,13 +12,14 @@ final class Respuesta
         exit;
     }
 
-    public static function exito(string $mensaje, string $ruta): never
+    /** @param array{texto: string, ruta: string}|null $accion  Sesion::flash() */
+    public static function exito(string $mensaje, string $ruta, ?array $accion = null): never
     {
         // Envío de un solo uso, #102. Un segundo envío igual vuelve aquí sin guardar.
         if (is_string($_POST['envio'] ?? null)) {
             $_SESSION['envios'] = array_slice([$_POST['envio'] => $ruta] + ($_SESSION['envios'] ?? []), 0, 20, true);
         }
-        Sesion::flash($mensaje);
+        Sesion::flash($mensaje, $accion);
         self::redirigir($ruta);
     }
 

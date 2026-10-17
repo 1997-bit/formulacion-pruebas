@@ -63,6 +63,9 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 /* En .pila: el título va con lo de abajo, no con lo de arriba */
 .pila > .titulo-seccion { margin: var(--esp-4) 0 calc(-1 * var(--esp-1)); }
 .separador { margin: var(--esp-1) 0; border: 0; border-top: 1px solid var(--borde); }
+/* Sección de un formulario: <fieldset class="seccion"> con <legend class="titulo-seccion"> */
+.seccion { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.seccion > legend { padding: 0; }
 
 /* Plegable: <details class="plegable">, .flecha al final del summary */
 .plegable > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--esp-1) var(--esp-3); cursor: pointer; list-style: none; }
@@ -320,6 +323,11 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   font-weight: 500;
 }
 .requerido { color: var(--error); }
+/* Botón de ícono dentro del control, a la derecha: ojo de la contraseña */
+.control-con-boton { position: relative; }
+.control-con-boton > .control { padding-right: calc(var(--alto-sm) + var(--esp-2)); }
+.control-con-boton > .control-boton { position: absolute; top: 50%; right: 4px; translate: 0 -50%; color: var(--tenue-texto); }
+.control-con-boton > .control-boton:hover { color: var(--texto); }
 .campo-ayuda {
   margin: 0;
   font-size: var(--letra-xs);
@@ -670,7 +678,7 @@ kbd {
   grid-column: accion;
   grid-row: 1 / span 2;
   margin-left: var(--esp-3);
-  align-self: start;
+  align-self: center;
 }
 
 /* Estilo Jira: fondo suave, borde y texto fuerte del mismo tono */

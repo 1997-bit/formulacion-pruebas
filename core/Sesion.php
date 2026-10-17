@@ -57,9 +57,12 @@ final class Sesion
         return $_SESSION['usuario'] ?? null;
     }
 
-    public static function flash(string $mensaje): void
+    // $accion: botón del aviso, el siguiente paso. Material: snackbar con acción.
+    /** @param array{texto: string, ruta: string}|null $accion */
+    public static function flash(string $mensaje, ?array $accion = null): void
     {
         $_SESSION['flash'] = $mensaje;
+        $_SESSION['flash_accion'] = $accion;
     }
 
     // Lee y borra flash, errores y datos de Respuesta::errores(). Errores y datos, solo en su ruta.

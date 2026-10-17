@@ -107,12 +107,43 @@ document.addEventListener('click', (e) => {
 const aviso = document.querySelector('.aviso-flotante');
 if (aviso) {
   const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
-  setTimeout(cerrar, 5000);
+  // Con acción no se cierra solo: da tiempo de usarla. WCAG 2.2.1.
+  if (!aviso.querySelector('[data-aviso-accion]')) setTimeout(cerrar, 5000);
   aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
 }
 
-// Error de validación: foco al primer campo marcado.
-document.querySelector('.alerta-error') && document.querySelector('[aria-invalid="true"]')?.focus();
+// Resumen de errores, patrón GOV.UK: un enlace por campo con error, foco al resumen. Sin JS queda el título y el error en cada campo.
+const resumen = document.querySelector('.alerta-error');
+if (resumen) {
+  const lista = document.createElement('ul');
+  for (const error of document.querySelectorAll('.campo-error[id$="-error"]')) {
+    const id = error.id.slice(0, -'-error'.length);
+    const grupo = error.closest('fieldset');
+    const control = document.getElementById(id) ?? grupo?.querySelector('input, select, textarea');
+    if (!control) continue;
+    const etiqueta = document.querySelector(`label[for="${id}"]`) ?? grupo?.querySelector('legend');
+    const nombre = (etiqueta?.textContent ?? control.getAttribute('aria-label') ?? '').replace('*', '').trim();
+    const enlace = document.createElement('a');
+    enlace.href = `#${control.id}`;
+    enlace.textContent = nombre ? `${nombre}: ${error.textContent.trim()}` : error.textContent.trim();
+    enlace.addEventListener('click', (e) => {
+      e.preventDefault();
+      control.focus();
+      control.scrollIntoView({ block: 'center' });
+    });
+    const item = document.createElement('li');
+    item.append(enlace);
+    lista.append(item);
+  }
+  if (lista.children.length) {
+    const descripcion = document.createElement('div');
+    descripcion.className = 'alerta-descripcion';
+    descripcion.append(lista);
+    resumen.append(descripcion);
+  }
+  resumen.tabIndex = -1;
+  resumen.focus();
+}
 
 // Un envío por form. Atrás lo libera.
 document.addEventListener('submit', (e) => {

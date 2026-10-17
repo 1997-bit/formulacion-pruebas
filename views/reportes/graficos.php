@@ -51,7 +51,7 @@ $horas = $g['horas_cierre'];
          aria-label="<?= $pico['anotados'] > 0 ? 'Pico el ' . $dm($pico['dia']) . ' con ' . $pico['anotados'] . '. ' : '' ?>Promedio <?= $coma($g['promedio']) ?> por día.">
       <?php foreach ($dias as $i => $d): ?>
         <?php $esPico = $pico['anotados'] > 0 && $d['dia'] === $pico['dia']; ?>
-        <span style="--v:<?= $d['anotados'] ?>"<?= $esPico ? ' class="pico"' : '' ?> data-dato="<?= $dm($d['dia']) ?> · <?= $d['anotados'] ?> resultado(s)"><?php if ($esPico): ?><span class="grafico-etiqueta<?= $i > $n * 2 / 3 ? ' al-fin' : '' ?>"><?= $dm($d['dia']) ?> · <?= $d['anotados'] ?></span><?php endif; ?></span>
+        <span style="--v:<?= $d['anotados'] ?>"<?= $esPico ? ' class="pico"' : '' ?> data-dato="<?= $dm($d['dia']) ?> · <?= Html::cantidad((int) $d['anotados'], 'resultado', 'resultados') ?>"><?php if ($esPico): ?><span class="grafico-etiqueta<?= $i > $n * 2 / 3 ? ' al-fin' : '' ?>"><?= $dm($d['dia']) ?> · <?= $d['anotados'] ?></span><?php endif; ?></span>
       <?php endforeach; ?>
       <?php if ($g['promedio'] > 0): ?><span class="grafico-promedio" style="--v:<?= $g['promedio'] ?>"><span>prom. <?= $coma($g['promedio']) ?></span></span><?php endif; ?>
     </div>
@@ -105,7 +105,7 @@ $horas = $g['horas_cierre'];
     <div class="grafico-barras grafico-pilas" style="--max:<?= $maxIncidentes ?>" role="img" aria-label="Incidentes por día y severidad. El detalle está en la tabla.">
       <?php foreach ($dias as $d): ?>
         <?php $detalle = implode(', ', array_filter(array_map(fn (int $sv): string => $d['severidad'][$sv] > 0 ? $severidades[$sv]['texto'] . ' ' . $d['severidad'][$sv] : '', [4, 3, 2, 1]))); ?>
-        <span style="--v:<?= $totalDia($d) ?>" data-dato="<?= Html::e($dm($d['dia']) . ' · ' . $totalDia($d) . ' incidente(s)' . ($detalle !== '' ? ': ' . $detalle : '') . ($d['stoppers'] > 0 ? '. Stoppers ' . $d['stoppers'] : '')) ?>">
+        <span style="--v:<?= $totalDia($d) ?>" data-dato="<?= Html::e($dm($d['dia']) . ' · ' . Html::cantidad((int) $totalDia($d), 'incidente', 'incidentes') . ($detalle !== '' ? ': ' . $detalle : '') . ($d['stoppers'] > 0 ? '. Stoppers ' . $d['stoppers'] : '')) ?>">
           <?php foreach ([4, 3, 2, 1] as $s): ?><?php if ($d['severidad'][$s] > 0): ?><span class="barra-<?= $severidades[$s]['variante'] ?>" style="flex-grow:<?= $d['severidad'][$s] ?>"></span><?php endif; ?><?php endforeach; ?>
         </span>
       <?php endforeach; ?>

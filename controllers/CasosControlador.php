@@ -68,7 +68,7 @@ final class CasosControlador
             'requerimientos' => $requerimientos,
             'miembros' => CasoServicio::miembrosPorProyecto($requerimientos),
             'errores' => Sesion::tomar('errores', []),
-            'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => []]),
+            'datos' => Sesion::tomar('datos', ['estado' => '0', 'evidencias' => [], 'requerimiento_id' => is_string($_GET['requerimiento'] ?? null) ? $_GET['requerimiento'] : '']),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => 'Registrar']],
         ]);
     }

@@ -12,6 +12,7 @@ use App\Helpers\Icono;
  * @var list<array<string, mixed>> $requerimientos
  * @var ?Paginacion $paginacion
  * @var ?string $flash
+ * @var ?array{texto: string, ruta: string} $accion
  * @var array{activo: ?int} $usuario
  */
 // Con proyecto activo la columna Proyecto sobra.
@@ -29,7 +30,7 @@ $todos = $usuario['activo'] === null;
   <a href="/requerimientos/listar?vista=matriz"<?= $vista === 'matriz' ? ' aria-current="page"' : '' ?>><?= Icono::svg('layout-grid') ?> Matriz de cobertura</a>
 </nav>
 <div class="pila">
-  <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
+  <?= Vista::capturar('partials/mensajes', ['flash' => $flash, 'accion' => $accion]) ?>
   <?php if ($vista === 'matriz'): ?>
     <?= Vista::capturar('requerimientos/matriz', ['matriz' => $matriz]) ?>
   <?php elseif (!$requerimientos): ?>

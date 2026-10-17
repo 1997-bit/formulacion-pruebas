@@ -21,8 +21,9 @@ final class RequerimientoServicio
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
+     * @return array{int, string} id y código
      */
-    public static function registrar(array $datos, array $usuario): string
+    public static function registrar(array $datos, array $usuario): array
     {
         $proyectoId = trim($datos['proyecto_id']);
         $codigo = strtoupper(trim($datos['codigo']));
@@ -39,12 +40,12 @@ final class RequerimientoServicio
             ->comprobar();
 
         try {
-            RequerimientoModelo::crear((int) $proyectoId, $codigo, $descripcion, str_starts_with($codigo, 'RNF') ? 1 : 0);
+            $id = RequerimientoModelo::crear((int) $proyectoId, $codigo, $descripcion, str_starts_with($codigo, 'RNF') ? 1 : 0);
         } catch (\PDOException $e) {
             throw ErrorValidacion::siDuplicado($e, ['codigo' => 'Ese código ya existe en el proyecto.']);
         }
 
-        return $codigo;
+        return [$id, $codigo];
     }
 
     /**

@@ -73,7 +73,7 @@ $listas = [
     <section class="tarjeta" aria-labelledby="<?= $id ?>">
       <header class="tarjeta-encabezado">
         <h2 class="tarjeta-titulo" id="<?= $id ?>"><?= $titulo ?></h2>
-        <p class="tarjeta-descripcion"><?= count($casos) ?> caso(s).</p>
+        <p class="tarjeta-descripcion"><?= Html::cantidad(count($casos), 'caso', 'casos') ?>.</p>
       </header>
       <?php if ($casos): ?>
         <div class="tabla-contenedor">
@@ -98,7 +98,7 @@ $listas = [
   <section class="tarjeta" aria-labelledby="ci-stoppers">
     <header class="tarjeta-encabezado">
       <h2 class="tarjeta-titulo" id="ci-stoppers">Stoppers abiertos</h2>
-      <p class="tarjeta-descripcion"><?= count($p['stoppers_abiertos']) ?> incidente(s).</p>
+      <p class="tarjeta-descripcion"><?= Html::cantidad(count($p['stoppers_abiertos']), 'incidente', 'incidentes') ?>.</p>
     </header>
     <?php if ($p['stoppers_abiertos']): ?>
       <div class="tabla-contenedor">
