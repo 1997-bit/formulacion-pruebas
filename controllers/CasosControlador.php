@@ -26,7 +26,7 @@ final class CasosControlador
         'solicitado_por', 'aprobado_por',
     ];
     private const CAMPOS_RESULTADO = [
-        'estado', 'resultado_obtenido', 'observaciones', 'impacto', 'evidencia_enlace',
+        'estado', 'resultado_obtenido', 'observaciones', 'impacto', 'commit_probado', 'evidencia_enlace',
         'descripcion_captura', 'descripcion_log', 'descripcion_enlace',
     ];
 
@@ -135,8 +135,10 @@ final class CasosControlador
                 'resultado_obtenido' => (string) $caso['resultado_obtenido'],
                 'observaciones' => (string) $caso['observaciones'],
                 'impacto' => (string) $caso['impacto'],
+                'commit_probado' => (string) $caso['commit_probado'],
                 'evidencias' => [],
             ],
+            'commits' => CasoModelo::commits($caso['proyecto_id']),
             'migas' => [['texto' => 'Casos de prueba', 'ruta' => '/casos/listar'], ['texto' => $caso['codigo']]],
         ]);
     }

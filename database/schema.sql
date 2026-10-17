@@ -72,6 +72,7 @@ CREATE TABLE casos_prueba (
     resultado_obtenido TEXT NULL,
     observaciones TEXT NULL,
     impacto TEXT NULL, -- ISO/IEC/IEEE 29119-3, log de pruebas
+    commit_probado VARCHAR(40) NULL, -- hash del build probado, RF-24
     creado_por INT UNSIGNED NOT NULL, -- RF-06
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     anotado_por INT UNSIGNED NULL, -- RF-24
@@ -112,6 +113,8 @@ CREATE TABLE incidentes (
     prioridad TINYINT UNSIGNED NOT NULL,
     estado TINYINT UNSIGNED NOT NULL DEFAULT 0,
     es_stopper TINYINT NOT NULL DEFAULT 0,
+    commit_afectado VARCHAR(40) NOT NULL, -- hash donde se encontró
+    commit_corregido VARCHAR(40) NULL, -- hash que lo corrige
     asignado_id INT UNSIGNED NULL,
     creado_por INT UNSIGNED NOT NULL,
     creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

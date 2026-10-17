@@ -204,11 +204,31 @@ final class CasoModelo
         )->execute([...array_values($campos), $id]);
     }
 
-    public static function anotar(int $id, int $estado, ?string $obtenido, ?string $observaciones, ?string $impacto, int $usuarioId): void
+    /** @param array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string, commit_probado: ?string} $r */
+    public static function anotar(int $id, array $r, int $usuarioId): void
     {
         Conexion::pdo()->prepare(
-            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, impacto = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
-        )->execute([$estado, $obtenido, $observaciones, $impacto, $usuarioId, $id]);
+            'UPDATE casos_prueba SET estado = ?, resultado_obtenido = ?, observaciones = ?, impacto = ?, commit_probado = ?, anotado_por = ?, anotado_en = NOW() WHERE id = ?'
+        )->execute([$r['estado'], $r['resultado_obtenido'], $r['observaciones'], $r['impacto'], $r['commit_probado'], $usuarioId, $id]);
+    }
+
+    /**
+     * Commits ya usados en el proyecto, el más reciente primero. Para el datalist.
+     *
+     * @return list<string>
+     */
+    public static function commits(int $proyectoId): array
+    {
+        $sql = Conexion::pdo()->prepare(
+            'SELECT h FROM (
+                SELECT commit_probado AS h, anotado_en AS f FROM casos_prueba WHERE proyecto_id = ? AND commit_probado IS NOT NULL
+                UNION ALL SELECT commit_afectado, creado_en FROM incidentes WHERE proyecto_id = ?
+                UNION ALL SELECT commit_corregido, creado_en FROM incidentes WHERE proyecto_id = ? AND commit_corregido IS NOT NULL
+             ) t GROUP BY h ORDER BY MAX(f) DESC LIMIT 10'
+        );
+        $sql->execute([$proyectoId, $proyectoId, $proyectoId]);
+
+        return $sql->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     // Dentro de una transacción.

@@ -74,12 +74,12 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | RF-16 | Formulario 9 | Portafolio por persona y semana. | Media |
 | RF-17 | Formulario 10 | Registro de Incidentes. | Alta |
 | RF-18 | Recrear ambiente | `schema.sql`, `seed.sql`, `.env.example`, `docs/recrear_ambiente.md`. | Alta |
-| RF-19 | Incidentes | Defectos de un caso en el formulario 10. | Alta |
+| RF-19 | Incidentes | Defectos de un caso en el formulario 10. Commit afectado obligatorio, commit corregido al cerrar. | Alta |
 | RF-20 | Historial | Campo, antes, después, usuario y fecha. | Media |
 | RF-21 | Permisos | Rol validado en el servidor, según 7.1. | Alta |
 | RF-22 | Consultar | Filtro por proyecto, requerimiento y estado. | Alta |
 | RF-23 | Reportes | Avance en el panel. Cierre aparte. | Alta |
-| RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto y evidencia. Guarda fecha, hora y usuario. | Alta |
+| RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto, commit probado y evidencia. Guarda fecha, hora y usuario. | Alta |
 
 ---
 
