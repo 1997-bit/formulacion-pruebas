@@ -89,6 +89,16 @@
   --lateral-ancho: 16rem;
   --lateral-ancho-icono: 3rem;
 
+  /* Espacio: escala de 4px. Gap, padding y margin usan solo estos. */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-10: 40px;
+
   --radio: 0.625rem;
   --radio-sm: calc(var(--radio) - 4px);
   --radio-md: calc(var(--radio) - 2px);
