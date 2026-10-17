@@ -146,6 +146,10 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   opacity: 1;
   visibility: visible;
 }
+/* Al tocar: capa del color del texto al 10 %, el estado pressed de Material 3. Sirve sobre cualquier fondo */
+:is(.btn, .chip-quitar, .paginacion a, .pestanas a, .resultado-opcion, .tabla tbody tr, .tareas a, .cifra-enlace, .tarjeta-caso, .sidebar-boton, .sidebar-subboton, .barra-boton):active {
+  background-image: linear-gradient(color-mix(in oklch, currentColor 10%, transparent) 0 0);
+}
 /* Sin hover, táctil: el globo solo con teclado. Un toque no lo deja pegado. También el del rail, app.css */
 @media (hover: none) {
   :is([data-tooltip], [data-etiqueta]):not(:focus-visible)::after { display: none; }
@@ -572,6 +576,27 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   background: var(--velo);
   backdrop-filter: var(--velo-desenfoque);
 }
+@media (prefers-reduced-transparency: reduce) {
+  .dialogo::backdrop { background: var(--velo-respaldo); backdrop-filter: none; }
+}
+/* Móvil: el diálogo es una hoja desde abajo, al alcance del pulgar. HIG Sheets. La paleta queda arriba por el teclado */
+@media (max-width: 37.49rem) {
+  .dialogo:not(.paleta) {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90dvh;
+    margin: auto 0 0;
+    padding-bottom: calc(var(--esp-5) + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    border-bottom: 0;
+    border-radius: var(--radio-2xl) var(--radio-2xl) 0 0;
+  }
+  .dialogo:not(.paleta)[open] { animation: hoja 0.25s cubic-bezier(0.2, 0, 0, 1); }
+  /* Botones a todo el ancho. Cancelar abajo, como el action sheet de iOS: un toque sin querer no borra */
+  .dialogo:not(.paleta) .acciones { flex-direction: column-reverse; }
+  .dialogo:not(.paleta) .acciones > .btn { width: 100%; min-height: var(--alto-tactil); }
+}
+@keyframes hoja { from { translate: 0 100%; } }
 .dialogo h2 { font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; margin: 0 0 var(--esp-2); }
 .dialogo p { margin: 0 0 var(--esp-5); font-size: var(--letra-sm); color: var(--tenue-texto); }
 .dialogo form { margin: 0; }
@@ -666,8 +691,8 @@ kbd {
 /* Aviso flotante tipo sonner, abajo a la derecha. app.js lo cierra */
 .aviso-flotante {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 70;
   width: min(24rem, calc(100% - 32px));
   align-items: center;

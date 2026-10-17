@@ -14,6 +14,11 @@
 
 html {
   scrollbar-gutter: stable;
+  /* iOS no agranda el texto al girar a horizontal */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Sin el recuadro gris de iOS al tocar: el estado :active de componentes.css avisa */
+  -webkit-tap-highlight-color: transparent;
   /* El foco no queda bajo la barra sticky. WCAG 2.4.11 */
   scroll-padding-top: 4.5rem;
   scrollbar-color: var(--entrada) transparent;
@@ -29,6 +34,8 @@ body {
   line-height: 1.5;
   letter-spacing: 0.01em;
   margin: 0;
+  /* viewport-fit=cover: el notch en horizontal no tapa el contenido */
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
 }
 
 h1 {
