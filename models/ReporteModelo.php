@@ -32,7 +32,8 @@ final class ReporteModelo
                     COALESCE(SUM(c.estado <> 0 AND NOT EXISTS (SELECT 1 FROM evidencias e WHERE e.caso_id = c.id)), 0) AS sin_evidencia,
                     COALESCE(SUM(c.estado = 2 AND NOT EXISTS (SELECT 1 FROM incidentes i WHERE i.caso_id = c.id)), 0) AS fault_sin_incidente,
                     (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2) AS incidentes_abiertos,
-                    (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2 AND i.es_stopper = 1) AS stoppers
+                    (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2 AND i.es_stopper = 1) AS stoppers,
+                    (SELECT COUNT(*) FROM incidentes i WHERE i.proyecto_id = p.id AND i.estado <> 2 AND i.asignado_id IS NULL) AS sin_asignar
              FROM proyectos p
              LEFT JOIN casos_prueba c ON c.proyecto_id = p.id
              WHERE ' . self::PERMITIDO . ($proyectoId === null ? '' : ' AND p.id = ?') . '

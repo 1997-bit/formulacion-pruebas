@@ -28,10 +28,8 @@ $cifras = [
     ['FAULT', 'circle-x', $t['fault'], $t['incidentes_abiertos'] . ' incidente(s) abierto(s)', '2', 'cifra-peligro', $t['fault_hoy']],
     ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0', 'cifra-aviso', 0],
 ];
-// Por atender: lo que impide el Go, por proyecto. Cada fila lleva al cierre. Stoppers en la alerta de arriba.
+// Por atender: lo que impide el Go y los incidentes sin dueño, por proyecto. Stoppers en la alerta de arriba.
 $tareas = [];
-// Listas vacías: no ocupan tarjeta. Van juntas en una línea "Todo al día".
-$alDia = [];
 foreach ($avance['proyectos'] as $p) {
     foreach ([
         ['fault_sin_incidente', 'bug', 'FAULT sin incidente'],
@@ -40,6 +38,9 @@ foreach ($avance['proyectos'] as $p) {
         if ($p[$clave] > 0) {
             $tareas[] = [$icono, $p[$clave] . ' ' . $texto, $enProyecto ? '' : $p['nombre'], '/reportes/cierre?proyecto=' . (int) $p['id']];
         }
+    }
+    if ($p['sin_asignar'] > 0) {
+        $tareas[] = ['users', $p['sin_asignar'] . ' incidente(s) abierto(s) sin asignar', $enProyecto ? '' : $p['nombre'], '/formularios/incidentes?estado=0'];
     }
 }
 ?>
@@ -80,15 +81,9 @@ foreach ($avance['proyectos'] as $p) {
       <p>Un administrador lo agrega como miembro.</p>
     </div>
   <?php else: ?>
-    <?php
-    if (!$tareas) { $alDia[] = 'nada por atender'; }
-    if (!$asignados) { $alDia[] = 'ningún incidente asignado'; }
-    if (!$atrasados) { $alDia[] = 'ningún caso atrasado'; }
-    if ($usuario['rol'] !== 1 && !$misPendientes) { $alDia[] = 'todos sus casos tienen resultado'; }
-    if ($usuario['rol'] === 1 && !$incompletos) { $alDia[] = 'todos los proyectos tienen miembros y plan'; }
-    ?>
-    <?php if ($alDia): ?>
-      <p class="tarjeta tarea-vacia al-dia"><?= Icono::svg('circle-check') ?> Todo al día: <?= Html::e(implode(' · ', $alDia)) ?>.</p>
+    <?php // "Todo al día" solo si no queda nada: sin tareas, stoppers, atrasos ni proyectos en No-Go. ?>
+    <?php if (!$tareas && !$asignados && !$atrasados && !$misPendientes && !$incompletos && $t['stoppers'] === 0 && !in_array(false, array_column($avance['proyectos'], 'go'), true)): ?>
+      <p class="tarjeta tarea-vacia al-dia"><?= Icono::svg('circle-check') ?> Todo al día: todos los proyectos están en Go.</p>
     <?php endif; ?>
     <?php if ($tareas): ?>
       <section class="tarjeta" aria-labelledby="h-atender">

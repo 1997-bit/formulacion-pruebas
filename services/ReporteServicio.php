@@ -10,7 +10,7 @@ use App\Models\ReporteModelo;
 // RF-23. El panel y el cierre salen de las mismas cifras.
 final class ReporteServicio
 {
-    private const CIFRAS = ['casos', 'pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'sin_evidencia', 'fault_sin_incidente', 'incidentes_abiertos', 'stoppers'];
+    private const CIFRAS = ['casos', 'pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'sin_evidencia', 'fault_sin_incidente', 'incidentes_abiertos', 'stoppers', 'sin_asignar'];
 
     /**
      * Totales por proyecto y del conjunto. Cada proyecto lleva sus criterios Go / No-Go.
