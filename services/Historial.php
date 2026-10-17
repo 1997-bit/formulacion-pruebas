@@ -34,6 +34,7 @@ final class Historial
         'resultado_obtenido' => ['Resultado obtenido', null],
         'observaciones' => ['Observaciones', null],
         'impacto' => ['Impacto', null],
+        'commit_probado' => ['Commit probado', null],
     ];
 
     /**

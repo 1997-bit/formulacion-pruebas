@@ -20,6 +20,7 @@ use App\Helpers\Icono;
  * @var array{rol: int} $usuario
  * @var array{0: ?array<string, mixed>, 1: ?array<string, mixed>} $vecinos  caso anterior y siguiente
  * @var list<array<string, mixed>> $historial
+ * @var list<string> $commits  ya usados en el proyecto
  */
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
@@ -85,6 +86,9 @@ $pasos = match ($caso['estado']) {
         <?php if ($caso['anotador'] !== null): ?>
           <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
         <?php endif; ?>
+        <?php if ($caso['commit_probado'] !== null): ?>
+          <dt>Commit probado</dt><dd><span class="codigo" title="<?= Html::e($caso['commit_probado']) ?>"><?= Html::e(substr($caso['commit_probado'], 0, 7)) ?></span></dd>
+        <?php endif; ?>
         <dt>Creado por</dt><dd><?= Html::e($caso['autor']) ?> · <?= $hora($caso['creado_en']) ?></dd>
         <dt>Solicitado por</dt><dd><?= $caso['solicitante'] === null ? '—' : Html::e($caso['solicitante']) ?></dd>
         <dt>Aprobado por</dt><dd><?= $caso['aprobador'] === null ? '—' : Html::e($caso['aprobador']) ?></dd>
@@ -115,6 +119,7 @@ $pasos = match ($caso['estado']) {
             <dt>Resultado obtenido</dt><dd class="multilinea"><?= $texto($caso['resultado_obtenido']) ?></dd>
             <dt>Observaciones</dt><dd class="multilinea"><?= $texto($caso['observaciones']) ?></dd>
             <dt>Impacto</dt><dd class="multilinea"><?= $texto($caso['impacto']) ?></dd>
+            <dt>Commit probado</dt><dd class="codigo"><?= $texto($caso['commit_probado']) ?></dd>
           </dl>
         </div>
         <?php if ($caso['evidencias']): ?>
@@ -141,7 +146,7 @@ $pasos = match ($caso['estado']) {
         <form class="pila no-imprimir" method="post" action="/casos/resultado" enctype="multipart/form-data">
           <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
           <input type="hidden" name="id" value="<?= (int) $caso['id'] ?>">
-          <?= Vista::capturar('partials/resultado', ['datos' => $datos, 'errores' => $errores, 'previas' => count($caso['evidencias'])]) ?>
+          <?= Vista::capturar('partials/resultado', ['datos' => $datos, 'errores' => $errores, 'previas' => count($caso['evidencias']), 'commits' => $commits]) ?>
           <div class="acciones">
             <button class="btn btn-primario" type="submit">Guardar resultado</button>
           </div>

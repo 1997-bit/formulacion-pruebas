@@ -89,10 +89,11 @@ final class IncidenteModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function actualizar(int $id, int $estado, ?int $asignadoId, int $stopper): void
+    /** @param array{estado: int, asignado_id: ?int, es_stopper: int, commit_corregido: ?string} $s */
+    public static function actualizar(int $id, array $s): void
     {
-        Conexion::pdo()->prepare('UPDATE incidentes SET estado = ?, asignado_id = ?, es_stopper = ? WHERE id = ?')
-            ->execute([$estado, $asignadoId, $stopper, $id]);
+        Conexion::pdo()->prepare('UPDATE incidentes SET estado = ?, asignado_id = ?, es_stopper = ?, commit_corregido = ? WHERE id = ?')
+            ->execute([$s['estado'], $s['asignado_id'], $s['es_stopper'], $s['commit_corregido'], $id]);
     }
 
     // Stoppers sin cerrar: impiden cerrar el plan.

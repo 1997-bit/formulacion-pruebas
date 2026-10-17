@@ -34,6 +34,14 @@ final class Validador
         return $this->regla($campo, $valor === '' || Catalogo::existe($catalogo, $valor), 'Valor no válido.');
     }
 
+    // Hash de commit: 7 a 40 hexadecimales. Vacío pasa: usar requerido().
+    public function commit(string $campo, ?string $valor): self
+    {
+        $valor = trim((string) $valor);
+
+        return $this->regla($campo, $valor === '' || preg_match('/^[0-9a-f]{7,40}$/i', $valor) === 1, 'De 7 a 40 caracteres de 0 a 9 y de a a f.');
+    }
+
     public function regla(string $campo, bool $cumple, string $mensaje): self
     {
         if (!$cumple) {

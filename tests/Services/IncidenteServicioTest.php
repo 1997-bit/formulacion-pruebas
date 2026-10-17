@@ -26,7 +26,7 @@ final class IncidenteServicioTest extends BaseDatos
         return $cambios + [
             'titulo' => 'Título', 'modulo' => 'Módulo', 'severidad' => '2', 'prioridad' => '2',
             'descripcion' => 'Descripción', 'pasos' => 'Pasos', 'resultado_esperado' => 'Esperado',
-            'resultado_obtenido' => 'Obtenido', 'estado' => '0', 'asignado_id' => '', 'es_stopper' => '0',
+            'resultado_obtenido' => 'Obtenido', 'commit_afectado' => '3426060', 'estado' => '0', 'asignado_id' => '', 'es_stopper' => '0',
         ];
     }
 

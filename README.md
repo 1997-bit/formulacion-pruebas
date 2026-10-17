@@ -34,6 +34,8 @@ php -S 127.0.0.1:8000 -t public
 | tester | `gloria` | `gloria1234` |
 | tester | `pan` | `pan12345` |
 
+Las fechas del seed se corren a la semana en que se carga. Las 5 capturas y logs del seed no están en el repo: sin ellos, esas evidencias dan 404.
+
 ## Desarrollo
 
 ```sh

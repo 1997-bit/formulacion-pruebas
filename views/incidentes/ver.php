@@ -17,6 +17,7 @@ use App\Helpers\Icono;
  * @var array<string, string> $errores
  * @var array<string, string> $datos
  * @var array{id: int} $usuario
+ * @var list<string> $commits  ya usados en el proyecto
  */
 
 $creado = new DateTime($incidente['creado_en']);
@@ -64,6 +65,10 @@ foreach ($asignables as $a) {
         <dt>Proyecto</dt><dd><?= Html::e($incidente['proyecto']) ?></dd>
         <dt>Módulo</dt><dd><?= Html::e($incidente['modulo']) ?></dd>
         <dt>Asignado a</dt><dd><?= Html::e($incidente['asignado'] ?? 'Sin asignar') ?></dd>
+        <dt>Commit afectado</dt><dd><span class="codigo" title="<?= Html::e($incidente['commit_afectado']) ?>"><?= Html::e(substr($incidente['commit_afectado'], 0, 7)) ?></span></dd>
+        <?php if ($incidente['commit_corregido'] !== null): ?>
+          <dt>Commit corregido</dt><dd><span class="codigo" title="<?= Html::e($incidente['commit_corregido']) ?>"><?= Html::e(substr($incidente['commit_corregido'], 0, 7)) ?></span></dd>
+        <?php endif; ?>
         <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= $creado->format('H:i') ?></dd>
       </dl>
     </aside>
@@ -100,7 +105,17 @@ foreach ($asignables as $a) {
                 'ayuda' => 'Miembros del proyecto. Vacío: sin asignar.',
                 'error' => $errores['asignado_id'] ?? '',
             ]) ?>
+            <?= Vista::capturar('partials/campo', [
+                'nombre' => 'commit_corregido',
+                'etiqueta' => 'Commit corregido',
+                'valor' => $datos['commit_corregido'] ?? '',
+                'clase' => 'codigo',
+                'ayuda' => 'Hash que lo corrige. Al cerrar.',
+                'error' => $errores['commit_corregido'] ?? '',
+                'atributos' => 'list="commits-proyecto" maxlength="40" pattern="[0-9a-fA-F]{7,40}" autocomplete="off" spellcheck="false"',
+            ]) ?>
           </div>
+          <datalist id="commits-proyecto"><?php foreach ($commits as $c): ?><option value="<?= Html::e($c) ?>"><?php endforeach; ?></datalist>
           <fieldset class="grupo">
             <legend>Bloqueo</legend>
             <label class="opcion"><input type="checkbox" name="es_stopper" value="1"<?= $datos['es_stopper'] === '1' ? ' checked' : '' ?>> Es stopper: impide cerrar el plan</label>
