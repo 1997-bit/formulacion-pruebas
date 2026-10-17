@@ -29,15 +29,21 @@ $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—'
 // Pasos: Registrado, resultado y cierre. Con FAULT, el incidente va antes del cierre.
 $conIncidente = $caso['incidentes'] !== [];
 $abiertos = count(array_filter($caso['incidentes'], fn (array $i): bool => $i['estado'] !== 2));
+// El paso actual dice lo que falta. Al terminarlo, el nombre del resultado.
 $pasos = match ($caso['estado']) {
-    0 => [['Registrado', 'hecho'], ['Ejecutado', 'actual'], ['Cerrado', 'pendiente']],
+    0 => [['Registrado', 'hecho'], ['Por ejecutar', 'actual'], ['Cerrado', 'pendiente']],
     1 => [['Registrado', 'hecho'], ['OK', 'hecho'], ['Cerrado', 'hecho']],
-    default => [['Registrado', 'hecho'], ['FAULT', 'mal'], ['Incidente', $conIncidente ? 'hecho' : 'actual'], ['Cerrado', !$conIncidente ? 'pendiente' : ($abiertos === 0 ? 'hecho' : 'actual')]],
+    default => [['Registrado', 'hecho'], ['FAULT', 'mal'], $conIncidente ? ['Incidente', 'hecho'] : ['Registrar incidente', 'actual'],
+        !$conIncidente ? ['Cerrado', 'pendiente'] : ($abiertos === 0 ? ['Cerrado', 'hecho'] : ['Cerrar incidente', 'actual'])],
 };
+// Pendiente con la fecha final pasada: días de atraso.
+$atraso = $caso['estado'] === 0 ? (int) (new DateTime($caso['fecha_fin']))->diff(new DateTime('today'))->format('%r%a') : 0;
+// Con un incidente abierto, el botón principal lleva a él y no a registrar otro.
+$abierto = array_values(array_filter($caso['incidentes'], fn (array $i): bool => $i['estado'] !== 2))[0] ?? null;
 ?>
 <header class="encabezado" data-reciente="<?= Html::e($caso['codigo']) ?>" data-reciente-texto="<?= Html::e($caso['objetivo']) ?>">
   <div>
-    <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?></p>
+    <p class="antetitulo fila"><span class="codigo"><?= Html::e($caso['codigo']) ?></span> <?= Catalogo::insignia('estado_caso', $caso['estado']) ?><?php if ($atraso > 0): ?> <span class="insignia insignia-peligro">Atrasado <?= $atraso ?> d</span><?php endif; ?></p>
     <h1><?= Html::e($caso['modulo']) ?></h1>
   </div>
   <div class="acciones">
@@ -49,7 +55,10 @@ $pasos = match ($caso['estado']) {
         <span class="btn btn-fantasma btn-icono" aria-disabled="true" role="link" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></span>
       <?php endif; ?>
     <?php endforeach; ?>
-    <a class="btn <?= $caso['estado'] === 2 ? 'btn-primario' : 'btn-secundario' ?>" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>" data-atajo="i"><?= Icono::svg('bug') ?> Registrar incidente</a>
+    <?php if ($abierto !== null): ?>
+      <a class="btn btn-primario" href="/formularios/incidentes/ver?id=<?= (int) $abierto['id'] ?>"><?= Icono::svg('bug') ?> Ver <?= Html::e($abierto['codigo']) ?></a>
+    <?php endif; ?>
+    <a class="btn <?= $caso['estado'] === 2 && $abierto === null ? 'btn-primario' : 'btn-secundario' ?>" href="/formularios/incidentes/registrar?caso=<?= (int) $caso['id'] ?>" data-atajo="i"><?= Icono::svg('bug') ?> Registrar incidente</a>
     <?php if ($editable): ?>
       <a class="btn btn-secundario" href="/casos/editar?id=<?= (int) $caso['id'] ?>" data-atajo="e"><?= Icono::svg('pencil') ?> Editar</a>
     <?php endif; ?>
@@ -82,7 +91,7 @@ $pasos = match ($caso['estado']) {
         <dt>Tipo de prueba</dt><dd><?= Html::e(Catalogo::texto('tipo_prueba', $caso['tipo_prueba'])) ?></dd>
         <dt>Plataforma</dt><dd><?= Html::e(Catalogo::texto('plataforma', $caso['plataforma']) . ($caso['entorno'] !== null ? ' · ' . $caso['entorno'] : '')) ?></dd>
         <dt>Técnica</dt><dd><?= $caso['subtecnica'] > 10 ? 'Caja blanca' : 'Caja negra' ?> · <?= Html::e(Catalogo::texto('subtecnica', $caso['subtecnica'])) ?></dd>
-        <dt>Fechas</dt><dd><?= Fecha::legible(new DateTime($caso['fecha_inicio'])) ?> al <?= Fecha::legible(new DateTime($caso['fecha_fin'])) ?></dd>
+        <dt>Fechas</dt><dd><?= Fecha::legible(new DateTime($caso['fecha_inicio'])) ?> al <span<?= $atraso > 0 ? ' class="atrasado"' : '' ?>><?= Fecha::legible(new DateTime($caso['fecha_fin'])) ?></span></dd>
         <?php if ($caso['anotador'] !== null): ?>
           <dt>Resultado anotado por</dt><dd><?= Html::e($caso['anotador']) ?> · <?= $hora($caso['anotado_en']) ?></dd>
         <?php endif; ?>

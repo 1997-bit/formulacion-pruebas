@@ -42,6 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Panel: "Todo al día" solo cuando no queda nada pendiente. Incidentes abiertos sin asignar en Por atender.
+- Reporte de cierre: la cifra que impide el Go sale en rojo.
+- Caso: insignia de atraso, pasos con lo que falta y, con un incidente abierto, el botón principal lleva a él.
+- Pruebas: misma zona horaria que la app.
 - Reporte de cierre: gráficos en 2 columnas sin hueco; el título oculto de la tabla de datos ya no se ve encima.
 - Cifras en 6 columnas exactas: con zoom ya no queda la principal sola.
 - Matriz de cobertura: llena el ancho con la descripción completa; sin subrayado en las celdas.

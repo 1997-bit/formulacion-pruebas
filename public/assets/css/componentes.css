@@ -866,9 +866,9 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 .paso { display: flex; flex-direction: column; gap: 6px; color: var(--tenue-texto); }
 .paso::before { content: ""; height: 4px; border-radius: var(--radio-total); background: var(--secundario); }
 .paso-hecho { color: var(--texto); }
-.paso-hecho::before { background: var(--tenue-texto); }
+.paso-hecho::before { background: var(--exito); }
 .paso-actual { color: var(--texto); font-weight: 600; }
-.paso-actual::before { background: var(--primario); }
+.paso-actual::before { background: linear-gradient(to right, var(--primario) 50%, var(--secundario) 50%); }
 .paso-mal { color: var(--peligro-fuerte); font-weight: 600; }
 .paso-mal::before { background: var(--peligro); }
 
