@@ -32,26 +32,6 @@ final class AccesoControlador
         Respuesta::redirigir('/dashboard');
     }
 
-    public function registro(): void
-    {
-        $this->pintar('acceso/registro', 'Crear cuenta');
-    }
-
-    public function registrar(): void
-    {
-        try {
-            AccesoServicio::registrar(
-                (string) ($_POST['nombre'] ?? ''),
-                (string) ($_POST['usuario'] ?? ''),
-                (string) ($_POST['clave'] ?? ''),
-                (string) $_SERVER['REMOTE_ADDR'],
-            );
-        } catch (ErrorValidacion $e) {
-            Respuesta::errores($e->errores, ['nombre' => $_POST['nombre'] ?? '', 'usuario' => $_POST['usuario'] ?? ''], '/registro');
-        }
-        Respuesta::exito('Cuenta creada. Ya puede iniciar sesión.', '/');
-    }
-
     public function salir(): void
     {
         Log::evento('info', 'session_logout:{id}');

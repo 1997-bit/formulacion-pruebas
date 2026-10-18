@@ -10,7 +10,7 @@ use App\Core\Log;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
 
-// RF-02, RF-03. Único lugar que crea un admin
+// RF-02, RF-03. Único lugar que crea cuentas, solo para admin
 final class UsuarioServicio
 {
     // Mínimo OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo
@@ -119,7 +119,7 @@ final class UsuarioServicio
     }
 
     /**
-     * Reglas comunes con el registro. $id: usuario editado
+     * Reglas de crear y editar. $id: usuario editado
      *
      * @param array<string, string> $datos
      * @return array{nombre: string, usuario: string, rol: int}

@@ -28,4 +28,3 @@ use App\Helpers\Html;
   </div>
   <button class="btn btn-primario btn-bloque" type="submit">Iniciar sesión</button>
 </form>
-<p class="acceso-pie">¿No tiene cuenta? <a href="/registro">Crear cuenta</a></p>

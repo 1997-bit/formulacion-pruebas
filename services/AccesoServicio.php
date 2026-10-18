@@ -9,7 +9,7 @@ use App\Core\Log;
 use App\Models\IntentoModelo;
 use App\Models\UsuarioModelo;
 
-// RF-01, RF-02
+// RF-01. Solo el admin crea cuentas: UsuarioServicio
 final class AccesoServicio
 {
     // No dice si el usuario existe, RNF-02
@@ -63,24 +63,5 @@ final class AccesoServicio
             Log::evento('warning', 'authn_login_lock:{llave}', ['llave' => $llave]);
             throw new ErrorValidacion(['general' => 'Demasiados intentos. Espere un momento.']);
         }
-    }
-
-    // Siempre tester. Admin solo en UsuarioServicio
-    // Cada cuenta es un intento de la IP
-    public static function registrar(string $nombre, string $usuario, string $clave, string $ip): int
-    {
-        $llave = 'ip:' . $ip;
-        self::frenar($llave);
-        $d = UsuarioServicio::validar(['nombre' => $nombre, 'usuario' => $usuario, 'clave' => $clave, 'rol' => '0'], null);
-
-        try {
-            $id = UsuarioModelo::crear($d['nombre'], $d['usuario'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON), 0);
-        } catch (\PDOException $e) {
-            throw ErrorValidacion::siDuplicado($e, UsuarioServicio::USUARIO_REPETIDO);
-        }
-        IntentoModelo::fallar($llave);
-        Log::evento('warning', 'user_created:{id},{nuevo}', ['nuevo' => $d['usuario']]);
-
-        return $id;
     }
 }
