@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Core\Paginacion;
 use App\Core\Vista;
+use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 use App\Services\LogServicio;
@@ -11,17 +12,20 @@ use App\Services\LogServicio;
  * RNF-11. Lista, Seguridad y Rendimiento del día. Con uid: la petición entera
  *
  * @var string $vista  lista, seguridad o rendimiento
- * @var array{dia: string, canal: string, nivel: int, evento: string, uid: string} $filtros
+ * @var array{dia: string, hora: int|null, canal: string, nivel: int, respuesta: int, evento: string, uid: string} $filtros
  * @var list<string> $dias
  * @var list<array<string, mixed>> $lineas  solo en lista
  * @var Paginacion $paginacion  solo en lista
  * @var list<array{error: int, aviso: int, info: int}> $horas  solo en lista
+ * @var array<int, string> $usuarios  solo en lista, id => nombre
  * @var array{eventos: array<string, int>, ips: array<string, int>} $seguridad  solo en seguridad
  * @var array<string, mixed> $rendimiento  solo en rendimiento, LogServicio::rendimiento()
  */
 
 $vistas = ['lista' => ['Lista', 'list-checks'], 'seguridad' => ['Seguridad', 'lock'], 'rendimiento' => ['Rendimiento', 'chart-column']];
 $enlace = fn (string $v): string => '/admin/logs?' . http_build_query(['vista' => $v, 'dia' => $filtros['dia']]);
+// Lista del día con estos filtros
+$lista = fn (array $mas): string => '/admin/logs?' . http_build_query(['dia' => $filtros['dia']] + $mas);
 $insignia = fn (int $nivel): string => match (true) {
     $nivel >= 400 => 'peligro',
     $nivel >= 300 => 'aviso',
@@ -59,6 +63,14 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
       </div>
       <?php if ($vista === 'lista'): ?>
         <div class="campo">
+          <label for="fl-hora">Hora</label>
+          <div class="select"><select class="control" id="fl-hora" name="hora"><option value="">Todas</option>
+            <?php for ($h = 0; $h < 24; $h++): ?>
+              <option value="<?= $h ?>"<?= $h === $filtros['hora'] ? ' selected' : '' ?>><?= Fecha::hora(new DateTimeImmutable("{$h}:00")) ?></option>
+            <?php endfor; ?>
+          </select></div>
+        </div>
+        <div class="campo">
           <label for="fl-canal">Canal</label>
           <div class="select"><select class="control" id="fl-canal" name="canal"><option value="">Todos</option>
             <?php foreach (LogServicio::CANALES as $c): ?>
@@ -71,6 +83,14 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
           <div class="select"><select class="control" id="fl-nivel" name="nivel"><option value="">Todos</option>
             <?php foreach (LogServicio::NIVELES as $n => $texto): ?>
               <option value="<?= $n ?>"<?= $n === $filtros['nivel'] ? ' selected' : '' ?>><?= $texto ?></option>
+            <?php endforeach; ?>
+          </select></div>
+        </div>
+        <div class="campo">
+          <label for="fl-respuesta">Respuesta</label>
+          <div class="select"><select class="control" id="fl-respuesta" name="respuesta"><option value="">Todas</option>
+            <?php foreach ([4 => 'Rechazadas, 4xx', 5 => 'Fallas de la app, 5xx'] as $n => $texto): ?>
+              <option value="<?= $n ?>"<?= $n === $filtros['respuesta'] ? ' selected' : '' ?>><?= $texto ?></option>
             <?php endforeach; ?>
           </select></div>
         </div>
@@ -100,6 +120,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
           'horas' => $horas,
           'series' => ['error' => ['Error o crítico', 'barra-peligro'], 'aviso' => ['Aviso', 'barra-aviso'], 'info' => ['Info', 'barra-secundaria']],
           'unidad' => ['línea', 'líneas'],
+          'enlace' => fn (int $h): string => '/admin/logs?' . http_build_query(['hora' => $h] + array_diff_key($_GET, ['pagina' => 0, 'vista' => 0])),
       ]) ?>
     <?php endif; ?>
     <?php if (!$lineas): ?>
@@ -118,7 +139,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
           <tbody>
             <?php foreach ($lineas as $l): ?>
               <tr>
-                <td><span class="codigo"><?= Html::e(substr((string) $l['datetime'], 11, 8)) ?></span></td>
+                <td><span class="codigo"><?= Fecha::hora(new DateTimeImmutable((string) $l['datetime']), true) ?></span></td>
                 <td><span class="insignia insignia-<?= $insignia((int) $l['level']) ?>"><?= Html::e(LogServicio::NIVELES[$l['level']] ?? (string) $l['level_name']) ?></span></td>
                 <td><?= Html::e((string) $l['channel']) ?></td>
                 <td>
@@ -127,7 +148,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
                     <pre class="log-detalle"><?= Html::e((string) json_encode(['context' => $l['context'], 'extra' => $l['extra']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?></pre>
                   </details>
                 </td>
-                <td><?= Html::e((string) ($l['extra']['user_id'] ?? '—')) ?></td>
+                <td><?= Html::e($usuarios[$l['extra']['user_id'] ?? 0] ?? (string) ($l['extra']['user_id'] ?? '—')) ?></td>
                 <td><span class="codigo"><?= Html::e((string) ($l['extra']['ip'] ?? '—')) ?></span></td>
                 <td><a class="codigo" href="/admin/logs?uid=<?= Html::e((string) ($l['extra']['uid'] ?? '')) ?>"><?= Html::e((string) ($l['extra']['uid'] ?? '')) ?></a></td>
               </tr>
@@ -152,10 +173,10 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
           ['Formulario falso', 'malicious_csrf'],
           ['Logins frenados', 'authn_login_lock'],
       ] as [$etiqueta, $evento]): ?>
-        <div class="tarjeta cifra">
+        <a class="tarjeta cifra cifra-enlace" href="<?= Html::e($lista(['canal' => 'seguridad', 'evento' => $evento])) ?>">
           <p class="cifra-etiqueta"><?= $etiqueta ?></p>
           <p class="cifra-valor"><?= $veces($evento) ?></p>
-        </div>
+        </a>
       <?php endforeach; ?>
     </div>
     <div class="tabla-contenedor">
@@ -166,7 +187,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
           <?php foreach ($e as $evento => $n): ?>
             <tr>
               <td><?= Html::e(LogServicio::EVENTOS[$evento] ?? $evento) ?></td>
-              <td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'seguridad', 'evento' => $evento])) ?>"><?= Html::e($evento) ?></a></td>
+              <td><a class="codigo" href="<?= Html::e($lista(['canal' => 'seguridad', 'evento' => $evento])) ?>"><?= Html::e($evento) ?></a></td>
               <td class="num"><span class="log-barra"><span class="barra-apilada"><span class="barra-secundaria" style="width:<?= round($n / $maxEvento * 100, 1) ?>%"></span></span><?= $n ?></span></td>
             </tr>
           <?php endforeach; ?>
@@ -201,16 +222,17 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
     <?php else: ?>
       <div class="cifras log-cifras">
         <?php foreach ([
-            ['Visitas', (string) $r['peticiones']],
-            ['Tiempo normal', $seg($r['p50'])],
-            ['1 de cada 20 tarda', $seg($r['p95'])],
-            ['Fallas de la app', $coma($r['errores']) . ' %'],
-            ['Rechazadas', $coma($r['rechazos']) . ' %'],
-        ] as [$etiqueta, $valor]): ?>
-          <div class="tarjeta cifra">
-            <p class="cifra-etiqueta"><?= $etiqueta ?></p>
-            <p class="cifra-valor"><?= $valor ?></p>
-          </div>
+            ['Visitas', (string) $r['peticiones'], ['canal' => 'http']],
+            ['Tiempo normal', $seg($r['p50']), null],
+            ['1 de cada 20 tarda', $seg($r['p95']), null],
+            ['Fallas de la app', $coma($r['errores']) . ' %', ['canal' => 'http', 'respuesta' => 5]],
+            ['Rechazadas', $coma($r['rechazos']) . ' %', ['canal' => 'http', 'respuesta' => 4]],
+        ] as [$etiqueta, $valor, $filtro]): ?>
+          <?php if ($filtro === null): ?>
+            <div class="tarjeta cifra"><p class="cifra-etiqueta"><?= $etiqueta ?></p><p class="cifra-valor"><?= $valor ?></p></div>
+          <?php else: ?>
+            <a class="tarjeta cifra cifra-enlace" href="<?= Html::e($lista($filtro)) ?>"><p class="cifra-etiqueta"><?= $etiqueta ?></p><p class="cifra-valor"><?= $valor ?></p></a>
+          <?php endif; ?>
         <?php endforeach; ?>
       </div>
 
@@ -219,6 +241,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
           'horas' => $r['horas'],
           'series' => ['errores' => ['Falla de la app', 'barra-peligro'], 'rechazos' => ['Rechazada', 'barra-aviso'], 'ok' => ['Bien', 'barra-secundaria']],
           'unidad' => ['visita', 'visitas'],
+          'enlace' => fn (int $h): string => $lista(['canal' => 'http', 'hora' => $h]),
       ]) ?>
 
       <div class="tabla-contenedor">
@@ -229,7 +252,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
             <?php foreach ($r['rutas'] as $ruta): ?>
               <?php $t = LogServicio::tono($ruta['p95'], LogServicio::LENTO); ?>
               <tr>
-                <td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'http', 'evento' => $ruta['ruta']])) ?>"><?= Html::e($ruta['ruta']) ?></a></td>
+                <td><a class="codigo" href="<?= Html::e($lista(['canal' => 'http', 'evento' => $ruta['ruta']])) ?>"><?= Html::e($ruta['ruta']) ?></a></td>
                 <td class="num"><?= $ruta['peticiones'] ?></td>
                 <td class="num"><?= $seg($ruta['p50']) ?></td>
                 <td class="num"><span class="log-barra"><span class="barra-apilada"><span class="barra-<?= $t ?>" style="width:<?= round($ruta['p95'] / $maxP95 * 100, 1) ?>%"></span></span><span class="insignia insignia-<?= $t ?>"><?= $seg($ruta['p95']) ?></span></span></td>

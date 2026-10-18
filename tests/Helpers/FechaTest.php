@@ -39,4 +39,15 @@ final class FechaTest extends TestCase
     {
         $this->assertSame($esperado, Fecha::relativa(new \DateTimeImmutable($fecha), new \DateTimeImmutable('2026-10-15 10:00:00')));
     }
+
+    // Ajustes: cookie hora. Sin cookie, 24 horas
+    public function testHoraSegunAjuste(): void
+    {
+        $tarde = new \DateTimeImmutable('2026-10-15 14:05:09');
+
+        $this->assertSame('14:05', Fecha::hora($tarde));
+        $_COOKIE['hora'] = '12';
+        $this->assertSame(['2:05 p. m.', '2:05:09 p. m.', '12:00 a. m.'], [Fecha::hora($tarde), Fecha::hora($tarde, true), Fecha::hora(new \DateTimeImmutable('2026-10-15 00:00'))]);
+        unset($_COOKIE['hora']);
+    }
 }

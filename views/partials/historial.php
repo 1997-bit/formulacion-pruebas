@@ -21,7 +21,7 @@ $ahora = new DateTimeImmutable();
     <?php foreach ($historial as $h): ?>
       <?php $fecha = new DateTime($h['fecha']); ?>
       <li<?= $h['campo'] === 'estado' ? ' class="linea-tiempo-estado"' : '' ?>>
-        <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>" title="<?= Fecha::legible($fecha) . ' ' . $fecha->format('H:i') ?>"><?= Fecha::relativa($fecha, $ahora) ?></time>
+        <time datetime="<?= $fecha->format('Y-m-d\TH:i') ?>" title="<?= Fecha::legible($fecha) . ' ' . Fecha::hora($fecha) ?>"><?= Fecha::relativa($fecha, $ahora) ?></time>
         <div>
           <?php if ($h['campo'] === 'motivo'): ?>
             <p class="linea-tiempo-cabeza"><strong><?= Html::e($h['usuario']) ?></strong> dio el motivo</p>

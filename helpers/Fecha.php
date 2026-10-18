@@ -13,6 +13,16 @@ final class Fecha
         return $fecha->format('d/m/Y');
     }
 
+    // 14:30 o 2:30 p. m. según Ajustes, cookie hora
+    public static function hora(\DateTimeInterface $fecha, bool $segundos = false): string
+    {
+        if (($_COOKIE['hora'] ?? '') !== '12') {
+            return $fecha->format($segundos ? 'H:i:s' : 'H:i');
+        }
+
+        return $fecha->format($segundos ? 'g:i:s' : 'g:i') . ($fecha->format('A') === 'AM' ? ' a. m.' : ' p. m.');
+    }
+
     // "hace 5 min", "hace 2 h", "ayer", "hace 3 d". Desde 7 días: la fecha
     public static function relativa(\DateTimeInterface $fecha, \DateTimeInterface $ahora): string
     {

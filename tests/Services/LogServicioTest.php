@@ -39,6 +39,7 @@ final class LogServicioTest extends TestCase
         $lineas[] = $linea('seguridad', 300, 'authn_login_fail:pan', 'aaaaaaa2', ip: '10.0.0.9');
         $lineas[] = $linea('app', 500, 'sys_crash', 'be45d3e3');
         $lineas[] = $linea('http', 200, 'POST /b 500', 'be45d3e3', ['ruta' => '/b', 'codigo' => 500, 'duracion_ms' => 5]);
+        $lineas[] = $linea('http', 200, 'GET /assets/x.css 404', 'cccccccc', ['ruta' => '/assets/x.css', 'codigo' => 404, 'duracion_ms' => 1]);
         file_put_contents($this->archivo, implode("\n", $lineas) . "\n");
     }
 
@@ -93,7 +94,7 @@ final class LogServicioTest extends TestCase
         $this->assertSame(['eventos' => ['authn_login_fail' => 2], 'ips' => ['10.0.0.9' => 2]], $seguridad);
     }
 
-    // La ruta más lenta primero. Total del día y por hora
+    // La ruta más lenta primero. Total del día y por hora. Sin /assets
     public function testRendimientoDaP50P95YTasa5xx(): void
     {
         $r = LogServicio::rendimiento(self::ADMIN, self::DIA);
@@ -110,7 +111,17 @@ final class LogServicioTest extends TestCase
     {
         [, , $horas] = LogServicio::listar(self::ADMIN, ['dia' => self::DIA], 1);
 
-        $this->assertSame(['error' => 1, 'aviso' => 2, 'info' => 5], $horas[10]);
+        $this->assertSame(['error' => 1, 'aviso' => 2, 'info' => 6], $horas[10]);
+    }
+
+    // Clic en la cifra o la barra: Lista de esa hora y tipo de respuesta
+    public function testFiltraPorHoraYRespuesta(): void
+    {
+        [$lineas] = LogServicio::listar(self::ADMIN, ['dia' => self::DIA, 'hora' => '10', 'respuesta' => '5'], 1);
+        [$otraHora] = LogServicio::listar(self::ADMIN, ['dia' => self::DIA, 'hora' => '11'], 1);
+
+        $this->assertSame(['POST /b 500'], array_column($lineas, 'message'));
+        $this->assertSame([], $otraHora);
     }
 
     public function testTonoSegunUmbral(): void

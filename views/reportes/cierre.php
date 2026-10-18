@@ -25,7 +25,7 @@ $listas = [
   <div>
     <p class="antetitulo"><?= Html::e($p['nombre']) ?></p>
     <h1>Reporte de cierre</h1>
-    <p class="campo-ayuda">Generado el <?= Fecha::legible($ahora) ?> a las <?= $ahora->format('H:i') ?> por <?= Html::e($usuario['nombre']) ?>.</p>
+    <p class="campo-ayuda">Generado el <?= Fecha::legible($ahora) ?> a las <?= Fecha::hora($ahora) ?> por <?= Html::e($usuario['nombre']) ?>.</p>
     <p class="fila">Decisión <?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></p>
   </div>
   <div class="acciones">
