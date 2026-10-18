@@ -25,7 +25,7 @@ final class IncidentesControlador
     public function listar(): void
     {
         $filtros = [];
-        foreach (['estado', 'severidad', 'stopper', 'mios'] as $filtro) {
+        foreach (['estado', 'severidad', 'stopper', 'mios', 'todos', 'q'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
         // Lista por defecto, g i y el menú

@@ -32,6 +32,8 @@
 .tabla .num { text-align: right; }
 .tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: var(--esp-1); }
 .tabla .celda-larga { white-space: normal; min-width: 16rem; }
+/* Stopper abierto: borde rojo a la izquierda, además de la insignia */
+.tabla .fila-stopper > :first-child { box-shadow: inset 3px 0 var(--peligro); }
 /* Columna de números sin dato: raya tenue. El lector oye el texto */
 .sin-dato { color: var(--tenue-texto); }
 

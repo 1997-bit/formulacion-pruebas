@@ -11,7 +11,7 @@ final class IncidenteModelo
 {
     /**
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array<string, ?int> $filtros IncidenteServicio::filtros()
+     * @param array<string, int|string|null> $filtros IncidenteServicio::filtros()
      */
     public static function contar(?array $proyectos, array $filtros = []): int
     {
@@ -23,21 +23,21 @@ final class IncidenteModelo
     }
 
     /**
-     * Abiertos primero, luego lo más grave. Orden del índice: sin filesort
+     * Abiertos primero, luego stopper, lo más grave y lo más nuevo
      *
      * Sin $offset: todos hasta $limite, tablero
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
-     * @param array<string, ?int> $filtros IncidenteServicio::filtros()
+     * @param array<string, int|string|null> $filtros IncidenteServicio::filtros()
      * @return list<array<string, mixed>>
      */
     public static function listar(?array $proyectos, ?int $offset, array $filtros = [], int $limite = Paginacion::POR_PAGINA): array
     {
         [$permiso, $valores] = self::donde($proyectos, $filtros);
-        $orden = ' ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero';
+        $orden = ' ORDER BY i.estado = 2, i.es_stopper DESC, i.severidad DESC, i.creado_en DESC, i.id DESC';
         // Subconsulta solo del índice, #107
         $sql = Conexion::pdo()->prepare(
-            'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper, i.asignado_id,
+            'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper, i.asignado_id, i.creado_en,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
              FROM (SELECT i.id FROM incidentes i WHERE ' . $permiso . $orden
                 . ' LIMIT ' . $limite . ' OFFSET ' . ($offset ?? 0) . ') k
@@ -149,15 +149,24 @@ final class IncidenteModelo
     }
 
     /**
-     * Permiso y filtros: estado, severidad, stopper = 1, asignado = id
+     * Permiso y filtros: abiertos, q, estado, severidad, stopper = 1, asignado = id
      *
      * @param list<int>|null $proyectos
-     * @param array<string, ?int> $filtros
-     * @return array{0: string, 1: list<int>}
+     * @param array<string, int|string|null> $filtros
+     * @return array{0: string, 1: list<int|string>}
      */
     private static function donde(?array $proyectos, array $filtros): array
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('i.proyecto_id', $proyectos);
+        if (($filtros['abiertos'] ?? null) !== null) {
+            $permiso .= ' AND i.estado <> 2';
+        }
+        if (($filtros['q'] ?? null) !== null) {
+            // Código o parte del título. % y _ como texto
+            $permiso .= ' AND (i.codigo LIKE ? OR i.titulo LIKE ?)';
+            $patron = '%' . addcslashes((string) $filtros['q'], '%_\\') . '%';
+            array_push($valores, $patron, $patron);
+        }
         foreach (['estado' => 'i.estado', 'severidad' => 'i.severidad', 'stopper' => 'i.es_stopper', 'asignado' => 'i.asignado_id'] as $filtro => $columna) {
             if (($filtros[$filtro] ?? null) !== null) {
                 $permiso .= " AND {$columna} = ?";
