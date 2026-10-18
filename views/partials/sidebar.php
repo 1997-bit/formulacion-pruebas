@@ -102,6 +102,10 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
   </nav>
 
   <div class="sidebar-pie">
+    <a class="sidebar-boton" href="/ayuda" data-etiqueta="Ayuda"<?= $rutaActual === '/ayuda' ? ' aria-current="page"' : '' ?> data-atajo="g a" data-atajo-texto="Ir a ayuda">
+      <?= Icono::svg('file-question-mark') ?>
+      <span class="sidebar-texto">Ayuda</span>
+    </a>
     <div class="usuario-menu">
       <button class="sidebar-boton sidebar-usuario" type="button" popovertarget="menu-usuario" data-etiqueta="<?= Html::e($usuario['nombre']) ?>">
         <span class="avatar-cuadrado" aria-hidden="true"><?= Html::e(Html::iniciales($usuario['nombre'])) ?></span>

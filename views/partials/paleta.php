@@ -30,6 +30,7 @@ foreach (require RAIZ . '/config/menu.php' as $grupo) {
         }
     }
 }
+$opciones[] = ['Ir a', 'Ayuda', '/ayuda'];
 $opciones[] = ['Ir a', 'Ajustes › Apariencia', '/ajustes'];
 $opciones[] = ['Ir a', 'Ajustes › Accesibilidad', '/ajustes/accesibilidad'];
 $opciones[] = ['Ir a', 'Casos › Tablero', '/casos/listar?vista=tablero'];

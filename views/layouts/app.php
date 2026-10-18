@@ -21,6 +21,8 @@ $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
 // Para el selector de proyecto y la paleta
 $proyectos = RequerimientoServicio::proyectos($usuario);
 $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
+// Artículo de esta pantalla, config/ayuda.php
+$ayuda = (require RAIZ . '/config/ayuda.php')['pantallas'][$rutaActual] ?? null;
 // Encabezado y pie al imprimir. Sin documento: título y proyecto activo
 $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $activo['nombre'] ?? 'Todos los proyectos', 'marca' => ''], $usuario['nombre'], new DateTimeImmutable());
 ?>
@@ -79,7 +81,11 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
         <?php endforeach; ?>
       </ol>
     </nav>
-    <button class="btn btn-fantasma btn-icono barra-fin" id="tema" type="button" aria-pressed="false" aria-label="Modo oscuro"
+    <?php if ($ayuda !== null): ?>
+      <a class="btn btn-fantasma btn-icono barra-fin" href="/ayuda?a=<?= Html::e($ayuda) ?>" aria-label="Ayuda de esta pantalla"
+         data-tooltip="Ayuda" data-tooltip-lado="abajo" data-tooltip-alinear="fin"><?= Icono::svg('file-question-mark') ?></a>
+    <?php endif; ?>
+    <button class="btn btn-fantasma btn-icono<?= $ayuda === null ? ' barra-fin' : '' ?>" id="tema" type="button" aria-pressed="false" aria-label="Modo oscuro"
             data-tooltip="Cambiar a oscuro" data-tooltip-lado="abajo" data-tooltip-alinear="fin">
       <?= Icono::svg('moon', 'icono tema-luna') ?><?= Icono::svg('sun', 'icono tema-sol') ?>
     </button>

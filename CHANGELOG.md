@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Ayuda: 10 artículos en `/ayuda` con tareas, referencia y glosario. Botón Ayuda en la barra de cada pantalla, enlace en el menú y atajo `g a`. Reglas de escritura en `docs/ayuda.md`.
 - Logs, Rendimiento: cifras del día en palabras simples, como Visitas, Tiempo normal y "1 de cada 20 tarda", más un gráfico de visitas por hora. La tabla de páginas va de la más lenta a la más rápida, con una barra de color.
 - Logs, Seguridad: cifras de logins, contraseñas incorrectas, accesos sin permiso, formularios falsos y logins frenados. Cada evento lleva su texto en español y una barra.
 - Logs, Lista: gráfico de líneas por hora y nivel, y filtros por hora y por respuesta 4xx o 5xx.
