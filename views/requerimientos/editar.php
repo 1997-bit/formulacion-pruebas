@@ -35,17 +35,11 @@ $codigo = (string) $requerimiento['codigo'];
   </div>
   <?php if ($usuario['rol'] === 1): ?>
     <div class="acciones">
-      <button class="btn btn-secundario btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar" aria-label="Eliminar requerimiento" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-      <dialog closedby="any" class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
-        <h2 id="dlg-eliminar-titulo">¿Eliminar el requerimiento <?= Html::e($codigo) ?>?</h2>
-        <p>Si tiene casos o formularios de técnicas no se elimina. Esta acción no se puede deshacer.</p>
-        <form method="post" action="/requerimientos/eliminar" class="acciones">
-          <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-          <input type="hidden" name="id" value="<?= (int) $requerimiento['id'] ?>">
-          <button class="btn btn-secundario" type="submit" formmethod="dialog" autofocus>Cancelar</button>
-          <button class="btn btn-peligro" type="submit">Eliminar</button>
-        </form>
-      </dialog>
+      <?= Vista::capturar('partials/eliminar', [
+          'dialogo' => 'dlg-eliminar', 'etiqueta' => 'Eliminar requerimiento', 'accion' => '/requerimientos/eliminar', 'id' => (int) $requerimiento['id'],
+          'titulo' => '¿Eliminar el requerimiento ' . $codigo . '?', 'confirmar' => $codigo,
+          'texto' => 'Si tiene casos o formularios de técnicas no se elimina. Esta acción no se puede deshacer.',
+      ]) ?>
     </div>
   <?php endif; ?>
 </header>
