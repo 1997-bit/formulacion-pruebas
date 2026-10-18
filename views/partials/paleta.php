@@ -58,5 +58,5 @@ $opciones[] = ['Acciones', 'Cerrar sesión', 'accion:salir'];
     <?php endforeach; ?>
   </ul>
   <p class="paleta-vacio" hidden>Sin resultados.</p>
-  <p class="solo-lector" role="status" id="paleta-estado"></p>
+  <output class="solo-lector" id="paleta-estado"></output>
 </dialog>

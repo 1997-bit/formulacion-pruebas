@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Índices nuevos en la BD: casos atrasados y pendientes del usuario responden en menos de 0,1 ms, y horas de cierre pasa de 54 a 34 ms con datos de carga. Una BD que ya existe necesita recrearse o un `ALTER TABLE` a mano.
+- HTML nativo en lugar de ARIA y JS: `<search>` en los filtros, `<output>` en los avisos de estado, `<button>` y `<a>` en los botones deshabilitados. El aviso flotante cierra con ✕ sin JS. Al imprimir, los `<details>` cerrados salen abiertos solo con CSS. La app se ve igual.
 
 ### Fixed
 

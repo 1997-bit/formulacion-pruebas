@@ -103,13 +103,12 @@ document.addEventListener('click', (e) => {
   if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
 });
 
-// Aviso flotante: cierra a los 5 s o con ✕. Espera con mouse o foco encima
+// Aviso flotante: cierra a los 5 s. ✕ cierra sin JS, command="close". Espera con mouse o foco encima
 const aviso = document.querySelector('.aviso-flotante');
 if (aviso) {
-  const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
+  const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.close());
   // Con acción no cierra solo, WCAG 2.2.1
   if (!aviso.querySelector('[data-aviso-accion]')) setTimeout(cerrar, 5000);
-  aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
 }
 
 // Resumen de errores, GOV.UK: un enlace por campo, foco al resumen. Sin JS: título y error por campo
@@ -295,16 +294,6 @@ if (panelRecientes && recientes.length) {
 
 document.querySelectorAll('[data-imprimir]').forEach((boton) => {
   boton.addEventListener('click', () => window.print());
-});
-
-// Al imprimir abre los <details> y luego los cierra. push: beforeprint puede llegar 2 veces
-const plegados = [];
-addEventListener('beforeprint', () => {
-  plegados.push(...document.querySelectorAll('.app-principal details:not([open])'));
-  plegados.forEach((d) => { d.open = true; });
-});
-addEventListener('afterprint', () => {
-  plegados.splice(0).forEach((d) => { d.open = false; });
 });
 
 // data-desde="id-inicio": final no anterior al inicio

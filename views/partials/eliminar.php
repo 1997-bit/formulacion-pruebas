@@ -26,7 +26,7 @@ $bloqueo ??= '';
 $patron = preg_replace('/[\\\\^$.*+?()[\]{}|\/]/', '\\\\$0', $confirmar);
 ?>
 <?php if ($bloqueo !== ''): ?>
-  <span class="btn <?= Html::e($clase) ?> btn-icono" aria-disabled="true" role="button" tabindex="0" aria-label="<?= Html::e($etiqueta . ': ' . $bloqueo) ?>" data-tooltip="<?= Html::e($bloqueo) ?>" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></span>
+  <button class="btn <?= Html::e($clase) ?> btn-icono" type="button" aria-disabled="true" aria-label="<?= Html::e($etiqueta . ': ' . $bloqueo) ?>" data-tooltip="<?= Html::e($bloqueo) ?>" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
 <?php else: ?>
   <button class="btn <?= Html::e($clase) ?> btn-icono" type="button" command="show-modal" commandfor="<?= Html::e($dialogo) ?>" aria-label="<?= Html::e($etiqueta) ?>" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
   <dialog closedby="any" class="dialogo" id="<?= Html::e($dialogo) ?>" aria-labelledby="<?= Html::e($dialogo) ?>-titulo">
