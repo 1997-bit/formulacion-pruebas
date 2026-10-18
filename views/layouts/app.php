@@ -33,7 +33,7 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#18181B" media="(prefers-color-scheme: dark)">
 <?php // PDF: el navegador usa el <title> como nombre del archivo ?>
-<title><?= empty($errores) ? '' : 'Error: ' ?><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Casos de Prueba</title>
+<title><?= empty($errores) ? '' : 'Error: ' ?><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Safeguard</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>

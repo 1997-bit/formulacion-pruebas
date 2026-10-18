@@ -21,7 +21,7 @@ use App\Helpers\Icono;
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= Html::e($titulo) ?> · Casos de Prueba</title>
+<title><?= Html::e($titulo) ?> · Safeguard</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <?php foreach (Vista::estilos(false) as $css): ?>
 <link rel="stylesheet" href="<?= Vista::estatico('/assets/css/' . $css . '.css') ?>">

@@ -1,4 +1,4 @@
-# formulacion-pruebas
+# Safeguard
 
 App web para registrar casos de prueba, darles seguimiento y generar los 10 formularios de testing. Roles admin y tester.
 

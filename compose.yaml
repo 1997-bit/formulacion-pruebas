@@ -1,5 +1,5 @@
 # DB_NAME, DB_USER y DB_PASS de .env
-name: formulacion-pruebas
+name: safeguard
 
 services:
   app:
