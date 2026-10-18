@@ -1,6 +1,6 @@
 # IR
 
-**Proyecto:** Sistema de Casos de Prueba
+**Proyecto:** Safeguard
 
 **Versión:** 1.0
 

@@ -1,5 +1,5 @@
 -- Datos para medir rendimiento, #90. Después de schema.sql y seed.sql
--- mysql casos_prueba < database/carga.sql
+-- mysql safeguard < database/carga.sql
 -- Proyecto "Carga": 2 000 requerimientos, 20 000 casos, 20 000 incidentes y 12 000 evidencias
 -- Sin azar. MySQL 8 y MariaDB 10.6. Sin tablas seq_ ni CTE recursivas
 
