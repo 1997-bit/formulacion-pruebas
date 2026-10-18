@@ -30,16 +30,17 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'error' => $errores[$nombre] ?? '',
     'requerido' => true,
 ]);
-// Radios de catálogo. Error en el fieldset, RNF-07
+// Radios de catálogo en segmentado con el color de la variante. Error en el fieldset, RNF-07
 $radios = function (string $nombre, string $legenda) use ($datos, $errores): string {
     $error = $errores[$nombre] ?? '';
     $html = '<fieldset class="grupo"' . ($error !== '' ? ' aria-describedby="f-' . $nombre . '-error"' : '') . '>'
-        . '<legend>' . $legenda . ' <span class="requerido" aria-hidden="true">*</span></legend><div class="grupo grupo-fila">';
+        . '<legend>' . $legenda . ' <span class="requerido" aria-hidden="true">*</span></legend><div class="segmentado">';
     foreach (Catalogo::valores($nombre) as $clave => $valor) {
-        $html .= '<label class="opcion"><input type="radio" name="' . $nombre . '" value="' . $clave . '"'
+        $html .= '<label><input type="radio" name="' . $nombre . '" value="' . $clave . '"'
             . ($clave === array_key_first(Catalogo::valores($nombre)) ? ' required' : '')
             . ($error !== '' ? ' aria-invalid="true"' : '')
-            . ((string) $clave === ($datos[$nombre] ?? '') ? ' checked' : '') . '> ' . Html::e($valor['texto']) . '</label>';
+            . ((string) $clave === ($datos[$nombre] ?? '') ? ' checked' : '') . '>'
+            . '<span class="punto insignia-' . Html::e($valor['variante']) . '" aria-hidden="true"></span>' . Html::e($valor['texto']) . '</label>';
     }
     $html .= '</div>';
     if ($error !== '') {

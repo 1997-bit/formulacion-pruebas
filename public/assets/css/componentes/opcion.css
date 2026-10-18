@@ -33,12 +33,30 @@
 }
 .opcion-tarjeta:has(input:checked) { background: var(--info-suave); border-color: var(--primario); }
 .opcion-tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--esp-3); }
+/* Segmentado: radios como pestañas. Marcado: pastilla blanca sobre gris */
+.segmentado { display: inline-flex; flex-wrap: wrap; align-self: flex-start; max-width: 100%; gap: 2px; padding: var(--esp-1); background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
+.segmentado label {
+  position: relative; display: inline-flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-sm); padding: var(--esp-1) var(--esp-3);
+  color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; white-space: nowrap; border-radius: var(--radio-md); cursor: pointer;
+}
+.segmentado input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+@media (hover: hover) {
+  .segmentado label:hover { color: var(--texto); }
+}
+.segmentado label:has(input:checked) { color: var(--texto); background: var(--fondo); box-shadow: var(--sombra-xs); }
+.segmentado label:has(input:focus-visible) { outline: 2px solid var(--anillo); outline-offset: 2px; }
+.segmentado:has(input[aria-invalid="true"]) { border-color: var(--error); }
+.segmentado .icono { width: 16px; height: 16px; }
+/* Punto con el color de la variante del catálogo */
+.segmentado .punto { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--fuerte, var(--tenue-texto)); }
 
 @media (pointer: coarse) {
   .opcion { min-height: var(--alto-lg); }
+  .segmentado label { min-height: var(--alto-lg); }
 }
 
 @media (forced-colors: active) {
-  .opcion-tarjeta:has(input:checked) { outline: 2px solid Highlight; }
+  .opcion-tarjeta:has(input:checked),
+  .segmentado label:has(input:checked) { outline: 2px solid Highlight; }
 }
 }

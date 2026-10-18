@@ -61,7 +61,7 @@ $errorEstrategia = $errores['estrategia'] ?? '';
       <legend>Estrategia <span class="requerido" aria-hidden="true">*</span></legend>
       <div class="opcion-tarjetas">
         <?php foreach (Catalogo::valores('estrategia') as $clave => $e): ?>
-          <label class="opcion opcion-tarjeta"><input type="radio" name="estrategia" value="<?= $clave ?>"<?= $clave === array_key_first(Catalogo::valores('estrategia')) ? ' required' : '' ?><?= $errorEstrategia !== '' ? ' aria-invalid="true"' : '' ?><?= (string) $clave === ($datos['estrategia'] ?? '') ? ' checked' : '' ?>><span><?= Html::e($e['texto']) ?><small><?= Html::e($e['ayuda']) ?></small></span></label>
+          <label class="opcion opcion-tarjeta"><span><?= Html::e($e['texto']) ?><small><?= Html::e($e['ayuda']) ?></small></span><input type="radio" name="estrategia" value="<?= $clave ?>"<?= $clave === array_key_first(Catalogo::valores('estrategia')) ? ' required' : '' ?><?= $errorEstrategia !== '' ? ' aria-invalid="true"' : '' ?><?= (string) $clave === ($datos['estrategia'] ?? '') ? ' checked' : '' ?>></label>
         <?php endforeach; ?>
       </div>
       <?php if ($errorEstrategia !== ''): ?>

@@ -11,16 +11,12 @@ use App\Helpers\Icono;
  */
 
 $pestanas = ['apariencia' => ['Apariencia', '/ajustes'], 'accesibilidad' => ['Accesibilidad', '/ajustes/accesibilidad']];
-// Radios: nombre => [título, valores]. Switches: nombre => [título, texto, ayuda, por defecto]
+// Radios: nombre => [título, valores]. Tema: valor => texto, en segmentado. Switches: nombre => [título, texto, ayuda, por defecto]
 // Switch: role="switch", marcado = 'si'
 // Switch por defecto: sin animación al cargar
 $grupos = [
     'apariencia' => [
-        'tema' => ['Tema', [
-            'sistema' => ['Sistema', 'Igual que el sistema operativo.'],
-            'light' => ['Claro', ''],
-            'dark' => ['Oscuro', ''],
-        ]],
+        'tema' => ['Tema', ['sistema' => 'Sistema', 'light' => 'Claro', 'dark' => 'Oscuro']],
         'sidebar' => ['Menú lateral', [
             'expandido' => ['Expandido', 'Íconos y nombres.'],
             'colapsado' => ['Colapsado', 'Solo íconos. También con Ctrl/⌘+B.'],
@@ -68,13 +64,20 @@ foreach ($interruptores[$pestana] ?? [] as $nombre => [$titulo, $texto, $ayuda, 
   <?php foreach ($grupos[$pestana] as $nombre => [$titulo, $valores]): ?>
     <fieldset class="tarjeta grupo ajuste">
       <legend><?= $titulo ?></legend>
-      <?php foreach ($valores as $valor => [$texto, $ayuda]): ?>
-        <label class="opcion opcion-tarjeta">
-          <?php if ($nombre === 'tema'): ?><span class="opcion-icono"><?= Icono::svg($iconos[$valor]) ?></span><?php endif; ?>
-          <span><?= $texto ?><?php if ($ayuda !== ''): ?><small><?= $ayuda ?></small><?php endif; ?></span>
-          <input type="radio" name="<?= $nombre ?>" value="<?= $valor ?>" data-ajuste>
-        </label>
-      <?php endforeach; ?>
+      <?php if ($nombre === 'tema'): ?>
+        <div class="segmentado">
+          <?php foreach ($valores as $valor => $texto): ?>
+            <label><input type="radio" name="tema" value="<?= $valor ?>" data-ajuste><?= Icono::svg($iconos[$valor]) ?><?= $texto ?></label>
+          <?php endforeach; ?>
+        </div>
+      <?php else: ?>
+        <?php foreach ($valores as $valor => [$texto, $ayuda]): ?>
+          <label class="opcion opcion-tarjeta">
+            <span><?= $texto ?><?php if ($ayuda !== ''): ?><small><?= $ayuda ?></small><?php endif; ?></span>
+            <input type="radio" name="<?= $nombre ?>" value="<?= $valor ?>" data-ajuste>
+          </label>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </fieldset>
   <?php endforeach; ?>
   <?php foreach ($porTitulo as $titulo => $lista): ?>
