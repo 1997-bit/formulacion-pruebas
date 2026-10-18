@@ -16,6 +16,8 @@ use App\Helpers\Icono;
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . Fecha::hora((new DateTime($fecha)));
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
+// Etiqueta del ícono: extensión del archivo o URL
+$extension = fn (array $e): string => $e['tipo'] === 4 ? 'URL' : strtoupper(pathinfo((string) $e['nombre_original'], PATHINFO_EXTENSION));
 $proyectos = [];
 foreach ($evidencias as $e) {
     $proyectos[$e['proyecto']][] = $e;
@@ -42,7 +44,7 @@ foreach ($evidencias as $e) {
         <ul class="archivos">
           <?php foreach ($lista as $e): ?>
             <li class="archivo">
-              <span class="archivo-icono"><?= Icono::svg($iconos[$e['tipo']] ?? 'file-text') ?></span>
+              <span class="archivo-icono archivo-tipo-<?= (int) $e['tipo'] ?>"><?= Icono::svg($iconos[$e['tipo']] ?? 'file-text') ?><span class="archivo-extension"><?= Html::e($extension($e)) ?></span></span>
               <p class="archivo-nombre"><?= Html::e($e['descripcion']) ?></p>
               <p class="archivo-detalle">
                 <a class="codigo" href="/casos/resultado?id=<?= (int) $e['caso_id'] ?>"><?= Html::e($e['caso']) ?></a>

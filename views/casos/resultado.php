@@ -25,6 +25,8 @@ use App\Helpers\Icono;
 
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . Fecha::hora((new DateTime($fecha)));
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
+// Etiqueta del ícono: extensión del archivo o URL
+$extension = fn (array $e): string => $e['tipo'] === 4 ? 'URL' : strtoupper(pathinfo((string) $e['nombre_original'], PATHINFO_EXTENSION));
 $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—' : Html::e($valor);
 // Pasos: Registrado, resultado y cierre. FAULT: incidente antes del cierre
 $conIncidente = $caso['incidentes'] !== [];
@@ -131,7 +133,7 @@ $abierto = array_values(array_filter($caso['incidentes'], fn (array $i): bool =>
             <ul class="archivos">
               <?php foreach ($caso['evidencias'] as $e): ?>
                 <li class="archivo">
-                  <span class="archivo-icono"><?= Icono::svg($iconos[$e['tipo']] ?? 'file-text') ?></span>
+                  <span class="archivo-icono archivo-tipo-<?= (int) $e['tipo'] ?>"><?= Icono::svg($iconos[$e['tipo']] ?? 'file-text') ?><span class="archivo-extension"><?= Html::e($extension($e)) ?></span></span>
                   <p class="archivo-nombre"><?= Html::e($e['descripcion']) ?></p>
                   <p class="archivo-detalle">
                     <span class="codigo"><?= Html::e($e['nombre_original'] ?? $e['enlace']) ?></span>
