@@ -7,12 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-10-17
+
+### Added
+
+- Eliminar caso, requerimiento, proyecto o usuario: un diálogo pide escribir el código o el nombre para confirmar. Pegar está permitido.
+- Caso con evidencias o incidentes: el botón Eliminar queda deshabilitado y el tooltip dice por qué.
+- Imagen Docker con etiquetas OCI: título, descripción y repo.
+
 ### Changed
 
 - Oscuro zinc: gris con un tinte frío leve.
 - Desde tablet: contenido en un panel con curvas sobre el fondo del menú lateral. Móvil: el menú lateral flota con curvas.
 - Radios propios. Ajustes con opciones en fila e íconos en Tema.
 - Curvas iguales en tarjetas, alertas y menús flotantes. Insignias en píldora.
+- Docker: nombre de proyecto fijo en compose y `up --wait` en el README, que termina cuando la app responde.
+
+### Fixed
+
+- Apache en Docker ya no muestra el aviso AH00558 al arrancar.
 
 ### Security
 
@@ -246,7 +259,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Estructura del proyecto.
 - Tablas base.
 
-[Unreleased]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.4.0...v1.5.0
