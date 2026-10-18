@@ -7,13 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Logs, Rendimiento: cifras del día en palabras simples, como Visitas, Tiempo normal y "1 de cada 20 tarda", más un gráfico de visitas por hora. La tabla de páginas va de la más lenta a la más rápida, con una barra de color.
+- Logs, Seguridad: cifras de logins, contraseñas incorrectas, accesos sin permiso, formularios falsos y logins frenados. Cada evento lleva su texto en español y una barra.
+- Logs, Lista: gráfico de líneas por hora y nivel, y filtros por hora y por respuesta 4xx o 5xx.
+- Logs: clic en una cifra o en una barra abre la Lista con ese filtro.
+- Ajustes, Apariencia: formato de hora de 24 o 12 horas. Se aplica en toda la app.
+
 ### Changed
 
 - Índices nuevos en la BD: casos atrasados y pendientes del usuario responden en menos de 0,1 ms, y horas de cierre pasa de 54 a 34 ms con datos de carga. Una BD que ya existe necesita recrearse o un `ALTER TABLE` a mano.
+- Logs: niveles en español, el nombre del usuario en lugar del id y Rendimiento sin `/assets`.
 - HTML nativo en lugar de ARIA y JS: `<search>` en los filtros, `<output>` en los avisos de estado, `<button>` y `<a>` en los botones deshabilitados. El aviso flotante cierra con ✕ sin JS. Al imprimir, los `<details>` cerrados salen abiertos solo con CSS. La app se ve igual.
 
 ### Fixed
 
+- Logs: la búsqueda por código de error ya no pasa el límite de memoria con logs grandes. Se leen línea por línea.
 - `carga.sql` corre de nuevo: llena `commit_afectado`, obligatorio desde 1.7.0.
 
 ### Removed

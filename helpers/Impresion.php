@@ -45,6 +45,6 @@ final class Impresion
         return '--doc-titulo:' . $cadena($documento['titulo'])
             . ';--doc-proyecto:' . $cadena($documento['proyecto'])
             . ';--doc-marca:' . $cadena($documento['marca'])
-            . ';--doc-pie:' . $cadena('Impreso el ' . Fecha::legible($ahora) . ' ' . $ahora->format('H:i') . ' por ' . $usuario);
+            . ';--doc-pie:' . $cadena('Impreso el ' . Fecha::legible($ahora) . ' ' . Fecha::hora($ahora) . ' por ' . $usuario);
     }
 }

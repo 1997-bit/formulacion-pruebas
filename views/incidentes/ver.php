@@ -69,7 +69,7 @@ foreach ($asignables as $a) {
         <?php if ($incidente['commit_corregido'] !== null): ?>
           <dt>Commit corregido</dt><dd><span class="codigo" title="<?= Html::e($incidente['commit_corregido']) ?>"><?= Html::e(substr($incidente['commit_corregido'], 0, 7)) ?></span></dd>
         <?php endif; ?>
-        <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= $creado->format('H:i') ?></dd>
+        <dt>Registrado por</dt><dd><?= Html::e($incidente['autor']) ?> · <?= Fecha::legible($creado) ?> <?= Fecha::hora($creado) ?></dd>
       </dl>
     </aside>
     <div class="pila">

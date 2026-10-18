@@ -29,6 +29,10 @@ $grupos = [
             'comoda' => ['Cómoda', ''],
             'compacta' => ['Compacta', 'Filas más bajas en tablas y listas. Más datos en pantalla.'],
         ]],
+        'hora' => ['Formato de hora', [
+            '24' => ['24 horas', '14:30'],
+            '12' => ['12 horas', '2:30 p. m.'],
+        ]],
     ],
     'accesibilidad' => [],
 ];

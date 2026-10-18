@@ -1,3 +1,12 @@
 @layer componentes {
 .log-detalle { margin: var(--esp-2) 0 0; padding: var(--esp-3); overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); white-space: pre-wrap; word-break: break-all; background: var(--tenue); border-radius: var(--radio-md); }
+/* Texto simple del evento junto al código */
+.log-texto { color: var(--tenue-texto); font-size: var(--letra-sm); }
+/* Barra proporcional y valor en la celda */
+.log-barra { display: inline-flex; font-variant-numeric: tabular-nums; align-items: center; justify-content: flex-end; gap: var(--esp-2); }
+.log-barra .barra-apilada { width: 6rem; height: 6px; }
+.log-barra .barra-secundaria { background: var(--tenue-texto); }
+/* 5 cifras iguales en una fila, valor abajo. Angosto: cifras.css */
+.log-cifras .cifra { justify-content: space-between; }
+@container principal (width >= 60rem) { .log-cifras { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 }

@@ -65,7 +65,7 @@ $editar = '/formularios/valor_limite/editar?requerimiento=' . (int) $requerimien
     </div>
     <?php if ($guardado !== null): ?>
       <?php $fecha = new DateTime($guardado['guardado_en']); ?>
-      <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
+      <p class="campo-ayuda">Guardado por <?= Html::e($guardado['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= Fecha::hora($fecha) ?>.</p>
     <?php endif; ?>
   <?php endif; ?>
 </div>

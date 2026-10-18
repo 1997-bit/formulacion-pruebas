@@ -338,8 +338,13 @@ const leer = (clave) => { try { return localStorage.getItem(clave); } catch { re
 const guardar = (clave, valor) => {
   try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch { /* sin localStorage */ }
 };
-// Por defecto no se guarda. AJUSTES en tema.js. Menú lateral en su cookie
-const valorAjuste = (nombre) => (nombre === 'sidebar' ? raiz.dataset.sidebar : leer(nombre) || AJUSTES[nombre]);
+// Por defecto no se guarda. AJUSTES en tema.js. Menú lateral y hora en cookie: PHP los pinta
+const cookie = (nombre) => document.cookie.match(new RegExp(`(?:^|; )${nombre}=([^;]*)`))?.[1];
+const valorAjuste = (nombre) => {
+  if (nombre === 'sidebar') return raiz.dataset.sidebar;
+  if (nombre === 'hora') return cookie('hora') || '24';
+  return leer(nombre) || AJUSTES[nombre];
+};
 const aplicarAjustes = () => {
   aplicarPreferencias();
   pintarTema();
@@ -357,7 +362,8 @@ document.addEventListener('change', (e) => {
   if (!e.target.matches('input[data-ajuste]')) return;
   const { name, type, checked } = e.target;
   const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
-  if (name !== 'sidebar') guardar(name, value === AJUSTES[name] ? null : value);
+  if (name === 'hora') document.cookie = `hora=${value}; path=/; max-age=31536000; SameSite=Lax`;
+  else if (name !== 'sidebar') guardar(name, value === AJUSTES[name] ? null : value);
   aplicarAjustes();
   document.getElementById('ajuste-estado').textContent = 'Guardado.';
 });
