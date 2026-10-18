@@ -68,6 +68,33 @@ final class CasoModelo
     }
 
     /**
+     * FAULT para registrar incidente. Sin incidente abierto primero, luego lo más reciente
+     * $texto: parte del código o del objetivo
+     *
+     * @param list<int>|null $proyectos Permisos::proyectos()
+     * @return list<array<string, mixed>>
+     */
+    public static function fallidos(?array $proyectos, string $texto, int $limite): array
+    {
+        [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
+        if ($texto !== '') {
+            $permiso .= ' AND (c.codigo LIKE ? OR c.objetivo LIKE ?)';
+            $patron = '%' . addcslashes($texto, '%_\\') . '%';
+            array_push($valores, $patron, $patron);
+        }
+        $sql = Conexion::pdo()->prepare(
+            'SELECT c.id, c.codigo, c.objetivo, c.anotado_en, p.nombre AS proyecto,
+                    (SELECT COUNT(*) FROM incidentes i WHERE i.caso_id = c.id AND i.estado <> 2) AS abiertos
+             FROM casos_prueba c JOIN proyectos p ON p.id = c.proyecto_id
+             WHERE ' . $permiso . ' AND c.estado = 2
+             ORDER BY abiertos > 0, c.anotado_en DESC, c.id DESC LIMIT ' . $limite
+        );
+        $sql->execute($valores);
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Tablero y cronograma. Sin paginar, hasta $limite. $rango: solo los que tocan esas fechas
      *
      * @param list<int>|null $proyectos Permisos::proyectos()

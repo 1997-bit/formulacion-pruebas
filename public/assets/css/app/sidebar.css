@@ -80,9 +80,6 @@ button.sidebar-boton {
   font-size: var(--letra-sm);
   text-align: left;
 }
-.sidebar-boton::-webkit-details-marker {
-  display: none;
-}
 @media (hover: hover) {
   .sidebar-boton:hover,
   .sidebar-subboton:hover {

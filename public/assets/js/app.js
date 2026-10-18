@@ -103,13 +103,12 @@ document.addEventListener('click', (e) => {
   if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
 });
 
-// Aviso flotante: cierra a los 5 s o con ✕. Espera con mouse o foco encima
+// Aviso flotante: cierra a los 5 s. ✕ cierra sin JS, command="close". Espera con mouse o foco encima
 const aviso = document.querySelector('.aviso-flotante');
 if (aviso) {
-  const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
+  const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.close());
   // Con acción no cierra solo, WCAG 2.2.1
   if (!aviso.querySelector('[data-aviso-accion]')) setTimeout(cerrar, 5000);
-  aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
 }
 
 // Resumen de errores, GOV.UK: un enlace por campo, foco al resumen. Sin JS: título y error por campo
@@ -297,16 +296,6 @@ document.querySelectorAll('[data-imprimir]').forEach((boton) => {
   boton.addEventListener('click', () => window.print());
 });
 
-// Al imprimir abre los <details> y luego los cierra. push: beforeprint puede llegar 2 veces
-const plegados = [];
-addEventListener('beforeprint', () => {
-  plegados.push(...document.querySelectorAll('.app-principal details:not([open])'));
-  plegados.forEach((d) => { d.open = true; });
-});
-addEventListener('afterprint', () => {
-  plegados.splice(0).forEach((d) => { d.open = false; });
-});
-
 // data-desde="id-inicio": final no anterior al inicio
 document.querySelectorAll('input[data-desde]').forEach((fin) => {
   const inicio = document.getElementById(fin.dataset.desde);
@@ -327,6 +316,11 @@ const mostrarSegunMarcado = () => {
 document.addEventListener('change', mostrarSegunMarcado);
 mostrarSegunMarcado();
 
+// data-autoenviar: los select filtran al cambiar. El botón queda sin JS
+document.addEventListener('change', (e) => {
+  if (e.target.matches('[data-autoenviar] select')) e.target.form.requestSubmit();
+});
+
 // data-vista-previa="id-img"
 document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
   const img = document.getElementById(entrada.dataset.vistaPrevia);
@@ -339,21 +333,19 @@ document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
 
 // Tema y atajos en localStorage, iguales en todas las pestañas. tema.js los aplica antes de pintar
 const botonTema = document.getElementById('tema');
-const pintarTema = () => {
-  if (!botonTema) return;
-  const oscuro = raiz.dataset.tema === 'dark';
-  botonTema.setAttribute('aria-pressed', String(oscuro));
-  botonTema.dataset.tooltip = oscuro ? 'Cambiar a claro' : 'Cambiar a oscuro';
-};
 const leer = (clave) => { try { return localStorage.getItem(clave); } catch { return null; } };
 const guardar = (clave, valor) => {
   try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch { /* sin localStorage */ }
 };
-// Por defecto no se guarda. AJUSTES en tema.js. Menú lateral en su cookie
-const valorAjuste = (nombre) => (nombre === 'sidebar' ? raiz.dataset.sidebar : leer(nombre) || AJUSTES[nombre]);
+// Por defecto no se guarda. AJUSTES en tema.js. Menú lateral y hora en cookie: PHP los pinta
+const cookie = (nombre) => document.cookie.match(new RegExp(`(?:^|; )${nombre}=([^;]*)`))?.[1];
+const valorAjuste = (nombre) => {
+  if (nombre === 'sidebar') return raiz.dataset.sidebar;
+  if (nombre === 'hora') return cookie('hora') || '24';
+  return leer(nombre) || AJUSTES[nombre];
+};
 const aplicarAjustes = () => {
   aplicarPreferencias();
-  pintarTema();
   // Radio: marcado si es lo guardado. Switch value="si": marcado con 'si'
   document.querySelectorAll('input[data-ajuste]').forEach((r) => {
     r.checked = r.value === valorAjuste(r.name);
@@ -368,7 +360,8 @@ document.addEventListener('change', (e) => {
   if (!e.target.matches('input[data-ajuste]')) return;
   const { name, type, checked } = e.target;
   const value = type === 'checkbox' ? (checked ? 'si' : 'no') : e.target.value;
-  if (name !== 'sidebar') guardar(name, value === AJUSTES[name] ? null : value);
+  if (name === 'hora') document.cookie = `hora=${value}; path=/; max-age=31536000; SameSite=Lax`;
+  else if (name !== 'sidebar') guardar(name, value === AJUSTES[name] ? null : value);
   aplicarAjustes();
   document.getElementById('ajuste-estado').textContent = 'Guardado.';
 });

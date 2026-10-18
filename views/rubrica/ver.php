@@ -63,6 +63,6 @@ $nivel = fn (int $p): int => min(5 - $p, 3);
       </table>
     </div>
     <?php $fecha = new DateTime($rubrica['guardado_en']); ?>
-    <p class="campo-ayuda">Evaluado por <?= Html::e($rubrica['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= $fecha->format('H:i') ?>.</p>
+    <p class="campo-ayuda">Evaluado por <?= Html::e($rubrica['autor']) ?> el <?= Fecha::legible($fecha) ?> a las <?= Fecha::hora($fecha) ?>.</p>
   <?php endif; ?>
 </div>

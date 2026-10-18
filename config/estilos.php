@@ -52,6 +52,7 @@ return [
     'componentes/tabla-tarjetas',
     'componentes/log',
     'componentes/impresion',
+    'componentes/articulo',
     'app/app',
     'app/sidebar',
     'app/menu-flotante',

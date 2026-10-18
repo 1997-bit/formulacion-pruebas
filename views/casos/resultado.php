@@ -23,7 +23,7 @@ use App\Helpers\Icono;
  * @var list<string> $commits  ya usados en el proyecto
  */
 
-$hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
+$hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . Fecha::hora((new DateTime($fecha)));
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
 $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—' : Html::e($valor);
 // Pasos: Registrado, resultado y cierre. FAULT: incidente antes del cierre
@@ -52,7 +52,7 @@ $abierto = array_values(array_filter($caso['incidentes'], fn (array $i): bool =>
         <a class="btn btn-fantasma btn-icono" href="/casos/resultado?id=<?= (int) $v['id'] ?>" aria-label="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>"
            data-tooltip="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>" data-atajo="<?= $tecla ?>" data-atajo-texto="<?= $etiqueta ?>"><?= Icono::svg($icono) ?></a>
       <?php else: ?>
-        <span class="btn btn-fantasma btn-icono" aria-disabled="true" role="link" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></span>
+        <a class="btn btn-fantasma btn-icono" aria-disabled="true" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></a>
       <?php endif; ?>
     <?php endforeach; ?>
     <?php if ($abierto !== null): ?>

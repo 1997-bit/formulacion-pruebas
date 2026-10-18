@@ -16,6 +16,10 @@
   .tabla .celda-acciones,
   .select::after { display: none !important; }
   [data-tooltip]::after { display: none; }
+  /* <details> cerrado: el contenido sale en papel */
+  .app-principal details::details-content { content-visibility: visible; }
+  .plegable > summary { margin-bottom: var(--esp-4); }
+  .plegable > summary .flecha { rotate: 90deg; }
 
   .tarjeta,
   .control,

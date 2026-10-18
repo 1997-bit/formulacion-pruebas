@@ -30,7 +30,7 @@ Toda petición entra por `public/index.php`. Rutas en `config/rutas.php`.
 
 | Grupo | Rutas |
 | --- | --- |
-| Acceso | `/` login. `/registro` cuentas `tester`. `/dashboard` avance. |
+| Acceso | `/` login. Sin registro público: solo `admin` crea cuentas. `/dashboard` avance. |
 | Administración | `/admin/usuarios`, `/admin/proyectos`. |
 | Requerimientos | `/requerimientos/registrar`, `/requerimientos/listar`, `/requerimientos/editar`, `/requerimientos/eliminar`. |
 | Casos | `/casos/registrar`, `/casos/listar`, `/casos/resultado`, `/casos/editar`, `/casos/eliminar`, `/evidencias/ver`. `/casos/resultado` anota e imprime el formulario 1. |
@@ -57,7 +57,7 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | ID | Requerimiento | Detalle | Prioridad |
 | --- | --- | --- | --- |
 | RF-01 | Iniciar sesión | `password_verify`. | Alta |
-| RF-02 | Crear cuenta | Registro público como `tester`. Solo `admin` crea `admin`. | Alta |
+| RF-02 | Crear cuenta | Solo `admin` crea cuentas, en Usuarios. Sin registro público. | Alta |
 | RF-03 | Gestionar roles | Solo `admin` cambia el rol. | Alta |
 | RF-04 | Registrar caso | Proyecto, requerimiento, tipo, módulo, técnica, objetivo, precondiciones, entrada, pasos, esperado, fechas. Final ≥ inicio. | Alta |
 | RF-05 | Listar casos | Por código. `tester` ve sus proyectos. | Alta |
@@ -80,6 +80,7 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | RF-22 | Consultar | Filtro por proyecto, requerimiento y estado. | Alta |
 | RF-23 | Reportes | Avance en el panel. Cierre aparte. | Alta |
 | RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto, commit probado y evidencia. Guarda fecha, hora y usuario. | Alta |
+| RF-25 | Ayuda | Artículos en `/ayuda`. Ayuda en el menú abre el de la pantalla actual. Reglas en `docs/ayuda.md`. | Baja |
 
 ---
 

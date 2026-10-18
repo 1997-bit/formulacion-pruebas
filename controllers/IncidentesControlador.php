@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Entrada;
 use App\Core\ErrorValidacion;
+use App\Core\Paginacion;
 use App\Core\Respuesta;
 use App\Core\Sesion;
 use App\Core\Vista;
@@ -25,7 +26,7 @@ final class IncidentesControlador
     public function listar(): void
     {
         $filtros = [];
-        foreach (['estado', 'severidad', 'stopper', 'mios'] as $filtro) {
+        foreach (['estado', 'severidad', 'stopper', 'mios', 'todos', 'q'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
         // Lista por defecto, g i y el menú
@@ -44,7 +45,7 @@ final class IncidentesControlador
         ]);
     }
 
-    // Sin caso: busca por código, BUG-050. Con caso: formulario 10
+    // Sin caso: lista los FAULT y busca por código, BUG-050. Con caso: formulario 10
     public function registrar(): void
     {
         $usuario = Sesion::usuario();
@@ -60,6 +61,7 @@ final class IncidentesControlador
                 'caso' => null,
                 'codigo' => $codigo,
                 'casos' => $casos,
+                'fallidos' => CasoModelo::fallidos(Permisos::proyectos($usuario), $codigo, Paginacion::POR_PAGINA),
                 'migas' => $migas,
             ]);
 

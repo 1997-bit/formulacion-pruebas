@@ -125,9 +125,9 @@ return [
     'estrategia' => [
         'nombre' => 'Estrategia del plan',
         'valores' => [
-            1 => ['texto' => 'Caja negra', 'variante' => 'borde'],
-            2 => ['texto' => 'Caja blanca', 'variante' => 'borde'],
-            3 => ['texto' => 'Mixta', 'variante' => 'borde'],
+            1 => ['texto' => 'Caja negra', 'variante' => 'borde', 'ayuda' => 'Prueba entradas y salidas sin ver el código.'],
+            2 => ['texto' => 'Caja blanca', 'variante' => 'borde', 'ayuda' => 'Prueba caminos y condiciones del código.'],
+            3 => ['texto' => 'Mixta', 'variante' => 'borde', 'ayuda' => 'Combina caja negra y caja blanca.'],
         ],
     ],
     'estado_plan' => [

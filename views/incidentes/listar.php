@@ -5,6 +5,7 @@ use App\Core\Csrf;
 use App\Core\Paginacion;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
+use App\Helpers\Fecha;
 use App\Helpers\Html;
 use App\Helpers\Icono;
 
@@ -13,14 +14,21 @@ use App\Helpers\Icono;
  * @var ?Paginacion $paginacion  null en el tablero
  * @var ?string $flash
  * @var string $vista lista o tablero
- * @var array<string, string> $filtros estado, severidad, stopper, mios
+ * @var array<string, string> $filtros estado, severidad, stopper, mios, todos, q
  * @var array{activo: ?int} $usuario
  */
 
 $filtrado = array_filter($filtros, fn (string $v): bool => $v !== '') !== [];
 $usados = array_filter($filtros, fn (string $v): bool => $v !== '');
 $enlaceVista = fn (string $v): string => '/formularios/incidentes?' . http_build_query(['vista' => $v] + $usados);
-$marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked' : '';
+// Vistas rápidas. El tablero ya muestra todos los estados
+$rapidas = $vista === 'lista'
+    ? ['Abiertos' => [], 'Asignados a mí' => ['mios' => '1'], 'Stoppers' => ['stopper' => '1'], 'Todos' => ['todos' => '1']]
+    : ['Todos' => [], 'Asignados a mí' => ['mios' => '1'], 'Stoppers' => ['stopper' => '1']];
+$rapidaActual = array_filter(array_intersect_key($filtros, ['estado' => '', 'stopper' => '', 'mios' => '', 'todos' => '']), fn (string $v): bool => $v !== '');
+$enlaceRapida = fn (array $f): string => '/formularios/incidentes?' . http_build_query(['vista' => $vista] + $f);
+$total = $paginacion !== null ? $paginacion->total : count($incidentes);
+$ahora = new DateTimeImmutable();
 // Con proyecto activo sobra la columna Proyecto
 $todos = $usuario['activo'] === null;
 // Iniciales decorativas, nombre en texto
@@ -32,12 +40,14 @@ $chips = array_filter([
     'severidad' => $filtros['severidad'] === '' ? '' : 'Severidad: ' . Catalogo::texto('severidad', $filtros['severidad']),
     'stopper' => $filtros['stopper'] === '1' ? 'Solo stoppers' : '',
     'mios' => $filtros['mios'] === '1' ? 'Asignados a mí' : '',
+    'todos' => $filtros['todos'] === '1' && $vista === 'lista' ? 'Con cerrados' : '',
+    'q' => $filtros['q'] === '' ? '' : 'Busca: ' . $filtros['q'],
 ]);
 ?>
 <header class="encabezado">
   <div>
     <h1>Incidentes</h1>
-    <p>Los defectos de los casos de sus proyectos. Abiertos y más graves primero.</p>
+    <p>Los defectos de los casos de sus proyectos. Stoppers y más graves primero.</p>
   </div>
   <div class="acciones"><a class="btn btn-primario" href="/formularios/incidentes/registrar" data-atajo="c"><?= Icono::svg('plus') ?> Registrar incidente</a></div>
 </header>
@@ -49,28 +59,41 @@ $chips = array_filter([
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
   <?php if ($incidentes || $filtrado): ?>
-    <form class="filtros" method="get" action="/formularios/incidentes" role="search" aria-label="Filtrar incidentes">
-      <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
-      <?php if ($vista === 'lista'): ?>
+    <search aria-label="Filtrar incidentes">
+      <form class="filtros" method="get" action="/formularios/incidentes" data-autoenviar>
+        <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
+        <?php foreach (['stopper', 'mios', 'todos'] as $fijo): ?>
+          <?php if ($filtros[$fijo] === '1'): ?><input type="hidden" name="<?= $fijo ?>" value="1"><?php endif; ?>
+        <?php endforeach; ?>
         <div class="campo">
-          <label for="fl-estado">Estado</label>
-          <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Todos</option><?= Catalogo::opciones('estado_incidente', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
+          <label for="fl-q">Buscar</label>
+          <div class="control-con-icono"><?= Icono::svg('search') ?><input class="control" type="search" id="fl-q" name="q" value="<?= Html::e($filtros['q']) ?>" placeholder="Código o título" maxlength="150"></div>
         </div>
-      <?php endif; ?>
-      <div class="campo">
-        <label for="fl-severidad">Severidad</label>
-        <div class="select"><select class="control" id="fl-severidad" name="severidad"><option value="">Todas</option><?= Catalogo::opciones('severidad', $filtros['severidad'] === '' ? null : $filtros['severidad']) ?></select></div>
-      </div>
-      <div class="grupo grupo-fila filtros-casillas">
-        <label class="opcion"><input type="checkbox" name="stopper" value="1"<?= $marcado('stopper') ?>> Solo stoppers</label>
-        <label class="opcion"><input type="checkbox" name="mios" value="1"<?= $marcado('mios') ?>> Asignados a mí</label>
-      </div>
-      <div class="acciones">
-        <button class="btn btn-secundario" type="submit">Filtrar</button>
-        <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/formularios/incidentes?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
-      </div>
-    </form>
+        <?php if ($vista === 'lista'): ?>
+          <div class="campo">
+            <label for="fl-estado">Estado</label>
+            <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Sin cerrar</option><?= Catalogo::opciones('estado_incidente', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
+          </div>
+        <?php endif; ?>
+        <div class="campo">
+          <label for="fl-severidad">Severidad</label>
+          <div class="select"><select class="control" id="fl-severidad" name="severidad"><option value="">Todas</option><?= Catalogo::opciones('severidad', $filtros['severidad'] === '' ? null : $filtros['severidad']) ?></select></div>
+        </div>
+        <div class="filtros-pie">
+          <p class="filtros-atajos"><span>Ver:</span>
+            <?php foreach ($rapidas as $texto => $f): ?>
+              <a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceRapida($f)) ?>"<?= $rapidaActual == $f ? ' aria-current="true"' : '' ?>><?= $texto ?></a>
+            <?php endforeach; ?>
+          </p>
+          <div class="acciones">
+            <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/formularios/incidentes?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
+            <button class="btn btn-secundario" type="submit">Filtrar</button>
+          </div>
+        </div>
+      </form>
+    </search>
     <?= Vista::capturar('partials/filtros_activos', ['ruta' => '/formularios/incidentes', 'fijos' => ['vista' => $vista], 'filtros' => $filtros, 'textos' => $chips]) ?>
+    <p class="campo-ayuda" role="status"><?= Html::cantidad($total, 'incidente', 'incidentes') ?></p>
   <?php endif; ?>
   <?php if (!$incidentes && $filtrado): ?>
     <div class="vacio">
@@ -121,19 +144,21 @@ $chips = array_filter([
       <table class="tabla tabla-tarjetas">
         <caption class="solo-lector">Incidentes</caption>
         <thead>
-          <tr><th scope="col">Código</th><th scope="col">Título</th><th scope="col">Caso</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col">Severidad</th><th scope="col">Prioridad</th><th scope="col">Asignado a</th><th scope="col">Estado</th></tr>
+          <tr><th scope="col">Código</th><th scope="col">Título</th><th scope="col">Caso</th><?php if ($todos): ?><th scope="col">Proyecto</th><?php endif; ?><th scope="col">Severidad</th><th scope="col">Prioridad</th><th scope="col">Asignado a</th><th scope="col">Estado</th><th scope="col">Creado</th></tr>
         </thead>
         <tbody>
           <?php foreach ($incidentes as $i): ?>
+            <?php $creado = new DateTimeImmutable($i['creado_en']); ?>
             <tr>
-              <td data-columna="Código"><a class="codigo" href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['codigo']) ?></a></td>
-              <td data-columna="Título" class="celda-larga"><?= Html::e($i['titulo']) ?><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?></td>
+              <td data-columna="Código"><span class="codigo"><?= Html::e($i['codigo']) ?></span></td>
+              <td data-columna="Título" class="celda-larga"><a href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['titulo']) ?></a><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?></td>
               <td data-columna="Caso"><a class="codigo" href="/casos/resultado?id=<?= (int) $i['caso_id'] ?>"><?= Html::e($i['caso']) ?></a></td>
               <?php if ($todos): ?><td data-columna="Proyecto"><?= Html::e($i['proyecto']) ?></td><?php endif; ?>
               <td data-columna="Severidad"><?= Catalogo::insignia('severidad', $i['severidad']) ?></td>
-              <td data-columna="Prioridad"><?= Catalogo::insignia('prioridad', $i['prioridad']) ?></td>
+              <td data-columna="Prioridad"><?= Html::e(Catalogo::texto('prioridad', $i['prioridad'])) ?></td>
               <td data-columna="Asignado a"><span class="fila"><?= $asignado($i['asignado']) ?></span></td>
               <td data-columna="Estado"><?= Catalogo::insignia('estado_incidente', $i['estado']) ?></td>
+              <td data-columna="Creado"><time datetime="<?= $creado->format('Y-m-d\TH:i') ?>" title="<?= Fecha::legible($creado) . ' ' . Fecha::hora($creado) ?>"><?= Fecha::relativa($creado, $ahora) ?></time></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

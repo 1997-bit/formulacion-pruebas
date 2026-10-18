@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-10-18
+
+### Added
+
+- Ayuda: 10 artículos en `/ayuda` con tareas, referencia y glosario. Ayuda en el menú abre el artículo de la pantalla actual. Atajo `g a` y entrada en Ctrl+K. Capturas WebP con la parte importante en rojo y diagrama de estados. Reglas de escritura en `docs/ayuda.md`.
+- Logs, Rendimiento: cifras del día en palabras simples, como Visitas, Tiempo normal y "1 de cada 20 tarda", más un gráfico de visitas por hora. La tabla de páginas va de la más lenta a la más rápida, con una barra de color.
+- Logs, Seguridad: cifras de logins, contraseñas incorrectas, accesos sin permiso, formularios falsos y logins frenados. Cada evento lleva su texto en español y una barra.
+- Logs, Lista: gráfico de líneas por hora y nivel, y filtros por hora y por respuesta 4xx o 5xx.
+- Logs: clic en una cifra o en una barra abre la Lista con ese filtro.
+- Ajustes, Apariencia: formato de hora de 24 o 12 horas. Se aplica en toda la app.
+- Incidentes: vistas rápidas Abiertos, Asignados a mí, Stoppers y Todos. Búsqueda por código o título, total siempre visible y columna Creado.
+- Registrar incidente: lista de casos FAULT para elegir con un clic. Los que no tienen incidente abierto van primero. La búsqueda acepta código o parte del objetivo.
+
+### Changed
+
+- Modo oscuro: pasa de la barra de arriba al menú de la cuenta, arriba de Ajustes. La barra queda solo con el menú y la ruta.
+- Índices nuevos en la BD: casos atrasados y pendientes del usuario responden en menos de 0,1 ms, y horas de cierre pasa de 54 a 34 ms con datos de carga. Una BD que ya existe necesita recrearse o un `ALTER TABLE` a mano.
+- Logs: niveles en español, el nombre del usuario en lugar del id y Rendimiento sin `/assets`.
+- Incidentes: la lista muestra solo los abiertos por defecto. Ordena por stopper, severidad y fecha, sin agrupar por proyecto. El título abre el incidente, la prioridad va sin color y los select filtran al cambiar.
+- Registrar incidente: el formulario va en secciones Qué pasó, Clasificación, Dónde se encontró y Seguimiento.
+- Radios: marcado con anillo grueso del color primario.
+- Plan de pruebas: Estrategia en tarjetas con una línea de ayuda y el radio a la derecha.
+- Ajustes y Registrar incidente: Tema, Severidad y Prioridad en control segmentado. Severidad y Prioridad llevan un punto con su color.
+- Alertas: el botón de la alerta de error va en rojo. El siguiente paso del aviso flotante es un botón junto a la ✕.
+- Campos: foco con borde y halo del color del anillo. Los buscadores de incidentes llevan una lupa.
+- HTML nativo en lugar de ARIA y JS: `<search>` en los filtros, `<output>` en los avisos de estado, `<button>` y `<a>` en los botones deshabilitados. El aviso flotante cierra con ✕ sin JS. Al imprimir, los `<details>` cerrados salen abiertos solo con CSS. La app se ve igual.
+
+### Fixed
+
+- Diálogo de eliminar dentro de una tabla, como en Usuarios: el texto ya no sale alineado a la derecha ni se sale del diálogo con barra de desplazamiento. Un usuario largo parte la línea.
+- Logs: la búsqueda por código de error ya no pasa el límite de memoria con logs grandes. Se leen línea por línea.
+- `carga.sql` corre de nuevo: llena `commit_afectado`, obligatorio desde 1.7.0.
+
+### Removed
+
+- Registro público. El login ya no tiene Crear cuenta y `/registro` responde 404. Solo el admin crea cuentas, en Usuarios.
+
 ## [1.9.0] - 2026-10-17
 
 ### Changed
@@ -148,127 +185,222 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logs con Monolog: accesos, errores y eventos de seguridad OWASP.
 - Vista de logs para el admin.
 - Campo impacto del caso, ISO/IEC/IEEE 29119-3.
-- Vistas Tablero y Cronograma de casos.
+- Vistas Tablero y Cronograma de casos. En el tablero, una tarjeta se arrastra a otra columna.
 - Panel con por atender, asignados, atrasados y barra apilada.
 - Incidentes: filtros, Asignarme y tablero.
 - Paleta de comandos con Ctrl+K.
-- Ajustes: pestañas Apariencia y Accesibilidad.
+- Ajustes: pestañas Apariencia y Accesibilidad. Menú lateral colapsado como opción.
+- Atajos en listas: J y K mueven la fila, O la abre. Anterior, siguiente y recientes.
+- Formularios: un solo envío por clic, foco en el primer campo con error y aviso antes de salir con cambios sin guardar.
+- Avisos flotantes: cierran a los 5 s o con ✕, y esperan con el mouse o el foco encima.
+- CI con PHPStan y lint.
+
+### Changed
+
+- Menús de usuario y de proyecto: cierran con clic afuera o Esc.
 
 ### Fixed
 
 - Vista Lista por defecto y Gantt legible.
+
+### Removed
+
+- Página `paleta.php` del sistema de diseño.
+
+### Security
+
+- Cerrar sesión solo con POST. BUG-011.
 
 ## [1.3.0] - 2026-10-12
 
 ### Added
 
 - Atajos de teclado: ayuda con `?`, ir a con `G`, líder Space y modos estándar, avanzado y solo Ctrl.
-- Página de ajustes.
+- Atajos con ⌘ en Mac. El atajo se ve en el tooltip y en el menú lateral.
+- Página de ajustes, con un switch para apagar los atajos de una tecla.
+- Pruebas unitarias de Core, Models, Helpers, servicios y formularios 2 a 7.
+- Pruebas de humo HTTP.
+- Seed con los casos de las pruebas nuevas y la cobertura medida con todas.
+
+### Changed
+
+- Código con el formato de php-cs-fixer.
+- Transacciones con `Conexion::transaccion` en formularios, casos, incidentes y proyectos.
 
 ### Fixed
 
-- J y K mueven el foco.
-- La pista de atajos se anuncia al lector de pantalla.
+- Atajos: sin efecto con IME, teclas muertas o Bloq Mayús, y una tecla sostenida no repite la secuencia.
+- Ajustes: tema Sistema en vivo y atajos de Mac en la ayuda.
+- Diálogos: un solo cierre con clic afuera.
+- Eliminar caso en una transacción.
 
 ## [1.2.0] - 2026-10-07
 
 ### Added
 
 - Favicon.
+- CI: las pruebas corren en cada PR.
+
+### Changed
+
+- PHP 8.2 como mínimo en Composer.
 
 ## [1.1.0] - 2026-10-05
 
 ### Added
 
-- Solicitado por y Aprobado por en el panel del caso.
+- Solicitado por y Aprobado por en el panel del caso. Solo miembros del proyecto.
+- Usuarios y proyectos: mensaje si la lista está vacía.
 
 ### Changed
 
-- Estados visibles en los datos del caso.
-- Reflow a 320px.
+- Seed con incidentes en los tres estados.
+- Reflow a 320px: códigos largos y tablas ya no desbordan la página.
+
+### Fixed
+
+- El seed corre sin error: `schema.sql` ya no borra la tabla `portafolio`.
+- Registro: se muestra el error general.
+
+### Security
+
+- Tabla de decisión: el valor de la regla sale escapado.
 
 ## [1.0.1] - 2026-10-04
 
+### Added
+
+- Reporte de cierre en `/reportes/cierre` con criterios Go / No-Go. Un FAULT con incidente cuenta como criterio.
+- Panel: avance por proyecto y tasa de aprobación.
+- Página 500 con código de error y log.
+- Paginación con ventana de 7 páginas.
+- Historial también en incidentes y plan.
+- Aviso si otro usuario guardó el caso, la matriz o la rúbrica antes. La rúbrica muestra quién la cambió por último.
+
 ### Changed
 
-- Rendimiento de login, lecturas, escrituras y servidor.
+- Login, lecturas, escrituras y servidor más rápidos: consultas en orden del índice, guardado por diferencia y un INSERT por guardado.
+- Evidencias con ETag y 304. Estáticos con versión en la URL y caché immutable.
+- Evidencias con el sha256 del contenido como nombre.
+- Listas ordenadas por sigla y número.
 
 ### Fixed
 
 - 21 bugs del seed. Lista en [bugs corregidos](docs/bugs_corregidos.md).
+- Doble clic ya no duplica casos ni incidentes.
+- Un 0 se guarda y no queda vacío.
+- Guardar un proyecto ya no borra la autoevaluación.
+- Siempre queda un admin.
+- Caso con incidente abierto no pasa a OK. Plan cerrado no admite stoppers abiertos.
+- Un valor UNIQUE repetido sale como error del campo.
 
 ### Security
 
 - Ningún sitio carga la app en un iframe. BUG-017.
 - `.htaccess` en la raíz protege `.env`, `database/` y `storage/`. BUG-054.
+- Login con bloqueo exponencial y registro con límite por IP.
+- Argon2id con rehash al entrar. Usuario inexistente: hash falso, el tiempo de respuesta no lo delata.
+- Cambiar clave o rol cierra las otras sesiones.
+- Registros de otros proyectos responden 404.
 
 ## [1.0.0] - 2026-10-04
 
 ### Added
 
-- Plan de pruebas, cobertura caja blanca y rúbrica. Con esto están los 10 formularios.
+- Plan de pruebas: uno por proyecto, se llena, se ve y se imprime.
+- Cobertura caja blanca: el servidor calcula el porcentaje. Se ve, se edita y se imprime.
+- Rúbrica: suma sobre 30. Se llena, se ve y se imprime.
+- Con esto están los 10 formularios.
 
 ## [0.8.0] - 2026-10-04
 
 ### Added
 
-- Clases de equivalencia, valor límite, tabla de decisión y autoevaluación.
-- Portafolio de evidencias.
+- Clases de equivalencia, valor límite y tabla de decisión: se ven, se editan y se imprimen. Guardan todas las filas o ninguna.
+- Clases de equivalencia: lista por requerimiento, con quién guardó y cuándo.
+- Autoevaluación con promedio. Se llena, se ve y se imprime.
+- Portafolio de evidencias del proyecto.
+- Seed con incidentes BUG-005 a BUG-014 y de seguridad, datos, accesibilidad y HTTP.
 
 ## [0.7.0] - 2026-10-03
 
 ### Added
 
-- Editar caso con historial.
+- Editar caso. Cada campo cambiado queda en el historial.
 - Eliminar caso, solo admin y con confirmación.
-- Filtros en las listas.
-- Registro de incidentes.
+- Filtros de casos por proyecto, requerimiento y estado, con aviso si no queda ninguno.
+- Incidentes: registrar desde el caso, listar con paginación, y cambiar estado, asignado y stopper.
+- Bugs encontrados como casos FAULT con su incidente.
 - Registro de caso imprimible.
 
 ## [0.6.0] - 2026-10-03
 
 ### Added
 
-- Registrar y listar casos.
-- Anotar resultado y ver evidencias.
+- Registrar y listar casos con paginación. La lista muestra el autor.
+- Anotar resultado y subir evidencias.
 - Requerimientos con paginación.
+
+### Removed
+
+- Tipo de evidencia Documento.
 
 ## [0.5.0] - 2026-10-03
 
 ### Added
 
-- Usuarios con roles admin y tester.
-- Proyectos y miembros.
+- Usuarios: crear, editar, eliminar y cambiar rol entre admin y tester.
+- Proyectos: crear, editar, eliminar y asignar miembros.
+- Permisos: solo miembros del proyecto. El tester edita solo sus casos.
+- Seed con admin, gloria y pan.
+
+### Changed
+
+- Tema en `tema.js`, también en las páginas de error.
+
+### Fixed
+
+- Rutas del menú sin `.php`.
 
 ## [0.4.0] - 2026-10-03
 
 ### Added
 
-- Login.
-- Paginación y partials comunes.
-- Tablas de formularios y trazabilidad.
+- Login y registro.
+- Registrar y listar requerimientos.
+- Paginación y partials de campo, mensajes y paginación.
+- Tablas de los 10 formularios y vista `v_trazabilidad`.
+- Caso con plataforma y tipo de evidencia.
+
+### Changed
+
+- Rol general se llama tester.
+- Las 20 sub-técnicas del documento.
 
 ## [0.3.0] - 2026-10-02
 
 ### Added
 
-- Conexión a la base.
+- Conexión PDO a la base.
 - Respuestas y páginas de error.
 
 ## [0.2.0] - 2026-10-02
 
 ### Added
 
-- Router, sesión, CSRF y validador.
+- Router, sesión, CSRF y validador con errores por campo.
+- Permisos y paginación base.
 
 ## [0.1.0] - 2026-10-02
 
 ### Added
 
-- Estructura del proyecto.
+- Estructura MVC y sistema de diseño.
+- Composer con PHPUnit, PHPStan y php-cs-fixer.
 - Tablas base.
 
-[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/1997-bit/safeguard/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/1997-bit/safeguard/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/1997-bit/safeguard/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/1997-bit/safeguard/compare/v1.6.0...v1.7.0

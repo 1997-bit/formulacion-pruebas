@@ -79,10 +79,6 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
         <?php endforeach; ?>
       </ol>
     </nav>
-    <button class="btn btn-fantasma btn-icono barra-fin" id="tema" type="button" aria-pressed="false" aria-label="Modo oscuro"
-            data-tooltip="Cambiar a oscuro" data-tooltip-lado="abajo" data-tooltip-alinear="fin">
-      <?= Icono::svg('moon', 'icono tema-luna') ?><?= Icono::svg('sun', 'icono tema-sol') ?>
-    </button>
   </header>
 
   <main class="app-principal" id="principal" tabindex="-1">

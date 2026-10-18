@@ -1,17 +1,9 @@
 @layer componentes {
 .ajuste { padding: var(--esp-4) var(--esp-5); border: 1px solid var(--borde); }
 .ajuste > legend { float: left; width: 100%; font-weight: 600; }
-/* Opción en fila con borde. Radio a la derecha. Marcada en azul */
-.ajuste .opcion {
-  display: flex;
-  gap: var(--esp-3);
-  padding: 10px var(--esp-3);
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
-}
-.ajuste .opcion > span:not(.opcion-icono) { flex: 1; }
-.ajuste .opcion:hover { background: var(--acento); }
-.ajuste .opcion:has(input:checked) { background: var(--info-suave); border-color: var(--primario); }
+/* Radio a la derecha y centrado */
+.ajuste .opcion-tarjeta { align-items: center; }
+.ajuste .opcion-tarjeta input { margin-top: 0; }
 .opcion-icono { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radio-md); background: var(--tenue); }
 .opcion-icono .icono { width: 16px; height: 16px; }
 .ajuste small { display: block; color: var(--tenue-texto); font-size: var(--letra-xs); }
@@ -30,8 +22,4 @@
   cursor: pointer;
 }
 .ajuste > legend + .ajuste-switch { margin-top: 0; padding-top: 0; border-top: 0; }
-
-@media (forced-colors: active) {
-  .ajuste .opcion:has(input:checked) { outline: 2px solid Highlight; }
-}
 }

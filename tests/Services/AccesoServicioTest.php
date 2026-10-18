@@ -15,7 +15,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Medium;
 use Tests\Apoyo\BaseDatos;
 
-// RF-01, RF-02, RNF-02
+// RF-01, RNF-02
 #[CoversClass(AccesoServicio::class)]
 #[Medium]
 final class AccesoServicioTest extends BaseDatos
@@ -157,23 +157,5 @@ final class AccesoServicioTest extends BaseDatos
         $vigente = AccesoServicio::vigente($sesion);
 
         $this->assertSame([$proyecto], $vigente['proyectos'] ?? null);
-    }
-
-    // RF-02. El registro público nunca crea admin
-    public function testRegistrarCreaTester(): void
-    {
-        $usuario = uniqid('reg', true);
-
-        AccesoServicio::registrar('Nuevo', $usuario, self::CLAVE, '192.0.2.1');
-
-        $this->assertSame(0, (int) UsuarioModelo::porUsuario($usuario)['rol']);
-    }
-
-    // #101
-    public function testRegistrarUsuarioRepetidoDaErrorDeCampo(): void
-    {
-        $errores = $this->errores(fn () => AccesoServicio::registrar('Otro', $this->nombre, self::CLAVE, '192.0.2.2'));
-
-        $this->assertSame(['usuario' => 'Ese usuario ya existe.'], $errores);
     }
 }

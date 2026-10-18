@@ -100,14 +100,12 @@ abstract class PruebaHttp extends TestCase
      */
     protected function eventos(array $respuesta): array
     {
-        // Todos los días: el servidor usa APP_ZONA, la prueba no
-        $lineas = array_merge(...array_map(fn (string $f): array => file($f, FILE_IGNORE_NEW_LINES) ?: [], glob(RAIZ . '/storage/logs/app-*.log') ?: []));
+        // Todos los días: el servidor usa APP_ZONA, la prueba no. Solo se decodifica la línea con el uid: logs grandes pasaban el límite de memoria
+        $uid = preg_quote($respuesta['cabeceras']['x-request-id'] ?? '-', '/');
+        $lineas = array_merge(...array_map(fn (string $f): array => preg_grep("/\"uid\":\"{$uid}\"/", file($f, FILE_IGNORE_NEW_LINES) ?: []), glob(RAIZ . '/storage/logs/app-*.log') ?: []));
         $registros = array_map(fn (string $l): array => json_decode($l, true), $lineas);
 
-        return array_values(array_map(fn (array $r): string => $r['message'], array_filter(
-            $registros,
-            fn (array $r): bool => $r['channel'] === 'seguridad' && $r['extra']['uid'] === ($respuesta['cabeceras']['x-request-id'] ?? null),
-        )));
+        return array_values(array_map(fn (array $r): string => $r['message'], array_filter($registros, fn (array $r): bool => $r['channel'] === 'seguridad')));
     }
 
     // Fábrica: nombres únicos. tearDownAfterClass() borra todo

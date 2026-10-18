@@ -14,7 +14,7 @@ use App\Helpers\Icono;
  * @var Paginacion $paginacion
  */
 
-$hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
+$hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . Fecha::hora((new DateTime($fecha)));
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
 $proyectos = [];
 foreach ($evidencias as $e) {

@@ -30,6 +30,7 @@ foreach (require RAIZ . '/config/menu.php' as $grupo) {
         }
     }
 }
+$opciones[] = ['Ir a', 'Ayuda', '/ayuda'];
 $opciones[] = ['Ir a', 'Ajustes › Apariencia', '/ajustes'];
 $opciones[] = ['Ir a', 'Ajustes › Accesibilidad', '/ajustes/accesibilidad'];
 $opciones[] = ['Ir a', 'Casos › Tablero', '/casos/listar?vista=tablero'];
@@ -58,5 +59,5 @@ $opciones[] = ['Acciones', 'Cerrar sesión', 'accion:salir'];
     <?php endforeach; ?>
   </ul>
   <p class="paleta-vacio" hidden>Sin resultados.</p>
-  <p class="solo-lector" role="status" id="paleta-estado"></p>
+  <output class="solo-lector" id="paleta-estado"></output>
 </dialog>

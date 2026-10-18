@@ -163,22 +163,29 @@ final class IncidenteServicio
      */
     public static function tablero(array $usuario, array $filtros): array
     {
-        return IncidenteModelo::listar(Permisos::proyectos($usuario), null, self::filtros($filtros, $usuario), CasoServicio::TOPE_VISTA);
+        // El tablero tiene columna Cerrado: no oculta cerrados
+        return IncidenteModelo::listar(Permisos::proyectos($usuario), null, ['abiertos' => null] + self::filtros($filtros, $usuario), CasoServicio::TOPE_VISTA);
     }
 
     /**
      * URL a filtros del modelo. Lo inválido no filtra
      *
-     * @param array<string, string> $filtros estado, severidad, stopper ('1'), mios ('1')
+     * Sin estado ni todos ('1'): solo abiertos
+     *
+     * @param array<string, string> $filtros estado, severidad, stopper ('1'), mios ('1'), todos ('1'), q
      * @param array{id: int} $usuario
-     * @return array<string, ?int>
+     * @return array<string, int|string|null>
      */
     private static function filtros(array $filtros, array $usuario): array
     {
         $numero = fn (string $clave, string $catalogo): ?int => Catalogo::existe($catalogo, $filtros[$clave] ?? null) ? (int) $filtros[$clave] : null;
+        $estado = $numero('estado', 'estado_incidente');
+        $q = mb_substr(trim($filtros['q'] ?? ''), 0, 150);
 
         return [
-            'estado' => $numero('estado', 'estado_incidente'),
+            'abiertos' => $estado === null && ($filtros['todos'] ?? '') !== '1' ? 1 : null,
+            'q' => $q === '' ? null : $q,
+            'estado' => $estado,
             'severidad' => $numero('severidad', 'severidad'),
             'stopper' => ($filtros['stopper'] ?? '') === '1' ? 1 : null,
             'asignado' => ($filtros['mios'] ?? '') === '1' ? $usuario['id'] : null,

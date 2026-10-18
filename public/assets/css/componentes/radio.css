@@ -1,5 +1,5 @@
 @layer componentes {
-/* Radio: círculo fino. Marcado: relleno primario con punto blanco */
+/* Radio: círculo fino. Marcado: anillo grueso primario */
 input[type="radio"] {
   appearance: none;
   flex-shrink: 0;
@@ -13,13 +13,12 @@ input[type="radio"] {
   background: transparent;
   cursor: pointer;
 }
-input[type="radio"]:checked { background: var(--primario); border-color: var(--primario); }
-input[type="radio"]:checked::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--primario-texto); }
+input[type="radio"]:checked { border: 5px solid var(--primario); background: var(--fondo); }
 input[type="radio"]:focus-visible { outline: 2px solid var(--anillo); outline-offset: 2px; }
 input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
 input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 
 @media (forced-colors: active) {
-  input[type="radio"]:checked { forced-color-adjust: none; background: Highlight; border-color: Highlight; }
+  input[type="radio"]:checked { forced-color-adjust: none; background: Canvas; border-color: Highlight; }
 }
 }

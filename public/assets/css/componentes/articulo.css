@@ -1,0 +1,12 @@
+@layer componentes {
+/* Ayuda: texto corto, ancho de lectura */
+.articulo { max-width: 70ch; }
+.articulo h2 { font-size: var(--letra-lg); margin: var(--esp-6) 0 var(--esp-2); }
+.articulo :is(ol, ul) { display: grid; gap: var(--esp-2); margin: 0 0 var(--esp-4); padding-left: var(--esp-5); }
+.articulo p { margin: 0 0 var(--esp-4); }
+.articulo .tabla-contenedor { margin-bottom: var(--esp-4); }
+/* Captura: borde para separarla del fondo, sobre todo en oscuro */
+.articulo img { display: block; max-width: 100%; height: auto; margin-top: var(--esp-2); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
+.articulo .diagrama { display: block; max-width: 100%; height: auto; margin-bottom: var(--esp-4); }
+.articulo-pie { margin-top: var(--esp-8); font-size: var(--letra-sm); }
+}

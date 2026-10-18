@@ -50,7 +50,7 @@ $texto = fn (?string $t): string => $t === null || $t === '' ? '—' : Html::e($
           <dt>Responsable</dt><dd><?= Html::e($plan['responsable']) ?></dd>
           <dt>Fecha</dt><dd><?= Fecha::legible(new DateTime($plan['fecha'])) ?></dd>
           <dt>Estrategia</dt><dd><?= Html::e(Catalogo::texto('estrategia', $plan['estrategia'])) ?></dd>
-          <dt>Actualizado</dt><dd><?= Fecha::legible($actualizado = new DateTime($plan['actualizado_en'])) ?> <?= $actualizado->format('H:i') ?></dd>
+          <dt>Actualizado</dt><dd><?= Fecha::legible($actualizado = new DateTime($plan['actualizado_en'])) ?> <?= Fecha::hora($actualizado) ?></dd>
         </dl>
       </aside>
       <section class="tarjeta" aria-labelledby="pl-contenido">

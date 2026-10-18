@@ -20,6 +20,10 @@
 .control-con-boton > .control { padding-right: calc(var(--alto-sm) + var(--esp-2)); }
 .control-con-boton > .control-boton { position: absolute; top: 50%; right: 4px; translate: 0 -50%; color: var(--tenue-texto); }
 .control-con-boton > .control-boton:hover { color: var(--texto); }
+/* Ícono fijo a la izquierda: lupa del buscador */
+.control-con-icono { position: relative; }
+.control-con-icono > .icono { position: absolute; top: 50%; left: var(--esp-3); translate: 0 -50%; width: 16px; height: 16px; color: var(--tenue-texto); pointer-events: none; }
+.control-con-icono > .control { padding-left: calc(var(--esp-3) + 16px + var(--esp-2)); }
 .campo-ayuda {
   margin: 0;
   font-size: var(--letra-xs);
@@ -49,9 +53,10 @@
   box-shadow: var(--sombra-xs);
 }
 .control::placeholder { color: var(--tenue-texto); }
-.control:focus-visible { outline: 2px solid var(--anillo); outline-offset: 1px; }
+/* Foco: borde del color del anillo y halo pegado. Outline transparente: visible en forced-colors */
+.control:focus-visible { outline: 2px solid transparent; border-color: var(--anillo); box-shadow: 0 0 0 3px color-mix(in oklch, var(--anillo), transparent 60%); }
 .control:is([aria-invalid="true"], :user-invalid) { border-color: var(--error); }
-.control:is([aria-invalid="true"], :user-invalid):focus-visible { outline-color: var(--error); }
+.control:is([aria-invalid="true"], :user-invalid):focus-visible { box-shadow: 0 0 0 3px color-mix(in oklch, var(--error), transparent 60%); }
 .control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
 textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 
