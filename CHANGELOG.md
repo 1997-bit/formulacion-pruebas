@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Registro público. El login ya no tiene Crear cuenta y `/registro` responde 404. Solo el admin crea cuentas, en Usuarios.
+
 ## [1.9.0] - 2026-10-17
 
 ### Changed
