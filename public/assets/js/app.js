@@ -316,6 +316,11 @@ const mostrarSegunMarcado = () => {
 document.addEventListener('change', mostrarSegunMarcado);
 mostrarSegunMarcado();
 
+// data-autoenviar: los select filtran al cambiar. El botón queda sin JS
+document.addEventListener('change', (e) => {
+  if (e.target.matches('[data-autoenviar] select')) e.target.form.requestSubmit();
+});
+
 // data-vista-previa="id-img"
 document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
   const img = document.getElementById(entrada.dataset.vistaPrevia);
