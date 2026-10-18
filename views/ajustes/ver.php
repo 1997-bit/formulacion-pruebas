@@ -69,7 +69,7 @@ foreach ($interruptores[$pestana] ?? [] as $nombre => [$titulo, $texto, $ayuda, 
     <fieldset class="tarjeta grupo ajuste">
       <legend><?= $titulo ?></legend>
       <?php foreach ($valores as $valor => [$texto, $ayuda]): ?>
-        <label class="opcion">
+        <label class="opcion opcion-tarjeta">
           <?php if ($nombre === 'tema'): ?><span class="opcion-icono"><?= Icono::svg($iconos[$valor]) ?></span><?php endif; ?>
           <span><?= $texto ?><?php if ($ayuda !== ''): ?><small><?= $ayuda ?></small><?php endif; ?></span>
           <input type="radio" name="<?= $nombre ?>" value="<?= $valor ?>" data-ajuste>
