@@ -1,0 +1,25 @@
+@layer componentes {
+/* Radio: círculo fino. Marcado: relleno primario con punto blanco */
+input[type="radio"] {
+  appearance: none;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--entrada);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="radio"]:checked { background: var(--primario); border-color: var(--primario); }
+input[type="radio"]:checked::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--primario-texto); }
+input[type="radio"]:focus-visible { outline: 2px solid var(--anillo); outline-offset: 2px; }
+input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
+input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
+
+@media (forced-colors: active) {
+  input[type="radio"]:checked { forced-color-adjust: none; background: Highlight; border-color: Highlight; }
+}
+}

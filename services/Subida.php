@@ -6,19 +6,19 @@ namespace App\Services;
 
 use App\Core\Log;
 
-// RNF-03. Revisa el contenido, no solo el nombre. Guarda fuera de public/.
+// RNF-03. Revisa el contenido, no solo el nombre. Guarda fuera de public/
 final class Subida
 {
     private const MAX_BYTES = 5 * 1024 * 1024;
 
-    // Tipo de evidencia => extensión => inicio del tipo MIME real.
+    // Tipo => extensión => inicio del MIME real
     private const PERMITIDOS = [
         1 => ['png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg'],
         2 => ['txt' => 'text/', 'log' => 'text/'],
     ];
 
     /**
-     * Null si sirve.
+     * Null si sirve
      *
      * @param array{name: string, tmp_name: string, size: int, error: int}|null $archivo
      */
@@ -44,8 +44,8 @@ final class Subida
     }
 
     /**
-     * Ya revisado con error(). Devuelve el nombre guardado: sha256 del contenido.
-     * Archivo idéntico se guarda 1 vez, #118. $nuevo = false si ya estaba.
+     * Ya revisado con error(). Da el nombre guardado: sha256 del contenido
+     * Archivo idéntico se guarda 1 vez, #118. $nuevo = false si ya estaba
      *
      * @param array{name: string, tmp_name: string, size: int, error: int} $archivo
      * @param-out bool $nuevo
@@ -67,7 +67,7 @@ final class Subida
         return RAIZ . '/storage/evidencias/' . basename($guardado);
     }
 
-    // Por la extensión propia: lo guardado ya pasó error().
+    // Extensión propia: ya pasó error()
     public static function mime(string $guardado): string
     {
         return match (pathinfo($guardado, PATHINFO_EXTENSION)) {

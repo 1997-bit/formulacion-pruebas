@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Core\ErrorNoEncontrado;
 use App\Core\ErrorPermiso;
 
-// Matriz 7.1 del IR.
+// Matriz 7.1 del IR
 final class Permisos
 {
     /** @param array<string, mixed> $usuario */
@@ -18,7 +18,7 @@ final class Permisos
         }
     }
 
-    // 404 y no 403: no revela ids de otros proyectos. BUG-026.
+    // 404 y no 403: no revela ids de otros proyectos, BUG-026
     /** @param array<string, mixed> $usuario */
     public static function exigirMiembro(array $usuario, int $proyectoId): void
     {
@@ -28,8 +28,8 @@ final class Permisos
     }
 
     /**
-     * Proyectos visibles en una lista. null: admin, todos.
-     * Vienen del usuario de sesión, leído en cada petición, #109. Con proyecto activo, solo ese.
+     * Proyectos visibles. null: admin, todos
+     * Del usuario leído en cada petición, #109. Con proyecto activo: solo ese
      *
      * @param array<string, mixed> $usuario
      * @return list<int>|null

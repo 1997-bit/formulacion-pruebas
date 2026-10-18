@@ -1,16 +1,16 @@
--- Datos de prueba, después de schema.sql. Usuarios y claves en el README.
+-- Después de schema.sql. Usuarios y claves en el README
 
 INSERT INTO usuarios (id, nombre, usuario, clave, rol, creado_en) VALUES
     (1, 'Administrador', 'admin', '$argon2id$v=19$m=19456,t=2,p=1$d09NYS5LaURCNlk5Lm9Zdg$jkID5L8R9fqmximrtTmhsOawXNyqoEEWQyawMkYGyBw', 1, '2026-09-30 17:42:10'),
     (2, 'Gloria', 'gloria', '$argon2id$v=19$m=19456,t=2,p=1$bmY4WlFmZW8yNGpOVUdpTw$OpU3uuLI/Q/+0mjEPOX+wI98Rp+hlHt4jTap2qdL2D8', 0, '2026-10-01 08:31:44'),
     (3, 'Pan', 'pan', '$argon2id$v=19$m=19456,t=2,p=1$UE02Y2pnTHg3R29TN2JDbg$ISFnKVHqnWwIohGc7DJhw08gWXFpe5DZk55CMAgMkfw', 0, '2026-10-01 08:36:02');
 
--- El primero es este sistema. Requerimientos del IR.
+-- El primero es este sistema, requerimientos del IR
 INSERT INTO proyectos (id, nombre, descripcion, creado_en) VALUES
     (1, 'Formulación de pruebas', 'Este sistema: casos de prueba, formularios y evidencias.', '2026-10-01 08:20:31'),
     (2, 'Biblioteca escolar', 'Préstamo y devolución de libros para estudiantes.', '2026-10-05 09:12:08');
 
--- Gloria y Pan en los 2. El admin no es miembro.
+-- Gloria y Pan en los 2. El admin no es miembro
 INSERT INTO proyecto_miembros (proyecto_id, usuario_id) VALUES
     (1, 2), (1, 3), (2, 2), (2, 3);
 
@@ -1205,7 +1205,7 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         2, 'Las dos responden 200 con el contenido: usuario y clave de la base, y el seed.',
         'Solo storage/ tiene .htaccess. Falta uno en la raíz y la guía que diga que la raíz es public/ (BUG-022). Ver BUG-054.',
         3, '2026-10-12 14:47:46', 3, '2026-10-12 15:25:25', 'Crítico: riesgo de seguridad o de pérdida de datos en Ambiente.', 'a1cf4c8'),
-    -- Pruebas automáticas. Un caso por archivo de tests/ sin caso.
+    -- Pruebas automáticas. Un caso por archivo de tests/
     (110, 1, 18, 'UNI-012', 1, 1, 'Ambiente', 1,
         'PHPUnit 11, PHP 8.5, Linux',
         'Verificar las clases de líneas que lee Env::cargar.',
@@ -1669,9 +1669,9 @@ INSERT INTO casos_prueba (id, proyecto_id, requerimiento_id, codigo, tipo_prueba
         NULL,
         3, '2026-10-09 14:20:00', NULL, NULL, NULL, NULL);
 
--- Solicitado: quien registró el caso, o el primer miembro si fue el admin. El admin no es miembro.
--- Aprobado: otro miembro del proyecto.
--- Pendiente no tiene aprobación: así se ve el panel derecho vacío.
+-- Solicitado: quien lo registró o el primer miembro si fue el admin
+-- Aprobado: otro miembro del proyecto
+-- Pendiente sin aprobación: panel derecho vacío
 UPDATE casos_prueba c SET c.solicitado_por = COALESCE((
     SELECT m.usuario_id
     FROM proyecto_miembros m
@@ -1693,7 +1693,7 @@ UPDATE casos_prueba c SET c.aprobado_por = COALESCE((
 ), c.solicitado_por)
 WHERE c.estado <> 0;
 
--- RF-24. Un caso OK lleva al menos 1 evidencia.
+-- RF-24. Un caso OK lleva al menos 1 evidencia
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en) VALUES
     (133, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/159', 'tests/Services/IncidenteServicioTest.php en verde en CI, PR #159', 3, '2026-10-14 17:11:25'),
     (136, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/158', 'tests/Services/ReporteServicioTest.php en verde en CI, PR #158', 2, '2026-10-15 08:47:09'),
@@ -1705,7 +1705,7 @@ INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_e
     (38, 4, 'https://github.com/1997-bit/formulacion-pruebas/pull/156', 'tests/Services/CasoServicioTest.php en verde en CI, PR #156', 2, '2026-10-13 14:44:20'),
     (1, 4, 'https://github.com/1997-bit/formulacion-pruebas/issues/38', 'Registro de la prueba con las capturas de los dos mensajes.', 2, '2026-10-01 10:35:07');
 
--- Evidencias reproducidas en el commit del bug.
+-- Evidencias reproducidas en el commit del bug
 INSERT INTO evidencias (caso_id, tipo, archivo, nombre_original, descripcion, subido_por, subido_en) VALUES
     (8, 1, '9c4b520d7ff2bb85017d09c2fa04f924f4fdc2b3466cb0295ebeb6a3c08c7fc0.png', 'bug-002-sin-historial.png', 'SIS-001 visto como pan: no sale la sección Historial', 3, '2026-10-05 17:50:59'),
     (63, 2, '8924485d4b07ce510277b2351eb11ca6b879e042130a6276db98f26c108bc300.log', 'bug-008-500.log', 'POST con un objetivo de 70 000 caracteres: 500 y página vacía', 2, '2026-10-07 11:54:26'),
@@ -1713,8 +1713,8 @@ INSERT INTO evidencias (caso_id, tipo, archivo, nombre_original, descripcion, su
     (72, 2, '7a0153901b59704da4f4656f5cc62f2652cad3106c86d71ff683b68b043af829.log', 'bug-017-cabeceras.log', 'Cabeceras de la respuesta: sin X-Frame-Options ni CSP', 2, '2026-10-08 09:48:16'),
     (103, 1, 'acdc05743538996447c2d079b279fde99ec0b49351744d2835ad3336f4e0a6cf.png', 'bug-048-ok-con-incidente.png', 'SIS-004 queda en OK con BUG-002 abierto', 2, '2026-10-12 10:12:07');
 
--- RF-19. Los FAULT de arriba con su incidente. BUG-008 es stopper y sigue abierto.
--- BUG-041 está En progreso. BUG-003 es stopper, pero el bloque de corregidos lo cierra.
+-- RF-19. FAULT con su incidente. BUG-008 es stopper abierto
+-- BUG-041 En progreso. BUG-003 lo cierra el bloque de corregidos
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado, resultado_obtenido,
     severidad, prioridad, estado, es_stopper, asignado_id, creado_por, creado_en, commit_afectado) VALUES
     (1, 7, 'BUG-001', 'Un 0 en Entorno o Precondiciones se guarda vacío', 'Casos',
@@ -2072,8 +2072,8 @@ INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcio
         'Cobra B/. 0,75: cuenta sábado y domingo.',
         2, 2, 0, 0, 2, 2, '2026-10-09 09:22:31', '7d03f58');
 
--- RF-09, formulario 2. Matrices desde las reglas del código y los casos del requerimiento.
--- RF-06, RF-20 y otros sin matriz: así se ve "Crear matriz".
+-- RF-09, formulario 2. Matrices de las reglas del código
+-- Sin matriz: se ve "Crear matriz"
 INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, clases_invalidas, valores_representativos, resultado_esperado, guardado_por, guardado_en) VALUES
     -- RF-01 Iniciar sesión: AccesoServicio::entrar
     (1, 1, 'Usuario', 'Existe; los espacios de los lados se quitan.', 'No existe; vacío.', 'gloria, '' gloria '', noexiste, (vacío)',
@@ -2156,7 +2156,7 @@ INSERT INTO clases_equivalencia (requerimiento_id, orden, campo, clase_valida, c
         'admin edita a pan; admin se pone tester; pan abre /admin/usuarios/editar',
         'admin cambia el rol de pan. Al quitarse el suyo: "No puede quitarse su propio rol de admin." pan recibe 403.', 3, '2026-10-06 18:01:07');
 
--- RF-10, formulario 3. Fronteras de las reglas del formulario 2. Cada límite con su valor de antes y de después.
+-- RF-10, formulario 3. Cada límite con su valor de antes y después
 INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, maximo, valores_limite, resultado_esperado, guardado_por, guardado_en) VALUES
     -- RF-02 Crear cuenta: UsuarioServicio
     (10, 1, 'Usuario', '1 a 30 caracteres', '1', '30', '0, 1, 2, 29, 30, 31 caracteres',
@@ -2187,7 +2187,7 @@ INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, 
     -- RF-01 de Biblioteca escolar: caso INT-001
     (3, 1, 'Préstamos activos', '0 a 2', '0', '2', '0, 1, 2, 3',
         'Presta con 0, 1 y 2. Con 3 no presta y dice "Tiene 3 préstamos activos".', 2, '2026-10-06 13:50:21'),
-    -- RNF-06 Fechas: Validador::fecha. Los valores fuera del calendario se envían a mano.
+    -- RNF-06 Fechas: Validador::fecha. Fuera del calendario: a mano
     (17, 1, 'Día del mes', '1 al último día del mes', '1', '31 en enero', '2026-01-00, 2026-01-01, 2026-01-31, 2026-01-32',
         'Acepta 01 y 31 y los muestra 01/01/2026 y 31/01/2026. Con 00 y 32: "Fecha inválida."', 2, '2026-10-06 17:02:17'),
     (17, 2, 'Febrero', '1 a 28; 29 en año bisiesto', '1', '28 o 29', '2026-02-28, 2026-02-29, 2028-02-29, 2028-02-30',
@@ -2209,7 +2209,7 @@ INSERT INTO valor_limite (requerimiento_id, orden, campo, rango_valido, minimo, 
     (21, 3, 'Texto de condición o acción', '1 a 255 caracteres', '1', '255', '0, 1, 255, 256 caracteres',
         'Acepta 1 y 255. Con 0: "Es obligatorio." Con 256: "Máximo 255 caracteres."', 2, '2026-10-06 17:33:21');
 
--- RF-15, formulario 8. Gloria se evaluó y evaluó a Pan. Pan no: así se ve "Llenar evaluación". El comentario va en la autoevaluación.
+-- RF-15, formulario 8. Gloria se evaluó y evaluó a Pan. Pan no: se ve "Llenar evaluación"
 INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, puntos, comentario) VALUES
     (1, 2, 2, 1, 4, NULL),
     (1, 2, 2, 2, 5, 'Usé partición de equivalencia y valor límite en los formularios 2 y 3.'),
@@ -2224,7 +2224,7 @@ INSERT INTO autoevaluaciones (proyecto_id, evaluador_id, evaluado_id, aspecto, p
     (1, 2, 3, 5, 5, NULL),
     (1, 2, 3, 6, 4, NULL);
 
--- RF-14, formulario 7, del admin. Total 25 / 30. Biblioteca sin rúbrica: así se ve "Llenar rúbrica".
+-- RF-14, formulario 7. Total 25 / 30. Biblioteca sin rúbrica: se ve "Llenar rúbrica"
 INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por, evaluado_en) VALUES
     (1, 1, 5, 1, '2026-10-09 09:15:06'),
     (1, 2, 4, 1, '2026-10-09 09:15:06'),
@@ -2233,7 +2233,7 @@ INSERT INTO rubrica_evaluaciones (proyecto_id, criterio, puntos, evaluado_por, e
     (1, 5, 5, 1, '2026-10-09 09:15:06'),
     (1, 6, 4, 1, '2026-10-09 09:15:06');
 
--- RF-11, formulario 4. Condiciones V/F, acciones X. Celda sin marcar = sin fila.
+-- RF-11, formulario 4. Celda sin marcar = sin fila
 INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
     -- RF-01 Iniciar sesión: AccesoServicio
     (1, 1, 0, 'El usuario existe', 2, '2026-10-06 14:04:07'),
@@ -2252,7 +2252,7 @@ INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_
     (3, 4, 1, 'Dice "Tiene 3 préstamos activos"', 2, '2026-10-06 15:00:53'),
     (3, 5, 1, 'Dice "Tiene una multa sin pagar"', 2, '2026-10-06 15:00:53');
 
--- Requerimiento, fila, regla, valor. Condición: 1 V, 0 F. Acción: 1 X.
+-- Requerimiento, fila, regla, valor. Condición: 1 V, 0 F. Acción: 1 X
 INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (1, 1, 1, 1), (1, 1, 2, 1), (1, 1, 3, 0), (1, 1, 4, 0),
     (1, 2, 1, 1), (1, 2, 2, 0), (1, 2, 3, 1), (1, 2, 4, 0),
@@ -2260,12 +2260,12 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (5, 1, 1, 1), (5, 1, 2, 1), (5, 1, 3, 0), (5, 1, 4, 0),
     (5, 2, 1, 1), (5, 2, 2, 0), (5, 2, 3, 1), (5, 2, 4, 0),
     (5, 3, 1, 1), (5, 3, 2, 1), (5, 3, 3, 1), (5, 4, 4, 1),
-    -- Con 3 préstamos la multa no importa: reglas 1 y 2 iguales.
+    -- Con 3 préstamos la multa no importa: reglas 1 y 2 iguales
     (3, 1, 1, 1), (3, 1, 2, 1), (3, 1, 3, 0), (3, 1, 4, 0),
     (3, 2, 1, 1), (3, 2, 2, 0), (3, 2, 3, 1), (3, 2, 4, 0),
     (3, 4, 1, 1), (3, 4, 2, 1), (3, 5, 3, 1), (3, 3, 4, 1);
 
--- RF-11. Tablas de permisos y del resultado del caso.
+-- RF-11. Tablas de permisos y del resultado del caso
 INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_por, guardado_en) VALUES
     -- RF-24 Anotar resultado: CasoServicio::validarResultado
     (9, 1, 0, 'Estado OK o FAULT', 2, '2026-10-06 15:37:55'),
@@ -2274,7 +2274,7 @@ INSERT INTO decision_filas (requerimiento_id, orden, es_accion, texto, guardado_
     (9, 4, 1, 'Guarda el resultado', 2, '2026-10-06 15:37:55'),
     (9, 5, 1, 'Dice "Es obligatorio con OK o FAULT."', 2, '2026-10-06 15:37:55'),
     (9, 6, 1, 'Dice "Con OK o FAULT hace falta al menos una."', 2, '2026-10-06 15:37:55'),
-    -- RF-02 Crear cuenta. El registro público ignora el rol.
+    -- RF-02 Crear cuenta. El registro público ignora el rol
     (10, 1, 0, 'Lo crea un admin desde Usuarios', 3, '2026-10-06 15:55:28'),
     (10, 2, 0, 'Elige el rol admin', 3, '2026-10-06 15:55:28'),
     (10, 3, 1, 'Crea la cuenta como admin', 3, '2026-10-06 15:55:28'),
@@ -2344,8 +2344,8 @@ INSERT INTO decision_celdas (requerimiento_id, fila_orden, regla, valor) VALUES
     (20, 4, 1, 1),
     (20, 5, 3, 1), (20, 5, 4, 1);
 
--- F5. XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage, 497 pruebas. Una clase por requerimiento.
--- Sentencias = líneas, decisiones = ramas, caminos = caminos. Xdebug no mide condiciones ni bucles.
+-- F5. XDEBUG_MODE=coverage phpunit --coverage-text --path-coverage, 497 pruebas. Una clase por requerimiento
+-- Sentencias = líneas, decisiones = ramas. Xdebug no mide condiciones ni bucles
 INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porcentaje, herramienta, guardado_por, guardado_en) VALUES
     -- RF-01 Acceso: AccesoServicio
     (1, 11, 23, 23, 100, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-15 10:18:52'),
@@ -2372,7 +2372,7 @@ INSERT INTO cobertura_blanca (requerimiento_id, metrica, total, cubiertos, porce
     (14, 12, 24, 20, 83, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-15 10:18:52'),
     (14, 16, 16, 7, 44, 'PHPUnit 11.5 + Xdebug 3.5', 1, '2026-10-15 10:18:52');
 
--- RF-13, formulario 6. El plan 1 no cierra mientras BUG-003, stopper, siga abierto.
+-- RF-13, formulario 6. El plan 1 no cierra con BUG-003 abierto
 INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, objetivos, estrategia, recursos, cronograma,
     criterios_aceptacion, riesgos, estado, actualizado_en) VALUES
     (1, '1.0', 2, '2026-10-01',
@@ -2391,8 +2391,8 @@ INSERT INTO plan_pruebas (proyecto_id, version, responsable_id, fecha, alcance, 
         'Las reglas de préstamo de RF-01 cumplidas en todas sus particiones.',
         NULL, 0, '2026-10-01 10:53:41');
 
--- Bugs corregidos según docs/bugs_corregidos.md. El caso FAULT y el incidente quedan.
--- Tabla normal: MySQL no usa una TEMPORARY 2 veces en una consulta. Se borra al final.
+-- docs/bugs_corregidos.md. El caso FAULT y el incidente quedan
+-- Tabla normal: MySQL no usa una TEMPORARY 2 veces en una consulta
 DROP TABLE IF EXISTS corregidos;
 CREATE TABLE corregidos (
     bug VARCHAR(10) PRIMARY KEY,
@@ -2431,13 +2431,13 @@ INSERT INTO corregidos (bug, pr, hash, fecha, obtenido, usuario) VALUES
     ('BUG-021', 189, '9581e88', '2026-10-15 16:35:26', 'Los bordes de campo miden 3,4:1 en claro y 3,1:1 en oscuro.', 2),
     ('BUG-057', 196, '1e2c7ad', '2026-10-15 18:45:34', 'SEG-002 sale solo en Casos atrasados, con "Tuyo".', 2);
 
--- Paso 1: incidente Cerrado con el commit que lo corrige. Paso 5: rastro en su historial.
+-- Paso 1: incidente Cerrado con su commit. Paso 5: historial
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
 SELECT 'incidentes', i.id, k.usuario, 'estado', i.estado, '2', k.fecha
 FROM incidentes i JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
 UPDATE incidentes i JOIN corregidos k ON k.bug = i.codigo SET i.estado = 2, i.commit_corregido = k.hash WHERE i.proyecto_id = 1;
 
--- Paso 5: rastro del caso antes del cambio.
+-- Paso 5: rastro del caso antes del cambio
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
 SELECT 'casos_prueba', c.id, k.usuario, 'estado', c.estado, '1', k.fecha
 FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1
@@ -2454,13 +2454,13 @@ UNION ALL
 SELECT 'casos_prueba', c.id, k.usuario, 'commit_probado', c.commit_probado, k.hash, k.fecha
 FROM casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo WHERE i.proyecto_id = 1;
 
--- Pasos 2 y 3: la regresión pasa en el commit corregido, caso OK. Paso 6: PR en observaciones.
+-- Pasos 2 y 3: regresión OK en el commit corregido. Paso 6: PR en observaciones
 UPDATE casos_prueba c JOIN incidentes i ON i.caso_id = c.id JOIN corregidos k ON k.bug = i.codigo
 SET c.estado = 1, c.resultado_obtenido = k.obtenido, c.observaciones = CONCAT(c.observaciones, ' Corregido en el PR #', k.pr, '.'),
     c.impacto = 'Ninguno después de la corrección.', c.commit_probado = k.hash, c.anotado_por = k.usuario, c.anotado_en = k.fecha
 WHERE i.proyecto_id = 1;
 
--- Paso 4: evidencia con el enlace al PR, solo en los más graves.
+-- Paso 4: evidencia con el PR, solo en los más graves
 INSERT INTO evidencias (caso_id, tipo, enlace, descripcion, subido_por, subido_en)
 SELECT i.caso_id, 4, CONCAT('https://github.com/1997-bit/formulacion-pruebas/pull/', k.pr), CONCAT('Regresión de ', k.bug, ' en verde, commit ', k.hash), k.usuario, k.fecha + INTERVAL 6 SECOND
 FROM incidentes i JOIN corregidos k ON k.bug = i.codigo
@@ -2468,12 +2468,12 @@ WHERE i.proyecto_id = 1 AND k.bug IN ('BUG-003', 'BUG-007', 'BUG-016', 'BUG-017'
 
 DROP TABLE corregidos;
 
--- BUG-002: corregido en el build 3426060, en progreso hasta repetir SIS-004.
+-- BUG-002: arreglo en 3426060, en progreso hasta repetir SIS-004
 UPDATE incidentes SET estado = 1, commit_corregido = '3426060', asignado_id = 3 WHERE proyecto_id = 1 AND codigo = 'BUG-002';
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
 SELECT 'incidentes', id, 2, 'estado', '0', '1', '2026-10-15 18:40:58' FROM incidentes WHERE proyecto_id = 1 AND codigo = 'BUG-002';
 
--- Historial: resultados anotados después de crear el caso y fechas finales movidas.
+-- Historial: resultados después de crear el caso y fechas finales movidas
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha) VALUES
     ('casos_prueba', 1, 2, 'estado', '0', '1', '2026-10-01 10:35:07'),
     ('casos_prueba', 1, 2, 'resultado_obtenido', NULL, 'Los dos intentos mostraron "Usuario o contraseña incorrectos." y la página siguió en el login.', '2026-10-01 10:35:07'),
@@ -2771,7 +2771,7 @@ INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues,
     ('casos_prueba', 143, 3, 'impacto', NULL, 'Medio: afecta a Panel, hay una forma de seguir.', '2026-10-15 17:27:39'),
     ('casos_prueba', 143, 3, 'commit_probado', NULL, 'daf501c', '2026-10-15 17:27:39');
 
--- Fechas relativas: todo se corre en semanas enteras hasta la semana de hoy. Los días hábiles siguen hábiles.
+-- Fechas relativas: se corre en semanas enteras hasta hoy. Los días hábiles siguen hábiles
 SET @dias = FLOOR(DATEDIFF(CURDATE(), '2026-10-16') / 7) * 7;
 UPDATE usuarios SET creado_en = creado_en + INTERVAL @dias DAY;
 UPDATE proyectos SET creado_en = creado_en + INTERVAL @dias DAY;

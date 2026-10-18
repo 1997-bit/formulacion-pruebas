@@ -1,4 +1,4 @@
-// Interfaz: sidebar, menús, diálogos, tooltips, tablas editables, totales y tema. Módulo ES: diferido y en modo estricto, sin IIFE.
+// Sidebar, menús, diálogos, tooltips, tablas editables, totales y tema. Módulo ES: diferido y estricto
 const raiz = document.documentElement;
 const sidebar = document.getElementById('sidebar');
 const alternar = document.getElementById('sidebar-alternar');
@@ -15,7 +15,7 @@ if (sidebar && alternar) {
 
   const fijarColapsado = (valor) => {
     raiz.dataset.sidebar = valor ? 'colapsado' : 'expandido';
-    // Cookie: PHP pinta el estado en la próxima página.
+    // Cookie: PHP pinta el estado en la próxima página
     document.cookie = `sidebar=${raiz.dataset.sidebar}; path=/; max-age=31536000; SameSite=Lax`;
     sincronizarAria();
   };
@@ -47,7 +47,7 @@ if (sidebar && alternar) {
     if (e.key === 'Escape' && movilAbierto()) cerrarMovil();
   });
 
-  // Sidebar colapsado: abrir un grupo lo expande.
+  // Colapsado: abrir un grupo lo expande
   sidebar.querySelectorAll('.sidebar-desplegable > summary').forEach((summary) => {
     summary.addEventListener('click', (e) => {
       if (escritorio.matches && colapsado()) {
@@ -55,7 +55,7 @@ if (sidebar && alternar) {
         fijarColapsado(false);
         summary.parentElement.open = true;
       } else if ('medio' in raiz.dataset && !movilAbierto()) {
-        // Tablet en rail: abre el menú completo con el grupo abierto.
+        // Tablet en rail: menú completo con el grupo abierto
         e.preventDefault();
         summary.parentElement.open = true;
         abrirMovil();
@@ -63,7 +63,7 @@ if (sidebar && alternar) {
     });
   });
 
-  // Ajustes → Apariencia: radio del menú lateral.
+  // Radio del menú lateral en Ajustes
   document.addEventListener('change', (e) => {
     if (e.target.matches('input[name="sidebar"][data-ajuste]')) fijarColapsado(e.target.value === 'colapsado');
   });
@@ -75,13 +75,13 @@ if (sidebar && alternar) {
   sincronizarAria();
 }
 
-// Menús popover sin anchor positioning: se ubican junto a su botón al abrir. data-lado: abajo o arriba.
+// Popover sin anchor positioning: junto a su botón. data-lado: abajo o arriba
 if (!CSS.supports('anchor-name: --a')) {
   document.querySelectorAll('[popover][data-lado]').forEach((menu) => {
     menu.addEventListener('toggle', (e) => {
       if (e.newState !== 'open') return;
       const r = document.querySelector(`[popovertarget="${menu.id}"]`).getBoundingClientRect();
-      // Rail: escritorio colapsado o tablet. Se mide en lugar de repetir las reglas del CSS.
+      // Rail: escritorio colapsado o tablet. Se mide, no repite el CSS
       const colapsado = (sidebar?.offsetWidth ?? 0) < 100;
       Object.assign(menu.style, colapsado
         ? { left: `${r.right + 8}px`, top: menu.dataset.lado === 'abajo' ? `${r.top}px` : 'auto', bottom: menu.dataset.lado === 'arriba' ? `${innerHeight - r.bottom}px` : 'auto', width: 'auto' }
@@ -90,29 +90,29 @@ if (!CSS.supports('anchor-name: --a')) {
   });
 }
 
-// <button command="show-modal" commandfor="id"> abre <dialog id="id"> sin JS. Respaldo para navegadores sin command.
+// Respaldo de command="show-modal" para navegadores sin command
 if (!('command' in HTMLButtonElement.prototype)) {
   document.querySelectorAll('[command="show-modal"]').forEach((boton) => {
     boton.addEventListener('click', () => document.getElementById(boton.getAttribute('commandfor'))?.showModal());
   });
 }
-// <dialog closedby="any"> cierra con clic en el velo. Respaldo para navegadores sin closedby.
+// Respaldo de closedby="any": clic en el velo cierra
 document.addEventListener('click', (e) => {
   if (!(e.target instanceof HTMLDialogElement) || 'closedBy' in HTMLDialogElement.prototype) return;
   const r = e.target.getBoundingClientRect();
   if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close();
 });
 
-// Aviso flotante: cierra a los 5 s o con ✕. Espera con mouse o foco encima.
+// Aviso flotante: cierra a los 5 s o con ✕. Espera con mouse o foco encima
 const aviso = document.querySelector('.aviso-flotante');
 if (aviso) {
   const cerrar = () => (aviso.matches(':hover, :focus-within') ? setTimeout(cerrar, 1000) : aviso.remove());
-  // Con acción no se cierra solo: da tiempo de usarla. WCAG 2.2.1.
+  // Con acción no cierra solo, WCAG 2.2.1
   if (!aviso.querySelector('[data-aviso-accion]')) setTimeout(cerrar, 5000);
   aviso.querySelector('[data-cerrar-aviso]').addEventListener('click', () => aviso.remove());
 }
 
-// Resumen de errores, patrón GOV.UK: un enlace por campo con error, foco al resumen. Sin JS queda el título y el error en cada campo.
+// Resumen de errores, GOV.UK: un enlace por campo, foco al resumen. Sin JS: título y error por campo
 const resumen = document.querySelector('.alerta-error');
 if (resumen) {
   const lista = document.createElement('ul');
@@ -145,7 +145,7 @@ if (resumen) {
   resumen.focus();
 }
 
-// Un envío por form. Atrás lo libera.
+// Un envío por form. Atrás lo libera
 document.addEventListener('submit', (e) => {
   const form = e.target;
   if (form.method === 'dialog' || e.submitter?.formMethod === 'dialog') return;
@@ -153,19 +153,19 @@ document.addEventListener('submit', (e) => {
   form.dataset.enviando = '';
   e.submitter?.setAttribute('aria-disabled', 'true');
 });
-// Página lenta: esqueleto en el contenido si la nueva tarda más de 150 ms. Atrás lo quita.
+// Esqueleto si la página tarda más de 150 ms. Atrás lo quita
 const principal = document.getElementById('principal');
 let esqueleto;
 const esperar = () => { esqueleto = setTimeout(() => principal?.setAttribute('aria-busy', 'true'), 150); };
 document.addEventListener('click', (e) => {
   const a = e.target instanceof Element ? e.target.closest('a[href]') : null;
   if (!a || e.defaultPrevented || e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-  // Con cambios sin guardar el navegador pregunta. Si el usuario se queda, no hay esqueleto.
+  // Cambios sin guardar: el navegador pregunta. Si se queda, sin esqueleto
   if (sinGuardar || a.target || a.hasAttribute('download') || a.origin !== location.origin || (a.hash && a.pathname === location.pathname)) return;
   esperar();
 });
 document.addEventListener('submit', (e) => { if (!e.defaultPrevented && e.target.method !== 'dialog') esperar(); });
-// Salir: Atrás no muestra páginas de la sesión cerrada desde bfcache.
+// Salir: Atrás no muestra la sesión cerrada desde bfcache
 document.addEventListener('submit', (e) => {
   if (e.target.action.endsWith('/salir')) try { localStorage.setItem('salida', String(Date.now())); } catch { /* sin localStorage: modo privado o bloqueado */ }
 });
@@ -181,13 +181,13 @@ window.addEventListener('pageshow', (e) => {
   });
 });
 
-// Form POST sin guardar: el navegador pregunta antes de salir.
+// Form POST sin guardar: pregunta antes de salir
 let sinGuardar = false;
 document.addEventListener('input', (e) => { if (e.target.form?.method === 'post') sinGuardar = true; });
 document.addEventListener('submit', () => { sinGuardar = false; });
 window.addEventListener('beforeunload', (e) => { if (sinGuardar) e.preventDefault(); });
 
-// Escape esconde los tooltips hasta mover el mouse o el foco.
+// Escape esconde tooltips hasta mover el mouse o el foco
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') raiz.setAttribute('data-tooltips-ocultos', '');
 });
@@ -195,7 +195,7 @@ const mostrarTooltips = () => raiz.removeAttribute('data-tooltips-ocultos');
 document.addEventListener('pointermove', mostrarTooltips);
 document.addEventListener('focusin', mostrarTooltips);
 
-// data-agregar-fila="tbody" copia <template id="tbody-fila">. data-quitar-fila borra. Mínimo 1 fila.
+// data-agregar-fila="tbody" copia <template id="tbody-fila">. data-quitar-fila borra. Mínimo 1
 document.addEventListener('click', (e) => {
   const agregar = e.target.closest('[data-agregar-fila]');
   if (agregar) {
@@ -217,7 +217,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Totales en vivo, solo visuales: el servidor recalcula. data-suma, data-promedio, data-porcentaje.
+// Totales en vivo, solo visuales: el servidor recalcula
 function calcular() {
   document.querySelectorAll('output[data-suma], output[data-promedio]').forEach((salida) => {
     const grupo = salida.dataset.suma ?? salida.dataset.promedio;
@@ -232,7 +232,7 @@ function calcular() {
     const fila = salida.closest('tr');
     const total = fila.querySelector('[data-parte="total"]')?.value ?? '';
     const cubiertos = fila.querySelector('[data-parte="cubiertos"]')?.value ?? '';
-    // Redondeo de CoberturaServicio::porcentaje(): multiplica antes de dividir.
+    // Redondeo de CoberturaServicio::porcentaje()
     const valido = /^\d+$/.test(total) && /^\d+$/.test(cubiertos) && Number(total) > 0 && Number(cubiertos) <= Number(total);
     const porcentaje = valido ? Math.round((Number(cubiertos) * 100) / Number(total)) : 0;
     salida.textContent = valido ? `${porcentaje} %` : '—';
@@ -243,7 +243,7 @@ function calcular() {
 document.addEventListener('input', calcular);
 calcular();
 
-// Tablero: soltar en otra columna pulsa su botón "Mover a".
+// Tablero: soltar en otra columna pulsa "Mover a"
 let arrastrada = null;
 const columnaDe = (e) => (e.target instanceof Element ? e.target.closest('[data-columna-estado]') : null);
 document.addEventListener('dragstart', (e) => {
@@ -271,7 +271,7 @@ document.addEventListener('dragend', () => {
   document.querySelectorAll('.soltar').forEach((c) => c.classList.remove('soltar'));
 });
 
-// Recientes: caso o incidente abierto, máximo 5. Para el panel y la paleta.
+// Recientes: caso o incidente abierto, máximo 5. Panel y paleta
 const marca = document.querySelector('[data-reciente]');
 let recientes = [];
 try { recientes = JSON.parse(localStorage.getItem('recientes')) || []; } catch { /* sin localStorage: modo privado o bloqueado */ }
@@ -297,7 +297,7 @@ document.querySelectorAll('[data-imprimir]').forEach((boton) => {
   boton.addEventListener('click', () => window.print());
 });
 
-// Al imprimir: abre los <details> cerrados del contenido y los cierra después. push: beforeprint puede llegar dos veces.
+// Al imprimir abre los <details> y luego los cierra. push: beforeprint puede llegar 2 veces
 const plegados = [];
 addEventListener('beforeprint', () => {
   plegados.push(...document.querySelectorAll('.app-principal details:not([open])'));
@@ -307,7 +307,7 @@ addEventListener('afterprint', () => {
   plegados.splice(0).forEach((d) => { d.open = false; });
 });
 
-// data-desde="id-inicio": fecha final no anterior.
+// data-desde="id-inicio": final no anterior al inicio
 document.querySelectorAll('input[data-desde]').forEach((fin) => {
   const inicio = document.getElementById(fin.dataset.desde);
   if (!inicio) return;
@@ -316,7 +316,7 @@ document.querySelectorAll('input[data-desde]').forEach((fin) => {
   ajustar();
 });
 
-// data-cuando="nombre=valor": visible y enviado solo con esa opción marcada.
+// data-cuando="nombre=valor": visible y enviado solo con esa opción
 const mostrarSegunMarcado = () => {
   document.querySelectorAll('[data-cuando]').forEach((bloque) => {
     const [nombre, valor] = bloque.dataset.cuando.split('=');
@@ -327,7 +327,7 @@ const mostrarSegunMarcado = () => {
 document.addEventListener('change', mostrarSegunMarcado);
 mostrarSegunMarcado();
 
-// data-vista-previa="id-img": muestra la imagen elegida.
+// data-vista-previa="id-img"
 document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
   const img = document.getElementById(entrada.dataset.vistaPrevia);
   entrada.addEventListener('change', () => {
@@ -337,7 +337,7 @@ document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
   });
 });
 
-// Tema y atajos en localStorage, igual en todas las pestañas. tema.js los aplica antes de pintar.
+// Tema y atajos en localStorage, iguales en todas las pestañas. tema.js los aplica antes de pintar
 const botonTema = document.getElementById('tema');
 const pintarTema = () => {
   if (!botonTema) return;
@@ -347,14 +347,14 @@ const pintarTema = () => {
 };
 const leer = (clave) => { try { return localStorage.getItem(clave); } catch { return null; } };
 const guardar = (clave, valor) => {
-  try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch { /* sin localStorage: modo privado o bloqueado */ }
+  try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch { /* sin localStorage */ }
 };
-// El valor por defecto no se guarda. AJUSTES está en tema.js. El menú lateral va en su cookie.
+// Por defecto no se guarda. AJUSTES en tema.js. Menú lateral en su cookie
 const valorAjuste = (nombre) => (nombre === 'sidebar' ? raiz.dataset.sidebar : leer(nombre) || AJUSTES[nombre]);
 const aplicarAjustes = () => {
   aplicarPreferencias();
   pintarTema();
-  // Radio: marcado si es el valor guardado. Switch value="si": marcado si vale 'si'.
+  // Radio: marcado si es lo guardado. Switch value="si": marcado con 'si'
   document.querySelectorAll('input[data-ajuste]').forEach((r) => {
     r.checked = r.value === valorAjuste(r.name);
   });
@@ -363,7 +363,7 @@ botonTema?.addEventListener('click', () => {
   guardar('tema', raiz.dataset.tema === 'dark' ? 'light' : 'dark');
   aplicarAjustes();
 });
-// Ajustes: cada opción se guarda al marcarla.
+// Cada opción se guarda al marcarla
 document.addEventListener('change', (e) => {
   if (!e.target.matches('input[data-ajuste]')) return;
   const { name, type, checked } = e.target;
@@ -373,6 +373,6 @@ document.addEventListener('change', (e) => {
   document.getElementById('ajuste-estado').textContent = 'Guardado.';
 });
 window.addEventListener('storage', aplicarAjustes);
-// Tema "Sistema": sigue al SO sin recargar.
+// Tema "Sistema": sigue al SO sin recargar
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarAjustes);
 aplicarAjustes();

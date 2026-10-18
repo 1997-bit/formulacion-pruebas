@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// Filas de los formularios 2 a 5. Key: requerimiento_id + orden, más guardado_por y guardado_en. $tabla y columnas vienen del servicio.
+// Formularios 2 a 5. Key: requerimiento_id + orden. $tabla y columnas vienen del servicio
 final class FilasModelo
 {
     /** @return list<array<string, mixed>> */
@@ -19,7 +19,7 @@ final class FilasModelo
     }
 
     /**
-     * Quién guardó la matriz y cuándo. Null si no tiene filas.
+     * Autor y fecha. Null sin filas
      *
      * @return array{autor: string, guardado_en: string}|null
      */
@@ -34,7 +34,7 @@ final class FilasModelo
     }
 
     /**
-     * Solo requerimientos de la página: máximo 20 grupos. #108.
+     * Solo requerimientos de la página: máximo 20 grupos, #108
      *
      * @param list<int> $requerimientos
      * @return array<int, int> requerimiento_id => filas
@@ -54,8 +54,8 @@ final class FilasModelo
     }
 
     /**
-     * Hash de lo guardado, tipo ETag, #100. Va oculto en el form. Si no coincide al guardar, otro guardó antes.
-     * FOR UPDATE: bloquea hasta el commit.
+     * Hash de lo guardado, tipo ETag, #100. Va oculto en el form. Distinto al guardar: otro guardó antes
+     * FOR UPDATE: lock hasta el commit
      *
      * @param list<string> $tablas
      */
@@ -72,7 +72,7 @@ final class FilasModelo
     }
 
     /**
-     * Un solo INSERT para todas las filas (#97). Sin filas no ejecuta nada.
+     * Un INSERT para todas las filas, #97
      *
      * @param list<string> $columnas
      * @param list<list<mixed>> $filas  valores en el orden de $columnas
@@ -89,8 +89,8 @@ final class FilasModelo
     }
 
     /**
-     * Guarda por diferencia (#98). Dentro de una transacción.
-     * Inserta las filas nuevas, borra las quitadas y actualiza las cambiadas. Sin cambios no escribe nada.
+     * Por diferencia, #98. En transacción
+     * INSERT nuevas, DELETE quitadas, UPDATE cambiadas. Sin cambios no escribe
      *
      * @param array<string, int> $dueno  p. ej. ['requerimiento_id' => 5]
      * @param list<string> $llave  columnas que distinguen la fila dentro del dueño, p. ej. ['orden']
@@ -137,7 +137,7 @@ final class FilasModelo
         if ($nuevas !== []) {
             self::insertar($tabla, array_keys($dueno + $filas[0] + $autor), $nuevas);
         }
-        // Lo que queda en $antes ya no viene: un DELETE.
+        // Lo que queda en $antes: DELETE
         if ($antes !== []) {
             $tupla = '(' . implode(', ', array_fill(0, count($llave), '?')) . ')';
             $pdo->prepare("DELETE FROM {$tabla} WHERE {$deDueno} AND (" . implode(', ', $llave) . ') IN ('
@@ -147,7 +147,7 @@ final class FilasModelo
     }
 
     /**
-     * Filas de F2 a F4 con orden 1, 2, 3…, por diferencia. Dentro de una transacción.
+     * F2 a F4 con orden 1, 2, 3…, por diferencia. En transacción
      *
      * @param list<string> $columnas
      * @param list<array<string, string>> $filas

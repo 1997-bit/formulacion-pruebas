@@ -6,7 +6,7 @@ namespace App\Core;
 
 use App\Helpers\Catalogo;
 
-// Junta errores y lanza ErrorValidacion.
+// Junta errores y lanza ErrorValidacion
 final class Validador
 {
     /** @var array<string, string> */
@@ -17,7 +17,7 @@ final class Validador
         return $this->regla($campo, trim((string) $valor) !== '', 'Es obligatorio.');
     }
 
-    // AAAA-MM-DD. Vacío pasa: usar requerido().
+    // AAAA-MM-DD. Vacío pasa
     public function fecha(string $campo, ?string $valor): self
     {
         $valor = trim((string) $valor);
@@ -26,7 +26,7 @@ final class Validador
         return $this->regla($campo, $valor === '' || ($fecha && $fecha->format('Y-m-d') === $valor), 'Fecha inválida.');
     }
 
-    // Vacío pasa: usar requerido().
+    // Vacío pasa
     public function catalogo(string $campo, string $catalogo, int|string|null $valor): self
     {
         $valor = trim((string) $valor);
@@ -34,7 +34,7 @@ final class Validador
         return $this->regla($campo, $valor === '' || Catalogo::existe($catalogo, $valor), 'Valor no válido.');
     }
 
-    // Hash de commit: 7 a 40 hexadecimales. Vacío pasa: usar requerido().
+    // Commit: 7 a 40 hexadecimales. Vacío pasa
     public function commit(string $campo, ?string $valor): self
     {
         $valor = trim((string) $valor);

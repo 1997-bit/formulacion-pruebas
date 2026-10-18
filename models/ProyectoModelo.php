@@ -44,8 +44,8 @@ final class ProyectoModelo
     }
 
     /**
-     * Permiso de lista, RF-05. Admin: null → TRUE, el optimizador lo descarta.
-     * Lista de ids: range sobre el índice. EXISTS o "? = 1 OR" leen toda la tabla.
+     * Permiso de lista, RF-05. Admin: null → TRUE, el optimizador lo descarta
+     * Ids: range sobre el índice. EXISTS o "? = 1 OR" leen toda la tabla
      *
      * @param list<int>|null $proyectos
      * @return array{0: string, 1: list<int>} condición y valores
@@ -68,7 +68,7 @@ final class ProyectoModelo
     }
 
     /**
-     * $id null: crea. Reemplaza miembros. ProyectoServicio abre la transacción.
+     * $id null: crea. ProyectoServicio abre la transacción
      *
      * @param list<int> $miembros
      */
@@ -81,7 +81,7 @@ final class ProyectoModelo
         } else {
             $pdo->prepare('UPDATE proyectos SET nombre = ?, descripcion = ? WHERE id = ?')->execute([$nombre, $descripcion, $id]);
         }
-        // Por diferencia: solo sale quien se quitó, con su auto y coevaluación. BUG-007.
+        // Por diferencia: solo sale quien se quitó, BUG-007
         FilasModelo::sincronizar(
             'proyecto_miembros',
             ['proyecto_id' => $id],
@@ -90,7 +90,7 @@ final class ProyectoModelo
         );
     }
 
-    // False si tiene requerimientos o casos.
+    // False con requerimientos o casos
     public static function eliminar(int $id): bool
     {
         try {

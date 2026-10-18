@@ -1,0 +1,35 @@
+@layer componentes {
+.progreso {
+  --progreso-color: var(--primario);
+  --progreso-pista: color-mix(in oklch, var(--progreso-color), transparent 80%);
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: var(--radio-total);
+  background: var(--progreso-pista);
+  overflow: hidden;
+}
+progress.progreso { appearance: none; }
+/* Una regla por pseudo-elemento: si una falla, las otras siguen */
+.progreso::-webkit-progress-bar { background: var(--progreso-pista); }
+.progreso::-webkit-progress-value { background: var(--progreso-color); border-radius: var(--radio-total); }
+.progreso::-moz-progress-bar { background: var(--progreso-color); border-radius: var(--radio-total); }
+meter.progreso { --progreso-pista: var(--secundario); }
+.progreso::-webkit-meter-bar { height: 8px; background: var(--progreso-pista); border: 0; border-radius: var(--radio-total); }
+.progreso::-webkit-meter-optimum-value { background: var(--exito); border-radius: var(--radio-total); }
+.progreso::-webkit-meter-suboptimum-value { background: var(--aviso); border-radius: var(--radio-total); }
+.progreso::-webkit-meter-even-less-good-value { background: var(--peligro); border-radius: var(--radio-total); }
+.progreso:-moz-meter-optimum::-moz-meter-bar { background: var(--exito); }
+.progreso:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--aviso); }
+.progreso:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--peligro); }
+.progreso::-moz-meter-bar { border-radius: var(--radio-total); }
+
+/* Barra en celda */
+.progreso-celda { display: flex; align-items: center; gap: var(--esp-3); min-width: 9rem; }
+.progreso-celda output { min-width: 3.5em; text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (forced-colors: active) {
+  .progreso { forced-color-adjust: none; }
+}
+}

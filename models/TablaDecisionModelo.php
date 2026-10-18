@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// decision_celdas. Las filas van por FilasModelo.
+// decision_celdas. Filas en FilasModelo
 final class TablaDecisionModelo
 {
     /** @return list<array{fila_orden: int, regla: int, valor: int}> */
@@ -19,7 +19,7 @@ final class TablaDecisionModelo
     }
 
     /**
-     * Por diferencia. Dentro de una transacción, después de FilasModelo::guardar().
+     * Por diferencia. En transacción, después de FilasModelo::guardar()
      *
      * @param list<array{0: int, 1: int, 2: int}> $celdas  [fila_orden, regla, valor]
      */

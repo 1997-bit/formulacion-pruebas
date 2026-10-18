@@ -11,8 +11,8 @@ use App\Models\UsuarioModelo;
 use App\Services\UsuarioServicio;
 use PHPUnit\Framework\TestCase;
 
-// Pruebas grandes: php -S con la base del .env. El servidor no ve el ROLLBACK de la prueba.
-// Por eso: nombres únicos y borrado al final de la clase.
+// Pruebas grandes: php -S con la base del .env. El servidor no ve el ROLLBACK
+// Por eso: nombres únicos y borrado al final
 abstract class PruebaHttp extends TestCase
 {
     protected const CLAVE = 'clave-de-prueba';
@@ -41,7 +41,7 @@ abstract class PruebaHttp extends TestCase
         Env::cargar(RAIZ . '/.env');
         self::$hash = password_hash(self::CLAVE, PASSWORD_ARGON2ID, UsuarioServicio::ARGON);
 
-        // Un puerto libre que da el sistema.
+        // Puerto libre del sistema
         $socket = stream_socket_server('tcp://127.0.0.1:0');
         $direccion = stream_socket_get_name($socket, false);
         fclose($socket);
@@ -52,7 +52,7 @@ abstract class PruebaHttp extends TestCase
         self::$servidor = $servidor ?: throw new \RuntimeException('No arrancó php -S.');
         register_shutdown_function(fn () => proc_terminate($servidor));
 
-        // Espera conexiones, máximo 5 s.
+        // Espera conexiones, máximo 5 s
         for ($i = 0; $i < 50 && !@fsockopen('127.0.0.1', (int) parse_url(self::$base, PHP_URL_PORT)); $i++) {
             usleep(100_000);
         }
@@ -83,7 +83,7 @@ abstract class PruebaHttp extends TestCase
         return new Cliente(self::$base);
     }
 
-    // Cliente con la sesión del usuario abierta.
+    // Cliente con sesión abierta
     protected function entrar(int $usuarioId): Cliente
     {
         $cliente = $this->cliente();
@@ -93,14 +93,14 @@ abstract class PruebaHttp extends TestCase
     }
 
     /**
-     * Mensajes del canal seguridad con el X-Request-Id de la respuesta. El log es del servidor php -S.
+     * Mensajes de seguridad con el X-Request-Id de la respuesta. Log del servidor php -S
      *
      * @param array{codigo: int, cabeceras: array<string, string>, cuerpo: string} $respuesta
      * @return list<string>
      */
     protected function eventos(array $respuesta): array
     {
-        // Todos los días: el servidor usa APP_ZONA, la prueba no.
+        // Todos los días: el servidor usa APP_ZONA, la prueba no
         $lineas = array_merge(...array_map(fn (string $f): array => file($f, FILE_IGNORE_NEW_LINES) ?: [], glob(RAIZ . '/storage/logs/app-*.log') ?: []));
         $registros = array_map(fn (string $l): array => json_decode($l, true), $lineas);
 
@@ -110,7 +110,7 @@ abstract class PruebaHttp extends TestCase
         )));
     }
 
-    // Fábrica: nombres únicos. tearDownAfterClass() borra todo.
+    // Fábrica: nombres únicos. tearDownAfterClass() borra todo
 
     protected function usuario(int $rol = 0): int
     {
@@ -152,7 +152,7 @@ abstract class PruebaHttp extends TestCase
         ]);
     }
 
-    // Log de texto en storage/evidencias.
+    // Log de texto en storage/evidencias
     protected function evidencia(int $casoId, int $autor): int
     {
         $archivo = bin2hex(random_bytes(16)) . '.txt';

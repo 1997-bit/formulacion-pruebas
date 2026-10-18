@@ -6,7 +6,7 @@ namespace App\Core;
 
 final class Sesion
 {
-    // ASVS 7.3.1 y 7.3.2, RNF-02. OWASP: 15 a 30 min sin uso para riesgo bajo, 4 a 8 h para una jornada.
+    // ASVS 7.3.1 y 7.3.2, RNF-02. OWASP: 15 a 30 min sin uso, 4 a 8 h de jornada
     private const INACTIVA = 1800;
     private const MAXIMA = 28800;
 
@@ -25,7 +25,7 @@ final class Sesion
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
-        // Sin no-store: Atrás restaura la página al instante, bfcache. no-cache sigue pidiendo la página al servidor.
+        // Sin no-store: Atrás usa bfcache. no-cache pide la página al servidor
         session_cache_limiter('');
         session_start();
         header('Cache-Control: private, no-cache');
@@ -39,7 +39,7 @@ final class Sesion
         $_SESSION['inicio'] = $_SESSION['uso'] = time();
     }
 
-    // Motivo si la sesión venció: inactiva o maxima. Si no, marca el uso y da null.
+    // Vencida: inactiva o maxima. Si no, marca el uso y da null
     public static function vencida(): ?string
     {
         $ahora = time();
@@ -54,7 +54,7 @@ final class Sesion
         return null;
     }
 
-    // Sesión sin usuario ni datos, con id nuevo. Queda solo el aviso para el login.
+    // Id nuevo sin usuario ni datos. Solo queda el aviso del login
     public static function vencer(string $aviso): void
     {
         session_regenerate_id(true);
@@ -62,7 +62,7 @@ final class Sesion
         self::flash($aviso);
     }
 
-    // Datos nuevos de la base, sin regenerar el id. Ejemplo: nombre cambiado.
+    // Datos nuevos de la base sin regenerar el id
     /** @param array<string, mixed> $usuario */
     public static function refrescar(array $usuario): void
     {
@@ -82,7 +82,7 @@ final class Sesion
         return $_SESSION['usuario'] ?? null;
     }
 
-    // $accion: botón del aviso, el siguiente paso. Material: snackbar con acción.
+    // $accion: botón del aviso, snackbar de Material
     /** @param array{texto: string, ruta: string}|null $accion */
     public static function flash(string $mensaje, ?array $accion = null): void
     {
@@ -90,7 +90,7 @@ final class Sesion
         $_SESSION['flash_accion'] = $accion;
     }
 
-    // Lee y borra flash, errores y datos de Respuesta::errores(). Errores y datos, solo en su ruta.
+    // Lee y borra flash, errores y datos. Errores y datos solo en su ruta
     public static function tomar(string $clave, mixed $defecto = null): mixed
     {
         $valor = in_array($clave, ['errores', 'datos'], true)

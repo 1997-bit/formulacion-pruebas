@@ -1,0 +1,4 @@
+@layer objetos {
+.acciones { display: flex; gap: var(--esp-2); flex-wrap: wrap; justify-content: flex-end; }
+.acciones-separadas { justify-content: space-between; }
+}

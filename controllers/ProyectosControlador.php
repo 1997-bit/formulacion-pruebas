@@ -13,7 +13,7 @@ use App\Models\ProyectoModelo;
 use App\Services\Permisos;
 use App\Services\ProyectoServicio;
 
-// Proyectos y miembros, IR 7.1.
+// Proyectos y miembros, IR 7.1
 final class ProyectosControlador
 {
     public function listar(): void
@@ -77,7 +77,7 @@ final class ProyectosControlador
         Respuesta::exito('Proyecto eliminado.', '/admin/proyectos');
     }
 
-    // Selector del sidebar. 0 = todos. Vuelve a la misma sección. Desde un detalle, al panel.
+    // Selector del sidebar. 0 = todos. Misma sección. Desde un detalle, al panel
     public function activar(): void
     {
         $id = (int) ($_POST['proyecto'] ?? 0);

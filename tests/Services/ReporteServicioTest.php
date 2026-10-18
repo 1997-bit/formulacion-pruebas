@@ -18,7 +18,7 @@ use Tests\Apoyo\BaseDatos;
 #[Medium]
 final class ReporteServicioTest extends BaseDatos
 {
-    // Caso del tester con estado. evidencia: enlace. incidente null: sin incidente.
+    // evidencia: enlace. incidente null: sin incidente
     private function casoCon(int $proyecto, int $tester, int $estado, bool $evidencia, ?int $stopper, string $codigo = 'SIS-001'): int
     {
         $caso = $this->caso($proyecto, $this->requerimiento($proyecto, 'RF-' . substr($codigo, -2)), $tester, $codigo);
@@ -33,7 +33,7 @@ final class ReporteServicioTest extends BaseDatos
         return $caso;
     }
 
-    // Casos con evidencia y sin incidente, uno por estado.
+    // Con evidencia, sin incidente, uno por estado
     private function casosCon(int $proyecto, int $tester, int ...$estados): void
     {
         foreach ($estados as $i => $estado) {
@@ -160,7 +160,7 @@ final class ReporteServicioTest extends BaseDatos
         ReporteServicio::cierre($proyecto, $this->sesion($tester));
     }
 
-    // Ritmo de 7 días: 1 anotado hoy, 2 pendientes. 2 × 7 / 1 = 14 días.
+    // Ritmo de 7 días: 1 anotado hoy, 2 pendientes. 2 × 7 / 1 = 14 días
     public function testProyeccionSaleDelRitmoDeSieteDias(): void
     {
         $tester = $this->usuario();
@@ -188,7 +188,7 @@ final class ReporteServicioTest extends BaseDatos
         $this->assertNull($p['fin_estimado']);
     }
 
-    // Un caso con fecha final hoy, anotado hoy: real y plan a hoy en 1, sin diferencia.
+    // Fecha final hoy, anotado hoy: real y plan en 1, sin diferencia
     public function testCierreTraeSeriesHastaHoy(): void
     {
         $tester = $this->usuario();

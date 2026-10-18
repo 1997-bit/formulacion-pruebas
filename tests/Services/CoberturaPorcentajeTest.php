@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
-// RF-12. Redondeo de la pantalla: medio hacia arriba.
+// RF-12. Redondeo de la pantalla: medio hacia arriba
 #[CoversClass(CoberturaServicio::class)]
 #[Small]
 final class CoberturaPorcentajeTest extends TestCase

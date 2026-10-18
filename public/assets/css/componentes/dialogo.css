@@ -1,0 +1,43 @@
+@layer componentes {
+.dialogo {
+  width: min(28rem, calc(100% - var(--esp-8)));
+  padding: var(--esp-5);
+  background: var(--flotante);
+  color: var(--flotante-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-xl);
+}
+.dialogo::backdrop {
+  background: var(--velo);
+  backdrop-filter: var(--velo-desenfoque);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .dialogo::backdrop { background: var(--velo-respaldo); backdrop-filter: none; }
+}
+/* Móvil: hoja desde abajo, HIG Sheets. La paleta queda arriba por el teclado */
+@media (width < 37.5rem) {
+  .dialogo:not(.paleta) {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90dvh;
+    margin: auto 0 0;
+    padding-bottom: calc(var(--esp-5) + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    border-bottom: 0;
+    border-radius: var(--radio-2xl) var(--radio-2xl) 0 0;
+  }
+  .dialogo:not(.paleta)[open] { animation: hoja var(--dur-media) var(--curva-entrar); }
+  /* Botones a todo el ancho. Cancelar abajo, como iOS: un toque sin querer no borra */
+  .dialogo:not(.paleta) .acciones { flex-direction: column-reverse; }
+  .dialogo:not(.paleta) .acciones > .btn { width: 100%; min-height: var(--alto-tactil); }
+}
+@keyframes hoja { from { translate: 0 100%; } }
+.dialogo h2 { font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; margin: 0 0 var(--esp-2); }
+.dialogo p { margin: 0 0 var(--esp-5); font-size: var(--letra-sm); color: var(--tenue-texto); }
+.dialogo form { margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogo:not(.paleta)[open] { animation: none; }
+}
+}

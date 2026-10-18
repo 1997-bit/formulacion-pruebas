@@ -1,0 +1,19 @@
+@layer componentes {
+/* Pestañas: control segmentado. La actual con aria-current="page" */
+
+.pestanas { display: inline-flex; max-width: 100%; gap: 2px; margin-bottom: var(--esp-4); padding: var(--esp-1); overflow-x: auto; background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
+.pestanas a {
+  display: inline-flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-sm); padding: var(--esp-1) var(--esp-3);
+  color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; text-decoration: none; white-space: nowrap;
+  border-radius: var(--radio-md);
+}
+@media (hover: hover) {
+  .pestanas a:hover { color: var(--texto); }
+}
+.pestanas a[aria-current="page"] { color: var(--texto); background: var(--fondo); box-shadow: var(--sombra-xs); }
+@media (forced-colors: active) { .pestanas a[aria-current="page"] { outline: 2px solid Highlight; } }
+
+@media (pointer: coarse) {
+  .pestanas a { min-height: var(--alto-lg); }
+}
+}

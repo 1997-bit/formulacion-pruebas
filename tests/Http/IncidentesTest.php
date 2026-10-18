@@ -13,7 +13,7 @@ use Tests\Apoyo\PruebaHttp;
 #[Large]
 final class IncidentesTest extends PruebaHttp
 {
-    // BUG-050. Sin caso: busca por código. Un resultado: va al formulario del caso.
+    // BUG-050. Sin caso: busca por código. Un resultado: formulario del caso
     public function testCodigoDeUnSoloCasoVaAlFormulario(): void
     {
         $tester = $this->usuario();

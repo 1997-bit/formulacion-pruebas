@@ -17,7 +17,7 @@ final class RequerimientoServicio
     private const FORMATO = '/^RN?F-\d{2,3}$/';
 
     /**
-     * RNF-xx es no funcional.
+     * RNF-xx es no funcional
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -49,8 +49,8 @@ final class RequerimientoServicio
     }
 
     /**
-     * Change request básico: motivo obligatorio y rastro en el historial. Sin cambios no escribe nada.
-     * El proyecto no cambia: la llave de casos_prueba lo ata.
+     * Change request: motivo obligatorio y rastro en el historial. Sin cambios no escribe
+     * El proyecto no cambia: la key de casos_prueba lo ata
      *
      * @param array<string, string> $datos codigo, descripcion y motivo
      * @param array{id: int, rol: int} $usuario
@@ -78,7 +78,7 @@ final class RequerimientoServicio
                     throw new ErrorValidacion(ErrorValidacion::OTRO_GUARDO);
                 }
                 RequerimientoModelo::actualizar($id, $codigo, $descripcion, str_starts_with($codigo, 'RNF') ? 1 : 0);
-                // El motivo va como un campo más: antes null, después el texto.
+                // Motivo como un campo más: antes null, después el texto
                 Historial::registrar('requerimientos', $id, $requerimiento + ['motivo' => null], [
                     'codigo' => $codigo, 'descripcion' => $descripcion, 'motivo' => $motivo,
                 ], $usuario['id']);
@@ -91,7 +91,7 @@ final class RequerimientoServicio
     }
 
     /**
-     * Solo admin. Con casos o formularios 2 a 5 no se elimina.
+     * Solo admin. Con casos o formularios 2 a 5 no se elimina
      *
      * @param array{id: int, rol: int} $usuario
      */
@@ -134,8 +134,8 @@ final class RequerimientoServicio
     }
 
     /**
-     * Matriz por proyecto. Columnas: tipos de prueba con casos en el proyecto.
-     * celdas[tipo] = [casos, fault]. Cobertura: celdas con casos sobre filas × columnas.
+     * Matriz por proyecto. Columnas: tipos de prueba con casos
+     * celdas[tipo] = [casos, fault]. Cobertura: celdas con casos / filas × columnas
      *
      * @param array{id: int, rol: int} $usuario
      * @return list<array{id: int, nombre: string, tipos: list<int>, filas: list<array<string, mixed>>, cubiertas: int, total: int, sin_casos: list<string>}>
@@ -167,7 +167,7 @@ final class RequerimientoServicio
     }
 
     /**
-     * Null si no existe.
+     * Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null

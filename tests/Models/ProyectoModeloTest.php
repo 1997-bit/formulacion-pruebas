@@ -14,7 +14,7 @@ use Tests\Apoyo\BaseDatos;
 #[Medium]
 final class ProyectoModeloTest extends BaseDatos
 {
-    // BUG-007. El que sigue conserva su autoevaluación.
+    // BUG-007. Quien sigue conserva su autoevaluación
     public function testGuardarQuitaSoloALosQueSalen(): void
     {
         $sale = $this->usuario();

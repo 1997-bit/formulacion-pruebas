@@ -1,0 +1,26 @@
+@layer componentes {
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--esp-2);
+  padding: var(--esp-10) var(--esp-4);
+  border: 1px dashed var(--entrada);
+  border-radius: var(--radio-xl);
+}
+.vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: var(--esp-1);
+  border-radius: var(--radio-lg);
+  background: var(--secundario);
+  color: var(--tenue-texto);
+}
+.vacio-icono .icono { width: 24px; height: 24px; }
+/* 403 y 404: el título es el h1 */
+.vacio :is(h1, h2, h3) { font-size: var(--letra-base); font-weight: 600; letter-spacing: 0; margin: 0; }
+.vacio p { margin: 0 0 var(--esp-2); max-width: 36ch; font-size: var(--letra-sm); color: var(--tenue-texto); }
+}

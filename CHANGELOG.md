@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Comentarios del código al mínimo, sin punto final.
+- CSS con ITCSS: un archivo por componente en `objetos/`, `componentes/` y `app/`, con capas de lo general a lo específico. El orden de carga está en `config/estilos.php`. La pantalla y la impresión se ven igual.
+
 ## [1.8.0] - 2026-10-17
 
 ### Added

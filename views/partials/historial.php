@@ -5,8 +5,8 @@ use App\Helpers\Fecha;
 use App\Helpers\Html;
 
 /**
- * RF-20. Cambios del caso o del requerimiento como línea de tiempo: hora a la izquierda, punto y cambio a la derecha.
- * Punto de color en los cambios de estado.
+ * RF-20. Línea de tiempo: hora a la izquierda, punto y cambio a la derecha
+ * Punto de color en cambios de estado
  *
  * @var list<array<string, mixed>> $historial  Historial::de()
  * @var string $codigo

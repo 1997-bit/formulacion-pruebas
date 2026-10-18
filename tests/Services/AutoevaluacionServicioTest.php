@@ -18,7 +18,7 @@ use Tests\Apoyo\BaseDatos;
 final class AutoevaluacionServicioTest extends BaseDatos
 {
     /**
-     * Auto 4 y co 2 en los 6 aspectos.
+     * Auto 4 y co 2 en los 6 aspectos
      *
      * @return array{evaluado_id: string, auto: array<int, string>, co: array<int, string>, comentario: array<int, string>}
      */

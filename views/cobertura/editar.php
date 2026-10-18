@@ -9,8 +9,8 @@ use App\Helpers\Icono;
 use App\Services\CoberturaServicio;
 
 /**
- * Formulario 5, RF-12, crear o editar. Una fila fija por métrica. Vacía no se mide.
- * Porcentaje en vivo. El servidor recalcula con el mismo redondeo. Todas o ninguna.
+ * Formulario 5, RF-12. Una fila fija por métrica. Vacía no se mide
+ * Porcentaje en vivo, el servidor recalcula. Todo o nada
  *
  * @var array<string, mixed> $requerimiento
  * @var string $huella  lo leído, para avisar si otro guardó antes (#100)

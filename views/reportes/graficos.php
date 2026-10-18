@@ -5,8 +5,8 @@ use App\Helpers\Catalogo;
 use App\Helpers\Html;
 
 /**
- * RF-23. Gráficos del cierre: resultados por día, avance acumulado e incidentes por día.
- * Barras con CSS: --v es el valor y --max el tope. data-dato: tooltip al pasar el mouse; con teclado o lector, la tabla de abajo. Curvas con SVG. Cada gráfico tiene su tabla para lector de pantalla. RNF-07.
+ * RF-23. Resultados por día, avance acumulado e incidentes por día
+ * Barras CSS: --v valor, --max tope. data-dato: tooltip. Curvas SVG. Cada gráfico con tabla para lector, RNF-07
  *
  * @var array<string, mixed> $g  ReporteServicio::graficos()
  * @var array<string, mixed> $p  proyecto del cierre
@@ -16,14 +16,14 @@ $dias = $g['dias'];
 $n = count($dias);
 $dm = fn (string $dia): string => (new DateTime($dia))->format('d/m');
 $coma = fn (float|int $x): string => str_replace('.', ',', (string) $x);
-// Eje: primer día, el del medio y el último.
+// Eje: primer día, medio y último
 $eje = '<div class="grafico-eje" aria-hidden="true"><span>' . $dm($dias[0]['dia']) . '</span><span>' . $dm($dias[intdiv($n - 1, 2)]['dia']) . '</span><span>' . $dm($dias[$n - 1]['dia']) . '</span></div>';
 $rango = $dm($dias[0]['dia']) . ' al ' . $dm($dias[$n - 1]['dia']);
 
 $maxAnotados = max(1, ...array_column($dias, 'anotados'));
 $pico = $g['pico'];
 
-// Avance: x de 0 a 300, y de 100 a 0.
+// Avance: x de 0 a 300, y de 100 a 0
 $pasados = array_values(array_filter($dias, fn (array $d): bool => $d['real_acum'] !== null));
 $ultimo = $pasados === [] ? null : end($pasados);
 $maxAcum = max(1, $dias[$n - 1]['plan_acum'], $ultimo['real_acum'] ?? 0);
@@ -123,7 +123,7 @@ $horas = $g['horas_cierre'];
     </dl>
   </section>
 
-  <?php // El <caption> se dibuja fuera de la tabla: el div es el que se oculta. ?>
+  <?php // El <caption> sale de la tabla: se oculta el div ?>
   <div class="solo-lector">
   <table>
     <caption>Datos por día de los gráficos</caption>

@@ -72,7 +72,7 @@ final class HistorialTest extends BaseDatos
         $this->assertSame([['campo' => 'entorno', 'antes' => null, 'despues' => '']], $this->filas('casos_prueba', $this->casoId));
     }
 
-    // Incidentes y plan: campos de $antes, sin lista fija.
+    // Incidentes y plan: campos de $antes, sin lista fija
     public function testOtraTablaUsaLosCamposDeAntes(): void
     {
         $incidente = $this->incidente($this->proyecto, $this->casoId, $this->autor);

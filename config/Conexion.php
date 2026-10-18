@@ -6,7 +6,7 @@ namespace App\Config;
 
 use App\Core\Env;
 
-// Una conexión PDO por petición.
+// Una conexión PDO por petición
 final class Conexion
 {
     private static ?\PDO $pdo = null;
@@ -23,8 +23,8 @@ final class Conexion
             self::$pdo = new \PDO($dsn, Env::get('DB_USER'), Env::get('DB_PASS'), [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_EMULATE_PREPARES => false,
-                // Misma zona horaria que PHP al conectar: un viaje menos a la base, #124.
-                // PHP 8.4 trae Pdo\Mysql. En 8.5 la constante vieja da warning. RNF-08: PHP 8.2+.
+                // Zona horaria de PHP al conectar. Un viaje menos, #124
+                // Pdo\Mysql desde PHP 8.4. En 8.5 la constante vieja da warning. RNF-08
                 (PHP_VERSION_ID >= 80400 ? \Pdo\Mysql::ATTR_INIT_COMMAND : \PDO::MYSQL_ATTR_INIT_COMMAND) => "SET time_zone = '" . date('P') . "'",
             ]);
         }
@@ -33,7 +33,7 @@ final class Conexion
     }
 
     /**
-     * Corre $hacer en una transacción. commit si termina, rollBack si lanza.
+     * Transacción: commit si termina, rollBack si lanza
      *
      * @template T
      * @param callable(): T $hacer

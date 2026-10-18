@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// F6. Un plan por proyecto. Key: proyecto_id.
+// F6. Un plan por proyecto
 final class PlanModelo
 {
     /** @return array<string, mixed>|null */
@@ -22,7 +22,7 @@ final class PlanModelo
         return $sql->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    // Plan Cerrado, estado 2: sin stoppers abiertos. BUG-035.
+    // Cerrado sin stoppers abiertos, BUG-035
     public static function cerrado(int $proyectoId): bool
     {
         $sql = Conexion::pdo()->prepare('SELECT 1 FROM plan_pruebas WHERE proyecto_id = ? AND estado = 2 FOR UPDATE');
@@ -40,7 +40,7 @@ final class PlanModelo
     }
 
     /**
-     * Crea o reemplaza el plan del proyecto.
+     * Crea o reemplaza
      *
      * @param array{version: string, responsable_id: int, fecha: string, alcance: string, objetivos: string, estrategia: int, recursos: ?string, cronograma: ?string, criterios_aceptacion: string, riesgos: ?string, estado: int} $plan
      */

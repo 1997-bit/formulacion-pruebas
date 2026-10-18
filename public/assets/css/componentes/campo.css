@@ -1,0 +1,74 @@
+@layer componentes {
+.campos {
+  display: grid;
+  gap: var(--esp-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+.campo > label,
+.grupo > legend {
+  font-size: var(--letra-sm);
+  font-weight: 500;
+}
+.requerido { color: var(--error); }
+/* Ícono dentro del control: ojo de la contraseña */
+.control-con-boton { position: relative; }
+.control-con-boton > .control { padding-right: calc(var(--alto-sm) + var(--esp-2)); }
+.control-con-boton > .control-boton { position: absolute; top: 50%; right: 4px; translate: 0 -50%; color: var(--tenue-texto); }
+.control-con-boton > .control-boton:hover { color: var(--texto); }
+.campo-ayuda {
+  margin: 0;
+  font-size: var(--letra-xs);
+  color: var(--tenue-texto);
+}
+.campo-error {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  color: var(--error);
+}
+.campo-error .icono { width: 14px; height: 14px; }
+
+.control {
+  width: 100%;
+  min-height: var(--alto-md);
+  padding: 6px var(--esp-3); /* centra el texto del select en 2.25rem */
+  font: inherit;
+  font-size: var(--letra-sm);
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--entrada);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-xs);
+}
+.control::placeholder { color: var(--tenue-texto); }
+.control:focus-visible { outline: 2px solid var(--anillo); outline-offset: 1px; }
+.control:is([aria-invalid="true"], :user-invalid) { border-color: var(--error); }
+.control:is([aria-invalid="true"], :user-invalid):focus-visible { outline-color: var(--error); }
+.control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
+textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
+
+.control[type="file"] { padding: var(--esp-1); cursor: pointer; }
+.control[type="file"]::file-selector-button {
+  margin-right: var(--esp-3);
+  padding: var(--esp-1) var(--esp-3);
+  font: inherit;
+  font-weight: 500;
+  color: var(--secundario-texto);
+  background: var(--secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+}
+
+@media (pointer: coarse) {
+  .control { min-height: var(--alto-tactil); font-size: 1rem; }
+}
+}

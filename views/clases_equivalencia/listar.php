@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 2, RF-09. Una matriz por requerimiento.
+ * Formulario 2, RF-09. Una matriz por requerimiento
  *
  * @var list<array<string, mixed>> $requerimientos  con filas
  * @var Paginacion $paginacion

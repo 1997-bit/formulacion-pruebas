@@ -6,8 +6,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Matriz de cobertura: requerimientos × tipos de prueba. Una tabla por proyecto.
- * Celda: número de casos, relleno por cantidad. Sin casos: borde punteado. Con FAULT: raya roja abajo.
+ * Requerimientos × tipos de prueba. Una tabla por proyecto
+ * Celda: casos, relleno por cantidad. Sin casos: borde punteado. FAULT: raya roja
  *
  * @var list<array<string, mixed>> $matriz  RequerimientoServicio::matriz()
  */

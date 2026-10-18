@@ -15,7 +15,7 @@ use App\Helpers\Icono;
  * @var ?array{texto: string, ruta: string} $accion
  * @var array{activo: ?int} $usuario
  */
-// Con proyecto activo la columna Proyecto sobra.
+// Con proyecto activo sobra la columna Proyecto
 $todos = $usuario['activo'] === null;
 ?>
 <header class="encabezado">

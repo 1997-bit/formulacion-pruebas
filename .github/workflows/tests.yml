@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 
-# Un nuevo commit en el PR reemplaza la ejecución anterior.
+# Un commit nuevo cancela la ejecución anterior
 concurrency:
   group: tests-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -41,7 +41,7 @@ jobs:
         # v7.0.1
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          # El job no escribe en el repositorio.
+          # Sin escritura en el repo
           persist-credentials: false
 
       - name: Configurar PHP

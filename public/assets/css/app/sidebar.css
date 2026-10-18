@@ -1,0 +1,312 @@
+@layer app {
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: var(--lateral-ancho);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--lateral);
+  color: var(--lateral-texto);
+  border-right: 1px solid var(--lateral-borde);
+  z-index: 30;
+}
+
+.sidebar-cabecera,
+.sidebar-pie {
+  padding: var(--esp-2);
+}
+/* La barra de inicio del iPhone no tapa al usuario */
+.sidebar-pie { padding-bottom: calc(var(--esp-2) + env(safe-area-inset-bottom, 0px)); }
+
+.sidebar-contenido {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Scroll sin pasar a la página */
+  overscroll-behavior: contain;
+}
+
+.sidebar-grupo {
+  padding: var(--esp-2);
+}
+
+.sidebar-grupo-titulo {
+  margin: 0;
+  padding: 0 var(--esp-2);
+  height: var(--alto-sm);
+  display: flex;
+  align-items: center;
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--tenue-texto);
+  white-space: nowrap;
+}
+
+.sidebar-menu,
+.sidebar-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Botón base del menú */
+.sidebar-boton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 100%;
+  min-height: var(--alto-sm);
+  padding: 0 var(--esp-2);
+  border-radius: var(--radio-md);
+  color: inherit;
+  font-size: var(--letra-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  list-style: none;
+}
+/* Botón con aspecto de enlace, como Cerrar sesión */
+button.sidebar-boton {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--letra-sm);
+  text-align: left;
+}
+.sidebar-boton::-webkit-details-marker {
+  display: none;
+}
+@media (hover: hover) {
+  .sidebar-boton:hover,
+  .sidebar-subboton:hover {
+    background: var(--lateral-acento);
+    color: var(--lateral-acento-texto);
+  }
+}
+.sidebar-boton[aria-current="page"],
+.sidebar-subboton[aria-current="page"] {
+  background: var(--lateral-acento);
+  color: var(--lateral-acento-texto);
+  font-weight: 500;
+}
+
+.sidebar-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flecha {
+  margin-left: auto;
+  transition: rotate var(--dur-corta) var(--curva);
+}
+.sidebar-desplegable[open] > summary .flecha {
+  rotate: 90deg;
+}
+
+.sidebar-submenu {
+  margin: 2px 0 2px var(--esp-4);
+  padding-left: var(--esp-3);
+  border-left: 1px solid var(--lateral-borde);
+}
+.sidebar-subboton {
+  display: flex;
+  align-items: center;
+  min-height: var(--alto-xs);
+  padding: 0 var(--esp-2);
+  border-radius: var(--radio-md);
+  color: inherit;
+  font-size: var(--letra-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Marca y usuario */
+.sidebar-marca,
+.sidebar-usuario {
+  min-height: 3rem;
+}
+.sidebar-dos-lineas {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.sidebar-dos-lineas strong {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-dos-lineas small {
+  font-size: var(--letra-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.marca-icono,
+.avatar-cuadrado {
+  width: var(--alto-sm);
+  height: var(--alto-sm);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-lg);
+  margin-left: calc(-1 * var(--esp-1));
+}
+.marca-icono {
+  background: var(--primario);
+  color: var(--primario-texto);
+}
+.avatar-cuadrado {
+  background: var(--secundario);
+  color: var(--secundario-texto);
+  border: 1px solid var(--borde);
+  font-size: var(--letra-xs);
+  font-weight: 600;
+}
+
+@media (width >= 37.5rem) {
+  .sidebar { border-right: 0; }
+}
+
+/* Rail: escritorio colapsado o tablet de 600 a 1023 px. data-medio: tema.js. Tablet abierto: completo encima */
+
+@media (width >= 37.5rem) {
+  :is([data-sidebar="colapsado"], [data-medio]):not([data-sidebar-movil="abierto"]) {
+    .sidebar { width: var(--lateral-ancho-icono); }
+
+    /* Ocultos a la vista, no al lector */
+    :is(.sidebar-texto, .flecha, .flecha-usuario, .sidebar-grupo-titulo) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .sidebar-submenu,
+    .sidebar-atajo { display: none; }
+    .sidebar-contenido { overflow: visible; }
+    .sidebar-grupo { padding: var(--esp-1) var(--esp-2); }
+    :is(.sidebar-marca, .sidebar-usuario) {
+      padding: 0;
+      min-height: var(--alto-sm);
+    }
+    :is(.marca-icono, .avatar-cuadrado) { margin-left: 0; }
+
+    .proyecto-flotante {
+      top: anchor(top);
+      left: calc(anchor(right) + var(--esp-2));
+      width: auto;
+      min-width: 14rem;
+    }
+    /* Flotante fuera del sidebar: nombres visibles con rail */
+    .proyecto-flotante .sidebar-texto {
+      position: static;
+      width: auto;
+      height: auto;
+      clip-path: none;
+    }
+    .usuario-flotante {
+      bottom: anchor(bottom);
+      left: calc(anchor(right) + var(--esp-2));
+      width: auto;
+      min-width: 12rem;
+    }
+
+    /* Globo con el nombre */
+    [data-etiqueta]:is(:hover, :focus-visible)::after {
+      content: attr(data-etiqueta);
+      position: absolute;
+      left: calc(100% + var(--esp-3));
+      top: 50%;
+      translate: 0 -50%;
+      padding: var(--esp-1) var(--esp-2);
+      background: var(--texto);
+      color: var(--fondo);
+      border-radius: var(--radio-sm);
+      font-size: var(--letra-xs);
+      font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    @media (pointer: coarse) {
+      :is(.sidebar-marca, .sidebar-usuario) { min-height: var(--alto-tactil); }
+    }
+  }
+}
+
+/* Menú encima: móvil siempre, tablet abierto. Fondo solo abierto */
+.sidebar-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+}
+
+@media (width < 37.5rem) {
+  /* Margen y curvas, igual que el panel */
+  .sidebar {
+    position: fixed;
+    inset: var(--esp-2) auto var(--esp-2) var(--esp-2);
+    height: auto;
+    width: min(18rem, 85vw);
+    padding-left: env(safe-area-inset-left, 0px);
+    border: 1px solid var(--lateral-borde);
+    border-radius: var(--radio-xl);
+    translate: calc(-100% - var(--esp-2)) 0;
+    transition: translate var(--dur-media) var(--curva-salir);
+    box-shadow: var(--sombra-xl);
+    z-index: 40;
+  }
+  [data-sidebar-movil="abierto"] .sidebar {
+    translate: 0 0;
+    transition-timing-function: var(--curva-entrar);
+  }
+}
+
+/* Tablet: el padding guarda el lugar del rail. El contenido no salta */
+@media (37.5rem <= width < 64rem) {
+  [data-sidebar-movil="abierto"] .app { padding-left: var(--lateral-ancho-icono); }
+  [data-sidebar-movil="abierto"] .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(18rem, 85vw);
+    padding-left: env(safe-area-inset-left, 0px);
+    box-shadow: var(--sombra-xl);
+    z-index: 40;
+  }
+}
+
+/* Táctil: sidebar y botón de la barra de 44px */
+@media (pointer: coarse) {
+  .sidebar-boton { min-height: var(--alto-tactil); }
+  .sidebar-subboton { min-height: var(--alto-lg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flecha,
+  .sidebar {
+    transition: none;
+  }
+}
+
+/* Atajo del enlace, atajos.js. Con hover o foco */
+.sidebar-atajo {
+  margin-left: auto;
+  opacity: 0;
+  font-size: 0.6875rem;
+}
+:is(.sidebar-boton, .sidebar-subboton):is(:hover, :focus-visible) .sidebar-atajo { opacity: 1; }
+[data-atajos="no"] .sidebar-atajo { display: none; }
+}

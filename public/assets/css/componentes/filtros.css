@@ -1,0 +1,24 @@
+@layer componentes {
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  align-items: end;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-4);
+  padding: var(--esp-4);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+}
+.filtros .acciones { justify-content: flex-start; }
+/* Atajos a la izquierda, botones a la derecha */
+.filtros-pie { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-2); }
+.filtros-atajos { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-1); margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.filtros-atajos [aria-current] { background: var(--acento); color: var(--acento-texto); }
+
+@media (width < 37.5rem) {
+  /* Filtros de dos en dos */
+  .filtros { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+  .filtros .acciones { grid-column: 1 / -1; }
+}
+}

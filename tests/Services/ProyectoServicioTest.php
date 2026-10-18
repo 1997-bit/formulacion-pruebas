@@ -56,7 +56,7 @@ final class ProyectoServicioTest extends BaseDatos
         $this->assertSame($esperado, $errores);
     }
 
-    // Miembros: solo testers.
+    // Miembros: solo testers
     public function testMiembroQueNoEsTesterDaError(): void
     {
         $admin = $this->sesion($this->usuario(1));
@@ -89,7 +89,7 @@ final class ProyectoServicioTest extends BaseDatos
         $this->assertSame($nombre, ProyectoServicio::ver($proyecto, $admin)['nombre']);
     }
 
-    // BUG-007. Solo sale quien se quitó, con su autoevaluación.
+    // BUG-007. Solo sale quien se quitó
     public function testQuitarMiembroSoloSacaAEseYSusEvaluaciones(): void
     {
         $admin = $this->sesion($this->usuario(1));
@@ -150,7 +150,7 @@ final class ProyectoServicioTest extends BaseDatos
         $llamadas[$accion]();
     }
 
-    // Panel del admin.
+    // Panel del admin
     public function testIncompletosSinMiembrosYSinPlan(): void
     {
         $admin = $this->sesion($this->usuario(1));

@@ -6,7 +6,7 @@ use App\Core\Vista;
 use App\Helpers\Catalogo;
 
 /**
- * Crear y editar. La clave nunca llega aquí.
+ * La clave nunca llega aquí
  *
  * @var ?int $id
  * @var string $titulo

@@ -9,7 +9,7 @@ use App\Helpers\Icono;
 use App\Services\RubricaServicio;
 
 /**
- * Formulario 7, RF-14, solo lectura. Total sumado en el servidor.
+ * Formulario 7, RF-14, solo lectura. Total del servidor
  *
  * @var array<string, mixed> $proyecto
  * @var ?array{puntos: array<int, int>, total: int, autor: string, guardado_en: string} $rubrica
@@ -17,7 +17,7 @@ use App\Services\RubricaServicio;
  */
 
 $editar = '/formularios/rubrica/editar?proyecto=' . (int) $proyecto['id'];
-// Descriptor de 5, 4, 3 y 1-2.
+// Descriptor de 5, 4, 3 y 1-2
 $nivel = fn (int $p): int => min(5 - $p, 3);
 ?>
 <header class="encabezado">

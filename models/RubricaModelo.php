@@ -6,11 +6,11 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// F7. Una fila por proyecto y criterio. Total = SUM(puntos).
+// F7. Una fila por proyecto y criterio
 final class RubricaModelo
 {
     /**
-     * Null si el proyecto no tiene rúbrica.
+     * Null sin rúbrica
      *
      * @return array{puntos: array<int, int>, total: int, autor: string, guardado_en: string}|null
      */
@@ -29,7 +29,7 @@ final class RubricaModelo
 
         $puntos = array_map(intval(...), array_column($filas, 'puntos', 'criterio'));
 
-        // Autor y fecha: el último criterio cambiado. Sin cambios no escribe, #98.
+        // Autor y fecha: el último criterio cambiado. Sin cambios no escribe, #98
         $fechas = array_column($filas, 'evaluado_en');
         $ultima = $filas[array_search(max($fechas), $fechas, true)];
 
@@ -45,7 +45,7 @@ final class RubricaModelo
     }
 
     /**
-     * Por diferencia. Dentro de una transacción.
+     * Por diferencia. En transacción
      *
      * @param array<int, int> $puntos criterio => puntos
      */

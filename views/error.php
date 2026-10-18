@@ -23,9 +23,9 @@ use App\Helpers\Icono;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= Html::e($titulo) ?> · Casos de Prueba</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/tokens.css') ?>">
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/base.css') ?>">
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">
+<?php foreach (Vista::estilos(false) as $css): ?>
+<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/' . $css . '.css') ?>">
+<?php endforeach ?>
 <script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
 </head>
 <body>

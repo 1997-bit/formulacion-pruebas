@@ -102,7 +102,7 @@ final class CasoModeloTest extends BaseDatos
         $this->assertFalse($eliminado);
     }
 
-    // El panel no repite: lo vencido va en atrasados, lo que no vence en pendientesDe.
+    // Sin repetir: vencido en atrasados, sin vencer en pendientesDe
     public function testPendientesDeNoTraeLosVencidos(): void
     {
         $tester = $this->usuario();

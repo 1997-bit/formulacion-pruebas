@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * RF-23. Sin proyecto activo: "Mi trabajo", una tarjeta por proyecto. Con proyecto activo: su resumen.
+ * RF-23. Sin proyecto activo: una tarjeta por proyecto. Con proyecto: su resumen
  *
  * @var array{total: array<string, int>, proyectos: list<array<string, mixed>>} $avance
  * @var list<array<string, mixed>> $asignados  incidentes abiertos asignados al usuario
@@ -21,14 +21,14 @@ use App\Helpers\Icono;
 $t = $avance['total'];
 $enProyecto = $usuario['activo'] !== null && $avance['proyectos'] !== [];
 $porcentaje = fn (int $n, int $de): int => $de === 0 ? 0 : (int) round($n / $de * 100);
-// Hoy: casos creados o anotados hoy. 0 no se muestra.
+// Creados o anotados hoy. 0 no se muestra
 $cifras = [
     ['Casos', 'clipboard-list', $t['casos'], $enProyecto ? 'En este proyecto' : Html::cantidad(count($avance['proyectos']), 'proyecto', 'proyectos'), '', '', $t['casos_hoy']],
     ['OK', 'circle-check', $t['ok'], 'Pasaron la prueba', '1', 'cifra-exito', $t['ok_hoy']],
     ['FAULT', 'circle-x', $t['fault'], Html::cantidad((int) $t['incidentes_abiertos'], 'incidente abierto', 'incidentes abiertos'), '2', 'cifra-peligro', $t['fault_hoy']],
     ['Pendientes', 'circle-alert', $t['pendientes'], 'Sin resultado todavía', '0', 'cifra-aviso', 0],
 ];
-// Por atender: lo que impide el Go y los incidentes sin dueño, por proyecto. Stoppers en la alerta de arriba.
+// Por atender: lo que impide el Go e incidentes sin dueño. Stoppers en la alerta
 $tareas = [];
 foreach ($avance['proyectos'] as $p) {
     foreach ([
@@ -81,7 +81,7 @@ foreach ($avance['proyectos'] as $p) {
       <p>Un administrador lo agrega como miembro.</p>
     </div>
   <?php else: ?>
-    <?php // "Todo al día" solo si no queda nada: sin tareas, stoppers, atrasos ni proyectos en No-Go. ?>
+    <?php // "Todo al día": sin tareas, stoppers, atrasos ni No-Go ?>
     <?php if (!$tareas && !$asignados && !$atrasados && !$misPendientes && !$incompletos && $t['stoppers'] === 0 && !in_array(false, array_column($avance['proyectos'], 'go'), true)): ?>
       <p class="tarjeta tarea-vacia al-dia"><?= Icono::svg('circle-check') ?> Todo al día: todos los proyectos están en Go.</p>
     <?php endif; ?>
@@ -172,7 +172,7 @@ foreach ($avance['proyectos'] as $p) {
             <div class="acciones"><?= $p['go'] ? '<span class="insignia insignia-exito">Go</span>' : '<span class="insignia insignia-peligro">No-Go</span>' ?></div>
           </header>
           <div class="tarjeta-contenido pila">
-            <?php // Un cuadro por caso. Más de 200: un cuadro por cada $por casos. ?>
+            <?php // Un cuadro por caso. Más de 200: uno por cada $por casos ?>
             <?php $por = max(1, (int) ceil($p['casos'] / 200)); ?>
             <div class="cuadricula" role="img" aria-label="<?= Html::e($resumen . ($por > 1 ? ". Cada cuadro: $por casos" : '')) ?>">
               <?php foreach ($partes as [, $clave, $variante]): ?>
@@ -196,7 +196,7 @@ foreach ($avance['proyectos'] as $p) {
             <?php endif; ?>
           </div>
           <footer class="tarjeta-pie">
-            <?php // Abrir = elegirlo en el selector del sidebar. ?>
+            <?php // Abrir = elegirlo en el selector ?>
             <form method="post" action="/proyecto">
               <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
               <input type="hidden" name="volver" value="/dashboard">

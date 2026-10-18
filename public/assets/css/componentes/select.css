@@ -1,0 +1,36 @@
+@layer componentes {
+/* Flecha del color del texto */
+.select { position: relative; }
+.select .control { appearance: none; padding-right: var(--esp-10); cursor: pointer; }
+.select::after {
+  content: "";
+  position: absolute;
+  right: var(--esp-3);
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  translate: 0 -50%;
+  background: var(--tenue-texto);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* Select con tokens: lista flotante. Sin soporte: el del sistema */
+@supports (appearance: base-select) {
+  .select .control, .select .control::picker(select) { appearance: base-select; }
+  .select .control::picker-icon { display: none; }
+  .select .control::picker(select) {
+    margin-top: var(--esp-1);
+    padding: var(--esp-1);
+    background: var(--flotante);
+    color: var(--flotante-texto);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-xl);
+    box-shadow: var(--sombra-md);
+  }
+  .select option { padding: var(--esp-2); border-radius: var(--radio-md); font-size: var(--letra-sm); }
+  .select option:is(:hover, :focus-visible) { background: var(--acento); color: var(--acento-texto); outline: none; }
+  .select option:checked { font-weight: 500; }
+}
+
+}

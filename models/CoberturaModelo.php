@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// cobertura_blanca. Una fila por métrica, sin orden. Autor y conteo en FilasModelo.
+// cobertura_blanca. Una fila por métrica. Autor y conteo en FilasModelo
 final class CoberturaModelo
 {
     /** @return array<int, array<string, mixed>> metrica => fila */
@@ -19,7 +19,7 @@ final class CoberturaModelo
     }
 
     /**
-     * Por diferencia. Dentro de una transacción.
+     * Por diferencia. En transacción
      *
      * @param array<int, array{total: int, cubiertos: int, porcentaje: int, herramienta: string}> $filas  metrica => fila
      */

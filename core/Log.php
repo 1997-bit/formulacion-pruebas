@@ -14,10 +14,10 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Monolog\Processor\UidProcessor;
 use Monolog\Processor\WebProcessor;
 
-// RNF-11. Canales http, seguridad y app. Una línea JSON por evento en storage/logs.
+// RNF-11. Canales http, seguridad y app. Una línea JSON por evento
 final class Log
 {
-    // RF o RNF de la ruta. Lo pone index.php.
+    // RF o RNF de la ruta, de index.php
     public static ?string $rf = null;
 
     private static ?Logger $base = null;
@@ -38,14 +38,14 @@ final class Log
         return self::$canales[$nombre] ??= self::$base->withName($nombre);
     }
 
-    // Evento de seguridad, OWASP Logging Vocabulary. {id}: usuario de la sesión.
+    // OWASP Logging Vocabulary. {id}: usuario de la sesión
     /** @param array<string, mixed> $contexto */
     public static function evento(string $nivel, string $mensaje, array $contexto = []): void
     {
         self::canal('seguridad')->log($nivel, $mensaje, $contexto + ['id' => Sesion::usuario()['id'] ?? null]);
     }
 
-    // Id de la petición. Va en X-Request-Id, en la página 500 y en cada línea.
+    // Id de la petición: X-Request-Id, página 500 y cada línea
     public static function uid(): string
     {
         self::canal('app');
@@ -53,7 +53,7 @@ final class Log
         return self::$uid->getUid();
     }
 
-    // Pruebas: otro handler, como TestHandler.
+    // Pruebas: otro handler, TestHandler
     public static function usar(HandlerInterface $handler): void
     {
         self::$base = self::crear($handler);

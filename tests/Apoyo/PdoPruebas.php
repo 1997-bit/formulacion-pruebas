@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Apoyo;
 
-// La prueba abre la transacción. Los servicios usan SAVEPOINT. ROLLBACK final: base intacta.
+// La prueba abre la transacción. Servicios con SAVEPOINT. ROLLBACK final: base intacta
 final class PdoPruebas extends \PDO
 {
     private int $nivel = 0;

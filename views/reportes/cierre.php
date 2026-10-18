@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * RF-23. Cierre de un proyecto, imprimible.
+ * RF-23. Cierre de un proyecto
  *
  * @var array<string, mixed> $proyecto  con criterios, go, listas de casos y stoppers_abiertos
  * @var array<string, mixed> $usuario

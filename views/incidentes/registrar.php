@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 10 de la paleta. Sin caso, primero se elige uno.
+ * Formulario 10. Sin caso: primero elegir uno
  *
  * @var ?array<string, mixed> $caso
  * @var ?string $codigo  solo sin caso: lo buscado
@@ -28,7 +28,7 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'error' => $errores[$nombre] ?? '',
     'requerido' => true,
 ]);
-// Radios de catálogo. Error en el fieldset, RNF-07.
+// Radios de catálogo. Error en el fieldset, RNF-07
 $radios = function (string $nombre, string $legenda) use ($datos, $errores): string {
     $error = $errores[$nombre] ?? '';
     $html = '<fieldset class="grupo"' . ($error !== '' ? ' aria-describedby="f-' . $nombre . '-error"' : '') . '>'
