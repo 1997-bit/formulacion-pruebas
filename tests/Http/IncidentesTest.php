@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Http;
 
+use App\Config\Conexion;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Large;
 use Tests\Apoyo\PruebaHttp;
@@ -22,5 +23,17 @@ final class IncidentesTest extends PruebaHttp
         $respuesta = $this->entrar($tester)->get('/formularios/incidentes/registrar?codigo=sis-001');
 
         $this->assertSame('/formularios/incidentes/registrar?caso=' . $caso, $respuesta['cabeceras']['location'] ?? null);
+    }
+
+    // Sin código: lista los FAULT de sus proyectos para elegir
+    public function testSinCodigoListaLosCasosFault(): void
+    {
+        $tester = $this->usuario();
+        $caso = $this->caso($this->proyecto($tester), $tester);
+        Conexion::pdo()->prepare('UPDATE casos_prueba SET estado = 2 WHERE id = ?')->execute([$caso]);
+
+        $respuesta = $this->entrar($tester)->get('/formularios/incidentes/registrar');
+
+        $this->assertStringContainsString('/formularios/incidentes/registrar?caso=' . $caso, $respuesta['cuerpo']);
     }
 }

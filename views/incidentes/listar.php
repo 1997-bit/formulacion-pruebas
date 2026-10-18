@@ -149,7 +149,7 @@ $chips = array_filter([
         <tbody>
           <?php foreach ($incidentes as $i): ?>
             <?php $creado = new DateTimeImmutable($i['creado_en']); ?>
-            <tr<?= $i['es_stopper'] && (int) $i['estado'] !== 2 ? ' class="fila-stopper"' : '' ?>>
+            <tr>
               <td data-columna="Código"><span class="codigo"><?= Html::e($i['codigo']) ?></span></td>
               <td data-columna="Título" class="celda-larga"><a href="/formularios/incidentes/ver?id=<?= (int) $i['id'] ?>"><?= Html::e($i['titulo']) ?></a><?= $i['es_stopper'] ? ' <span class="insignia insignia-peligro">Stopper</span>' : '' ?></td>
               <td data-columna="Caso"><a class="codigo" href="/casos/resultado?id=<?= (int) $i['caso_id'] ?>"><?= Html::e($i['caso']) ?></a></td>
