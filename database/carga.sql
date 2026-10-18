@@ -46,10 +46,10 @@ FROM casos_prueba WHERE proyecto_id = @p AND estado <> 0;
 
 -- 20 000 incidentes, 1 por caso. 1 de cada 20 es stopper
 INSERT INTO incidentes (proyecto_id, caso_id, codigo, titulo, modulo, descripcion, pasos, resultado_esperado,
-                        resultado_obtenido, severidad, prioridad, estado, es_stopper, asignado_id, creado_por)
+                        resultado_obtenido, severidad, prioridad, estado, es_stopper, commit_afectado, asignado_id, creado_por)
 SELECT @p, c.id, CONCAT('BUG-', LPAD(c.numero, 5, '0')), CONCAT('Defecto de carga ', c.numero), c.modulo,
        'Descripción de carga', 'Pasos de carga', 'Esperado', 'Obtenido',
-       c.numero % 4 + 1, c.numero % 3 + 1, c.numero % 3, c.numero % 20 = 0, IF(c.numero % 2 = 0, 2, NULL), 2
+       c.numero % 4 + 1, c.numero % 3 + 1, c.numero % 3, c.numero % 20 = 0, LPAD(HEX(c.numero), 40, '0'), IF(c.numero % 2 = 0, 2, NULL), 2
 FROM casos_prueba c WHERE c.proyecto_id = @p;
 
 DROP TEMPORARY TABLE numeros;
