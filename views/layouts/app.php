@@ -37,10 +37,9 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/tokens.css') ?>">
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/base.css') ?>">
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/componentes.css') ?>">
-<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/app.css') ?>">
+<?php foreach (Vista::estilos() as $css): ?>
+<link rel="stylesheet" href="<?= Vista::estatico('/assets/css/' . $css . '.css') ?>">
+<?php endforeach ?>
 <script src="<?= Vista::estatico('/assets/js/tema.js') ?>"></script>
 <script type="module" src="<?= Vista::estatico('/assets/js/clave.js') ?>"></script>
 <script type="module" src="<?= Vista::estatico('/assets/js/app.js') ?>"></script>

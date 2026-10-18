@@ -1,7 +1,7 @@
 /* --x: fondo. --x-texto: lo de encima */
 
 /* Cascada: lo de abajo gana. !important al revés: base gana */
-@layer tokens, base, componentes, app;
+@layer tokens, generico, elementos, objetos, componentes, app, utilidades;
 
 /* Inter local */
 @font-face {

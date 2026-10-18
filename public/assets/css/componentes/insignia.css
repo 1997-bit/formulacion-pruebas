@@ -1,0 +1,24 @@
+@layer componentes {
+.insignia {
+  display: inline-block;
+  padding: 2px var(--esp-2);
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: var(--radio-total);
+  border: 1px solid transparent;
+}
+.insignia-exito { --suave: var(--exito-suave); --fuerte: var(--exito-fuerte); }
+.insignia-aviso { --suave: var(--aviso-suave); --fuerte: var(--aviso-fuerte); }
+.insignia-peligro { --suave: var(--peligro-suave); --fuerte: var(--peligro-fuerte); }
+.insignia-info { --suave: var(--info-suave); --fuerte: var(--info-fuerte); }
+.insignia-destacado { --suave: var(--destacado-suave); --fuerte: var(--destacado-fuerte); }
+/* Jira: fondo suave y texto fuerte del mismo tono */
+:is(.insignia-exito, .insignia-aviso, .insignia-peligro, .insignia-info, .insignia-destacado) {
+  background: var(--suave);
+  color: var(--fuerte);
+}
+.insignia-secundaria { background: var(--secundario); color: var(--secundario-texto); }
+.insignia-borde { border-color: var(--borde); }
+
+}

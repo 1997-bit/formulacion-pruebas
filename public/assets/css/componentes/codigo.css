@@ -1,0 +1,9 @@
+@layer componentes {
+.codigo {
+  font-family: var(--fuente-mono);
+  color: var(--tenue-texto);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+}

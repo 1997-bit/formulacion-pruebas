@@ -1,0 +1,22 @@
+@layer componentes {
+.detalle {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--esp-3) var(--esp-5);
+  margin: 0;
+  font-size: var(--letra-sm);
+}
+.detalle dt { color: var(--tenue-texto); font-weight: 500; }
+.detalle dd { margin: 0; min-width: 0; }
+.detalle .multilinea,
+.tabla .multilinea { white-space: pre-line; }
+/* Apilada: nombre arriba, valor abajo */
+.detalle-apilado { grid-template-columns: 1fr; gap: 2px; }
+.detalle-apilado dd { margin-bottom: var(--esp-3); }
+.detalle-apilado dd:last-child { margin-bottom: 0; }
+@media (width < 30rem) {
+  .detalle { grid-template-columns: 1fr; gap: 2px; }
+  .detalle dd { margin-bottom: var(--esp-3); }
+}
+
+}

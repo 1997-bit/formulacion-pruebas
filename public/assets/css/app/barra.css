@@ -1,0 +1,48 @@
+@layer app {
+.app-barra {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--barra-alto);
+  padding: var(--esp-2) var(--esp-4);
+  background: var(--fondo);
+  border-bottom: 1px solid var(--borde);
+}
+
+.barra-boton {
+  display: grid;
+  place-items: center;
+  width: var(--alto-sm);
+  height: var(--alto-sm);
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  color: var(--texto);
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .barra-boton:hover {
+    background: var(--acento);
+    color: var(--acento-texto);
+  }
+}
+
+.barra-separador {
+  width: 1px;
+  height: 1rem;
+  background: var(--borde);
+}
+
+.barra-fin {
+  margin-left: auto;
+}
+
+@media (pointer: coarse) {
+  .barra-boton { width: var(--alto-tactil); height: var(--alto-tactil); }
+}
+}

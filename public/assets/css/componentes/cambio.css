@@ -1,0 +1,20 @@
+@layer componentes {
+/* Historial: anterior tachado */
+
+del.cambio,
+ins.cambio {
+  padding: 1px var(--esp-1);
+  border-radius: var(--radio-sm);
+  color: var(--texto);
+  white-space: pre-line;
+}
+del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
+ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: underline; text-underline-offset: 3px; }
+/* El lector no anuncia del ni ins: texto oculto */
+del.cambio::before,
+ins.cambio::before { clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap; }
+del.cambio::before { content: " [eliminado: "; }
+ins.cambio::before { content: " [agregado: "; }
+del.cambio::after,
+ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; }
+}

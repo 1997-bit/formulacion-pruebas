@@ -1,0 +1,13 @@
+@layer componentes {
+/* Pasos: un segmento por paso, texto debajo */
+.pasos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--esp-2); margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); }
+.paso { display: flex; flex-direction: column; gap: var(--esp-2); color: var(--tenue-texto); }
+.paso::before { content: ""; height: 4px; border-radius: var(--radio-total); background: var(--secundario); }
+.paso-hecho { color: var(--texto); }
+.paso-hecho::before { background: var(--exito); }
+.paso-actual { color: var(--texto); font-weight: 600; }
+.paso-actual::before { background: linear-gradient(to right, var(--primario) 50%, var(--secundario) 50%); }
+.paso-mal { color: var(--peligro-fuerte); font-weight: 600; }
+.paso-mal::before { background: var(--peligro); }
+
+}

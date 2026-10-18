@@ -1,0 +1,4 @@
+@layer app {
+/* j / k: fila con foco */
+.tabla tbody tr:focus-within { background: var(--acento); }
+}

@@ -1,0 +1,60 @@
+@layer componentes {
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: var(--alto-md);
+  padding: 0 var(--esp-4);
+  font: inherit;
+  font-size: var(--letra-sm);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: var(--radio-md);
+  border: 1px solid transparent;
+}
+.btn-primario { background: var(--primario); color: var(--primario-texto); }
+.btn-secundario { background: var(--tarjeta); color: var(--texto); border-color: var(--entrada); box-shadow: var(--sombra-xs); }
+.btn-peligro { background: var(--peligro); color: var(--peligro-texto); }
+.btn-fantasma { background: transparent; color: var(--texto); }
+@media (hover: hover) {
+  .btn-primario:hover { background: color-mix(in oklch, var(--primario), black 12%); }
+  .btn-secundario:hover,
+  .btn-fantasma:hover { background: var(--acento); color: var(--acento-texto); }
+  .btn-peligro:hover { background: color-mix(in oklch, var(--peligro), black 12%); }
+}
+.btn:disabled,
+.btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+/* Span deshabilitado con tooltip: recibe el mouse y dice por qué. Sin clic */
+span.btn[aria-disabled="true"][data-tooltip] { pointer-events: auto; }
+
+.btn-sm { min-height: var(--alto-xs); padding: 0 var(--esp-3); font-size: var(--letra-xs); border-radius: var(--radio-sm); }
+
+/* Enviando, app.js. Gira salvo con movimiento reducido */
+form[data-enviando] .btn[aria-disabled="true"]::before {
+  content: "";
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.6s linear infinite;
+}
+form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
+@keyframes girar { to { rotate: 1turn; } }
+
+/* Solo ícono: con aria-label */
+.btn-icono { min-height: var(--alto-sm); width: var(--alto-sm); padding: 0; }
+/* Con borde junto a otros .btn: mismo alto */
+.btn-secundario.btn-icono { min-height: var(--alto-md); width: var(--alto-md); }
+.btn-bloque { width: 100%; }
+
+@media (pointer: coarse) {
+  .btn { min-height: var(--alto-tactil); }
+  .btn-icono,
+  .btn-secundario.btn-icono { width: var(--alto-tactil); min-height: var(--alto-tactil); }
+  .btn-sm { min-height: var(--alto-lg); }
+}
+}

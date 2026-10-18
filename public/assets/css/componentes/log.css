@@ -1,0 +1,3 @@
+@layer componentes {
+.log-detalle { margin: var(--esp-2) 0 0; padding: var(--esp-3); overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); white-space: pre-wrap; word-break: break-all; background: var(--tenue); border-radius: var(--radio-md); }
+}

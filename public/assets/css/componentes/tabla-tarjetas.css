@@ -1,0 +1,67 @@
+@layer componentes {
+/* Solo móvil: en tablet la tabla se desliza. Cada <td> con data-columna */
+@media (width < 37.5rem) {
+  .tabla-tarjetas thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .tabla-tarjetas,
+  .tabla-tarjetas tbody,
+  .tabla-tarjetas tr,
+  .tabla-tarjetas td {
+    display: block;
+  }
+  .tabla-tarjetas tr {
+    padding: var(--esp-3);
+    border-bottom: 1px solid var(--borde);
+  }
+  .tabla-tarjetas tbody tr:last-child { border-bottom: 0; }
+  .tabla-tarjetas td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--esp-4);
+    padding: var(--esp-1) 0;
+    border: 0;
+    white-space: normal;
+    text-align: right;
+  }
+  .tabla-tarjetas td::before {
+    content: attr(data-columna);
+    flex-shrink: 0;
+    color: var(--tenue-texto);
+    font-weight: 500;
+    text-align: left;
+  }
+  .tabla-tarjetas .celda-larga { min-width: 0; }
+  .tabla-tarjetas .celda-acciones {
+    width: auto;
+    justify-content: flex-end;
+    padding-top: var(--esp-2);
+  }
+  .tabla-tarjetas .celda-acciones::before { content: none; }
+
+  /* Filas editables */
+  .tabla-tarjetas tfoot { display: block; }
+  .tabla-tarjetas tbody th,
+  .tabla-tarjetas tfoot th {
+    display: block;
+    padding: 0 0 var(--esp-2);
+    border: 0;
+    white-space: normal;
+  }
+  .tabla-tarjetas tfoot tr { background: var(--tenue); }
+  .tabla-tarjetas tfoot :is(th, td) { border: 0; }
+  .tabla-tarjetas.tabla-editable td:not(.celda-acciones) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 6px 0;
+    text-align: left;
+  }
+  .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
+}
+}

@@ -1,0 +1,12 @@
+@layer generico {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* hidden gana a display */
+[hidden] {
+  display: none !important;
+}
+}

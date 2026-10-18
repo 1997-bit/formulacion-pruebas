@@ -37,6 +37,18 @@ final class Vista
         return $ruta . '?v=' . filemtime(RAIZ . '/public' . $ruta);
     }
 
+    /**
+     * Hojas de config/estilos.php. Sin $app: sin app/, para acceso y error
+     *
+     * @return list<string>
+     */
+    public static function estilos(bool $app = true): array
+    {
+        $lista = require RAIZ . '/config/estilos.php';
+
+        return array_values(array_filter($lista, fn (string $css): bool => $app || !str_starts_with($css, 'app/')));
+    }
+
     /** @param array<string, mixed> $datos */
     public static function capturar(string $vista, array $datos = []): string
     {

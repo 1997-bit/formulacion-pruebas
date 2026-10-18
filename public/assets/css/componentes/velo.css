@@ -1,0 +1,20 @@
+@layer componentes {
+.velo {
+  background: var(--velo);
+  -webkit-backdrop-filter: var(--velo-desenfoque);
+  backdrop-filter: var(--velo-desenfoque);
+}
+/* Reducir transparencia: velo sólido sin desenfoque */
+@media (prefers-reduced-transparency: reduce) {
+  .velo {
+    background: var(--velo-respaldo);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .velo {
+    background: var(--velo-respaldo);
+  }
+}
+}

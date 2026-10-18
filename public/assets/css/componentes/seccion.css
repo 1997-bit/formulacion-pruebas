@@ -1,0 +1,9 @@
+@layer componentes {
+.titulo-seccion { margin: 0 0 var(--esp-3); font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; line-height: 1.3; }
+/* En .pila: el título va con lo de abajo */
+.pila > .titulo-seccion { margin: var(--esp-4) 0 calc(-1 * var(--esp-1)); }
+.separador { margin: var(--esp-1) 0; border: 0; border-top: 1px solid var(--borde); }
+/* <fieldset class="seccion"> con <legend class="titulo-seccion"> */
+.seccion { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.seccion > legend { padding: 0; }
+}

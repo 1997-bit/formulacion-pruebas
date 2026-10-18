@@ -1,0 +1,17 @@
+@layer objetos {
+/* <aside> de datos primero en el HTML: se imprime primero
+   En pantalla a la derecha. Angosto: debajo. Decide el ancho del contenido */
+
+.vista-detalle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+  align-items: start;
+  gap: var(--esp-4);
+}
+.vista-detalle > aside { grid-column: 2; grid-row: 1; }
+@container principal (width < 48rem) {
+  .vista-detalle { grid-template-columns: 1fr; }
+  .vista-detalle > aside { grid-column: auto; grid-row: auto; order: 1; }
+}
+
+}

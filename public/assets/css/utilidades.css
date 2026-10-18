@@ -1,0 +1,28 @@
+@layer utilidades {
+/* Solo lectores de pantalla */
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Movimiento reducido a mano, igual que prefers-reduced-motion */
+[data-movimiento="si"] *,
+[data-movimiento="si"] *::before,
+[data-movimiento="si"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+[data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso, .matriz-celda) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }
+
+/* Ajustes → Densidad compacta */
+[data-densidad="compacta"] .tabla :is(th, td) { padding-block: var(--esp-2); }
+[data-densidad="compacta"] .tareas a { padding-block: var(--esp-1); }
+[data-densidad="compacta"] .tarjeta { padding: var(--esp-4); }
+
+/* Al tocar: capa del color del texto al 10 %, pressed de Material 3
+   Al final: un background de hover o página actual no la borra */
+:is(.btn, .chip-quitar, .paginacion a, .pestanas a, .resultado-opcion, .tareas a, .cifra-enlace, .tarjeta-caso, .sidebar-boton, .sidebar-subboton, .barra-boton):active {
+  background-image: linear-gradient(color-mix(in oklch, currentColor 10%, transparent) 0 0);
+}
+}

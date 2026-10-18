@@ -1,0 +1,5 @@
+@layer componentes {
+.tema-sol { display: none; }
+:root[data-tema="dark"] .tema-sol { display: block; }
+:root[data-tema="dark"] .tema-luna { display: none; }
+}

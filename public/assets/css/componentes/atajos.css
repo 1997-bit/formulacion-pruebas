@@ -1,0 +1,15 @@
+@layer componentes {
+.atajos-lista {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--esp-2) var(--esp-4);
+  align-items: center;
+  margin: var(--esp-3) 0 0;
+  font-size: var(--letra-sm);
+}
+.atajos-lista dt { display: flex; gap: var(--esp-1); }
+.atajos-lista dd { margin: 0; }
+.atajos-grupo { margin: var(--esp-4) 0 0; font-size: var(--letra-xs); font-weight: 600; color: var(--tenue-texto); text-transform: uppercase; letter-spacing: 0.04em; }
+.dialogo-atajos { max-height: calc(100dvh - var(--esp-8)); overflow-y: auto; }
+.dialogo-atajos .acciones { margin-top: var(--esp-5); justify-content: flex-end; }
+}

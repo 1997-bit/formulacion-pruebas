@@ -1,0 +1,38 @@
+@layer app {
+/* Cronograma de un mes */
+.cronograma-barra { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2); }
+.cronograma-barra h2 { flex: 1; text-align: center; }
+.cronograma-contenedor { overflow-x: auto; border: 1px solid var(--borde); border-radius: var(--radio-xl); background: var(--tarjeta); }
+.cronograma {
+  display: grid; position: relative; min-width: calc(8rem + var(--dias) * 1.75rem);
+  grid-template-columns: 8rem repeat(var(--dias), minmax(1.75rem, 1fr));
+  font-size: var(--letra-xs);
+}
+.cronograma > * { grid-column: 1; }
+.cronograma-esquina, .cronograma-dia { padding: var(--esp-2) 0; border-bottom: 1px solid var(--borde); color: var(--tenue-texto); font-weight: 500; }
+.cronograma-esquina { grid-row: 1; padding-inline: var(--esp-3); position: sticky; left: 0; background: var(--tarjeta); z-index: 2; }
+.cronograma-dia { text-align: center; font-variant-numeric: tabular-nums; }
+.cronograma-dia.finde { background: var(--tenue); }
+.cronograma-dia.hoy { color: var(--primario); font-weight: 700; }
+.cronograma-hoy { justify-self: center; width: 2px; background: var(--primario); z-index: 1; pointer-events: none; }
+.cronograma-grupo { grid-column: 1 / -1; margin: 0; padding: var(--esp-3) var(--esp-3) var(--esp-1); font-size: var(--letra-xs); font-weight: 600; color: var(--tenue-texto); text-transform: uppercase; letter-spacing: 0.04em; position: sticky; left: 0; }
+.cronograma-caso { padding: var(--esp-1) var(--esp-3); align-self: center; position: sticky; left: 0; background: var(--tarjeta); z-index: 2; text-decoration: none; }
+.cronograma-caso:hover { text-decoration: underline; }
+.cronograma-tramo {
+  align-self: center; margin: 3px 1px; padding: 2px 6px; border-radius: var(--radio-sm);
+  overflow: hidden; white-space: nowrap; font-weight: 600; color: var(--exito-texto);
+}
+.cronograma-leyenda span { display: flex; align-items: center; gap: var(--esp-2); }
+.cronograma-tramo.barra-peligro { color: var(--peligro-texto); }
+/* Atraso: rayado de la fecha final al resultado o a hoy */
+.cronograma-atraso { align-self: center; margin: 3px 1px; padding: 2px 6px; min-height: 1.25rem; overflow: hidden; white-space: nowrap; font-size: var(--letra-xs); color: var(--peligro-fuerte); border: 1px dashed var(--peligro-fuerte); border-radius: var(--radio-sm); background: repeating-linear-gradient(-45deg, color-mix(in oklch, var(--peligro), transparent 80%) 0 4px, transparent 4px 8px); }
+.cronograma-tramo.sigue-antes { border-start-start-radius: 0; border-end-start-radius: 0; margin-left: 0; }
+.cronograma-tramo.sigue-despues { border-start-end-radius: 0; border-end-end-radius: 0; margin-right: 0; }
+
+@media print {
+  /* Horizontal: caben 31 días */
+  .cronograma-contenedor { overflow: visible; border-radius: 0; }
+  .cronograma-tramo, .cronograma-atraso, .cronograma-dia.finde { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cronograma { min-width: 0; grid-template-columns: 6rem repeat(var(--dias), minmax(0, 1fr)); }
+}
+}

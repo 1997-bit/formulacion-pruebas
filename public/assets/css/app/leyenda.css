@@ -1,0 +1,9 @@
+@layer app {
+.leyenda { display: flex; flex-wrap: wrap; gap: var(--esp-1) var(--esp-4); margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.leyenda li { display: flex; align-items: center; gap: var(--esp-2); }
+.leyenda-muestra { width: 10px; height: 10px; border-radius: var(--radio-sm); }
+
+@media print {
+  .leyenda-muestra { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+}

@@ -34,7 +34,7 @@ final class Impresion
     }
 
     /**
-     * style del <html>. @page lee estas variables, componentes.css
+     * style del <html>. @page lee estas variables, componentes/impresion.css
      *
      * @param array{titulo: string, proyecto: string, marca: string} $documento
      */
