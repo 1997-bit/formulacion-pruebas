@@ -181,7 +181,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
     </div>
     <div class="tabla-contenedor">
       <table class="tabla">
-        <caption>Todo lo que pasó <?= $fecha ?>, de más a menos</caption>
+        <caption class="solo-lector">Todo lo que pasó <?= $fecha ?>, de más a menos</caption>
         <thead><tr><th scope="col">Qué pasó</th><th scope="col">Código</th><th scope="col" class="num">Veces</th></tr></thead>
         <tbody>
           <?php foreach ($e as $evento => $n): ?>
@@ -197,7 +197,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
     </div>
     <div class="tabla-contenedor">
       <table class="tabla">
-        <caption>Equipos con más contraseñas incorrectas, top 10. IP: dirección del equipo en la red.</caption>
+        <caption class="solo-lector">Equipos con más contraseñas incorrectas, top 10. IP: dirección del equipo en la red.</caption>
         <thead><tr><th scope="col">Equipo, IP</th><th scope="col" class="num">Intentos fallidos</th></tr></thead>
         <tbody>
           <?php foreach ($seguridad['ips'] as $ip => $n): ?>
@@ -246,7 +246,7 @@ $seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format
 
       <div class="tabla-contenedor">
         <table class="tabla">
-          <caption>Páginas, de la más lenta a la más rápida</caption>
+          <caption class="solo-lector">Páginas, de la más lenta a la más rápida</caption>
           <thead><tr><th scope="col">Página</th><th scope="col" class="num">Visitas</th><th scope="col" class="num">Tiempo normal</th><th scope="col" class="num">1 de cada 20 tarda</th><th scope="col" class="num">Fallas</th></tr></thead>
           <tbody>
             <?php foreach ($r['rutas'] as $ruta): ?>
