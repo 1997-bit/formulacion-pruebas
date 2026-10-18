@@ -13,7 +13,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
-// RNF-11. Log de ejemplo de un día viejo, borrado al final.
+// RNF-11. Log de un día viejo, borrado al final
 #[CoversClass(LogServicio::class)]
 #[Small]
 final class LogServicioTest extends TestCase
@@ -55,7 +55,7 @@ final class LogServicioTest extends TestCase
         LogServicio::listar(['id' => 2, 'rol' => 0], [], 1);
     }
 
-    // OWASP Logging Cheat Sheet: leer los logs queda registrado.
+    // OWASP Logging Cheat Sheet: leer logs queda registrado
     public function testLeerDejaSensitiveRead(): void
     {
         $log = new TestHandler();
@@ -66,7 +66,7 @@ final class LogServicioTest extends TestCase
         $this->assertTrue($log->hasInfoThatContains('sensitive_read:'));
     }
 
-    // El código de la página 500 lleva a toda su petición, la más nueva primero.
+    // El código de la página 500 lleva a su petición, la más nueva primero
     public function testUidDaLaPeticionEntera(): void
     {
         [$lineas] = LogServicio::listar(self::ADMIN, ['uid' => 'be45d3e3'], 1);

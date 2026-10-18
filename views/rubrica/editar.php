@@ -9,7 +9,7 @@ use App\Helpers\Icono;
 use App\Services\RubricaServicio;
 
 /**
- * Formulario 7, RF-14, llenar o editar. Total en vivo. El servidor recalcula.
+ * Formulario 7, RF-14. Total en vivo, el servidor recalcula
  *
  * @var array<string, mixed> $proyecto
  * @var bool $nueva
@@ -17,7 +17,7 @@ use App\Services\RubricaServicio;
  * @var array<string, string> $errores
  */
 
-// Puntos => descriptor: 5, 4, 3 y 1-2.
+// Puntos => descriptor: 5, 4, 3 y 1-2
 $niveles = [5 => 0, 4 => 1, 3 => 2, 2 => 3, 1 => 3];
 ?>
 <header class="encabezado">

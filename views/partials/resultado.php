@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\CasoServicio;
 
 /**
- * Estado, resultado y evidencias nuevas, RF-24. Dentro de un form multipart.
+ * Estado, resultado y evidencias, RF-24. En un form multipart
  *
  * @var array<string, mixed> $datos  evidencias: tipos marcados
  * @var array<string, string> $errores
@@ -26,7 +26,7 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'error' => $errores[$nombre] ?? '',
 ]);
 $marcado = fn (string $campo, int $valor): string => (string) $valor === ($datos[$campo] ?? '') ? ' checked' : '';
-// Error y ayuda enlazados, RNF-07. En radios y casillas, en el fieldset.
+// Error y ayuda enlazados, RNF-07. Radios y casillas: en el fieldset
 $describir = fn (string $id, string $nombre): string => isset($errores[$nombre])
     ? ' aria-invalid="true" aria-describedby="' . $id . '-error ' . $id . '-ayuda"'
     : ' aria-describedby="' . $id . '-ayuda"';
@@ -34,7 +34,7 @@ $error = fn (string $id, string $nombre): string => isset($errores[$nombre])
     ? '<p class="campo-error" id="' . $id . '-error">' . Icono::svg('circle-x') . Html::e($errores[$nombre]) . '</p>'
     : '';
 $aria = fn (string $nombre): string => isset($errores[$nombre]) ? ' aria-describedby="f-' . $nombre . '-error"' : '';
-// Un bloque por tipo marcado: ícono, control, atributos, ayuda y ejemplo.
+// Un bloque por tipo marcado
 $evidencias = [
     1 => ['image', 'file', 'accept=".png,.jpg,.jpeg" data-vista-previa="f-captura-previa"', 'PNG o JPG, máximo 5 MB.', 'Pantalla de login con el mensaje de error'],
     2 => ['terminal', 'file', 'accept=".txt,.log"', 'Salida de consola o del servidor: TXT o LOG, máximo 5 MB.', 'Registro del servidor durante el intento'],

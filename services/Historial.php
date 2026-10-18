@@ -13,7 +13,7 @@ use App\Models\UsuarioModelo;
 // RF-20
 final class Historial
 {
-    // Campo del caso => etiqueta y catálogo. En el caso, solo estos campos dejan rastro.
+    // Campo => etiqueta y catálogo. Solo estos campos del caso dejan rastro
     private const CAMPOS = [
         'requerimiento' => ['Requerimiento', null],
         'tipo_prueba' => ['Tipo de prueba', 'tipo_prueba'],
@@ -37,12 +37,12 @@ final class Historial
         'commit_probado' => ['Commit probado', null],
     ];
 
-    // Etiquetas de requerimientos. motivo: por qué cambió, el change request.
+    // Requerimientos. motivo: el change request
     private const ETIQUETAS = ['codigo' => 'Código', 'descripcion' => 'Descripción', 'motivo' => 'Motivo', 'eliminado' => 'Eliminado'];
 
     /**
-     * Una fila por campo cambiado, un INSERT. En la transacción del UPDATE: si falla, nada cambia.
-     * Casos: campos de CAMPOS. Incidentes y plan: los de $despues.
+     * Una fila por campo cambiado, un INSERT. En la transacción del UPDATE
+     * Casos: campos de CAMPOS. Incidentes y plan: los de $despues
      *
      * @param array<string, mixed> $antes
      * @param array<string, mixed> $despues
@@ -60,20 +60,20 @@ final class Historial
         FilasModelo::insertar('logs_cambios', ['tabla', 'registro_id', 'usuario_id', 'campo', 'antes', 'despues'], $filas);
     }
 
-    // Registro borrado: su historial no se borra, ASVS 16.4.2. antes guarda el código.
+    // Borrado: su historial queda, ASVS 16.4.2. antes guarda el código
     public static function eliminado(string $tabla, int $id, string $codigo, int $usuarioId): void
     {
         FilasModelo::insertar('logs_cambios', ['tabla', 'registro_id', 'usuario_id', 'campo', 'antes', 'despues'], [[$tabla, $id, $usuarioId, 'eliminado', $codigo, null]]);
     }
 
     /**
-     * Con etiqueta y valores legibles. Casos y requerimientos.
+     * Etiquetas y valores legibles. Casos y requerimientos
      *
      * @return list<array<string, mixed>>
      */
     public static function de(string $tabla, int $id): array
     {
-        // 'usuario' no es catálogo: guarda el id, el historial muestra el nombre.
+        // 'usuario' guarda el id. El historial muestra el nombre
         $nombres = [];
         $nombreUsuario = static function (?string $valor) use (&$nombres): string {
             if ($valor === null) {

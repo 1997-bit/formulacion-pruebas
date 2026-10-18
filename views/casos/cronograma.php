@@ -8,8 +8,8 @@ use App\Helpers\Icono;
 use App\Services\CasoServicio;
 
 /**
- * Gantt de un mes: una fila por caso, de fecha_inicio a fecha_fin, agrupadas por requerimiento.
- * Grid CSS. Columna 1: código. Demás: un día cada una. Cada celda lleva su fila: la línea de hoy cruza las barras. Sin JS.
+ * Gantt de un mes: una fila por caso, agrupadas por requerimiento
+ * Grid CSS. Columna 1: código. Resto: un día. Cada celda con su fila: la línea de hoy cruza las barras. Sin JS
  *
  * @var list<array<string, mixed>> $casos  CasoModelo::sinPaginar() con el rango del mes
  * @var DateTimeImmutable $mes  primer día
@@ -24,7 +24,7 @@ $fin = $mes->format('Y-m-t');
 $hoy = date('Y-m-d');
 $diaHoy = str_starts_with($hoy, $mes->format('Y-m')) ? (int) date('j') : null;
 $enlaceMes = fn (DateTimeImmutable $m): string => '/casos/listar?' . http_build_query(['vista' => 'cronograma', 'mes' => $m->format('Y-m')] + array_filter($filtros, fn (string $x): bool => $x !== ''));
-// Día del mes en que empieza y termina la barra, recortada al mes.
+// Día de inicio y fin de la barra, recortada al mes
 $columna = fn (string $fecha): int => (int) (new DateTimeImmutable(max($inicio, min($fin, $fecha))))->format('j');
 
 $grupos = [];
@@ -32,7 +32,7 @@ foreach ($casos as $c) {
     $grupos[$c['proyecto'] . ' · ' . $c['requerimiento']][] = $c;
 }
 $filas = count($casos) + count($grupos) + 1;
-// Símbolo por estado: una barra corta no cabe texto, y el color no basta. RNF-07.
+// Símbolo por estado: en una barra corta no cabe texto y el color no basta, RNF-07
 $simbolos = [0 => '!', 1 => '✓', 2 => '✗'];
 $fila = 1;
 ?>
@@ -71,7 +71,7 @@ $fila = 1;
           $variante = Catalogo::valores('estado_caso')[$c['estado']]['variante'];
           $fila++;
           $fechas = Fecha::legible(new DateTime($c['fecha_inicio'])) . ' al ' . Fecha::legible(new DateTime($c['fecha_fin']));
-          // Plan contra real: resultado después de la fecha final, o pendiente con la fecha final pasada.
+          // Atraso: resultado después de la fecha final, o pendiente vencido
           $real = $c['estado'] === 0 ? $hoy : $c['anotado'];
           $retraso = $real !== null && $real > $c['fecha_fin'] ? (int) (new DateTime($c['fecha_fin']))->diff(new DateTime($real))->days : 0;
           $atraso = $retraso === 0 ? '' : ($c['estado'] === 0 ? "atrasado $retraso d" : "tarde $retraso d");

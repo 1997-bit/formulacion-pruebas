@@ -5,15 +5,15 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Sin formulario: cada opción se guarda al marcarla, app.js y data-ajuste. Una página por pestaña.
+ * Sin formulario: cada opción se guarda al marcarla, app.js. Una página por pestaña
  *
  * @var string $pestana apariencia o accesibilidad
  */
 
 $pestanas = ['apariencia' => ['Apariencia', '/ajustes'], 'accesibilidad' => ['Accesibilidad', '/ajustes/accesibilidad']];
-// Radios: nombre => [título, valores]. Switches: nombre => [título, texto, ayuda, marcado por defecto].
-// Switch: role="switch", marcado = 'si'.
-// Switch con su valor por defecto: no se anima al cargar.
+// Radios: nombre => [título, valores]. Switches: nombre => [título, texto, ayuda, por defecto]
+// Switch: role="switch", marcado = 'si'
+// Switch por defecto: sin animación al cargar
 $grupos = [
     'apariencia' => [
         'tema' => ['Tema', [
@@ -40,9 +40,9 @@ $interruptores = [
         'movimiento' => ['Movimiento', 'Reducir movimiento', 'Sin animaciones ni transiciones. Si el sistema operativo pide menos movimiento, ya están apagadas.', false],
     ],
 ];
-// Ícono de cada opción del tema.
+// Ícono de cada tema
 $iconos = ['sistema' => 'monitor', 'light' => 'sun', 'dark' => 'moon'];
-// Los switches se agrupan por su título en un fieldset cada uno.
+// Un fieldset por título de switch
 $porTitulo = [];
 foreach ($interruptores[$pestana] ?? [] as $nombre => [$titulo, $texto, $ayuda, $defecto]) {
     $porTitulo[$titulo][$nombre] = [$texto, $ayuda, $defecto];

@@ -16,12 +16,12 @@ use App\Services\RequerimientoServicio;
  */
 
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-// Sidebar desde la cookie, sin parpadeo.
+// Sidebar desde la cookie, sin parpadeo
 $colapsado = ($_COOKIE['sidebar'] ?? '') === 'colapsado';
-// Para el selector de proyecto y la paleta.
+// Para el selector de proyecto y la paleta
 $proyectos = RequerimientoServicio::proyectos($usuario);
 $activo = array_values(array_filter($proyectos, fn (array $p): bool => $p['id'] === ($usuario['activo'] ?? null)))[0] ?? null;
-// Encabezado y pie de cada hoja al imprimir, en toda página. Sin documento: título de la página y proyecto activo.
+// Encabezado y pie al imprimir. Sin documento: título y proyecto activo
 $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $activo['nombre'] ?? 'Todos los proyectos', 'marca' => ''], $usuario['nombre'], new DateTimeImmutable());
 ?>
 <!doctype html>
@@ -32,7 +32,7 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#18181B" media="(prefers-color-scheme: dark)">
-<?php // Guardar como PDF: el navegador usa el <title> como título del archivo, el único metadato que copia. ?>
+<?php // PDF: el navegador usa el <title> como nombre del archivo ?>
 <title><?= empty($errores) ? '' : 'Error: ' ?><?= Html::e(isset($documento) ? $documento['titulo'] . ' · ' . $documento['proyecto'] : $titulo) ?> · Casos de Prueba</title>
 <link rel="icon" type="image/svg+xml" href="<?= Vista::estatico('/favicon.svg') ?>">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -45,7 +45,7 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <script type="module" src="<?= Vista::estatico('/assets/js/clave.js') ?>"></script>
 <script type="module" src="<?= Vista::estatico('/assets/js/app.js') ?>"></script>
 <script type="module" src="<?= Vista::estatico('/assets/js/atajos.js') ?>"></script>
-<?php // Chrome y Edge piden la página al pasar el mouse por un enlace. Solo GET: todo cambio es POST. ?>
+<?php // Precarga al pasar el mouse. Solo GET: todo cambio es POST ?>
 <script type="speculationrules">{"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/evidencias/*"}}, {"not": {"selector_matches": "[target], [download]"}}]}, "eagerness": "moderate"}]}</script>
 </head>
 <body class="app">

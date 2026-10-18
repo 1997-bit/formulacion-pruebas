@@ -5,8 +5,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Paleta, Ctrl/⌘+K, atajos.js. PHP: opciones fijas. JS: Recientes, Esta página y filtro.
- * ARIA combobox: foco en el campo, opción activa en aria-activedescendant.
+ * Ctrl/⌘+K, atajos.js. PHP: opciones fijas. JS: Recientes, Esta página y filtro
+ * ARIA combobox: foco en el campo, activa en aria-activedescendant
  *
  * @var array{rol: int} $usuario
  * @var list<array{id: int, nombre: string}> $proyectos
@@ -14,7 +14,7 @@ use App\Helpers\Icono;
 
 $rol = $usuario['rol'];
 $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
-// [grupo, texto, ruta o acción JS]. Sin íconos: va en cada página y cada SVG pesa.
+// [grupo, texto, ruta o acción JS]. Sin íconos: cada SVG pesa en cada página
 $opciones = [];
 foreach (require RAIZ . '/config/menu.php' as $grupo) {
     if (!$permitido($grupo)) {
@@ -36,7 +36,7 @@ $opciones[] = ['Ir a', 'Casos › Tablero', '/casos/listar?vista=tablero'];
 $opciones[] = ['Ir a', 'Casos › Cronograma', '/casos/listar?vista=cronograma'];
 $opciones[] = ['Ir a', 'Incidentes › Tablero', '/formularios/incidentes?vista=tablero'];
 $opciones[] = ['Ir a', 'Incidentes asignados a mí', '/formularios/incidentes?mios=1'];
-// proyecto:id pulsa el botón del selector del sidebar.
+// proyecto:id pulsa el selector del sidebar
 foreach ([['id' => 0, 'nombre' => 'Todos los proyectos'], ...$proyectos] as $p) {
     $opciones[] = ['Cambiar de proyecto', $p['nombre'], 'proyecto:' . $p['id']];
 }

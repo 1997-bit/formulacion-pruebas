@@ -24,7 +24,7 @@ final class ImpresionTest extends TestCase
         );
     }
 
-    // Una comilla del nombre no cierra la cadena CSS.
+    // Una comilla del nombre no cierra la cadena CSS
     public function testVariablesEscapanComillas(): void
     {
         $css = Impresion::variables(['titulo' => 'T', 'proyecto' => "O'Hara", 'marca' => 'BORRADOR'], 'Ana', new \DateTimeImmutable('2026-10-15 09:05'));

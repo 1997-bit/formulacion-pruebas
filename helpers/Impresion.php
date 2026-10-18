@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// Impresión: encabezado, marca y pie de cada hoja. Documentos: además firmas al final, ver layouts/app.php.
+// Encabezado, marca y pie de cada hoja. Documentos: firmas al final, layouts/app.php
 final class Impresion
 {
-    // Número de formulario de la guía => título. 0: el reporte de cierre, sin número.
+    // Número de formulario => título. 0: reporte de cierre
     private const FORMULARIOS = [
         0 => 'Reporte de cierre',
         1 => 'Registro de caso de prueba',
@@ -21,8 +21,8 @@ final class Impresion
     ];
 
     /**
-     * Para el controlador: 'documento' => Impresion::documento(2, $proyecto, 'RF-01').
-     * $marca: texto en el centro de arriba de cada hoja, como BORRADOR. Vacío: sin marca.
+     * Uso: 'documento' => Impresion::documento(2, $proyecto, 'RF-01')
+     * $marca: texto arriba al centro de cada hoja, como BORRADOR. Vacío: sin marca
      *
      * @return array{titulo: string, proyecto: string, marca: string}
      */
@@ -34,7 +34,7 @@ final class Impresion
     }
 
     /**
-     * Atributo style del <html>. @page lee estas variables en sus márgenes, ver componentes.css.
+     * style del <html>. @page lee estas variables, componentes.css
      *
      * @param array{titulo: string, proyecto: string, marca: string} $documento
      */

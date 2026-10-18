@@ -6,7 +6,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Conserva los filtros de la URL.
+ * Conserva los filtros
  *
  * @var Paginacion $paginacion
  */

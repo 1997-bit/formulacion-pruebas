@@ -1,4 +1,4 @@
-/* Componentes. Requiere tokens.css y base.css. */
+/* Requiere tokens.css y base.css */
 @layer componentes {
 
 /* Botones */
@@ -31,12 +31,12 @@
 }
 .btn:disabled,
 .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-/* Un span deshabilitado con tooltip recibe el mouse: el tooltip dice por qué. Un span no tiene clic */
+/* Span deshabilitado con tooltip: recibe el mouse y dice por qué. Sin clic */
 span.btn[aria-disabled="true"][data-tooltip] { pointer-events: auto; }
 
 .btn-sm { min-height: var(--alto-xs); padding: 0 var(--esp-3); font-size: var(--letra-xs); border-radius: var(--radio-sm); }
 
-/* Enviando, app.js. El botón gira, salvo con movimiento reducido */
+/* Enviando, app.js. Gira salvo con movimiento reducido */
 form[data-enviando] .btn[aria-disabled="true"]::before {
   content: "";
   width: 1em;
@@ -49,9 +49,9 @@ form[data-enviando] .btn[aria-disabled="true"]::before {
 form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 @keyframes girar { to { rotate: 1turn; } }
 
-/* Solo ícono: siempre con aria-label */
+/* Solo ícono: con aria-label */
 .btn-icono { min-height: var(--alto-sm); width: var(--alto-sm); padding: 0; }
-/* Con borde va junto a otros .btn: mismo alto */
+/* Con borde junto a otros .btn: mismo alto */
 .btn-secundario.btn-icono { min-height: var(--alto-md); width: var(--alto-md); }
 
 .acciones { display: flex; gap: var(--esp-2); flex-wrap: wrap; justify-content: flex-end; }
@@ -62,14 +62,14 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .pila { display: flex; flex-direction: column; gap: var(--esp-4); }
 .fila { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2); }
 .titulo-seccion { margin: 0 0 var(--esp-3); font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; line-height: 1.3; }
-/* En .pila: el título va con lo de abajo, no con lo de arriba */
+/* En .pila: el título va con lo de abajo */
 .pila > .titulo-seccion { margin: var(--esp-4) 0 calc(-1 * var(--esp-1)); }
 .separador { margin: var(--esp-1) 0; border: 0; border-top: 1px solid var(--borde); }
-/* Sección de un formulario: <fieldset class="seccion"> con <legend class="titulo-seccion"> */
+/* <fieldset class="seccion"> con <legend class="titulo-seccion"> */
 .seccion { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 .seccion > legend { padding: 0; }
 
-/* Plegable: <details class="plegable">, .flecha al final del summary */
+/* <details class="plegable">, .flecha al final del summary */
 .plegable > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--esp-1) var(--esp-3); cursor: pointer; list-style: none; }
 .plegable > summary::-webkit-details-marker { display: none; }
 .plegable > summary .titulo-seccion { margin: 0; }
@@ -92,7 +92,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .insignia-peligro { --suave: var(--peligro-suave); --fuerte: var(--peligro-fuerte); }
 .insignia-info { --suave: var(--info-suave); --fuerte: var(--info-fuerte); }
 .insignia-destacado { --suave: var(--destacado-suave); --fuerte: var(--destacado-fuerte); }
-/* Estilo Jira: fondo suave y texto fuerte del mismo tono */
+/* Jira: fondo suave y texto fuerte del mismo tono */
 :is(.insignia-exito, .insignia-aviso, .insignia-peligro, .insignia-info, .insignia-destacado) {
   background: var(--suave);
   color: var(--fuerte);
@@ -100,7 +100,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .insignia-secundaria { background: var(--secundario); color: var(--secundario-texto); }
 .insignia-borde { border-color: var(--borde); }
 
-/* Código de caso, SIS-001, monoespaciada */
+/* Código, SIS-001, monoespaciada */
 
 .codigo {
   font-family: var(--fuente-mono);
@@ -110,7 +110,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   white-space: nowrap;
 }
 
-/* Tooltip solo visual. Nombre en aria-label. No en <input> ni <img>, WCAG 1.4.13 */
+/* Tooltip visual. Nombre en aria-label. No en <input> ni <img>, WCAG 1.4.13 */
 
 [data-tooltip] {
   position: relative;
@@ -125,7 +125,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   width: max-content;
   max-width: 16rem;
   padding: var(--esp-1) var(--esp-2);
-  /* Puente para pasar el mouse al globo */
+  /* Puente del mouse al globo */
   border-bottom: 6px solid transparent;
   background: var(--texto) padding-box;
   color: var(--fondo);
@@ -151,7 +151,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   opacity: 1;
   visibility: visible;
 }
-/* Sin hover, táctil: el globo solo con teclado. Un toque no lo deja pegado. También el del rail, app.css */
+/* Táctil: globo solo con teclado. Un toque no lo deja pegado. También el del rail */
 @media (hover: none) {
   :is([data-tooltip], [data-etiqueta]):not(:focus-visible)::after { display: none; }
 }
@@ -203,8 +203,8 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 /* Línea sobre el h1 */
 .encabezado .antetitulo { margin: 0 0 var(--esp-2); }
 
-/* Detalle: el <aside> de datos va primero en el HTML, para imprimirlo primero.
-   En pantalla queda a la derecha. Contenido angosto: debajo. El ancho del contenido decide, no la ventana */
+/* <aside> de datos primero en el HTML: se imprime primero
+   En pantalla a la derecha. Angosto: debajo. Decide el ancho del contenido */
 
 .vista-detalle {
   display: grid;
@@ -218,7 +218,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   .vista-detalle > aside { grid-column: auto; grid-row: auto; order: 1; }
 }
 
-/* Filtros: form GET, en la URL */
+/* Filtros: form GET */
 
 .filtros {
   display: grid;
@@ -232,9 +232,9 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   border-radius: var(--radio-xl);
 }
 .filtros .acciones { justify-content: flex-start; }
-/* Sin dato en una columna de números: raya tenue, el lector oye el texto */
+/* Columna de números sin dato: raya tenue. El lector oye el texto */
 .sin-dato { color: var(--tenue-texto); }
-/* Fila de abajo: atajos a la izquierda, botones a la derecha */
+/* Atajos a la izquierda, botones a la derecha */
 .filtros-pie { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-2); }
 .filtros-atajos { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-1); margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 .filtros-atajos [aria-current] { background: var(--acento); color: var(--acento-texto); }
@@ -259,7 +259,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 }
 .chip-quitar .icono { width: 12px; height: 12px; }
 
-/* Avatar: iniciales, siempre con el nombre al lado */
+/* Avatar: iniciales con el nombre al lado */
 .avatar {
   display: inline-grid;
   place-items: center;
@@ -307,7 +307,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   box-shadow: var(--sombra-xs);
 }
 
-/* Campos: ayuda y error con aria-describedby */
+/* Ayuda y error con aria-describedby */
 
 .campos {
   display: grid;
@@ -325,7 +325,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
   font-weight: 500;
 }
 .requerido { color: var(--error); }
-/* Botón de ícono dentro del control, a la derecha: ojo de la contraseña */
+/* Ícono dentro del control: ojo de la contraseña */
 .control-con-boton { position: relative; }
 .control-con-boton > .control { padding-right: calc(var(--alto-sm) + var(--esp-2)); }
 .control-con-boton > .control-boton { position: absolute; top: 50%; right: 4px; translate: 0 -50%; color: var(--tenue-texto); }
@@ -349,7 +349,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .control {
   width: 100%;
   min-height: var(--alto-md);
-  padding: 6px var(--esp-3); /* 6px: centra el texto del select en 2.25rem */
+  padding: 6px var(--esp-3); /* centra el texto del select en 2.25rem */
   font: inherit;
   font-size: var(--letra-sm);
   background: var(--fondo);
@@ -365,7 +365,7 @@ form[data-enviando] .btn-icono[aria-disabled="true"] > .icono { display: none; }
 .control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
 textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
 
-/* Flecha propia con el color del texto */
+/* Flecha del color del texto */
 .select { position: relative; }
 .select .control { appearance: none; padding-right: var(--esp-10); cursor: pointer; }
 .select::after {
@@ -381,7 +381,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   pointer-events: none;
 }
 
-/* <select> con los tokens de la app: lista flotante como los menús. Sin soporte: el select del sistema */
+/* Select con tokens: lista flotante. Sin soporte: el del sistema */
 @supports (appearance: base-select) {
   .select .control, .select .control::picker(select) { appearance: base-select; }
   .select .control::picker-icon { display: none; }
@@ -431,7 +431,7 @@ textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
   cursor: pointer;
 }
 .opcion input { width: 16px; height: 16px; margin: 0; accent-color: var(--primario); }
-/* Radio propio: círculo fino. Marcado: relleno primario con punto blanco */
+/* Radio: círculo fino. Marcado: relleno primario con punto blanco */
 input[type="radio"] {
   appearance: none;
   flex-shrink: 0;
@@ -451,9 +451,9 @@ input[type="radio"]:focus-visible { outline: 2px solid var(--anillo); outline-of
 input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
 input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 .grupo-fila { flex-direction: row; flex-wrap: wrap; gap: var(--esp-2) var(--esp-5); }
-/* Con error, el mensaje va en el fieldset */
+/* Con error: mensaje en el fieldset */
 
-/* Estado del caso: etiqueta = botón, con texto e ícono */
+/* Estado del caso: etiqueta = botón con texto e ícono */
 
 .resultado {
   margin: 0;
@@ -501,12 +501,12 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 
 .tabla-contenedor {
   overflow-x: auto;
-  contain: paint; /* frena el desborde de la tabla (#39); recorta lo position: fixed de adentro */
+  contain: paint; /* frena el desborde, #39. Recorta lo position: fixed de adentro */
   background: var(--fondo);
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
 }
-/* Lista larga: el encabezado queda fijo bajo la barra al bajar. clip y no auto: auto crea un scroll propio y sticky no ve el de la página */
+/* Encabezado fijo al bajar. clip y no auto: auto crea scroll propio y sticky no ve el de la página */
 .encabezado-fijo { overflow-x: clip; contain: none; }
 .encabezado-fijo thead th { position: sticky; top: var(--barra-alto); z-index: 1; }
 .tabla {
@@ -528,17 +528,17 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 }
 .tabla tbody tr:last-child :is(td, th) { border-bottom: 0; }
 .tabla .celda-acciones { width: 1%; text-align: right; }
-/* Números a la derecha: las cifras se comparan por columna */
+/* Números a la derecha: se comparan por columna */
 .tabla .num { text-align: right; }
 .tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: var(--esp-1); }
 .tabla .celda-larga { white-space: normal; min-width: 16rem; }
 
-/* Menos de 64rem: la tabla ancha se desliza de lado. Sin encabezado fijo, el scroll propio lo rompe */
+/* Menos de 64rem: scroll de lado. Sin encabezado fijo: el scroll propio lo rompe */
 @media (width < 64rem) {
   .encabezado-fijo { overflow-x: auto; contain: paint; }
   .encabezado-fijo thead th { position: static; top: auto; }
 }
-/* Tablet: la primera columna queda fija y una sombra a la derecha avisa que hay más */
+/* Tablet: primera columna fija y sombra a la derecha si hay más */
 @media (37.5rem <= width < 64rem) {
   .tabla-contenedor {
     background:
@@ -608,7 +608,7 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 @media (prefers-reduced-transparency: reduce) {
   .dialogo::backdrop { background: var(--velo-respaldo); backdrop-filter: none; }
 }
-/* Móvil: el diálogo es una hoja desde abajo, al alcance del pulgar. HIG Sheets. La paleta queda arriba por el teclado */
+/* Móvil: hoja desde abajo, HIG Sheets. La paleta queda arriba por el teclado */
 @media (width < 37.5rem) {
   .dialogo:not(.paleta) {
     width: 100%;
@@ -621,7 +621,7 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
     border-radius: var(--radio-2xl) var(--radio-2xl) 0 0;
   }
   .dialogo:not(.paleta)[open] { animation: hoja var(--dur-media) var(--curva-entrar); }
-  /* Botones a todo el ancho. Cancelar abajo, como el action sheet de iOS: un toque sin querer no borra */
+  /* Botones a todo el ancho. Cancelar abajo, como iOS: un toque sin querer no borra */
   .dialogo:not(.paleta) .acciones { flex-direction: column-reverse; }
   .dialogo:not(.paleta) .acciones > .btn { width: 100%; min-height: var(--alto-tactil); }
 }
@@ -630,7 +630,7 @@ input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
 .dialogo p { margin: 0 0 var(--esp-5); font-size: var(--letra-sm); color: var(--tenue-texto); }
 .dialogo form { margin: 0; }
 
-/* Ayuda de atajos con ?, atajos.js */
+/* Ayuda de atajos, ?, atajos.js */
 
 kbd {
   display: inline-block;
@@ -702,7 +702,7 @@ kbd {
   align-self: center;
 }
 
-/* Estilo Jira: fondo suave, borde y texto fuerte del mismo tono */
+/* Jira: fondo suave, borde y texto fuerte del mismo tono */
 .alerta-error {
   background: var(--peligro-suave);
   border-color: color-mix(in oklch, var(--peligro-fuerte), transparent 60%);
@@ -710,14 +710,14 @@ kbd {
 }
 .alerta-error .alerta-descripcion { color: var(--texto); }
 
-/* Éxito: confirma el texto, no el color */
+/* Éxito: lo confirma el texto, no el color */
 .alerta-exito {
   background: var(--exito-suave);
   border-color: color-mix(in oklch, var(--exito-fuerte), transparent 60%);
 }
 .alerta-exito > .icono { color: var(--correcto); }
 
-/* Aviso flotante tipo sonner, abajo a la derecha. app.js lo cierra */
+/* Aviso flotante tipo sonner. app.js lo cierra */
 .aviso-flotante {
   position: fixed;
   right: calc(var(--esp-4) + env(safe-area-inset-right, 0px));
@@ -759,7 +759,7 @@ kbd {
   color: var(--tenue-texto);
 }
 .vacio-icono .icono { width: 24px; height: 24px; }
-/* En 403 y 404 el título es el h1 */
+/* 403 y 404: el título es el h1 */
 .vacio :is(h1, h2, h3) { font-size: var(--letra-base); font-weight: 600; letter-spacing: 0; margin: 0; }
 .vacio p { margin: 0 0 var(--esp-2); max-width: 36ch; font-size: var(--letra-sm); color: var(--tenue-texto); }
 
@@ -792,7 +792,7 @@ kbd {
 .cifras {
   display: grid;
   gap: var(--esp-4);
-  /* 5 cifras, la principal ocupa 2: 6 columnas exactas, una fila. Contar cuántas caben dejaba filas cojas con zoom */
+  /* 5 cifras, la principal ocupa 2: 6 columnas, una fila. auto-fill dejaba filas cojas con zoom */
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 .cifra { display: flex; flex-direction: column; gap: var(--esp-1); }
@@ -815,10 +815,10 @@ kbd {
   font-variant-numeric: tabular-nums;
 }
 .cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
-/* Cifra principal: más grande y en dos columnas si hay espacio */
+/* Cifra principal: más grande y en dos columnas si cabe */
 .cifra-principal .cifra-valor { font-size: var(--letra-3xl); }
-/* Container queries: dependen del ancho del contenido, no de la ventana. Sin filas de 3 + 1 ni 3 + 2.
-   Ancho: una fila, la principal ocupa 2. Medio: la principal sola y las otras de 2 en 2. Angosto: una por fila. */
+/* Container queries: ancho del contenido, no de la ventana. Sin filas de 3 + 1 ni 3 + 2
+   Ancho: una fila. Medio: la principal sola y el resto de 2 en 2. Angosto: una por fila */
 .app-principal { container: principal / inline-size; }
 .cifra-principal { grid-column: span 2; }
 @container principal (width < 60rem) {
@@ -827,12 +827,12 @@ kbd {
 }
 @container principal (width < 28rem) { .cifras { grid-template-columns: 1fr; } }
 .cifra-hoy { color: var(--texto); font-weight: 500; }
-/* Ícono de la cifra con el color del estado */
+/* Ícono con el color del estado */
 .cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
 .cifra-peligro .cifra-etiqueta svg { color: var(--peligro-fuerte); }
 .cifra-aviso .cifra-etiqueta svg { color: var(--aviso-fuerte); }
 
-/* <progress> para avance, <meter> para medidas. Siempre con el número al lado */
+/* <progress> para avance, <meter> para medidas. Con el número al lado */
 
 .progreso {
   --progreso-color: var(--primario);
@@ -908,7 +908,7 @@ meter.progreso { --progreso-pista: var(--secundario); }
   font-variant-numeric: tabular-nums;
 }
 
-/* Historial: anterior tachado, no solo color */
+/* Historial: anterior tachado */
 
 del.cambio,
 ins.cambio {
@@ -919,7 +919,7 @@ ins.cambio {
 }
 del.cambio { background: color-mix(in oklch, var(--peligro), transparent 85%); }
 ins.cambio { background: color-mix(in oklch, var(--exito), transparent 80%); text-decoration: underline; text-underline-offset: 3px; }
-/* El lector de pantalla no anuncia del ni ins. Texto oculto, solo para él. */
+/* El lector no anuncia del ni ins: texto oculto */
 del.cambio::before,
 ins.cambio::before { clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap; }
 del.cambio::before { content: " [eliminado: "; }
@@ -927,8 +927,8 @@ ins.cambio::before { content: " [agregado: "; }
 del.cambio::after,
 ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; width: 1px; height: 1px; overflow: hidden; }
 
-/* Línea de tiempo: un punto por cambio, reciente arriba */
-/* Línea de tiempo: hora | punto y línea | cambio */
+/* Línea de tiempo: reciente arriba */
+/* hora | punto y línea | cambio */
 .linea-tiempo { --hora: 5.5rem; margin: 0; padding: 0; list-style: none; }
 .linea-tiempo li { position: relative; display: grid; align-items: baseline; grid-template-columns: var(--hora) 1fr; column-gap: var(--esp-6); padding-bottom: var(--esp-4); }
 .linea-tiempo li::before {
@@ -955,7 +955,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 .linea-tiempo time { font-family: var(--fuente-mono); font-size: var(--letra-xs); line-height: 1.7; color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
 .linea-tiempo-estado time { color: var(--texto); }
 
-/* Pasos: un segmento por paso, el texto debajo */
+/* Pasos: un segmento por paso, texto debajo */
 .pasos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--esp-2); margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); }
 .paso { display: flex; flex-direction: column; gap: var(--esp-2); color: var(--tenue-texto); }
 .paso::before { content: ""; height: 4px; border-radius: var(--radio-total); background: var(--secundario); }
@@ -999,7 +999,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 .archivo-icono img { width: 100%; height: 100%; object-fit: cover; }
 .archivo-nombre { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-sm); font-weight: 500; overflow-wrap: anywhere; }
 .archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
-/* La URL de una evidencia se parte. Los códigos no, #39 */
+/* La URL se parte. Los códigos no, #39 */
 .archivo-detalle span.codigo { white-space: normal; overflow-wrap: anywhere; }
 .archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: var(--esp-1); }
 
@@ -1012,7 +1012,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   object-fit: contain;
 }
 
-/* Pestañas: control segmentado. Enlaces, la actual con aria-current="page" en una píldora */
+/* Pestañas: control segmentado. La actual con aria-current="page" */
 
 .pestanas { display: inline-flex; max-width: 100%; gap: 2px; margin-bottom: var(--esp-4); padding: var(--esp-1); overflow-x: auto; background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-lg); }
 .pestanas a {
@@ -1030,7 +1030,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 .ajuste { padding: var(--esp-4) var(--esp-5); border: 1px solid var(--borde); }
 .ajuste > legend { float: left; width: 100%; font-weight: 600; }
-/* Opción en fila con borde. El radio va a la derecha. La marcada queda en azul */
+/* Opción en fila con borde. Radio a la derecha. Marcada en azul */
 .ajuste .opcion {
   display: flex;
   gap: var(--esp-3);
@@ -1047,7 +1047,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 .ajuste-estado:empty { display: none; }
 .ajuste-estado { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
 
-/* Switch tipo shadcn/ui: checkbox con role="switch". Teclado y lector nativos */
+/* Switch tipo shadcn/ui: checkbox con role="switch" */
 
 .switch {
   appearance: none;
@@ -1058,7 +1058,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   margin: 0;
   border: 1px solid transparent;
   border-radius: var(--radio-total);
-  background: var(--tenue-texto); /* apagado: 3:1 contra el fondo (WCAG 1.4.11) */
+  background: var(--tenue-texto); /* apagado: 3:1 contra el fondo, WCAG 1.4.11 */
   box-shadow: var(--sombra-xs);
   cursor: pointer;
   transition: background var(--dur-corta) var(--curva);
@@ -1106,7 +1106,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   background: var(--tenue);
 }
 .acceso-logo { height: 32px; }
-/* Logo negro: se invierte en oscuro */
+/* Logo negro: invertido en oscuro */
 :root[data-tema="dark"] .acceso-logo { filter: invert(1); }
 .acceso > .tarjeta { width: min(100%, 24rem); padding: var(--esp-6); box-shadow: var(--sombra-sm); }
 .acceso-pie { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); text-align: center; }
@@ -1119,7 +1119,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
 /* Celular y táctil */
 
-/* Tabla como tarjetas: cada <td> necesita data-columna. Solo móvil: en tablet la tabla se desliza */
+/* Tabla como tarjetas: cada <td> con data-columna. Solo móvil: en tablet se desliza */
 @media (width < 37.5rem) {
   .tabla-tarjetas thead {
     position: absolute;
@@ -1192,7 +1192,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
 }
 
-/* La acción baja bajo el texto */
+/* Acción bajo el texto */
 @media (width < 30rem) {
   .alerta-accion {
     grid-column: contenido;
@@ -1202,7 +1202,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .alerta:has(> .icono) .alerta-accion { margin-left: var(--esp-3); }
 }
 
-/* Táctil: targets de 44px. btn-sm y opciones: 40px, van en grupos con espacio. 16px evita el zoom de iOS */
+/* Táctil: 44px. btn-sm y opciones: 40px, en grupos con espacio. 16px: sin zoom de iOS */
 @media (pointer: coarse) {
   .btn { min-height: var(--alto-tactil); }
   .btn-icono,
@@ -1215,7 +1215,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .pestanas a { min-height: var(--alto-lg); }
 }
 
-/* Alto contraste de Windows: el sistema quita los fondos. Marcar con colores del sistema. */
+/* Alto contraste de Windows: sin fondos. Colores del sistema */
 
 @media (forced-colors: active) {
   .resultado-opcion:has(input:checked) { outline: 3px solid Highlight; outline-offset: 2px; }
@@ -1247,12 +1247,12 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .btn-secundario { box-shadow: none; }
   .control::placeholder { color: transparent; }
   .tabla-contenedor { overflow: visible; }
-  /* Bloques normales en papel: flex y grid con break-inside se enciman en Firefox, bug 1695475 */
+  /* Bloques normales: flex y grid con break-inside se enciman en Firefox, bug 1695475 */
   .pila,
   .vista-detalle { display: block; }
   .pila > * + *,
   .vista-detalle > * + * { margin-top: 12pt; }
-  /* En papel, nombre y valor lado a lado */
+  /* Nombre y valor lado a lado */
   .detalle-apilado { grid-template-columns: max-content 1fr; gap: 6px 20px; }
   .detalle-apilado dd { margin: 0; }
   a { color: inherit; text-decoration: none; }
@@ -1267,7 +1267,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
     print-color-adjust: exact;
   }
 
-  /* No cortar entre hojas */
+  /* Sin corte entre hojas */
   thead { display: table-header-group; }
   tr,
   .campo,
@@ -1276,7 +1276,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .archivo { break-inside: avoid; }
   h1, h2, h3, .tarjeta-encabezado { break-after: avoid; }
 
-  /* Hoja carta. Encabezado y pie en cada hoja: variables --doc-* del <html>, ver layouts/app.php. */
+  /* Hoja carta. Encabezado y pie: variables --doc-* del <html>, layouts/app.php */
   @page {
     size: letter;
     margin: 2cm 1.5cm 1.8cm;
@@ -1284,33 +1284,33 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
     @top-right { content: var(--doc-proyecto, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
     @bottom-left { content: var(--doc-pie, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
     @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 8pt var(--fuente); color: oklch(40% 0 0); }
-    /* Marca del estado: BORRADOR, NO-GO. Vacía en el resto */
+    /* Marca: BORRADOR, NO-GO o vacía */
     @top-center { content: var(--doc-marca, ""); font: 700 10pt var(--fuente); letter-spacing: 2pt; color: oklch(50% 0.2 25); }
   }
-  /* Hoja 1: el título ya está en el cuerpo. Sin encabezado, más aire arriba */
+  /* Hoja 1: título en el cuerpo. Sin encabezado, más aire arriba */
   @page :first {
     margin-top: 2.5cm;
     @top-left { content: none; }
     @top-right { content: none; }
   }
-  /* Doble cara: margen interior más ancho para engrapar */
+  /* Doble cara: margen interior para engrapar */
   @page :left { margin-left: 1.5cm; margin-right: 2cm; }
   @page :right { margin-left: 2cm; margin-right: 1.5cm; }
-  /* Página con tabla ancha: todo el documento en hoja horizontal, sin hojas sueltas antes y después */
+  /* Tabla ancha: todo el documento horizontal, sin hojas sueltas */
   @page horizontal { size: letter landscape; }
   .app-principal:has(.tabla-ancha, .matriz-contenedor, .cronograma-contenedor) { page: horizontal; }
 
-  /* Texto: sin palabra sola al final, cortes en español, títulos parejos */
+  /* Sin palabra sola al final, cortes en español, títulos parejos */
   p, dd { text-wrap: pretty; hyphens: auto; }
   h1, h2, h3 { text-wrap: balance; }
   /* Enlaces externos: la dirección en papel */
   .app-principal a[href^="http"]:not(.btn)::after { content: " (" attr(href) ")"; font-size: 0.85em; overflow-wrap: anywhere; hyphens: none; color: oklch(40% 0 0); }
-  /* Caja partida entre hojas: cada parte con su borde */
+  /* Caja partida: cada parte con su borde */
   .alerta,
   .archivo,
   .tabla-contenedor { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
-  /* Documento plano: sin tarjetas, secciones separadas por una línea */
+  /* Documento plano: secciones separadas por una línea */
   body { font-size: 10pt; }
   h1 { font-size: 18pt; }
   .tarjeta { padding: 0; border: 0; border-radius: 0; background: none; }
@@ -1322,7 +1322,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
 
   /* Datos primero: identifican el documento */
   .vista-detalle > aside { padding-bottom: 12pt; border-bottom: 1px solid oklch(80% 0 0); }
-  /* Párrafos: sin una línea sola al pie o al inicio de hoja */
+  /* Sin línea sola al pie o al inicio de hoja */
   p, dd { orphans: 3; widows: 3; }
 
   /* Cifras y gráficos en filas fijas */
@@ -1335,13 +1335,13 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .tarjeta:not(:has(table, .detalle)),
   .firmas { break-inside: avoid; }
 
-  /* Tablas: ajustan al ancho de la hoja, el texto baja de línea */
+  /* Tablas al ancho de la hoja, texto en varias líneas */
   .tabla { font-size: 9pt; }
   .tabla th,
   .tabla td { padding: 4pt 6pt; white-space: normal; }
   .tabla .celda-larga { min-width: 0; }
   .tabla-contenedor { border-radius: 0; }
-  /* Tabla corta, menos de 15 filas: entera en una hoja. Las largas se parten y repiten el thead. */
+  /* Menos de 15 filas: en una hoja. Las largas repiten el thead */
   .tabla-contenedor:not(:has(tbody tr:nth-child(15))) { break-inside: avoid; }
 
   /* Firmas */
@@ -1349,7 +1349,7 @@ ins.cambio::after { content: "] "; clip-path: inset(100%); position: absolute; w
   .firma p { margin: 2pt 0 0; font-size: 8pt; }
   .firma-linea { display: block; height: 32pt; border-bottom: 1px solid oklch(20% 0 0); }
 
-  /* Panel con curvas: en papel, flujo normal */
+  /* Panel en flujo normal */
   .app-cuerpo { height: auto; margin: 0; overflow: visible; border: 0; border-radius: 0; }
 }
 

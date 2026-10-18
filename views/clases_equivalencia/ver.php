@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\ClasesEquivalenciaServicio;
 
 /**
- * Formulario 2, RF-09, solo lectura. Al imprimir: plantilla de la guía.
+ * Formulario 2, RF-09, solo lectura. Imprime la plantilla de la guía
  *
  * @var array<string, mixed> $requerimiento
  * @var list<array<string, mixed>> $filas

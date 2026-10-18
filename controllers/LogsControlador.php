@@ -8,7 +8,7 @@ use App\Core\Sesion;
 use App\Core\Vista;
 use App\Services\LogServicio;
 
-// RNF-11. Solo admin.
+// RNF-11. Solo admin
 final class LogsControlador
 {
     public function ver(): void

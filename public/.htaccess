@@ -1,7 +1,7 @@
 Options -Indexes
 Require all granted
 
-# CSS y JS con ?v= de Vista::estatico: caché de 1 año, sin volver a pedirlos. #122.
+# ?v= de Vista::estatico: caché de 1 año, #122
 <IfModule mod_headers.c>
     <If "%{QUERY_STRING} =~ /^v=\d+$/">
         Header set Cache-Control "max-age=31536000, immutable"
@@ -12,5 +12,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L,QSA]
 
-# Manifest de la app web con su tipo estándar.
+# Tipo del manifest
 AddType application/manifest+json .webmanifest

@@ -11,15 +11,15 @@ use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
 
-// RF-09, formulario 2. Filas por requerimiento.
+// RF-09, formulario 2. Filas por requerimiento
 final class ClasesEquivalenciaServicio
 {
-    // Lo que resume la huella (#100).
+    // Lo que resume la huella, #100
     public const TABLAS = ['clases_equivalencia'];
 
     private const TABLA = 'clases_equivalencia';
 
-    // Columna => [etiqueta, largo máximo]. null = TEXT.
+    // Columna => [etiqueta, largo máximo]. null = TEXT
     public const COLUMNAS = [
         'campo' => ['Campo', 100],
         'clase_valida' => ['Clase válida', null],
@@ -51,7 +51,7 @@ final class ClasesEquivalenciaServicio
     }
 
     /**
-     * Requerimientos del usuario, paginados, con cuántas filas tiene su matriz (RNF-09).
+     * Requerimientos del usuario paginados, con filas de su matriz, RNF-09
      *
      * @param array{id: int, rol: int} $usuario
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
@@ -69,8 +69,8 @@ final class ClasesEquivalenciaServicio
     }
 
     /**
-     * Todas o ninguna: valida cada fila y reemplaza en una transacción.
-     * Keys de error: "fila.columna".
+     * Todo o nada: valida cada fila y reemplaza en una transacción
+     * Keys de error: "fila.columna"
      *
      * @param list<array<string, string>> $filas
      * @param array{id: int, rol: int} $usuario

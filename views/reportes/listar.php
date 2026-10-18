@@ -5,7 +5,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * RF-23. Go / No-Go de cada proyecto.
+ * RF-23. Go / No-Go de cada proyecto
  *
  * @var list<array<string, mixed>> $proyectos
  */
@@ -30,7 +30,7 @@ use App\Helpers\Icono;
         <tr><th scope="col">Proyecto</th><th scope="col" class="num">Casos</th><th scope="col" class="num">Pendientes</th><th scope="col" class="num">Sin evidencia</th><th scope="col" class="num">FAULT sin incidente</th><th scope="col" class="num">Stoppers abiertos</th><th scope="col">Decisión</th><th scope="col" class="celda-acciones"><span class="solo-lector">Acciones</span></th></tr>
       </thead>
       <tbody>
-        <?php // La cifra que impide el Go va en rojo. ?>
+        <?php // Lo que impide el Go en rojo ?>
         <?php foreach ($proyectos as $p): ?>
           <tr>
             <th scope="row" data-columna="Proyecto"><?= Html::e($p['nombre']) ?></th>

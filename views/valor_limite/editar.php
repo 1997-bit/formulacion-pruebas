@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\ValorLimiteServicio;
 
 /**
- * Formulario 3, RF-10, crear o editar. Todas las filas o ninguna.
+ * Formulario 3, RF-10. Todo o nada
  *
  * @var array<string, mixed> $requerimiento
  * @var string $huella  lo leído, para avisar si otro guardó antes (#100)

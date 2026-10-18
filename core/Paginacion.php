@@ -8,13 +8,13 @@ namespace App\Core;
 final class Paginacion
 {
     public const POR_PAGINA = 20;
-    // Enlaces: primera, última y las cercanas a la actual. BUG-049.
+    // Primera, última y cercanas a la actual. BUG-049
     private const VENTANA = 7;
 
     public readonly int $total;
     public readonly int $pagina;
 
-    // Fuera de rango: primera o última.
+    // Fuera de rango: primera o última
     public function __construct(int $total, int $pagina)
     {
         $this->total = max(0, $total);
@@ -32,7 +32,7 @@ final class Paginacion
     }
 
     /**
-     * Páginas a enlazar. null = salto, …. Ejemplo: 1, null, 48, 49, 50, 51, 52, null, 1000.
+     * null = salto. Ejemplo: 1, null, 48, 49, 50, 51, 52, null, 1000
      *
      * @return list<int|null>
      */

@@ -21,12 +21,12 @@ use App\Helpers\Icono;
  */
 
 $filtrado = array_filter($filtros, fn (string $v): bool => $v !== '') !== [];
-// Las pestañas conservan los filtros.
+// Las pestañas conservan los filtros
 $vistas = ['lista' => ['Lista', 'list-checks'], 'tablero' => ['Tablero', 'folder-kanban'], 'cronograma' => ['Cronograma', 'chart-column']];
 $enlaceVista = fn (string $v): string => '/casos/listar?' . http_build_query(['vista' => $v] + array_filter($filtros, fn (string $x): bool => $x !== ''));
 $elegido = fn (string $filtro, int|string $valor): string => (string) $valor === $filtros[$filtro] ? ' selected' : '';
 
-// Códigos repetidos entre proyectos: agrupados, sin grupos si hay 1.
+// Códigos repetidos entre proyectos: agrupados. Con 1, sin grupos
 $porProyecto = [];
 foreach ($requerimientos as $r) {
     $porProyecto[$r['proyecto']][] = $r;
@@ -39,11 +39,11 @@ foreach ($porProyecto as $proyecto => $reqs) {
     }
     $opcionesReq .= count($porProyecto) > 1 ? '</optgroup>' : '';
 }
-// Con proyecto activo la columna Proyecto sobra.
+// Con proyecto activo sobra la columna Proyecto
 $todos = $usuario['activo'] === null;
 $nombreProyecto = array_column($proyectos, 'nombre', 'id')[$filtros['proyecto']] ?? null;
 $codigoReq = array_column($requerimientos, 'codigo', 'id')[$filtros['requerimiento']] ?? null;
-// Atajos de fechas: cambian desde y hasta, conservan lo demás.
+// Atajos de fechas: cambian desde y hasta, lo demás queda
 $hoy = new DateTimeImmutable('today');
 $atajos = [
     'Esta semana' => [$hoy->modify('monday this week'), $hoy->modify('sunday this week')],

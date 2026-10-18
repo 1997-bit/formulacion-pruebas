@@ -21,9 +21,9 @@ $filtrado = array_filter($filtros, fn (string $v): bool => $v !== '') !== [];
 $usados = array_filter($filtros, fn (string $v): bool => $v !== '');
 $enlaceVista = fn (string $v): string => '/formularios/incidentes?' . http_build_query(['vista' => $v] + $usados);
 $marcado = fn (string $filtro): string => $filtros[$filtro] === '1' ? ' checked' : '';
-// Con proyecto activo la columna Proyecto sobra.
+// Con proyecto activo sobra la columna Proyecto
 $todos = $usuario['activo'] === null;
-// Avatar: iniciales decorativas, nombre en texto.
+// Iniciales decorativas, nombre en texto
 $asignado = fn (?string $nombre): string => $nombre === null
     ? 'Sin asignar'
     : '<span class="avatar" aria-hidden="true">' . Html::e(Html::iniciales($nombre)) . '</span>' . Html::e($nombre);

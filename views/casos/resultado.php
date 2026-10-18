@@ -9,8 +9,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Detalle de la paleta. Prueba y resultado a la izquierda, datos a la derecha.
- * Al imprimir: formulario 1, RF-08. Una columna, sin el form del resultado.
+ * Prueba y resultado a la izquierda, datos a la derecha
+ * Al imprimir: formulario 1, RF-08. Una columna, sin el form del resultado
  *
  * @var array<string, mixed> $caso  con evidencias
  * @var bool $editable
@@ -26,19 +26,19 @@ use App\Helpers\Icono;
 $hora = fn (string $fecha): string => Fecha::legible(new DateTime($fecha)) . ' ' . (new DateTime($fecha))->format('H:i');
 $iconos = [1 => 'image', 2 => 'terminal', 4 => 'link'];
 $texto = fn (?string $valor): string => $valor === null || $valor === '' ? '—' : Html::e($valor);
-// Pasos: Registrado, resultado y cierre. Con FAULT, el incidente va antes del cierre.
+// Pasos: Registrado, resultado y cierre. FAULT: incidente antes del cierre
 $conIncidente = $caso['incidentes'] !== [];
 $abiertos = count(array_filter($caso['incidentes'], fn (array $i): bool => $i['estado'] !== 2));
-// El paso actual dice lo que falta. Al terminarlo, el nombre del resultado.
+// Paso actual: lo que falta. Terminado: el nombre del resultado
 $pasos = match ($caso['estado']) {
     0 => [['Registrado', 'hecho'], ['Por ejecutar', 'actual'], ['Cerrado', 'pendiente']],
     1 => [['Registrado', 'hecho'], ['OK', 'hecho'], ['Cerrado', 'hecho']],
     default => [['Registrado', 'hecho'], ['FAULT', 'mal'], $conIncidente ? ['Incidente', 'hecho'] : ['Registrar incidente', 'actual'],
         !$conIncidente ? ['Cerrado', 'pendiente'] : ($abiertos === 0 ? ['Cerrado', 'hecho'] : ['Cerrar incidente', 'actual'])],
 };
-// Pendiente con la fecha final pasada: días de atraso.
+// Pendiente vencido: días de atraso
 $atraso = $caso['estado'] === 0 ? (int) (new DateTime($caso['fecha_fin']))->diff(new DateTime('today'))->format('%r%a') : 0;
-// Con un incidente abierto, el botón principal lleva a él y no a registrar otro.
+// Incidente abierto: el botón principal lleva a él
 $abierto = array_values(array_filter($caso['incidentes'], fn (array $i): bool => $i['estado'] !== 2))[0] ?? null;
 ?>
 <header class="encabezado" data-reciente="<?= Html::e($caso['codigo']) ?>" data-reciente-texto="<?= Html::e($caso['objetivo']) ?>">

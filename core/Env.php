@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Lector mínimo de .env. La variable real del entorno gana: Docker.
+// Lector de .env. La variable del entorno gana, Docker
 final class Env
 {
     public static function cargar(string $ruta): void

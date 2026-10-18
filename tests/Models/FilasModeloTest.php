@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Medium;
 use Tests\Apoyo\BaseDatos;
 
-// Tablas temporales: sin COMMIT implícito, el ROLLBACK las vacía.
+// Tablas temporales: sin COMMIT implícito. El ROLLBACK las vacía
 #[CoversClass(FilasModelo::class)]
 #[Medium]
 final class FilasModeloTest extends BaseDatos
@@ -34,7 +34,7 @@ final class FilasModeloTest extends BaseDatos
         return Conexion::pdo()->query('SELECT dueno, orden, texto, autor FROM t_sinc ORDER BY dueno, orden')->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // Dueño 7 con 3 filas del autor 1 y dueño 8 con 1 fila.
+    // Dueño 7 con 3 filas del autor 1 y dueño 8 con 1 fila
     private function sincInicial(): void
     {
         FilasModelo::insertar('t_sinc', ['dueno', 'orden', 'texto', 'autor'], [[7, 1, 'a', 1], [7, 2, 'b', 1], [7, 3, 'c', 1], [8, 1, 'otro', 1]]);
@@ -62,7 +62,7 @@ final class FilasModeloTest extends BaseDatos
         $this->assertSame([['a' => 1, 'b' => 'x'], ['a' => 2, 'b' => '0'], ['a' => 3, 'b' => 'z']], $this->insertadas());
     }
 
-    // #98. autor marca las filas escritas.
+    // #98. autor marca las filas escritas
     public function testSincronizarSinCambiosNoEscribe(): void
     {
         $this->sincInicial();

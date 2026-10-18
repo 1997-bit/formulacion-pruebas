@@ -24,8 +24,8 @@ final class CasoModelo
     }
 
     /**
-     * Una página. Orden del índice proyecto_id, sigla, numero: sin filesort.
-     * La subconsulta lee solo el índice. El resto, 20 filas. #107.
+     * Una página. Orden del índice proyecto_id, sigla, numero: sin filesort
+     * La subconsulta lee solo el índice, #107
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
@@ -48,7 +48,7 @@ final class CasoModelo
     }
 
     /**
-     * Por código exacto en los proyectos permitidos. Varios si se repite entre proyectos, #111.
+     * Por código exacto. Varios si se repite entre proyectos, #111
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -68,7 +68,7 @@ final class CasoModelo
     }
 
     /**
-     * Tablero y cronograma. Sin paginar, hasta $limite. Con $rango, solo los que tocan esas fechas.
+     * Tablero y cronograma. Sin paginar, hasta $limite. $rango: solo los que tocan esas fechas
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
@@ -97,7 +97,7 @@ final class CasoModelo
     }
 
     /**
-     * Pendientes con la fecha final ya pasada, el más atrasado primero.
+     * Pendientes vencidos, el más atrasado primero
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -117,7 +117,7 @@ final class CasoModelo
     }
 
     /**
-     * Pendientes que creó el usuario y no han vencido, el más próximo primero. Los vencidos van en atrasados().
+     * Pendientes del usuario sin vencer, el más próximo primero
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -137,8 +137,8 @@ final class CasoModelo
     }
 
     /**
-     * Caso anterior y siguiente del mismo proyecto, en el orden de la lista.
-     * OR y no (sigla, numero) > (?, ?): usa el índice único, sin filesort.
+     * Anterior y siguiente del mismo proyecto, orden de la lista
+     * OR y no (sigla, numero) > (?, ?): usa el índice único
      *
      * @param array<string, mixed> $caso
      * @return array{0: ?array<string, mixed>, 1: ?array<string, mixed>}
@@ -180,7 +180,7 @@ final class CasoModelo
     }
 
     /**
-     * En transacción. Valores de antes para el historial.
+     * En transacción. Da los valores de antes para el historial
      *
      * @return array<string, mixed>|null
      */
@@ -213,7 +213,7 @@ final class CasoModelo
     }
 
     /**
-     * Commits ya usados en el proyecto, el más reciente primero. Para el datalist.
+     * Commits del proyecto, el más reciente primero. Para el datalist
      *
      * @return list<string>
      */
@@ -231,7 +231,7 @@ final class CasoModelo
         return $sql->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    // Dentro de una transacción.
+    // En transacción
     public static function siguienteNumero(int $proyectoId, string $sigla): int
     {
         $sql = Conexion::pdo()->prepare(
@@ -254,7 +254,7 @@ final class CasoModelo
         return (int) Conexion::pdo()->lastInsertId();
     }
 
-    // False si tiene evidencias o incidentes. El historial queda, ASVS 16.4.2.
+    // False con evidencias o incidentes. El historial queda, ASVS 16.4.2
     public static function eliminar(int $id): bool
     {
         try {
@@ -270,7 +270,7 @@ final class CasoModelo
     }
 
     /**
-     * RF-22. Filtros usados + permiso.
+     * RF-22. Filtros + permiso
      *
      * @param list<int>|null $proyectos
      * @param array{proyecto: ?int, requerimiento: ?int, estado: ?int, desde: ?string, hasta: ?string} $filtros
@@ -280,7 +280,7 @@ final class CasoModelo
     {
         [$permiso, $valores] = ProyectoModelo::permitidos('c.proyecto_id', $proyectos);
         $condiciones = [$permiso];
-        // Fechas: el caso entra si su rango cruza el del filtro.
+        // Entra si su rango cruza el del filtro
         foreach (['proyecto' => 'c.proyecto_id = ?', 'requerimiento' => 'c.requerimiento_id = ?', 'estado' => 'c.estado = ?', 'desde' => 'c.fecha_fin >= ?', 'hasta' => 'c.fecha_inicio <= ?'] as $filtro => $condicion) {
             if ($filtros[$filtro] !== null) {
                 $condiciones[] = $condicion;

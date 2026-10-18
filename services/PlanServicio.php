@@ -13,7 +13,7 @@ use App\Models\ProyectoModelo;
 use App\Models\RequerimientoModelo;
 use App\Models\UsuarioModelo;
 
-// RF-13, formulario 6. Un plan por proyecto. Lo llena cualquier miembro.
+// RF-13, formulario 6. Un plan por proyecto. Cualquier miembro
 final class PlanServicio
 {
     public const TEXTOS = ['alcance', 'objetivos', 'recursos', 'cronograma', 'criterios_aceptacion', 'riesgos'];
@@ -21,7 +21,7 @@ final class PlanServicio
     private const ESTADO_CERRADO = 2;
 
     /**
-     * Proyectos del usuario con el estado del plan. null: sin plan.
+     * Proyectos del usuario con estado del plan. null: sin plan
      *
      * @param array{id: int, rol: int} $usuario
      * @return list<array<string, mixed>>
@@ -39,7 +39,7 @@ final class PlanServicio
     }
 
     /**
-     * Null si no existe.
+     * Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -55,7 +55,7 @@ final class PlanServicio
     }
 
     /**
-     * Null si el proyecto aún no tiene plan.
+     * Null sin plan
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -68,7 +68,7 @@ final class PlanServicio
     }
 
     /**
-     * El responsable sale de aquí.
+     * El responsable sale de aquí
      *
      * @return list<array<string, mixed>>
      */
@@ -125,7 +125,7 @@ final class PlanServicio
             'estado' => (int) $d['estado'],
         ];
         Conexion::transaccion(function () use ($proyectoId, $plan, $usuario): void {
-            // Al editar, deja rastro de lo cambiado (#115). Crear no deja rastro.
+            // Editar deja rastro, #115. Crear no
             $antes = PlanModelo::deProyecto($proyectoId);
             PlanModelo::guardar($proyectoId, $plan);
             if ($antes !== null) {

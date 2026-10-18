@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Apoyo;
 
-// Navegador mínimo: guarda la cookie de sesión y no sigue redirecciones.
+// Navegador mínimo: guarda la cookie y no sigue redirecciones
 final class Cliente
 {
     private \CurlHandle $curl;
@@ -35,7 +35,7 @@ final class Cliente
         return $this->pedir('POST', $ruta, $datos);
     }
 
-    // El token CSRF del formulario de la ruta.
+    // Token CSRF del formulario de la ruta
     public function token(string $ruta): string
     {
         preg_match('/name="csrf" value="([0-9a-f]{64})"/', $this->get($ruta)['cuerpo'], $m);
@@ -43,7 +43,7 @@ final class Cliente
         return $m[1] ?? throw new \LogicException("Sin token CSRF en {$ruta}.");
     }
 
-    // Id de sesión. null sin cookie.
+    // Id de sesión. null sin cookie
     public function sesion(): ?string
     {
         foreach (curl_getinfo($this->curl, CURLINFO_COOKIELIST) as $linea) {

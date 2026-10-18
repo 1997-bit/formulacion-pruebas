@@ -12,7 +12,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
-// RNF-03. Sin probar lo que exige is_uploaded_file.
+// RNF-03. Sin probar lo que exige is_uploaded_file
 #[CoversClass(Subida::class)]
 #[Small]
 final class SubidaTest extends TestCase
@@ -61,7 +61,7 @@ final class SubidaTest extends TestCase
         $this->assertSame($esperado, $error);
     }
 
-    // RNF-11. Archivo rechazado: upload_validation con nombre y motivo.
+    // RNF-11. Rechazado: upload_validation con nombre y motivo
     public function testExeRechazadoDejaUploadValidation(): void
     {
         $log = new TestHandler();
@@ -72,7 +72,7 @@ final class SubidaTest extends TestCase
         $this->assertTrue($log->hasCriticalThatContains('upload_validation:virus.exe'));
     }
 
-    // #118. Archivo igual ya guardado: no se mueve otra vez.
+    // #118. Igual ya guardado: no se mueve otra vez
     public function testGuardarArchivoRepetidoDevuelveElMismoNombre(): void
     {
         $nombre = self::SHA . '.txt';

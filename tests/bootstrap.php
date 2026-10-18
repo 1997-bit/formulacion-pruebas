@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-// Arranque de PHPStan y PHPUnit.
+// Arranque de PHPStan y PHPUnit
 define('RAIZ', dirname(__DIR__));
 require RAIZ . '/vendor/autoload.php';
 
-// Pruebas sin archivo de log. Cada prueba de eventos pone su TestHandler.
+// Sin archivo de log. Cada prueba de eventos pone su TestHandler
 App\Core\Log::usar(new Monolog\Handler\NullHandler());

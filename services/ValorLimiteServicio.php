@@ -11,15 +11,15 @@ use App\Core\Paginacion;
 use App\Core\Validador;
 use App\Models\FilasModelo;
 
-// RF-10, formulario 3. Filas por requerimiento.
+// RF-10, formulario 3. Filas por requerimiento
 final class ValorLimiteServicio
 {
-    // Lo que resume la huella (#100).
+    // Lo que resume la huella, #100
     public const TABLAS = ['valor_limite'];
 
     private const TABLA = 'valor_limite';
 
-    // Columna => [etiqueta, largo máximo]. null = TEXT.
+    // Columna => [etiqueta, largo máximo]. null = TEXT
     public const COLUMNAS = [
         'campo' => ['Campo', 100],
         'rango_valido' => ['Rango válido', 100],
@@ -52,7 +52,7 @@ final class ValorLimiteServicio
     }
 
     /**
-     * Requerimientos del usuario, paginados, con cuántas filas tiene su análisis (RNF-09).
+     * Requerimientos del usuario paginados, con filas de su análisis, RNF-09
      *
      * @param array{id: int, rol: int} $usuario
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
@@ -70,8 +70,8 @@ final class ValorLimiteServicio
     }
 
     /**
-     * Todas o ninguna: valida cada fila y reemplaza en una transacción.
-     * Keys de error: "fila.columna".
+     * Todo o nada: valida cada fila y reemplaza en una transacción
+     * Keys de error: "fila.columna"
      *
      * @param list<array<string, string>> $filas
      * @param array{id: int, rol: int} $usuario

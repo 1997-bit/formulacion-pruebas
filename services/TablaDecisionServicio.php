@@ -13,26 +13,26 @@ use App\Models\FilasModelo;
 use App\Models\TablaDecisionModelo;
 
 /**
- * RF-11, formulario 4. Condiciones y acciones de un requerimiento, una columna por regla.
- * n condiciones = 2^n reglas.
- * Celdas. Condición: V, F o -. Acción: X o -.
+ * RF-11, formulario 4. Una columna por regla
+ * n condiciones = 2^n reglas
+ * Condición: V, F o -. Acción: X o -
  *
  * @phpstan-type Fila array{texto: string, reglas: list<string>}
  * @phpstan-type Tabla array{condiciones: list<Fila>, acciones: list<Fila>}
  */
 final class TablaDecisionServicio
 {
-    // Lo que resume la huella (#100).
+    // Lo que resume la huella, #100
     public const TABLAS = ['decision_filas', 'decision_celdas'];
 
     private const TABLA = 'decision_filas';
 
-    // 4 condiciones = 16 reglas. Más no cabe en pantalla.
+    // 4 condiciones = 16 reglas. Más no cabe
     public const MAX_CONDICIONES = 4;
     public const MAX_ACCIONES = 20;
 
     /**
-     * Guardada, o una vacía de 2 condiciones y 2 acciones si no tiene.
+     * Guardada o vacía de 2 condiciones y 2 acciones
      *
      * @param array{id: int, rol: int} $usuario
      * @return Tabla
@@ -67,8 +67,8 @@ final class TablaDecisionServicio
     }
 
     /**
-     * Agrega o quita una fila sin guardar. Con otro número de condiciones, las reglas
-     * vuelven a la combinación completa y las acciones se desmarcan.
+     * Agrega o quita una fila sin guardar. Otro número de condiciones:
+     * reglas completas y acciones sin marcar
      *
      * @param Tabla $tabla
      * @param string $cambio  condicion, accion, quitar-condicion-N o quitar-accion-N
@@ -104,7 +104,7 @@ final class TablaDecisionServicio
     }
 
     /**
-     * Requerimientos del usuario, paginados, con cuántas filas tiene su tabla (RNF-09).
+     * Requerimientos del usuario paginados, con filas de su tabla, RNF-09
      *
      * @param array{id: int, rol: int} $usuario
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
@@ -122,8 +122,8 @@ final class TablaDecisionServicio
     }
 
     /**
-     * Todas o ninguna: valida cada celda. Filas y celdas en una transacción.
-     * Keys de error: "condicion.i", "condicion.i.r", "accion.i", "accion.i.r", "regla.r".
+     * Todo o nada: valida cada celda. Filas y celdas en una transacción
+     * Keys de error: "condicion.i", "condicion.i.r", "accion.i", "accion.i.r", "regla.r"
      *
      * @param Tabla $tabla
      * @param array{id: int, rol: int} $usuario
@@ -175,7 +175,7 @@ final class TablaDecisionServicio
     }
 
     /**
-     * Combinación completa. La primera condición cambia cada 2^(n-1) reglas, la última en cada una: VVFF, VFVF.
+     * Combinación completa. La primera condición cambia cada 2^(n-1) reglas, la última en cada una: VVFF, VFVF
      *
      * @param Tabla $tabla
      * @return Tabla

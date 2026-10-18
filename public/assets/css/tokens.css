@@ -1,9 +1,9 @@
-/* Variables de diseño. --x: fondo. --x-texto: lo de encima. */
+/* --x: fondo. --x-texto: lo de encima */
 
-/* Orden de la cascada: lo de abajo gana. !important al revés: base gana */
+/* Cascada: lo de abajo gana. !important al revés: base gana */
 @layer tokens, base, componentes, app;
 
-/* Inter local, sin internet. */
+/* Inter local */
 @font-face {
   font-family: "Inter";
   src: url("../fonts/InterVariable.woff2") format("woff2");
@@ -20,7 +20,7 @@
 }
 
 @layer tokens {
-/* Tema del sistema, salvo <html data-tema>. light-dark(claro, oscuro). */
+/* Tema del sistema salvo <html data-tema>. light-dark(claro, oscuro) */
 :root {
   color-scheme: light dark;
 }
@@ -46,7 +46,7 @@
 
   --destacado: oklch(73.2% 0.186 53);
 
-  /* Estados. Sólido: resultado marcado y barras en oscuro. */
+  /* Sólido: resultado marcado y barras en oscuro */
   --peligro: oklch(58% 0.204 25);                                   /* FAULT */
   --peligro-texto: oklch(100% 0 0);
   --exito: oklch(75% 0.166 156);                                    /* OK */
@@ -54,7 +54,7 @@
   --aviso: oklch(88.6% 0.17 94);                                    /* Atención */
   --info: oklch(54.5% 0.252 264);                                   /* En progreso */
 
-  /* Suave: fondo de insignia. Fuerte: texto sobre fondo, mínimo 4.5:1. */
+  /* Suave: fondo de insignia. Fuerte: texto sobre fondo, 4.5:1 */
   --exito-suave: light-dark(oklch(96.1% 0.026 166), oklch(30% 0.06 155));
   --exito-fuerte: light-dark(oklch(51.5% 0.112 156), oklch(78% 0.15 155));
   --aviso-suave: light-dark(oklch(96.6% 0.053 94), oklch(32% 0.06 90));
@@ -69,11 +69,11 @@
   --correcto: var(--exito-fuerte);
 
   --borde: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 8%));
-  --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, mínimo 3:1 */
+  --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, 3:1 */
   --anillo: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
   --enlace: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
 
-  /* Fondo de diálogos y sidebar móvil. Más oscuro en tema oscuro. */
+  /* Diálogos y sidebar móvil. Más oscuro en tema oscuro */
   --velo: linear-gradient(
     light-dark(oklch(0% 0 0 / 0.10), oklch(0% 0 0 / 0.25)),
     light-dark(oklch(0% 0 0 / 0.15), oklch(0% 0 0 / 0.35))
@@ -90,7 +90,7 @@
   --lateral-ancho-icono: 3rem;
   --barra-alto: 3.5rem;
 
-  /* Espacio: escala de 4px. Gap, padding y margin usan solo estos. px: el espacio no crece con la letra, el alto sí */
+  /* Escala de 4px para gap, padding y margin. px: no crece con la letra */
   --esp-1: 4px;
   --esp-2: 8px;
   --esp-3: 12px;
@@ -100,15 +100,15 @@
   --esp-8: 32px;
   --esp-10: 40px;
 
-  /* Alto de botones y campos. md: el normal. lg: táctil y opciones grandes. */
+  /* Alto de botones y campos. lg: táctil y opciones grandes */
   --alto-xs: 1.75rem;
   --alto-sm: 2rem;
   --alto-md: 2.25rem;
   --alto-lg: 2.5rem;
-  --alto-tactil: 2.75rem; /* 44px: Apple HIG y WCAG 2.5.5 */
+  --alto-tactil: 2.75rem; /* 44px, Apple HIG y WCAG 2.5.5 */
 
-  /* Movimiento, Material 3. Duración: mínima 100 ms, corta 150 ms, media 250 ms.
-     Curva: la estándar. Entrar desacelera: llega suave. Salir acelera: se va rápido */
+  /* Movimiento, Material 3: 100, 150 y 250 ms
+     Entrar desacelera, salir acelera */
   --dur-minima: 100ms;
   --dur-corta: 150ms;
   --dur-media: 250ms;
@@ -124,7 +124,7 @@
   --radio-2xl: calc(var(--radio) + 8px);
   --radio-total: 9999px;
 
-  /* Sombras más fuertes en oscuro. */
+  /* Sombras más fuertes en oscuro */
   --sombra-color: light-dark(oklch(0% 0 0 / 0.1), oklch(0% 0 0 / 0.45));
   --sombra-xs: 0 1px 2px 0 light-dark(oklch(0% 0 0 / 0.05), oklch(0% 0 0 / 0.3));
   --sombra-sm: 0 1px 3px 0 var(--sombra-color), 0 1px 2px -1px var(--sombra-color);
@@ -135,7 +135,7 @@
   --fuente: "Inter", system-ui, sans-serif;
   --fuente-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* rem: crece 200 % con zoom. Títulos fluidos con vw. */
+  /* rem: crece 200 % con zoom. Títulos fluidos con vw */
   --letra-xs: 0.75rem;
   --letra-sm: 0.875rem;
   --letra-base: 1rem;
@@ -153,7 +153,7 @@
   }
 }
 
-/* Ajustes del sistema → más contraste. Bordes y texto tenue más fuertes. */
+/* Más contraste: bordes y texto tenue más fuertes */
 @media (prefers-contrast: more) {
   :root {
     --borde: light-dark(oklch(60% 0 0), oklch(100% 0 0 / 45%));

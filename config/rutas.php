@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// rol: null pública, 0 con sesión, 1 admin.
+// rol: null pública, 0 con sesión, 1 admin
 return [
     'GET /' => ['controlador' => 'Acceso', 'accion' => 'login', 'rol' => null, 'rf' => 'RF-01'],
     'POST /' => ['controlador' => 'Acceso', 'accion' => 'entrar', 'rol' => null, 'rf' => 'RF-01'],

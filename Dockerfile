@@ -1,4 +1,4 @@
-# Dependencias sin dev.
+# Dependencias sin dev
 FROM docker.io/library/composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./

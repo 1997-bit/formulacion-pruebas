@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 4, RF-11. Una tabla por requerimiento.
+ * Formulario 4, RF-11. Una tabla por requerimiento
  *
  * @var list<array<string, mixed>> $requerimientos  con filas
  * @var Paginacion $paginacion

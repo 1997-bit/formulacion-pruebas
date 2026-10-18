@@ -23,9 +23,9 @@ final class IncidenteModelo
     }
 
     /**
-     * Por proyecto. Abiertos primero, luego lo más grave. Orden del índice: sin filesort.
+     * Abiertos primero, luego lo más grave. Orden del índice: sin filesort
      *
-     * Sin $offset: todos hasta $limite, para el tablero.
+     * Sin $offset: todos hasta $limite, tablero
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @param array<string, ?int> $filtros IncidenteServicio::filtros()
@@ -35,7 +35,7 @@ final class IncidenteModelo
     {
         [$permiso, $valores] = self::donde($proyectos, $filtros);
         $orden = ' ORDER BY i.proyecto_id, i.estado, i.severidad DESC, i.numero';
-        // La subconsulta lee solo el índice, #107.
+        // Subconsulta solo del índice, #107
         $sql = Conexion::pdo()->prepare(
             'SELECT i.id, i.codigo, i.titulo, i.severidad, i.prioridad, i.estado, i.es_stopper, i.asignado_id,
                     c.id AS caso_id, c.codigo AS caso, p.nombre AS proyecto, a.nombre AS asignado
@@ -52,7 +52,7 @@ final class IncidenteModelo
     }
 
     /**
-     * Abiertos asignados a un usuario, lo más grave primero.
+     * Abiertos del usuario, lo más grave primero
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -96,7 +96,7 @@ final class IncidenteModelo
             ->execute([$s['estado'], $s['asignado_id'], $s['es_stopper'], $s['commit_corregido'], $id]);
     }
 
-    // Stoppers sin cerrar: impiden cerrar el plan.
+    // Stoppers abiertos: impiden cerrar el plan
     public static function stoppersAbiertos(int $proyectoId): int
     {
         $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM incidentes WHERE proyecto_id = ? AND es_stopper = 1 AND estado <> 2');
@@ -105,7 +105,7 @@ final class IncidenteModelo
         return (int) $sql->fetchColumn();
     }
 
-    // Incidentes del caso sin cerrar: impiden OK. BUG-048. FOR UPDATE en la transacción del resultado.
+    // Abiertos del caso: impiden OK, BUG-048. FOR UPDATE en la transacción
     public static function abiertosDeCaso(int $casoId): int
     {
         $sql = Conexion::pdo()->prepare('SELECT COUNT(*) FROM (SELECT id FROM incidentes WHERE caso_id = ? AND estado <> 2 FOR UPDATE) a');
@@ -125,7 +125,7 @@ final class IncidenteModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // Dentro de una transacción.
+    // En transacción
     public static function siguienteNumero(int $proyectoId): int
     {
         $sql = Conexion::pdo()->prepare(
@@ -149,7 +149,7 @@ final class IncidenteModelo
     }
 
     /**
-     * Permiso y filtros usados: estado, severidad, stopper = 1, asignado = id.
+     * Permiso y filtros: estado, severidad, stopper = 1, asignado = id
      *
      * @param list<int>|null $proyectos
      * @param array<string, ?int> $filtros

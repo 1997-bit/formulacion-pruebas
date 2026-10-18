@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 5, RF-12. Una cobertura por requerimiento.
+ * Formulario 5, RF-12. Una cobertura por requerimiento
  *
  * @var list<array<string, mixed>> $requerimientos  con filas: métricas medidas
  * @var Paginacion $paginacion

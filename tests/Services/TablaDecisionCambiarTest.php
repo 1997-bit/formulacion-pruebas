@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
-// RF-11. Agregar o quitar filas sin guardar.
+// RF-11. Agregar o quitar filas sin guardar
 #[CoversClass(TablaDecisionServicio::class)]
 #[Small]
 final class TablaDecisionCambiarTest extends TestCase

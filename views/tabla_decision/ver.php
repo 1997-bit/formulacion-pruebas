@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 4, RF-11, solo lectura. Al imprimir: plantilla de la guía.
+ * Formulario 4, RF-11, solo lectura. Imprime la plantilla de la guía
  *
  * @var array<string, mixed> $requerimiento
  * @var ?array{condiciones: list<array{texto: string, reglas: list<string>}>, acciones: list<array{texto: string, reglas: list<string>}>} $tabla
@@ -42,7 +42,7 @@ $editar = '/formularios/tabla_decision/editar?requerimiento=' . (int) $requerimi
     </div>
   <?php else: ?>
     <?php $reglas = 2 ** count($tabla['condiciones']); ?>
-    <?php // Más de 8 reglas: no cabe en vertical, se imprime en horizontal. ?>
+    <?php // Más de 8 reglas: horizontal ?>
     <div class="tabla-contenedor<?= $reglas > 8 ? ' tabla-ancha' : '' ?>">
       <table class="tabla">
         <caption class="solo-lector">Condiciones y acciones por regla</caption>

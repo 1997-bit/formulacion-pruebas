@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\ClasesEquivalenciaServicio;
 
 /**
- * Formulario 2, RF-09, crear o editar. Todas las filas o ninguna.
+ * Formulario 2, RF-09. Todo o nada
  *
  * @var array<string, mixed> $requerimiento
  * @var string $huella  lo leído, para avisar si otro guardó antes (#100)

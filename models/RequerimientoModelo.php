@@ -9,11 +9,11 @@ use App\Core\Paginacion;
 
 final class RequerimientoModelo
 {
-    // Tester: solo sus proyectos.
+    // Tester: sus proyectos
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * Todos, para los selects. Orden del índice proyecto_id, no_funcional, numero.
+     * Todos, para los selects. Orden del índice
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -32,8 +32,8 @@ final class RequerimientoModelo
     }
 
     /**
-     * Una página con el conteo de casos: 20 conteos por índice. #108.
-     * La subconsulta lee solo el índice, #107.
+     * Una página con conteo de casos por índice, #108
+     * Subconsulta solo del índice, #107
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -55,7 +55,7 @@ final class RequerimientoModelo
     }
 
     /**
-     * Matriz de cobertura: una fila por requerimiento y tipo de prueba. Sin casos: tipo_prueba null.
+     * Una fila por requerimiento y tipo de prueba. Sin casos: tipo_prueba null
      *
      * @param list<int>|null $proyectos Permisos::proyectos()
      * @return list<array<string, mixed>>
@@ -125,7 +125,7 @@ final class RequerimientoModelo
     }
 
     /**
-     * Casos que validan el requerimiento: el impacto del cambio.
+     * Casos del requerimiento: impacto del cambio
      *
      * @return list<array<string, mixed>>
      */
@@ -137,7 +137,7 @@ final class RequerimientoModelo
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // Casos o filas de los formularios 2 a 5. Los formularios borran en cascada: sin este control se pierden.
+    // Casos o filas de F2 a F5. Los formularios borran en cascada
     public static function enUso(int $id): bool
     {
         $sql = Conexion::pdo()->prepare(
@@ -152,7 +152,7 @@ final class RequerimientoModelo
         return (bool) $sql->fetchColumn();
     }
 
-    // El historial queda, ASVS 16.4.2.
+    // El historial queda, ASVS 16.4.2
     public static function eliminar(int $id): void
     {
         Conexion::pdo()->prepare('DELETE FROM requerimientos WHERE id = ?')->execute([$id]);

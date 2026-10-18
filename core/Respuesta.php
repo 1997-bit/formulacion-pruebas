@@ -15,7 +15,7 @@ final class Respuesta
     /** @param array{texto: string, ruta: string}|null $accion  Sesion::flash() */
     public static function exito(string $mensaje, string $ruta, ?array $accion = null): never
     {
-        // Envío de un solo uso, #102. Un segundo envío igual vuelve aquí sin guardar.
+        // Envío de un solo uso, #102. Repetido: vuelve sin guardar
         if (is_string($_POST['envio'] ?? null)) {
             $_SESSION['envios'] = array_slice([$_POST['envio'] => $ruta] + ($_SESSION['envios'] ?? []), 0, 20, true);
         }
@@ -29,21 +29,21 @@ final class Respuesta
      */
     public static function errores(array $errores, array $datos, string $ruta): never
     {
-        // Solo los nombres de campo, nunca los valores. ASVS 16.2.5.
+        // Solo nombres de campo, nunca valores. ASVS 16.2.5
         Log::evento('warning', 'input_validation_fail:({campos}),{id}', ['campos' => implode(',', array_keys($errores))]);
-        // Por ruta, #103: otro formulario no los toma.
+        // Por ruta, #103. Otro formulario no los toma
         $_SESSION['errores'] = [$ruta => $errores];
         $_SESSION['datos'] = [$ruta => $datos];
         self::redirigir($ruta);
     }
 
-    // nosniff: el navegador no adivina el tipo. RNF-03.
+    // nosniff, RNF-03
     public static function archivo(string $ruta, string $tipo, string $nombre): never
     {
-        // Libera la sesión antes de descargar: otra pestaña no espera. #120.
+        // Libera la sesión: otra pestaña no espera, #120
         session_write_close();
-        // El nombre guardado no cambia con el contenido: sirve de ETag. private: solo caché del navegador.
-        // no-cache: pregunta cada vez, así revisa el permiso siempre. #121.
+        // Nombre = hash del contenido: sirve de ETag. private: solo caché del navegador
+        // no-cache: revisa el permiso cada vez, #121
         $etag = '"' . pathinfo($ruta, PATHINFO_FILENAME) . '"';
         header('Cache-Control: private, no-cache');
         header('ETag: ' . $etag);
@@ -54,7 +54,7 @@ final class Respuesta
         header('Content-Type: ' . $tipo);
         header('X-Content-Type-Options: nosniff');
         header('Content-Disposition: inline; filename="' . str_replace(['"', '\\', "\r", "\n"], '_', $nombre) . '"');
-        // Con mod_xsendfile, Apache envía el archivo y libera PHP. Sin él, lo envía PHP: php -S, XAMPP.
+        // mod_xsendfile: Apache envía y libera PHP. Sin él, PHP: php -S, XAMPP
         if (function_exists('apache_get_modules') && in_array('mod_xsendfile', apache_get_modules(), true)) {
             header('X-Sendfile: ' . $ruta);
             exit;
@@ -64,7 +64,7 @@ final class Respuesta
         exit;
     }
 
-    // $referencia: uid de la petición en storage/logs. Solo 500.
+    // $referencia: uid de la petición en storage/logs. Solo 500
     public static function error(int $codigo, ?string $referencia = null): never
     {
         http_response_code($codigo);

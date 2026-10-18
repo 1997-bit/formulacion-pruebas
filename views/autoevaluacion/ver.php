@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 8, RF-15, solo lectura. Lo del usuario y promedios del equipo, calculados en el servidor.
+ * Formulario 8, RF-15, solo lectura. Promedios del servidor
  *
  * @var array<string, mixed> $proyecto
  * @var bool $puedeLlenar  el admin no es miembro: solo ve los promedios

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Ignora la cadena de consulta.
+// Ignora la cadena de consulta
 final class Ruteador
 {
     /** @return array{controlador: string, accion: string, rol: ?int, rf: string}|null */

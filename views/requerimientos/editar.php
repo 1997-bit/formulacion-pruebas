@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Change request básico: motivo obligatorio, casos afectados e historial.
+ * Change request: motivo obligatorio, casos afectados e historial
  *
  * @var array<string, mixed> $requerimiento
  * @var list<array<string, mixed>> $casos

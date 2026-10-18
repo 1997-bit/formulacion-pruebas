@@ -8,11 +8,11 @@ use App\Config\Conexion;
 
 final class ReporteModelo
 {
-    // Tester: solo sus proyectos. RF-05.
+    // Tester: sus proyectos, RF-05
     private const PERMITIDO = '(? = 1 OR EXISTS (SELECT 1 FROM proyecto_miembros m WHERE m.proyecto_id = p.id AND m.usuario_id = ?))';
 
     /**
-     * Una fila por proyecto, también sin casos. $proyectoId null: todos los permitidos.
+     * Una fila por proyecto, también sin casos. $proyectoId null: todos
      *
      * @return list<array<string, mixed>>
      */
@@ -42,7 +42,7 @@ final class ReporteModelo
         );
         $sql->execute($proyectoId === null ? [(int) $admin, $usuarioId] : [(int) $admin, $usuarioId, $proyectoId]);
 
-        // SUM da DECIMAL: PDO lo trae como texto.
+        // SUM da DECIMAL: PDO trae texto
         $filas = $sql->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($filas as &$f) {
             foreach (['pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'anotados_7d', 'sin_evidencia', 'fault_sin_incidente'] as $columna) {
@@ -55,7 +55,7 @@ final class ReporteModelo
     }
 
     /**
-     * Con resultado y sin evidencia: RF-24 no lo permite.
+     * Resultado sin evidencia: RF-24 no lo permite
      *
      * @return list<array<string, mixed>>
      */
@@ -65,7 +65,7 @@ final class ReporteModelo
     }
 
     /**
-     * FAULT sin defecto registrado. RF-19.
+     * FAULT sin incidente, RF-19
      *
      * @return list<array<string, mixed>>
      */
@@ -90,7 +90,7 @@ final class ReporteModelo
     }
 
     /**
-     * Por día: casos con fecha final ese día y resultados anotados ese día.
+     * Por día: casos con fecha final y resultados anotados
      *
      * @return array{plan: array<string, int>, anotados: array<string, int>}
      */
@@ -109,7 +109,7 @@ final class ReporteModelo
     }
 
     /**
-     * Incidentes creados por día y severidad. Stoppers aparte.
+     * Incidentes por día y severidad. Stoppers aparte
      *
      * @return list<array{dia: string, severidad: int, es_stopper: int, n: int}>
      */
@@ -125,7 +125,7 @@ final class ReporteModelo
     }
 
     /**
-     * Horas promedio de creado a cerrado. El cierre sale del primer cambio de estado a 2 en el historial. Null sin cerrados.
+     * Horas promedio hasta cerrar. Cierre: primer cambio a estado 2 en el historial. Null sin cerrados
      */
     public static function horasDeCierre(int $proyectoId): ?float
     {
@@ -143,7 +143,7 @@ final class ReporteModelo
     }
 
     /**
-     * $condicion es fija del modelo, nunca de la petición.
+     * $condicion fija del modelo, nunca de la petición
      *
      * @return list<array<string, mixed>>
      */

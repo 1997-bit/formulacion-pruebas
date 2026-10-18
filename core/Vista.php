@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Vista dentro de un layout.
+// Vista dentro de un layout
 final class Vista
 {
     /** @param array<string, mixed> $datos */
@@ -16,7 +16,7 @@ final class Vista
     }
 
     /**
-     * Formularios > formulario > elemento. Con $paso, el elemento es un enlace a $ruta . $consulta y $paso va al final.
+     * Formularios > formulario > elemento. Con $paso: enlace a $ruta . $consulta y $paso al final
      *
      * @return list<array{texto: string, ruta?: string}>
      */
@@ -31,7 +31,7 @@ final class Vista
         return $migas;
     }
 
-    // CSS o JS con su versión en la URL: un cambio en el archivo cambia la URL (#122).
+    // Versión en la URL: archivo cambiado, URL nueva, #122
     public static function estatico(string $ruta): string
     {
         return $ruta . '?v=' . filemtime(RAIZ . '/public' . $ruta);
