@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Índices nuevos en la BD: casos atrasados y pendientes del usuario responden en menos de 0,1 ms, y horas de cierre pasa de 54 a 34 ms con datos de carga. Una BD que ya existe necesita recrearse o un `ALTER TABLE` a mano.
+
+### Fixed
+
+- `carga.sql` corre de nuevo: llena `commit_afectado`, obligatorio desde 1.7.0.
+
 ### Removed
 
 - Registro público. El login ya no tiene Crear cuenta y `/registro` responde 404. Solo el admin crea cuentas, en Usuarios.

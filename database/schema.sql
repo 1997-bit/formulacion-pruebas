@@ -86,6 +86,8 @@ CREATE TABLE casos_prueba (
     UNIQUE (proyecto_id, sigla, numero),
     UNIQUE (id, proyecto_id), -- destino de la key compuesta de incidentes
     INDEX (proyecto_id, estado),
+    INDEX (estado, fecha_fin), -- atrasados
+    INDEX (creado_por, estado, fecha_fin), -- pendientes del usuario. Sirve a la key de creado_por
     CHECK (fecha_fin >= fecha_inicio),
     FOREIGN KEY (proyecto_id) REFERENCES proyectos (id),
     FOREIGN KEY (requerimiento_id, proyecto_id) REFERENCES requerimientos (id, proyecto_id), -- mismo proyecto
@@ -156,6 +158,7 @@ CREATE TABLE logs_cambios (
     despues TEXT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX (tabla, registro_id, fecha),
+    INDEX (tabla, campo, registro_id, fecha), -- horas de cierre
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
