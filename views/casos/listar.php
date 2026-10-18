@@ -76,51 +76,53 @@ $chips = array_filter([
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
   <?php if ($casos || $filtrado || $vista === 'cronograma'): ?>
-    <form class="filtros" method="get" action="/casos/listar" role="search" aria-label="Filtrar casos">
-      <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
-      <?php if ($vista === 'cronograma'): ?><input type="hidden" name="mes" value="<?= $mes->format('Y-m') ?>"><?php endif; ?>
-      <?php if ($todos): ?>
-      <div class="campo">
-        <label for="fl-proyecto">Proyecto</label>
-        <div class="select">
-          <select class="control" id="fl-proyecto" name="proyecto">
-            <option value="">Todos</option>
-            <?php foreach ($proyectos as $p): ?>
-              <option value="<?= (int) $p['id'] ?>"<?= $elegido('proyecto', $p['id']) ?>><?= Html::e($p['nombre']) ?></option>
+    <search aria-label="Filtrar casos">
+      <form class="filtros" method="get" action="/casos/listar">
+        <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
+        <?php if ($vista === 'cronograma'): ?><input type="hidden" name="mes" value="<?= $mes->format('Y-m') ?>"><?php endif; ?>
+        <?php if ($todos): ?>
+        <div class="campo">
+          <label for="fl-proyecto">Proyecto</label>
+          <div class="select">
+            <select class="control" id="fl-proyecto" name="proyecto">
+              <option value="">Todos</option>
+              <?php foreach ($proyectos as $p): ?>
+                <option value="<?= (int) $p['id'] ?>"<?= $elegido('proyecto', $p['id']) ?>><?= Html::e($p['nombre']) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
+        <?php endif; ?>
+        <div class="campo">
+          <label for="fl-req">Requerimiento</label>
+          <div class="select"><select class="control" id="fl-req" name="requerimiento"><option value="">Todos</option><?= $opcionesReq ?></select></div>
+        </div>
+        <div class="campo">
+          <label for="fl-estado">Estado</label>
+          <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Todos</option><?= Catalogo::opciones('estado_caso', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
+        </div>
+        <div class="campo">
+          <label for="fl-desde">Desde</label>
+          <input class="control" type="date" id="fl-desde" name="desde" value="<?= Html::e($filtros['desde']) ?>">
+        </div>
+        <div class="campo">
+          <label for="fl-hasta">Hasta</label>
+          <input class="control" type="date" id="fl-hasta" name="hasta" value="<?= Html::e($filtros['hasta']) ?>">
+        </div>
+        <div class="filtros-pie">
+          <p class="filtros-atajos"><span>Fechas:</span>
+            <?php foreach ($atajos as $texto => $r): ?>
+              <?php $activo = $filtros['desde'] === $r[0]->format('Y-m-d') && $filtros['hasta'] === $r[1]->format('Y-m-d'); ?>
+              <a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceAtajo($r)) ?>"<?= $activo ? ' aria-current="true"' : '' ?>><?= $texto ?></a>
             <?php endforeach; ?>
-          </select>
+          </p>
+          <div class="acciones">
+            <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
+            <button class="btn btn-secundario" type="submit">Filtrar</button>
+          </div>
         </div>
-      </div>
-      <?php endif; ?>
-      <div class="campo">
-        <label for="fl-req">Requerimiento</label>
-        <div class="select"><select class="control" id="fl-req" name="requerimiento"><option value="">Todos</option><?= $opcionesReq ?></select></div>
-      </div>
-      <div class="campo">
-        <label for="fl-estado">Estado</label>
-        <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Todos</option><?= Catalogo::opciones('estado_caso', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
-      </div>
-      <div class="campo">
-        <label for="fl-desde">Desde</label>
-        <input class="control" type="date" id="fl-desde" name="desde" value="<?= Html::e($filtros['desde']) ?>">
-      </div>
-      <div class="campo">
-        <label for="fl-hasta">Hasta</label>
-        <input class="control" type="date" id="fl-hasta" name="hasta" value="<?= Html::e($filtros['hasta']) ?>">
-      </div>
-      <div class="filtros-pie">
-        <p class="filtros-atajos"><span>Fechas:</span>
-          <?php foreach ($atajos as $texto => $r): ?>
-            <?php $activo = $filtros['desde'] === $r[0]->format('Y-m-d') && $filtros['hasta'] === $r[1]->format('Y-m-d'); ?>
-            <a class="btn btn-fantasma btn-sm" href="<?= Html::e($enlaceAtajo($r)) ?>"<?= $activo ? ' aria-current="true"' : '' ?>><?= $texto ?></a>
-          <?php endforeach; ?>
-        </p>
-        <div class="acciones">
-          <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/casos/listar?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
-          <button class="btn btn-secundario" type="submit">Filtrar</button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </search>
     <?= Vista::capturar('partials/filtros_activos', [
         'ruta' => '/casos/listar',
         'fijos' => ['vista' => $vista] + ($vista === 'cronograma' ? ['mes' => $mes->format('Y-m')] : []),

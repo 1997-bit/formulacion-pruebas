@@ -27,8 +27,8 @@
 }
 .btn:disabled,
 .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-/* Span deshabilitado con tooltip: recibe el mouse y dice por qué. Sin clic */
-span.btn[aria-disabled="true"][data-tooltip] { pointer-events: auto; }
+/* Deshabilitado con tooltip: recibe el mouse y dice por qué. Sin clic. Submit en envío sigue sin mouse */
+:is(a, [type="button"]).btn[aria-disabled="true"][data-tooltip] { pointer-events: auto; }
 
 .btn-sm { min-height: var(--alto-xs); padding: 0 var(--esp-3); font-size: var(--letra-xs); border-radius: var(--radio-sm); }
 

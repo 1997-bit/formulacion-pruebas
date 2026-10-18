@@ -49,27 +49,29 @@ $chips = array_filter([
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['flash' => $flash]) ?>
   <?php if ($incidentes || $filtrado): ?>
-    <form class="filtros" method="get" action="/formularios/incidentes" role="search" aria-label="Filtrar incidentes">
-      <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
-      <?php if ($vista === 'lista'): ?>
+    <search aria-label="Filtrar incidentes">
+      <form class="filtros" method="get" action="/formularios/incidentes">
+        <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
+        <?php if ($vista === 'lista'): ?>
+          <div class="campo">
+            <label for="fl-estado">Estado</label>
+            <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Todos</option><?= Catalogo::opciones('estado_incidente', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
+          </div>
+        <?php endif; ?>
         <div class="campo">
-          <label for="fl-estado">Estado</label>
-          <div class="select"><select class="control" id="fl-estado" name="estado"><option value="">Todos</option><?= Catalogo::opciones('estado_incidente', $filtros['estado'] === '' ? null : $filtros['estado']) ?></select></div>
+          <label for="fl-severidad">Severidad</label>
+          <div class="select"><select class="control" id="fl-severidad" name="severidad"><option value="">Todas</option><?= Catalogo::opciones('severidad', $filtros['severidad'] === '' ? null : $filtros['severidad']) ?></select></div>
         </div>
-      <?php endif; ?>
-      <div class="campo">
-        <label for="fl-severidad">Severidad</label>
-        <div class="select"><select class="control" id="fl-severidad" name="severidad"><option value="">Todas</option><?= Catalogo::opciones('severidad', $filtros['severidad'] === '' ? null : $filtros['severidad']) ?></select></div>
-      </div>
-      <div class="grupo grupo-fila filtros-casillas">
-        <label class="opcion"><input type="checkbox" name="stopper" value="1"<?= $marcado('stopper') ?>> Solo stoppers</label>
-        <label class="opcion"><input type="checkbox" name="mios" value="1"<?= $marcado('mios') ?>> Asignados a mí</label>
-      </div>
-      <div class="acciones">
-        <button class="btn btn-secundario" type="submit">Filtrar</button>
-        <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/formularios/incidentes?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
-      </div>
-    </form>
+        <div class="grupo grupo-fila filtros-casillas">
+          <label class="opcion"><input type="checkbox" name="stopper" value="1"<?= $marcado('stopper') ?>> Solo stoppers</label>
+          <label class="opcion"><input type="checkbox" name="mios" value="1"<?= $marcado('mios') ?>> Asignados a mí</label>
+        </div>
+        <div class="acciones">
+          <button class="btn btn-secundario" type="submit">Filtrar</button>
+          <?php if ($filtrado): ?><a class="btn btn-fantasma" href="/formularios/incidentes?vista=<?= Html::e($vista) ?>">Limpiar</a><?php endif; ?>
+        </div>
+      </form>
+    </search>
     <?= Vista::capturar('partials/filtros_activos', ['ruta' => '/formularios/incidentes', 'fijos' => ['vista' => $vista], 'filtros' => $filtros, 'textos' => $chips]) ?>
   <?php endif; ?>
   <?php if (!$incidentes && $filtrado): ?>

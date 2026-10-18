@@ -52,7 +52,7 @@ $abierto = array_values(array_filter($caso['incidentes'], fn (array $i): bool =>
         <a class="btn btn-fantasma btn-icono" href="/casos/resultado?id=<?= (int) $v['id'] ?>" aria-label="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>"
            data-tooltip="<?= $etiqueta ?>: <?= Html::e($v['codigo']) ?>" data-atajo="<?= $tecla ?>" data-atajo-texto="<?= $etiqueta ?>"><?= Icono::svg($icono) ?></a>
       <?php else: ?>
-        <span class="btn btn-fantasma btn-icono" aria-disabled="true" role="link" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></span>
+        <a class="btn btn-fantasma btn-icono" aria-disabled="true" aria-label="<?= $etiqueta ?>: no hay" data-tooltip="<?= $etiqueta ?>: no hay"><?= Icono::svg($icono) ?></a>
       <?php endif; ?>
     <?php endforeach; ?>
     <?php if ($abierto !== null): ?>

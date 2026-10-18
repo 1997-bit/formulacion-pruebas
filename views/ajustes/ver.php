@@ -90,5 +90,5 @@ foreach ($interruptores[$pestana] ?? [] as $nombre => [$titulo, $texto, $ayuda, 
       <div data-lista-atajos></div>
     </section>
   <?php endif; ?>
-  <p role="status" class="ajuste-estado" id="ajuste-estado"></p>
+  <output class="ajuste-estado" id="ajuste-estado"></output>
 </div>

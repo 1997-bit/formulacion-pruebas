@@ -11,14 +11,14 @@ use App\Helpers\Icono;
  */
 ?>
 <?php if (!empty($flash)): ?>
-  <?php // app.js cierra a los 5 s, salvo con acción. Sin JS queda ?>
-  <div class="alerta alerta-exito aviso-flotante" role="status"><?= Icono::svg('circle-check') ?>
+  <?php // app.js cierra a los 5 s, salvo con acción. ✕ cierra sin JS ?>
+  <dialog open class="alerta alerta-exito aviso-flotante" id="aviso" aria-label="Aviso"><?= Icono::svg('circle-check') ?>
     <p class="alerta-titulo"><?= Html::e($flash) ?></p>
     <?php if (!empty($accion)): ?>
       <p class="alerta-descripcion"><a href="<?= Html::e($accion['ruta']) ?>" data-aviso-accion><?= Html::e($accion['texto']) ?></a></p>
     <?php endif; ?>
-    <button class="btn btn-fantasma btn-icono btn-sm alerta-accion" type="button" data-cerrar-aviso aria-label="Cerrar aviso" data-tooltip="Cerrar" data-tooltip-alinear="fin"><?= Icono::svg('x') ?></button>
-  </div>
+    <button class="btn btn-fantasma btn-icono btn-sm alerta-accion" type="button" command="close" commandfor="aviso" aria-label="Cerrar aviso" data-tooltip="Cerrar" data-tooltip-alinear="fin"><?= Icono::svg('x') ?></button>
+  </dialog>
 <?php endif; ?>
 <?php if (!empty($errores)): ?>
   <div class="alerta alerta-error" role="alert"><?= Icono::svg('circle-alert') ?>

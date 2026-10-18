@@ -41,47 +41,49 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
   <?php endforeach; ?>
 </nav>
 <div class="pila">
-  <form class="filtros" method="get" action="/admin/logs" role="search" aria-label="Filtrar logs">
-    <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
-    <div class="campo">
-      <label for="fl-dia">Día</label>
-      <div class="select"><select class="control" id="fl-dia" name="dia">
-        <?php foreach ($dias as $d): ?>
-          <option<?= $d === $filtros['dia'] ? ' selected' : '' ?>><?= Html::e($d) ?></option>
-        <?php endforeach; ?>
-      </select></div>
-    </div>
-    <?php if ($vista === 'lista'): ?>
+  <search aria-label="Filtrar logs">
+    <form class="filtros" method="get" action="/admin/logs">
+      <input type="hidden" name="vista" value="<?= Html::e($vista) ?>">
       <div class="campo">
-        <label for="fl-canal">Canal</label>
-        <div class="select"><select class="control" id="fl-canal" name="canal"><option value="">Todos</option>
-          <?php foreach (LogServicio::CANALES as $c): ?>
-            <option<?= $c === $filtros['canal'] ? ' selected' : '' ?>><?= $c ?></option>
+        <label for="fl-dia">Día</label>
+        <div class="select"><select class="control" id="fl-dia" name="dia">
+          <?php foreach ($dias as $d): ?>
+            <option<?= $d === $filtros['dia'] ? ' selected' : '' ?>><?= Html::e($d) ?></option>
           <?php endforeach; ?>
         </select></div>
       </div>
-      <div class="campo">
-        <label for="fl-nivel">Nivel mínimo</label>
-        <div class="select"><select class="control" id="fl-nivel" name="nivel"><option value="">Todos</option>
-          <?php foreach (LogServicio::NIVELES as $n => $texto): ?>
-            <option value="<?= $n ?>"<?= $n === $filtros['nivel'] ? ' selected' : '' ?>><?= $texto ?></option>
-          <?php endforeach; ?>
-        </select></div>
+      <?php if ($vista === 'lista'): ?>
+        <div class="campo">
+          <label for="fl-canal">Canal</label>
+          <div class="select"><select class="control" id="fl-canal" name="canal"><option value="">Todos</option>
+            <?php foreach (LogServicio::CANALES as $c): ?>
+              <option<?= $c === $filtros['canal'] ? ' selected' : '' ?>><?= $c ?></option>
+            <?php endforeach; ?>
+          </select></div>
+        </div>
+        <div class="campo">
+          <label for="fl-nivel">Nivel mínimo</label>
+          <div class="select"><select class="control" id="fl-nivel" name="nivel"><option value="">Todos</option>
+            <?php foreach (LogServicio::NIVELES as $n => $texto): ?>
+              <option value="<?= $n ?>"<?= $n === $filtros['nivel'] ? ' selected' : '' ?>><?= $texto ?></option>
+            <?php endforeach; ?>
+          </select></div>
+        </div>
+        <div class="campo">
+          <label for="fl-evento">Mensaje</label>
+          <input class="control" id="fl-evento" name="evento" enterkeyhint="search" value="<?= Html::e($filtros['evento']) ?>" placeholder="authz_fail">
+        </div>
+        <div class="campo">
+          <label for="fl-uid">Código del error</label>
+          <input class="control codigo" id="fl-uid" name="uid" enterkeyhint="search" value="<?= Html::e($filtros['uid']) ?>" placeholder="be45d3e3" maxlength="8">
+        </div>
+      <?php endif; ?>
+      <div class="acciones">
+        <button class="btn btn-secundario" type="submit">Filtrar</button>
+        <a class="btn btn-fantasma" href="/admin/logs?vista=<?= Html::e($vista) ?>">Limpiar</a>
       </div>
-      <div class="campo">
-        <label for="fl-evento">Mensaje</label>
-        <input class="control" id="fl-evento" name="evento" enterkeyhint="search" value="<?= Html::e($filtros['evento']) ?>" placeholder="authz_fail">
-      </div>
-      <div class="campo">
-        <label for="fl-uid">Código del error</label>
-        <input class="control codigo" id="fl-uid" name="uid" enterkeyhint="search" value="<?= Html::e($filtros['uid']) ?>" placeholder="be45d3e3" maxlength="8">
-      </div>
-    <?php endif; ?>
-    <div class="acciones">
-      <button class="btn btn-secundario" type="submit">Filtrar</button>
-      <a class="btn btn-fantasma" href="/admin/logs?vista=<?= Html::e($vista) ?>">Limpiar</a>
-    </div>
-  </form>
+    </form>
+  </search>
 
   <?php if ($vista === 'lista'): ?>
     <?php if ($filtros['uid'] !== ''): ?>
