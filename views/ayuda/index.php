@@ -9,7 +9,7 @@ use App\Helpers\Html;
   <header class="encabezado">
     <div>
       <h1>Ayuda</h1>
-      <p>Cada pantalla tiene su artículo en el botón Ayuda de la barra.</p>
+      <p>En cada pantalla, Ayuda del menú abre su artículo.</p>
     </div>
   </header>
   <?php foreach ($grupos as $grupo => $articulos): ?>

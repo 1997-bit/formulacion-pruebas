@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Ayuda: 10 artículos en `/ayuda` con tareas, referencia y glosario. Botón Ayuda en la barra de cada pantalla, enlace en el menú y atajo `g a`. Reglas de escritura en `docs/ayuda.md`.
+- Ayuda: 10 artículos en `/ayuda` con tareas, referencia y glosario. Ayuda en el menú abre el artículo de la pantalla actual. Atajo `g a`. Reglas de escritura en `docs/ayuda.md`.
 - Logs, Rendimiento: cifras del día en palabras simples, como Visitas, Tiempo normal y "1 de cada 20 tarda", más un gráfico de visitas por hora. La tabla de páginas va de la más lenta a la más rápida, con una barra de color.
 - Logs, Seguridad: cifras de logins, contraseñas incorrectas, accesos sin permiso, formularios falsos y logins frenados. Cada evento lleva su texto en español y una barra.
 - Logs, Lista: gráfico de líneas por hora y nivel, y filtros por hora y por respuesta 4xx o 5xx.
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Modo oscuro: pasa de la barra de arriba al menú de la cuenta, arriba de Ajustes. La barra queda solo con el menú y la ruta.
 - Índices nuevos en la BD: casos atrasados y pendientes del usuario responden en menos de 0,1 ms, y horas de cierre pasa de 54 a 34 ms con datos de carga. Una BD que ya existe necesita recrearse o un `ALTER TABLE` a mano.
 - Logs: niveles en español, el nombre del usuario en lugar del id y Rendimiento sin `/assets`.
 - Incidentes: la lista muestra solo los abiertos por defecto. Ordena por stopper, severidad y fecha, sin agrupar por proyecto. El título abre el incidente, la prioridad va sin color y los select filtran al cambiar.

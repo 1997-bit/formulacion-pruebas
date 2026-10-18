@@ -333,12 +333,6 @@ document.querySelectorAll('input[data-vista-previa]').forEach((entrada) => {
 
 // Tema y atajos en localStorage, iguales en todas las pestañas. tema.js los aplica antes de pintar
 const botonTema = document.getElementById('tema');
-const pintarTema = () => {
-  if (!botonTema) return;
-  const oscuro = raiz.dataset.tema === 'dark';
-  botonTema.setAttribute('aria-pressed', String(oscuro));
-  botonTema.dataset.tooltip = oscuro ? 'Cambiar a claro' : 'Cambiar a oscuro';
-};
 const leer = (clave) => { try { return localStorage.getItem(clave); } catch { return null; } };
 const guardar = (clave, valor) => {
   try { valor === null ? localStorage.removeItem(clave) : localStorage.setItem(clave, valor); } catch { /* sin localStorage */ }
@@ -352,7 +346,6 @@ const valorAjuste = (nombre) => {
 };
 const aplicarAjustes = () => {
   aplicarPreferencias();
-  pintarTema();
   // Radio: marcado si es lo guardado. Switch value="si": marcado con 'si'
   document.querySelectorAll('input[data-ajuste]').forEach((r) => {
     r.checked = r.value === valorAjuste(r.name);

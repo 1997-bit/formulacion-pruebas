@@ -1,6 +1,6 @@
 # Ayuda
 
-Artículos en `/ayuda`. La lista va en `config/ayuda.php` y el texto en `views/ayuda/articulos/<slug>.php`. `pantallas` en `config/ayuda.php` une cada ruta con su artículo para el botón Ayuda de la barra.
+Artículos en `/ayuda`. La lista va en `config/ayuda.php` y el texto en `views/ayuda/articulos/<slug>.php`. `pantallas` en `config/ayuda.php` une cada ruta con su artículo para el enlace Ayuda del menú: abre el artículo de la pantalla actual.
 
 ## Reglas
 
