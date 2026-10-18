@@ -80,6 +80,7 @@ Referencia: desarrollador, QA, QA Lead, requerimientos, sistemas, product owner,
 | RF-22 | Consultar | Filtro por proyecto, requerimiento y estado. | Alta |
 | RF-23 | Reportes | Avance en el panel. Cierre aparte. | Alta |
 | RF-24 | Anotar resultado | Pendiente, OK o FAULT. OK o FAULT pide resultado, observaciones, impacto, commit probado y evidencia. Guarda fecha, hora y usuario. | Alta |
+| RF-25 | Ayuda | Artículos en `/ayuda`. Ayuda en el menú abre el de la pantalla actual. Reglas en `docs/ayuda.md`. | Baja |
 
 ---
 

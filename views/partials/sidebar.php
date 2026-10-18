@@ -14,6 +14,8 @@ use App\Helpers\Icono;
  */
 
 $menu = require RAIZ . '/config/menu.php';
+// Ayuda abre el artículo de esta pantalla. Sin artículo: el índice
+$ayuda = (require RAIZ . '/config/ayuda.php')['pantallas'][$rutaActual] ?? null;
 $rol = $usuario['rol'];
 $permitido = fn (array $x): bool => !isset($x['rol']) || $x['rol'] === $rol;
 $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
@@ -102,6 +104,10 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
   </nav>
 
   <div class="sidebar-pie">
+    <a class="sidebar-boton" href="/ayuda<?= $ayuda === null ? '' : '?a=' . Html::e($ayuda) ?>" data-etiqueta="Ayuda"<?= $rutaActual === '/ayuda' ? ' aria-current="page"' : '' ?> data-atajo="g a" data-atajo-texto="Ir a ayuda">
+      <?= Icono::svg('file-question-mark') ?>
+      <span class="sidebar-texto">Ayuda</span>
+    </a>
     <div class="usuario-menu">
       <button class="sidebar-boton sidebar-usuario" type="button" popovertarget="menu-usuario" data-etiqueta="<?= Html::e($usuario['nombre']) ?>">
         <span class="avatar-cuadrado" aria-hidden="true"><?= Html::e(Html::iniciales($usuario['nombre'])) ?></span>
@@ -112,6 +118,11 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
         <?= Icono::svg('chevrons-up-down', 'icono flecha-usuario') ?>
       </button>
       <div class="usuario-flotante" id="menu-usuario" popover data-lado="arriba">
+        <?php // Ícono y texto del tema contrario. componentes/tema.css muestra uno ?>
+        <button class="sidebar-boton" id="tema" type="button">
+          <?= Icono::svg('moon', 'icono tema-luna') ?><?= Icono::svg('sun', 'icono tema-sol') ?>
+          <span class="tema-luna">Modo oscuro</span><span class="tema-sol">Modo claro</span>
+        </button>
         <a class="sidebar-boton" href="/ajustes" data-atajo="g s" data-atajo-texto="Ir a ajustes">
           <?= Icono::svg('settings') ?>
           <span>Ajustes</span>

@@ -9,6 +9,7 @@ return [
     'POST /salir' => ['controlador' => 'Acceso', 'accion' => 'salir', 'rol' => 0, 'rf' => 'RF-01'],
     'GET /ajustes' => ['controlador' => 'Ajustes', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RNF-07'],
     'GET /ajustes/accesibilidad' => ['controlador' => 'Ajustes', 'accion' => 'accesibilidad', 'rol' => 0, 'rf' => 'RNF-07'],
+    'GET /ayuda' => ['controlador' => 'Ayuda', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RF-25'],
     'POST /proyecto' => ['controlador' => 'Proyectos', 'accion' => 'activar', 'rol' => 0, 'rf' => 'RF-21'],
     'GET /dashboard' => ['controlador' => 'Panel', 'accion' => 'ver', 'rol' => 0, 'rf' => 'RF-23'],
     'GET /requerimientos/listar' => ['controlador' => 'Requerimientos', 'accion' => 'listar', 'rol' => 0, 'rf' => 'RF-04'],
