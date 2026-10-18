@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Artículos de /ayuda por grupo. slug => título. Solo estos slugs abren, docs/ayuda.md
+// Artículos de /ayuda por grupo. slug => título. Solo estos slugs abren
 // 'pantallas': ruta => slug que abre Ayuda del menú en esa pantalla
 return [
     'articulos' => [
