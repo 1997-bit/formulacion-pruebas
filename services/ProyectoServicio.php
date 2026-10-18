@@ -11,7 +11,7 @@ use App\Models\PlanModelo;
 use App\Models\ProyectoModelo;
 use App\Models\UsuarioModelo;
 
-// Proyectos y miembros, IR 7.1. Miembros: solo testers. El admin ya ve todo.
+// IR 7.1. Miembros: solo testers. El admin ya ve todo
 final class ProyectoServicio
 {
     /**
@@ -26,7 +26,7 @@ final class ProyectoServicio
     }
 
     /**
-     * Panel del admin: proyectos sin miembros o sin plan. Con proyecto activo, solo ese.
+     * Panel del admin: proyectos sin miembros o sin plan. Con proyecto activo: solo ese
      *
      * @param array{id: int, rol: int, activo?: ?int} $actor
      * @return list<array{id: int, nombre: string, sin_miembros: bool, sin_plan: bool}>
@@ -47,7 +47,7 @@ final class ProyectoServicio
     }
 
     /**
-     * Con 'miembros': ids de usuario.
+     * Con 'miembros': ids de usuario
      *
      * @param array{id: int, rol: int} $actor
      * @return array<string, mixed>|null
@@ -72,7 +72,7 @@ final class ProyectoServicio
     }
 
     /**
-     * $id null: crea.
+     * $id null: crea
      *
      * @param array{nombre: string, descripcion: string, miembros: list<string>} $datos
      * @param array{id: int, rol: int} $actor

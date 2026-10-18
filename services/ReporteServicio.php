@@ -8,13 +8,13 @@ use App\Helpers\Html;
 use App\Models\ProyectoModelo;
 use App\Models\ReporteModelo;
 
-// RF-23. El panel y el cierre salen de las mismas cifras.
+// RF-23. Panel y cierre usan las mismas cifras
 final class ReporteServicio
 {
     private const CIFRAS = ['casos', 'pendientes', 'ok', 'fault', 'casos_hoy', 'ok_hoy', 'fault_hoy', 'sin_evidencia', 'fault_sin_incidente', 'incidentes_abiertos', 'stoppers', 'sin_asignar'];
 
     /**
-     * Totales por proyecto y del conjunto. Cada proyecto lleva sus criterios Go / No-Go.
+     * Totales por proyecto y del conjunto, con criterios Go / No-Go
      *
      * @param array{id: int, rol: int, activo?: ?int} $usuario
      * @return array{total: array<string, int>, proyectos: list<array<string, mixed>>}
@@ -37,7 +37,7 @@ final class ReporteServicio
     }
 
     /**
-     * Cierre de un proyecto. Null si no existe.
+     * Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -59,8 +59,8 @@ final class ReporteServicio
     }
 
     /**
-     * Series por día del cierre. Rango: del primer al último dato, máximo 60 días. Null sin datos.
-     * plan_acum: casos con fecha final hasta ese día. real_acum: anotados hasta ese día, null después de hoy.
+     * Series por día. Del primer al último dato, máximo 60 días. Null sin datos
+     * plan_acum: casos con fecha final hasta el día. real_acum: anotados hasta el día, null después de hoy
      *
      * @return array<string, mixed>|null
      */
@@ -74,10 +74,10 @@ final class ReporteServicio
         }
 
         $hoy = date('Y-m-d');
-        // Hasta hoy o el último dato si es después: el avance se mide a hoy.
+        // Hasta hoy o el último dato: el avance se mide a hoy
         $hasta = new \DateTimeImmutable(max([...$fechas, $hoy]));
         $desde = max(new \DateTimeImmutable(min($fechas)), $hasta->modify('-59 days'));
-        // Lo de antes del rango cuenta en los acumulados.
+        // Lo anterior al rango cuenta en los acumulados
         $antes = fn (array $porDia): int => array_sum(array_filter($porDia, fn (string $d): bool => $d < $desde->format('Y-m-d'), ARRAY_FILTER_USE_KEY));
         $plan = $antes($casos['plan']);
         $real = $antes($casos['anotados']);
@@ -120,7 +120,7 @@ final class ReporteServicio
     }
 
     /**
-     * Go si hay casos y se cumplen todos los criterios.
+     * Go: hay casos y se cumplen todos los criterios
      *
      * @param array<string, mixed> $p
      * @return array<string, mixed>
@@ -137,7 +137,7 @@ final class ReporteServicio
         $p['aprobacion'] = $ejecutados === 0 ? 0 : (int) round($p['ok'] / $ejecutados * 100);
         $p['go'] = $p['casos'] > 0 && !in_array(false, array_column($p['criterios'], 'cumple'), true);
 
-        // Proyección: ritmo de los últimos 7 días. Sin ritmo o sin pendientes: sin fecha.
+        // Ritmo de los últimos 7 días. Sin ritmo o sin pendientes: sin fecha
         $p['ritmo'] = round($p['anotados_7d'] / 7, 1);
         $p['fin_estimado'] = $p['pendientes'] === 0 || $p['anotados_7d'] === 0
             ? null

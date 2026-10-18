@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 3, RF-10. Un análisis por requerimiento.
+ * Formulario 3, RF-10. Un análisis por requerimiento
  *
  * @var list<array<string, mixed>> $requerimientos  con filas
  * @var Paginacion $paginacion

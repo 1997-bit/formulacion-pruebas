@@ -6,13 +6,13 @@ namespace App\Helpers;
 
 final class Html
 {
-    // Escapar todo dato del usuario o de la base.
+    // Escapar todo dato del usuario o de la base
     public static function e(?string $texto): string
     {
         return htmlspecialchars($texto ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
-    // 1 caso, 2 casos, 0 casos. Sin "caso(s)".
+    // 1 caso, 2 casos, 0 casos
     public static function cantidad(int $n, string $uno, string $varios): string
     {
         return $n . ' ' . ($n === 1 ? $uno : $varios);

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-// Menú del sidebar. 'rol' => 1 lo oculta al tester, pero no protege, RF-21. 'atajo': teclas de atajos.js.
-// g s, Ajustes, va en views/partials/sidebar.php, en el menú del usuario.
+// 'rol' => 1 oculta al tester, no protege, RF-21. 'atajo': teclas de atajos.js
+// g s, Ajustes, va en partials/sidebar.php
 return [
     [
         'grupo' => 'Plataforma',

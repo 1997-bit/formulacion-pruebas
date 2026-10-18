@@ -8,7 +8,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 1 de la paleta. Al editar, sin el resultado y con el historial.
+ * Formulario 1. Al editar: sin resultado, con historial
  *
  * @var ?array<string, mixed> $caso  null al registrar
  * @var list<array<string, mixed>> $historial
@@ -27,10 +27,10 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'requerido' => true,
 ]);
 $elegido = fn (string $campo, int|string $valor): string => (string) $valor === ($datos[$campo] ?? '') ? ' selected' : '';
-// Cerrado mientras el caso siga Pendiente y sin evidencias.
+// Cerrado si sigue Pendiente y sin evidencias
 $conResultado = ($datos['estado'] ?? '0') !== '0' || !empty($datos['evidencias']) || isset($errores['estado']);
 
-// Proyecto del requerimiento. Agrupados por proyecto, sin grupos si hay 1.
+// Agrupados por proyecto. Con 1, sin grupos
 $porProyecto = [];
 foreach ($requerimientos as $r) {
     $porProyecto[$r['proyecto']][] = $r;
@@ -43,7 +43,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
     }
     $opcionesReq .= count($porProyecto) > 1 ? '</optgroup>' : '';
 }
-// La técnica sale de la sub-técnica.
+// La técnica sale de la sub-técnica
 $opcionesSub = '';
 foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$desde, $hasta]) {
     $opcionesSub .= '<optgroup label="' . $tecnica . '">';
@@ -54,8 +54,8 @@ foreach (['Caja negra' => [1, 10], 'Caja blanca' => [11, 20]] as $tecnica => [$d
     }
     $opcionesSub .= '</optgroup>';
 }
-// Solicitado y aprobado: miembros del proyecto, en el orden de los requerimientos.
-// Un option por campo, porque cada select marca su propia selección.
+// Miembros del proyecto, en el orden de los requerimientos
+// Un option por campo: cada select marca lo suyo
 $proyectosConMiembros = [];
 foreach ($porProyecto as $proyecto => $reqs) {
     $lista = $miembros[(int) $reqs[0]['proyecto_id']] ?? [];
@@ -63,7 +63,7 @@ foreach ($porProyecto as $proyecto => $reqs) {
         $proyectosConMiembros[$proyecto] = $lista;
     }
 }
-// Un ex miembro sigue como opción si el caso lo tiene: guardar no lo borra.
+// Ex miembro: sigue como opción si el caso lo tiene
 $nombreActual = ['solicitado_por' => $caso['solicitante'] ?? null, 'aprobado_por' => $caso['aprobador'] ?? null];
 $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, $elegido, $caso, $nombreActual): string {
     $html = '';
@@ -98,7 +98,7 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
   </div>
 </header>
 <?php if ($caso === null && !$requerimientos): ?>
-  <?php // NN/g: el estado vacío dice qué falta y lleva ahí. ?>
+  <?php // NN/g: el estado vacío dice qué falta ?>
   <div class="vacio">
     <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
     <h2>Primero registre un requerimiento</h2>
@@ -116,7 +116,7 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
       <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">
     <?php endif; ?>
     <?php if ($caso !== null): ?><input type="hidden" name="id" value="<?= (int) $caso['id'] ?>"><?php endif; ?>
-    <?php // Grupos con legend: GOV.UK y WCAG 1.3.1. ?>
+    <?php // Grupos con legend, GOV.UK y WCAG 1.3.1 ?>
     <fieldset class="seccion pila">
       <legend class="titulo-seccion">Qué se prueba</legend>
       <div class="campos">
@@ -139,7 +139,7 @@ $opcionesPersona = function (string $campo) use ($proyectosConMiembros, $datos, 
     <hr class="separador">
     <fieldset class="seccion pila">
       <legend class="titulo-seccion">Cómo y cuándo</legend>
-      <?php // Grupos de 4 y de 3: en escritorio llenan su fila, sin huecos. ?>
+      <?php // Grupos de 4 y 3: llenan su fila en escritorio ?>
       <div class="campos">
         <?= $campo('plataforma', 'Plataforma', ['tipo' => 'select', 'opciones' => Catalogo::opciones('plataforma', $datos['plataforma'] ?? null)]) ?>
         <?= $campo('subtecnica', 'Técnica y sub-técnica', ['tipo' => 'select', 'opciones' => $opcionesSub, 'ayuda' => 'Agrupadas en caja negra y caja blanca.']) ?>

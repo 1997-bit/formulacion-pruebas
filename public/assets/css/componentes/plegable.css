@@ -1,0 +1,8 @@
+@layer componentes {
+/* <details class="plegable">, .flecha al final del summary */
+.plegable > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--esp-1) var(--esp-3); cursor: pointer; list-style: none; }
+.plegable > summary::-webkit-details-marker { display: none; }
+.plegable > summary .titulo-seccion { margin: 0; }
+.plegable[open] > summary { margin-bottom: var(--esp-4); }
+.plegable[open] > summary .flecha { rotate: 90deg; }
+}

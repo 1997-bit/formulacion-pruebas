@@ -22,8 +22,8 @@ $atajo = fn (array $x, string $texto): string => isset($x['atajo'])
 ?>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-cabecera">
-    <?php // Selector de proyecto, como Jira y Linear. Plataforma y Formularios: solo el activo. ?>
-    <?php // Popover: Esc y clic afuera los cierra el navegador. Posición con anchor positioning, ver app.css. ?>
+    <?php // Selector de proyecto, como Jira y Linear. Plataforma y Formularios: solo el activo ?>
+    <?php // Popover: Esc y clic afuera cierran. anchor positioning en app/menu-flotante.css ?>
     <div class="proyecto-menu">
       <button class="sidebar-boton sidebar-marca" type="button" popovertarget="menu-proyecto" data-etiqueta="<?= Html::e($activo['nombre'] ?? 'Todos los proyectos') ?>"
                data-atajo="p" data-atajo-texto="Cambiar de proyecto">

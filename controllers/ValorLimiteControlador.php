@@ -17,7 +17,7 @@ use App\Services\ValorLimiteServicio;
 // RF-10
 final class ValorLimiteControlador
 {
-    // Sin requerimiento: lista de análisis. Con requerimiento: análisis de solo lectura.
+    // Sin requerimiento: lista. Con requerimiento: solo lectura
     public function ver(): void
     {
         $usuario = Sesion::usuario();

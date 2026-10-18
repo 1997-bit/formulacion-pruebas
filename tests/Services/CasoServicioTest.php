@@ -219,7 +219,7 @@ final class CasoServicioTest extends BaseDatos
         $this->assertSame($esperado, $errores);
     }
 
-    // 29119-3. Impacto es obligatorio en el log de pruebas.
+    // 29119-3. Impacto obligatorio
     public function testOkSinImpactoNoSeGuarda(): void
     {
         $usuario = $this->usuario();
@@ -230,7 +230,7 @@ final class CasoServicioTest extends BaseDatos
         $this->assertSame(['impacto' => 'Es obligatorio con OK o FAULT.'], $errores);
     }
 
-    // Un hash de commit: 7 a 40 hexadecimales. Se guarda en minúsculas.
+    // Commit: 7 a 40 hexadecimales, en minúsculas
     public function testCommitProbadoNoHexadecimalNoSeGuarda(): void
     {
         $usuario = $this->usuario();
@@ -414,7 +414,7 @@ final class CasoServicioTest extends BaseDatos
     }
 
     /**
-     * Tester en 2 proyectos. P: SIS-001 r1 Pendiente, SIS-002 r2 OK. Q: UNI-001.
+     * Tester en 2 proyectos. P: SIS-001 r1 Pendiente, SIS-002 r2 OK. Q: UNI-001
      *
      * @return array{usuario: int, p: int, q: int, r2: int}
      */
@@ -489,7 +489,7 @@ final class CasoServicioTest extends BaseDatos
         $this->assertSame(['SIS-001'], $codigos);
     }
 
-    // Casos del 06/10: entran si el rango los cruza. Fecha inválida: sin filtro.
+    // Casos del 06/10: entran si el rango cruza. Fecha inválida: sin filtro
     public function testListarPorRangoDeFechas(): void
     {
         $e = $this->escenario();

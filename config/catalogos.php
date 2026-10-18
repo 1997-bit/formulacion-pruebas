@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-// Única fuente de valores fijos. número => texto y variante, el color de la insignia.
-// El número va en la base: no se cambia ni se reutiliza. Este orden es el de las listas.
+// Valores fijos. número => texto y variante de insignia
+// El número va en la base: no cambia ni se reutiliza. Orden de las listas
 return [
     'estado_caso' => [
         'nombre' => 'Estado del caso',
@@ -13,7 +13,7 @@ return [
             2 => ['texto' => 'FAULT', 'variante' => 'peligro'],
         ],
     ],
-    // La sigla inicia el código, SIS-001. Cambiarla no toca códigos existentes.
+    // Sigla del código, SIS-001. Cambiarla no toca códigos existentes
     'tipo_prueba' => [
         'nombre' => 'Tipo de prueba',
         'valores' => [
@@ -28,7 +28,7 @@ return [
             9 => ['texto' => 'Seguridad', 'sigla' => 'SEG', 'variante' => 'borde'],
         ],
     ],
-    // 1-10 caja negra, 11-20 caja blanca. Métricas del F5: 11, 12, 13, 16 y 18.
+    // 1-10 caja negra, 11-20 caja blanca. Métricas del F5: 11, 12, 13, 16 y 18
     'subtecnica' => [
         'nombre' => 'Sub-técnica',
         'valores' => [
@@ -64,7 +64,7 @@ return [
             5 => ['texto' => 'API', 'variante' => 'borde'],
         ],
     ],
-    // Captura png/jpg, log txt/log, RNF-03. El 3 era Documento: no se reutiliza.
+    // Captura png/jpg, log txt/log, RNF-03. El 3 era Documento: no reutilizar
     'tipo_evidencia' => [
         'nombre' => 'Tipo de evidencia',
         'valores' => [
@@ -73,7 +73,7 @@ return [
             4 => ['texto' => 'Enlace', 'variante' => 'borde'],
         ],
     ],
-    // De menor a mayor: con DESC lo grave queda arriba.
+    // De menor a mayor. Con DESC lo grave va arriba
     'severidad' => [
         'nombre' => 'Severidad',
         'valores' => [
@@ -99,7 +99,7 @@ return [
             2 => ['texto' => 'Cerrado', 'variante' => 'exito'],
         ],
     ],
-    // niveles: descriptor de 5, 4, 3 y 1-2.
+    // niveles: descriptor de 5, 4, 3 y 1-2
     'criterio_rubrica' => [
         'nombre' => 'Criterio de la rúbrica',
         'valores' => [

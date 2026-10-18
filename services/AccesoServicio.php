@@ -12,11 +12,11 @@ use App\Models\UsuarioModelo;
 // RF-01, RF-02
 final class AccesoServicio
 {
-    // No dice si el usuario existe (RNF-02).
+    // No dice si el usuario existe, RNF-02
     private const ERROR_ENTRAR = 'Usuario o contraseña incorrectos.';
 
-    // Clave al azar con UsuarioServicio::ARGON. Usuario inexistente: verifica contra este hash.
-    // Así tarda lo mismo y el tiempo no revela si existe.
+    // Clave al azar con ARGON. Usuario inexistente: verifica contra este hash
+    // Mismo tiempo: no revela si existe
     private const HASH_FALSO = '$argon2id$v=19$m=19456,t=2,p=1$bWNzL3R6ZksvY0hJejJ1VA$PRg4SvgQEEZ1uei56DJDKihodqvTtRg5/1TkrmdqpZo';
 
     /** @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int} */
@@ -24,7 +24,7 @@ final class AccesoServicio
     {
         $usuario = trim($usuario);
         $llave = mb_substr('u:' . $usuario, 0, 64);
-        // Antes del hash: un intento bloqueado no gasta CPU.
+        // Antes del hash: bloqueado no gasta CPU
         self::frenar($llave);
 
         $fila = UsuarioModelo::porUsuario($usuario);
@@ -35,7 +35,7 @@ final class AccesoServicio
         }
         IntentoModelo::borrar($llave);
         Log::evento('info', 'authn_login_success:{usuario}', ['usuario' => $usuario]);
-        // Las claves con parámetros viejos se actualizan al entrar.
+        // Parámetros viejos: rehash al entrar
         if (password_needs_rehash($fila['clave'], PASSWORD_ARGON2ID, UsuarioServicio::ARGON)) {
             UsuarioModelo::cambiarClave($fila['id'], password_hash($clave, PASSWORD_ARGON2ID, UsuarioServicio::ARGON));
         }
@@ -44,7 +44,7 @@ final class AccesoServicio
     }
 
     /**
-     * Cada petición: usuario con proyectos. Null si no existe o cambió clave o rol. BUG-003, BUG-023.
+     * Usuario con proyectos. Null si no existe o cambió clave o rol. BUG-003, BUG-023
      *
      * @param array<string, mixed> $sesion
      * @return array{id: int, nombre: string, usuario: string, rol: int, sesion_version: int, proyectos: list<int>}|null
@@ -56,7 +56,7 @@ final class AccesoServicio
         return $fila !== null && $fila['sesion_version'] === ($sesion['sesion_version'] ?? null) ? $fila : null;
     }
 
-    // Mensaje genérico: no dice cuánto falta.
+    // Genérico: no dice cuánto falta
     private static function frenar(string $llave): void
     {
         if (IntentoModelo::bloqueado($llave)) {
@@ -65,8 +65,8 @@ final class AccesoServicio
         }
     }
 
-    // Siempre tester. Un admin solo se crea en UsuarioServicio.
-    // Cada cuenta creada cuenta como un intento de la IP.
+    // Siempre tester. Admin solo en UsuarioServicio
+    // Cada cuenta es un intento de la IP
     public static function registrar(string $nombre, string $usuario, string $clave, string $ip): int
     {
         $llave = 'ip:' . $ip;

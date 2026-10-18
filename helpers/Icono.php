@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// SVG de Lucide inline, no <img>: toma el color del texto.
+// SVG de Lucide inline: toma el color del texto
 final class Icono
 {
-    /** @var array<string, string> Cada SVG se lee una vez por petición (#124). */
+    /** @var array<string, string> Un SVG se lee una vez por petición, #124 */
     private static array $leidos = [];
 
     public static function svg(string $nombre, string $clase = 'icono'): string

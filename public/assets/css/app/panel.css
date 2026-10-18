@@ -1,0 +1,51 @@
+@layer app {
+/* Panel: una tarjeta por proyecto */
+
+/* Mismo alto por fila: pie al fondo */
+.rejilla-panel > .tarjeta { display: flex; flex-direction: column; }
+.rejilla-panel > .tarjeta > .tarjeta-contenido { flex: 1; }
+
+.rejilla-panel {
+  display: grid;
+  gap: var(--esp-4);
+  /* auto-fit: sin columnas vacías */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+/* Panel: cifras, tareas y barra apilada */
+.cifra-enlace { color: inherit; text-decoration: none; }
+@media (hover: hover) {
+  .cifra-enlace:hover { background: var(--acento); box-shadow: var(--sombra-sm); }
+}
+.tareas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.tareas a {
+  display: flex; align-items: baseline; gap: var(--esp-2); padding: var(--esp-2); margin: 0 calc(-1 * var(--esp-2));
+  color: inherit; text-decoration: none; border-radius: var(--radio-md); font-size: var(--letra-sm);
+}
+@media (hover: hover) {
+  .tareas a:hover { background: var(--acento); }
+}
+.tareas a > :is(svg, .insignia) { align-self: center; }
+.tareas a > span:not(.codigo):not(.insignia) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tareas small { color: var(--tenue-texto); white-space: nowrap; }
+/* Angosto: texto completo y dato debajo */
+@container principal (width < 40rem) {
+  .tareas a { flex-wrap: wrap; }
+  .tareas a > span:not(.codigo):not(.insignia) { flex-basis: 0; white-space: normal; }
+  .tareas small { flex-basis: 100%; }
+}
+.tarea-vacia { display: flex; align-items: center; gap: var(--esp-2); margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.tarea-vacia svg { color: var(--exito-fuerte); }
+.al-dia { margin: 0; }
+/* Cuadrícula: un cuadro por caso */
+.cuadricula { display: grid; grid-template-columns: repeat(auto-fill, minmax(10px, 1fr)); gap: 3px; }
+.cuadricula > span { aspect-ratio: 1; border-radius: 3px; }
+.proyeccion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.proyeccion .numero { color: var(--texto); }
+.proyeccion .proyeccion-tarde { color: var(--peligro-fuerte); }
+
+@media print {
+  .rejilla-panel { display: block; }
+  .rejilla-panel > * + * { margin-top: 12pt; }
+}
+}

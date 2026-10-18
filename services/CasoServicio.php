@@ -20,13 +20,13 @@ use App\Models\UsuarioModelo;
 // RF-04, RF-05, RF-07, RF-16, RF-24
 final class CasoServicio
 {
-    // Tablero y cronograma: más casos piden filtrar.
+    // Tablero y cronograma: con más casos, pedir filtro
     public const TOPE_VISTA = 300;
-    // Tipo de evidencia => sufijo de los campos: evidencia_captura, descripcion_captura…
+    // Tipo de evidencia => sufijo: evidencia_captura, descripcion_captura…
     public const EVIDENCIAS = [1 => 'captura', 2 => 'log', 4 => 'enlace'];
 
     /**
-     * Formulario 1. El proyecto sale del requerimiento y la técnica de la sub-técnica.
+     * Formulario 1. Proyecto del requerimiento, técnica de la sub-técnica
      *
      * @param array<string, string> $datos
      * @param list<string> $marcadas tipos de evidencia marcados
@@ -37,7 +37,7 @@ final class CasoServicio
     public static function registrar(array $datos, array $marcadas, array $archivos, array $usuario): array
     {
         $d = array_map('trim', $datos);
-        // Uno de otro proyecto cuenta como no elegido.
+        // De otro proyecto: no elegido
         $requerimiento = RequerimientoModelo::porId((int) $d['requerimiento_id']);
         $proyectos = Permisos::proyectos($usuario);
         if ($requerimiento !== null && $proyectos !== null && !in_array($requerimiento['proyecto_id'], $proyectos, true)) {
@@ -54,7 +54,7 @@ final class CasoServicio
         $anotado = $d['estado'] !== '0';
         $guardados = [];
 
-        // Lock: sin códigos duplicados. Respaldo: UNIQUE proyecto_id + codigo.
+        // Lock contra códigos duplicados. Respaldo: UNIQUE proyecto_id + codigo
         try {
             return Conexion::transaccion(function () use ($proyectoId, $sigla, $d, $anotado, $tipos, $archivos, $usuario, &$guardados): array {
                 $codigo = sprintf('%s-%03d', $sigla, CasoModelo::siguienteNumero($proyectoId, $sigla));
@@ -78,7 +78,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-06. El código no cambia con el tipo. El requerimiento sigue en el mismo proyecto.
+     * RF-06. El código no cambia con el tipo. Requerimiento del mismo proyecto
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -104,7 +104,7 @@ final class CasoServicio
     }
 
     /**
-     * Con 'evidencias'. Null si no existe. ErrorPermiso si no puede editar.
+     * Con 'evidencias'. Null si no existe. ErrorPermiso sin permiso de editar
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -120,19 +120,19 @@ final class CasoServicio
     }
 
     /**
-     * Los del proyecto del caso, por id.
+     * Del proyecto del caso, por id
      *
      * @param array<string, mixed> $caso
      * @return array<int, array<string, mixed>>
      */
     public static function requerimientos(array $caso): array
     {
-        // Proyecto del caso, no el activo: exigirMiembro ya validó.
+        // Proyecto del caso, no el activo. exigirMiembro ya validó
         return array_column(RequerimientoModelo::todos([$caso['proyecto_id']]), null, 'id');
     }
 
     /**
-     * Ids de miembros del proyecto del requerimiento, para los 2 campos de aprobación.
+     * Ids de miembros del proyecto, para los 2 campos de aprobación
      *
      * @param array<string, mixed>|null $requerimiento
      * @return list<int>
@@ -147,7 +147,7 @@ final class CasoServicio
     }
 
     /**
-     * Miembros de cada proyecto de los requerimientos, por id de proyecto. Para los selects del formulario.
+     * Miembros por proyecto, para los selects
      *
      * @param list<array<string, mixed>> $requerimientos
      * @return array<int, list<array<string, mixed>>>
@@ -158,7 +158,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-24. Cualquiera del proyecto, aunque no lo haya creado. Puede volver a Pendiente.
+     * RF-24. Cualquiera del proyecto. Puede volver a Pendiente
      *
      * @param array<string, string> $datos
      * @param list<string> $marcadas
@@ -196,7 +196,7 @@ final class CasoServicio
     }
 
     /**
-     * Devuelve el código del caso eliminado.
+     * Da el código del caso eliminado
      *
      * @param array{id: int, rol: int} $usuario
      */
@@ -204,7 +204,7 @@ final class CasoServicio
     {
         Permisos::exigirAdmin($usuario);
         $caso = CasoModelo::porId($id) ?? throw new ErrorNoEncontrado();
-        // El borrado y su fila en el historial van juntos.
+        // Borrado y fila del historial juntos
         $eliminado = Conexion::transaccion(function () use ($id, $caso, $usuario): bool {
             if (!CasoModelo::eliminar($id)) {
                 return false;
@@ -221,7 +221,7 @@ final class CasoServicio
     }
 
     /**
-     * Con 'evidencias' e 'incidentes'. Null si no existe.
+     * Con 'evidencias' e 'incidentes'. Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -238,7 +238,7 @@ final class CasoServicio
     }
 
     /**
-     * Null si no existe.
+     * Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -254,7 +254,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-16, RNF-09. Las evidencias de los proyectos del usuario.
+     * RF-16, RNF-09. Evidencias de los proyectos del usuario
      *
      * @param array{id: int, rol: int} $usuario
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
@@ -268,7 +268,7 @@ final class CasoServicio
     }
 
     /**
-     * RF-22, RNF-09. Filtro vacío no filtra. Filtro de otro proyecto: lista vacía.
+     * RF-22, RNF-09. Filtro vacío no filtra. De otro proyecto: lista vacía
      *
      * @param array<string, string> $filtros proyecto, requerimiento, estado
      * @param array{id: int, rol: int} $usuario
@@ -284,7 +284,7 @@ final class CasoServicio
     }
 
     /**
-     * Tablero y cronograma: filtros de la lista, sin paginar.
+     * Tablero y cronograma: filtros de la lista sin paginar
      *
      * @param array<string, mixed> $usuario
      * @param array<string, string> $filtros
@@ -297,7 +297,7 @@ final class CasoServicio
     }
 
     /**
-     * Formulario 1 sin el resultado.
+     * Formulario 1 sin el resultado
      *
      * @param array<string, string> $d
      * @param array<string, mixed>|null $requerimiento null si no es válido
@@ -306,8 +306,8 @@ final class CasoServicio
      */
     private static function validarCaso(array $d, ?array $requerimiento, array $miembros, ?array $caso): Validador
     {
-        // Solo miembros del proyecto del requerimiento.
-        // El valor que ya tiene el caso se acepta aunque esa persona haya salido del proyecto.
+        // Solo miembros del proyecto del requerimiento
+        // El valor actual pasa aunque esa persona ya salió del proyecto
         $esMiembro = static fn (string $campo): bool => ($d[$campo] ?? '') === ''
             || in_array((int) $d[$campo], $miembros, true)
             || $d[$campo] === (string) ($caso[$campo] ?? '');
@@ -338,7 +338,7 @@ final class CasoServicio
     }
 
     /**
-     * Columnas del formulario 1, sin el resultado.
+     * Columnas del formulario 1 sin el resultado
      *
      * @param array<string, string> $d
      * @return array<string, mixed>
@@ -365,7 +365,7 @@ final class CasoServicio
     }
 
     /**
-     * Resultado: estado, obtenido, observaciones, impacto y commit probado.
+     * Resultado: estado, obtenido, observaciones, impacto y commit probado
      *
      * @param array<string, string> $d
      * @return array{estado: int, resultado_obtenido: ?string, observaciones: ?string, impacto: ?string, commit_probado: ?string}
@@ -388,7 +388,7 @@ final class CasoServicio
     private static function filtros(array $filtros): array
     {
         $numero = fn (string $clave): ?int => ctype_digit($filtros[$clave] ?? '') ? (int) $filtros[$clave] : null;
-        // Fecha ISO válida o null: 2026-02-30 no pasa.
+        // ISO válida o null: 2026-02-30 no pasa
         $fecha = function (string $clave) use ($filtros): ?string {
             $f = \DateTimeImmutable::createFromFormat('!Y-m-d', $filtros[$clave] ?? '');
 
@@ -415,8 +415,8 @@ final class CasoServicio
     }
 
     /**
-     * RF-24. OK o FAULT: resultado, observaciones, impacto, commit probado y al menos 1 evidencia, nueva o anterior.
-     * Impacto: campo obligatorio de 29119-3.
+     * RF-24. OK o FAULT: resultado, observaciones, impacto, commit y 1 evidencia mínimo, nueva o anterior
+     * Impacto obligatorio, 29119-3
      *
      * @param array<string, string> $d
      * @param list<int> $tipos
@@ -451,7 +451,7 @@ final class CasoServicio
     }
 
     /**
-     * Dentro de la transacción. $guardados junta las rutas para borrarlas si falla.
+     * En la transacción. $guardados junta rutas para borrar si falla
      *
      * @param array<string, string> $d
      * @param list<int> $tipos
@@ -470,7 +470,7 @@ final class CasoServicio
             $archivo = $archivos[$nombre];
             $guardado = Subida::guardar($archivo, $nuevo);
             if ($nuevo) {
-                $guardados[] = Subida::ruta($guardado); // Se borra si falla. Si ya estaba, lo usa otra evidencia.
+                $guardados[] = Subida::ruta($guardado); // se borra si falla. Si ya estaba, lo usa otra evidencia
             }
             EvidenciaModelo::crear($casoId, $tipo, $guardado, mb_substr($archivo['name'], 0, 255), null, $descripcion, $usuarioId);
         }

@@ -17,11 +17,11 @@ final class PlanControlador
 {
     private const CAMPOS = ['version', 'responsable_id', 'fecha', 'estrategia', 'estado', ...PlanServicio::TEXTOS];
 
-    // Sin proyecto: lista de proyectos. Con proyecto: su plan.
+    // Sin proyecto: lista. Con proyecto: su plan
     public function ver(): void
     {
         $usuario = Sesion::usuario();
-        // Sin ?proyecto: el activo del sidebar.
+        // Sin ?proyecto: el activo
         $id = $_GET['proyecto'] ?? $usuario['activo'];
         if ($id === null) {
             Vista::pagina('plan_pruebas/listar', [
@@ -37,7 +37,7 @@ final class PlanControlador
         $plan = PlanServicio::plan($proyecto['id'], $usuario);
         Vista::pagina('plan_pruebas/ver', [
             'titulo' => 'Plan de pruebas · ' . $proyecto['nombre'],
-            // Sin plan o en borrador: BORRADOR en cada hoja.
+            // Sin plan o borrador: BORRADOR en cada hoja
             'documento' => Impresion::documento(6, $proyecto['nombre'], '', ($plan['estado'] ?? 0) === 0 ? 'BORRADOR' : ''),
             'proyecto' => $proyecto,
             'plan' => $plan,

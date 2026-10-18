@@ -1,0 +1,15 @@
+@layer app {
+/* Paleta de comandos, Ctrl/⌘+K */
+.paleta { width: min(36rem, calc(100% - var(--esp-8))); padding: 0; margin-top: 12vh; overflow: hidden; }
+.paleta-campo { display: flex; align-items: center; gap: var(--esp-3); padding: 0 var(--esp-4); border-bottom: 1px solid var(--borde); color: var(--tenue-texto); }
+.paleta-entrada { flex: 1; min-width: 0; height: 3rem; border: 0; background: transparent; color: var(--texto); font: inherit; font-size: var(--letra-base); outline: none; }
+.paleta-lista { list-style: none; margin: 0; padding: var(--esp-2); max-height: min(24rem, 60dvh); overflow-y: auto; }
+.paleta-lista [role="option"] {
+  display: flex; align-items: center; gap: var(--esp-3); padding: var(--esp-2) var(--esp-3); border-radius: var(--radio-md);
+  font-size: var(--letra-sm); cursor: pointer;
+}
+.paleta-lista [role="option"] > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.paleta-lista [role="option"]::after { content: attr(data-grupo); font-size: var(--letra-xs); color: var(--tenue-texto); white-space: nowrap; }
+.paleta-lista [aria-selected="true"] { background: var(--acento); color: var(--acento-texto); }
+.dialogo .paleta-vacio { margin: 0; padding: var(--esp-4); text-align: center; }
+}

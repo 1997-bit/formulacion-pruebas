@@ -1,0 +1,10 @@
+@layer componentes {
+/* Vista previa de la captura */
+.vista-previa {
+  max-width: 100%;
+  max-height: 10rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  object-fit: contain;
+}
+}

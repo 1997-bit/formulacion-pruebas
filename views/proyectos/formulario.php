@@ -7,7 +7,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Crear y editar, con miembros.
+ * Con miembros
  *
  * @var ?int $id
  * @var list<array<string, mixed>> $testers

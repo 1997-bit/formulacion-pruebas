@@ -5,7 +5,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Filtros activos como chips. La ✕ es un enlace a la misma lista sin ese filtro.
+ * Chips. La ✕ enlaza a la lista sin ese filtro
  *
  * @var string $ruta  /casos/listar
  * @var array<string, string> $fijos  parámetros que no son filtros: vista, mes

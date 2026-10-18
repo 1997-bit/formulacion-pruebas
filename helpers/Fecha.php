@@ -13,7 +13,7 @@ final class Fecha
         return $fecha->format('d/m/Y');
     }
 
-    // Hace cuánto: "hace 5 min", "hace 2 h", "ayer", "hace 3 d". Desde 7 días: la fecha legible.
+    // "hace 5 min", "hace 2 h", "ayer", "hace 3 d". Desde 7 días: la fecha
     public static function relativa(\DateTimeInterface $fecha, \DateTimeInterface $ahora): string
     {
         $segundos = $ahora->getTimestamp() - $fecha->getTimestamp();

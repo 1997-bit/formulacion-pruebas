@@ -66,7 +66,7 @@ final class AccesoServicioTest extends BaseDatos
         ];
     }
 
-    // No dice si el usuario existe.
+    // No dice si el usuario existe
     #[DataProvider('fallos')]
     public function testFalloDaElMismoMensaje(string $sufijo, string $clave): void
     {
@@ -75,7 +75,7 @@ final class AccesoServicioTest extends BaseDatos
         $this->assertSame(self::ERROR, $errores);
     }
 
-    // RNF-11, ASVS 16.2.5. El evento no lleva la clave.
+    // RNF-11, ASVS 16.2.5. El evento no lleva la clave
     public function testFalloDejaAuthnLoginFailSinLaClave(): void
     {
         $log = new TestHandler();
@@ -87,7 +87,7 @@ final class AccesoServicioTest extends BaseDatos
         $this->assertStringNotContainsString('clave-secreta', json_encode(array_map(fn ($r) => $r->toArray(), $log->getRecords())));
     }
 
-    // IntentoModelo::LIBRES = 3: el tercer fallo bloquea.
+    // IntentoModelo::LIBRES = 3: el tercer fallo bloquea
     public function testDosFallosNoBloquean(): void
     {
         $this->errores(fn () => AccesoServicio::entrar($this->nombre, 'mala'));
@@ -159,7 +159,7 @@ final class AccesoServicioTest extends BaseDatos
         $this->assertSame([$proyecto], $vigente['proyectos'] ?? null);
     }
 
-    // RF-02. El registro público nunca crea admin.
+    // RF-02. El registro público nunca crea admin
     public function testRegistrarCreaTester(): void
     {
         $usuario = uniqid('reg', true);

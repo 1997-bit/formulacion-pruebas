@@ -1,0 +1,18 @@
+@layer componentes {
+.aviso-flotante {
+  position: fixed;
+  right: calc(var(--esp-4) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--esp-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 70;
+  width: min(24rem, calc(100% - var(--esp-8)));
+  align-items: center;
+  box-shadow: var(--sombra-lg);
+  animation: subir var(--dur-media) var(--curva-entrar);
+}
+.aviso-flotante > .icono { margin-top: 0; }
+.aviso-flotante .alerta-accion { grid-row: 1; }
+@keyframes subir { from { opacity: 0; translate: 0 8px; } }
+@media (prefers-reduced-motion: reduce) {
+  .aviso-flotante { animation: none; }
+}
+}

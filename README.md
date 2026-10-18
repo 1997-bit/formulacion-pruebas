@@ -1,4 +1,4 @@
-# formulacion-pruebas
+# Safeguard
 
 App web para registrar casos de prueba, darles seguimiento y generar los 10 formularios de testing. Roles admin y tester.
 
@@ -20,10 +20,10 @@ PHP 8.2+ con `pdo_mysql` y `mbstring`, MySQL 8 o MariaDB 10.6+, Composer.
 ```sh
 composer install
 cp .env.example .env   # poner DB_USER y DB_PASS
-mysql -e "CREATE DATABASE casos_prueba CHARACTER SET utf8mb4"
-mysql casos_prueba < database/schema.sql
-mysql casos_prueba < database/seed.sql
-MYSQL_DATABASE=casos_prueba MYSQL_USER=app bash database/permisos.sh | mysql   # usuario 'app'@'%'
+mysql -e "CREATE DATABASE safeguard CHARACTER SET utf8mb4"
+mysql safeguard < database/schema.sql
+mysql safeguard < database/seed.sql
+MYSQL_DATABASE=safeguard MYSQL_USER=app bash database/permisos.sh | mysql   # usuario 'app'@'%'
 php -S 127.0.0.1:8000 -t public
 ```
 

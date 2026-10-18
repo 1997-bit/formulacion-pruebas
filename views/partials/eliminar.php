@@ -6,8 +6,8 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Botón Eliminar con su diálogo. Para confirmar, el usuario escribe $confirmar. Pegar está permitido.
- * Con $bloqueo, el botón queda deshabilitado y el tooltip dice por qué.
+ * Eliminar con diálogo: escribir $confirmar. Pegar está permitido
+ * $bloqueo: deshabilitado y el tooltip dice por qué
  *
  * @var string $dialogo    id del dialog
  * @var string $etiqueta   aria-label del botón, como Eliminar caso
@@ -22,7 +22,7 @@ use App\Helpers\Icono;
 
 $clase ??= 'btn-secundario';
 $bloqueo ??= '';
-// El pattern es una regex de JS con la bandera v. Escape solo de los caracteres de sintaxis.
+// pattern: regex de JS con bandera v. Escape solo de la sintaxis
 $patron = preg_replace('/[\\\\^$.*+?()[\]{}|\/]/', '\\\\$0', $confirmar);
 ?>
 <?php if ($bloqueo !== ''): ?>

@@ -1,0 +1,29 @@
+@layer componentes {
+/* Línea de tiempo: reciente arriba */
+/* hora | punto y línea | cambio */
+.linea-tiempo { --hora: 5.5rem; margin: 0; padding: 0; list-style: none; }
+.linea-tiempo li { position: relative; display: grid; align-items: baseline; grid-template-columns: var(--hora) 1fr; column-gap: var(--esp-6); padding-bottom: var(--esp-4); }
+.linea-tiempo li::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--hora) + 8px);
+  top: 0.45em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--tenue-texto);
+}
+.linea-tiempo .linea-tiempo-estado::before { background: var(--primario); box-shadow: 0 0 0 3px color-mix(in oklch, var(--primario), transparent 70%); }
+.linea-tiempo li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--hora) + 12px);
+  top: calc(0.45em + 13px);
+  bottom: 2px;
+  width: 1px;
+  background: var(--borde);
+}
+.linea-tiempo p { margin: 0 0 var(--esp-1); font-size: var(--letra-sm); }
+.linea-tiempo time { font-family: var(--fuente-mono); font-size: var(--letra-xs); line-height: 1.7; color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+.linea-tiempo-estado time { color: var(--texto); }
+}

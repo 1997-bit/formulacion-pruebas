@@ -1,0 +1,16 @@
+@layer componentes {
+/* Tabla editable: name="campo[]" y aria-label por control. Filas en app.js */
+
+.tabla-editable th { white-space: normal; }
+.tabla-editable td { padding: 6px 8px; vertical-align: top; white-space: normal; }
+.tabla-editable tbody th { vertical-align: top; padding-top: 14px; }
+.tabla-editable tbody tr:hover { background: none; }
+.tabla-editable :is(td, th) .control { min-width: 9rem; }
+.tabla-editable textarea.control { min-height: var(--alto-md); padding-block: 6px; }
+.tabla-editable .celda-corta .control { min-width: 5rem; }
+.tabla-editable td.celda-acciones { vertical-align: top; padding-top: 8px; }
+.tabla-editable td:has(> input[type="checkbox"]) { vertical-align: middle; }
+.tabla-editable .control[type="number"] { font-variant-numeric: tabular-nums; }
+/* Alinea con el texto de los controles */
+.tabla-editable tfoot td { padding: 10px 8px 10px 21px; }
+}

@@ -1,0 +1,130 @@
+@layer componentes {
+/* Al final: gana a los componentes de arriba */
+.solo-impresion { display: none; }
+
+@media print {
+  :root,
+  :root[data-tema] { color-scheme: light !important; }
+  body { background: oklch(100% 0 0); }
+
+  .solo-impresion { display: block; }
+  .no-imprimir,
+  .btn,
+  .filtros,
+  .aviso-flotante,
+  .paginacion,
+  .tabla .celda-acciones,
+  .select::after { display: none !important; }
+  [data-tooltip]::after { display: none; }
+
+  .tarjeta,
+  .control,
+  .btn-secundario { box-shadow: none; }
+  .control::placeholder { color: transparent; }
+  .tabla-contenedor { overflow: visible; }
+  /* Bloques normales: flex y grid con break-inside se enciman en Firefox, bug 1695475 */
+  .pila,
+  .vista-detalle { display: block; }
+  .pila > * + *,
+  .vista-detalle > * + * { margin-top: 12pt; }
+  /* Nombre y valor lado a lado */
+  .detalle-apilado { grid-template-columns: max-content 1fr; gap: 6px 20px; }
+  .detalle-apilado dd { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Sin esto se pierden fondos de insignias y barras */
+  .insignia,
+  .progreso,
+  .paso::before,
+  .tabla th,
+  .tabla tfoot td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Sin corte entre hojas */
+  thead { display: table-header-group; }
+  tr,
+  .campo,
+  .cifra,
+  .alerta,
+  .archivo { break-inside: avoid; }
+  h1, h2, h3, .tarjeta-encabezado { break-after: avoid; }
+
+  /* Hoja carta. Encabezado y pie: variables --doc-* del <html>, layouts/app.php */
+  @page {
+    size: letter;
+    margin: 2cm 1.5cm 1.8cm;
+    @top-left { content: var(--doc-titulo, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @top-right { content: var(--doc-proyecto, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @bottom-left { content: var(--doc-pie, ""); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 8pt var(--fuente); color: oklch(40% 0 0); }
+    /* Marca: BORRADOR, NO-GO o vacía */
+    @top-center { content: var(--doc-marca, ""); font: 700 10pt var(--fuente); letter-spacing: 2pt; color: oklch(50% 0.2 25); }
+  }
+  /* Hoja 1: título en el cuerpo. Sin encabezado, más aire arriba */
+  @page :first {
+    margin-top: 2.5cm;
+    @top-left { content: none; }
+    @top-right { content: none; }
+  }
+  /* Doble cara: margen interior para engrapar */
+  @page :left { margin-left: 1.5cm; margin-right: 2cm; }
+  @page :right { margin-left: 2cm; margin-right: 1.5cm; }
+  /* Tabla ancha: todo el documento horizontal, sin hojas sueltas */
+  @page horizontal { size: letter landscape; }
+  .app-principal:has(.tabla-ancha, .matriz-contenedor, .cronograma-contenedor) { page: horizontal; }
+
+  /* Sin palabra sola al final, cortes en español, títulos parejos */
+  p, dd { text-wrap: pretty; hyphens: auto; }
+  h1, h2, h3 { text-wrap: balance; }
+  /* Enlaces externos: la dirección en papel */
+  .app-principal a[href^="http"]:not(.btn)::after { content: " (" attr(href) ")"; font-size: 0.85em; overflow-wrap: anywhere; hyphens: none; color: oklch(40% 0 0); }
+  /* Caja partida: cada parte con su borde */
+  .alerta,
+  .archivo,
+  .tabla-contenedor { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+  /* Documento plano: secciones separadas por una línea */
+  body { font-size: 10pt; }
+  h1 { font-size: 18pt; }
+  .tarjeta { padding: 0; border: 0; border-radius: 0; background: none; }
+  .pila > .tarjeta + .tarjeta,
+  .vista-detalle .pila > .tarjeta + .tarjeta { padding-top: 12pt; border-top: 1px solid oklch(80% 0 0); }
+  .tarjeta-titulo { font-size: 12pt; }
+  .pasos,
+  .pestanas { display: none; }
+
+  /* Datos primero: identifican el documento */
+  .vista-detalle > aside { padding-bottom: 12pt; border-bottom: 1px solid oklch(80% 0 0); }
+  /* Sin línea sola al pie o al inicio de hoja */
+  p, dd { orphans: 3; widows: 3; }
+
+  /* Cifras y gráficos en filas fijas */
+  .cifras { grid-template-columns: repeat(5, 1fr); }
+  .cifra-principal { grid-column: auto; }
+  .cifra { padding: 8pt; border: 1px solid oklch(80% 0 0); border-radius: 0; }
+  .grafico,
+  .vista-detalle > aside,
+  .tarjeta-encabezado,
+  .tarjeta:not(:has(table, .detalle)),
+  .firmas { break-inside: avoid; }
+
+  /* Tablas al ancho de la hoja, texto en varias líneas */
+  .tabla { font-size: 9pt; }
+  .tabla th,
+  .tabla td { padding: 4pt 6pt; white-space: normal; }
+  .tabla .celda-larga { min-width: 0; }
+  .tabla-contenedor { border-radius: 0; }
+  /* Menos de 15 filas: en una hoja. Las largas repiten el thead */
+  .tabla-contenedor:not(:has(tbody tr:nth-child(15))) { break-inside: avoid; }
+
+  /* Firmas */
+  .firmas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24pt; margin-top: 28pt; }
+  .firma p { margin: 2pt 0 0; font-size: 8pt; }
+  .firma-linea { display: block; height: 32pt; border-bottom: 1px solid oklch(20% 0 0); }
+
+  /* Panel en flujo normal */
+  .app-cuerpo { height: auto; margin: 0; overflow: visible; border: 0; border-radius: 0; }
+}
+}

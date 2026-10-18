@@ -11,7 +11,7 @@ use App\Core\Sesion;
 use App\Core\Vista;
 use App\Services\UsuarioServicio;
 
-// RF-02, RF-03. Ninguna vista recibe la clave.
+// RF-02, RF-03. Ninguna vista recibe la clave
 final class UsuariosControlador
 {
     private const CAMPOS = ['nombre', 'usuario', 'clave', 'rol'];
@@ -87,7 +87,7 @@ final class UsuariosControlador
     }
 
     /**
-     * La clave no vuelve al formulario.
+     * La clave no vuelve al formulario
      *
      * @param array<string, string> $datos
      * @return array<string, string>

@@ -1,0 +1,49 @@
+@layer app {
+/* Menús de proyecto y usuario: popover pegado a su botón, anchor positioning */
+.sidebar-marca { anchor-name: --menu-proyecto; }
+.sidebar-usuario { anchor-name: --menu-usuario; }
+.usuario-flotante,
+.proyecto-flotante {
+  inset: auto;
+  margin: 0;
+  padding: var(--esp-1);
+  overflow-y: auto;
+  background: var(--flotante);
+  color: var(--flotante-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-md);
+  position-try-fallbacks: flip-block;
+}
+/* Usuario: hacia arriba */
+.usuario-flotante {
+  position-anchor: --menu-usuario;
+  bottom: calc(anchor(top) + var(--esp-1));
+  left: anchor(left);
+  width: anchor-size(width);
+}
+/* Proyecto: hacia abajo */
+.proyecto-flotante {
+  position-anchor: --menu-proyecto;
+  top: calc(anchor(bottom) + var(--esp-1));
+  left: anchor(left);
+  width: anchor-size(width);
+  max-height: 60vh;
+}
+.proyecto-flotante-titulo {
+  margin: 0;
+  padding: var(--esp-1) var(--esp-2);
+  font-size: var(--letra-xs);
+  color: var(--tenue-texto);
+}
+.proyecto-flotante .sidebar-boton {
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: var(--letra-sm);
+  text-align: left;
+}
+.proyecto-flotante .sidebar-boton[aria-current] {
+  font-weight: 500;
+}
+}

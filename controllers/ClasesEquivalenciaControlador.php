@@ -17,7 +17,7 @@ use App\Services\RequerimientoServicio;
 // RF-09
 final class ClasesEquivalenciaControlador
 {
-    // Sin requerimiento: lista de matrices. Con requerimiento: matriz de solo lectura.
+    // Sin requerimiento: lista. Con requerimiento: solo lectura
     public function ver(): void
     {
         $usuario = Sesion::usuario();

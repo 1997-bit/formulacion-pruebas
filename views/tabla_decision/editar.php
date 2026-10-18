@@ -8,8 +8,8 @@ use App\Helpers\Icono;
 use App\Services\TablaDecisionServicio;
 
 /**
- * Formulario 4, RF-11, crear o editar. El servidor arma las columnas.
- * Agregar o quitar fila envía sin guardar. Todas las reglas o ninguna.
+ * Formulario 4, RF-11. El servidor arma las columnas
+ * Agregar o quitar fila no guarda. Todo o nada
  *
  * @var array<string, mixed> $requerimiento
  * @var string $huella  lo leído, para avisar si otro guardó antes (#100)
@@ -44,7 +44,7 @@ $reglasConError = array_filter(range(0, $reglas - 1), fn (int $r): bool => isset
 <div class="pila">
   <?= Vista::capturar('partials/mensajes', ['errores' => $errores]) ?>
   <form class="tarjeta pila" method="post" action="/formularios/tabla_decision/editar">
-    <!-- Enter guarda: es el primer botón de envío -->
+    <!-- Enter guarda: primer botón de envío -->
     <button class="solo-lector" type="submit" tabindex="-1" aria-hidden="true">Guardar tabla</button>
     <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
     <input type="hidden" name="huella" value="<?= Html::e($huella) ?>">

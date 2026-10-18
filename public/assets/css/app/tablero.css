@@ -1,0 +1,27 @@
+@layer app {
+/* Tablero de casos: una columna por estado */
+.tablero { display: grid; gap: var(--esp-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); align-items: start; }
+.tablero-columna { background: var(--tenue); border: 1px solid var(--borde); border-radius: var(--radio-xl); padding: var(--esp-3); }
+.tablero-titulo { display: flex; align-items: center; gap: var(--esp-2); margin: 0 0 var(--esp-3); font-size: var(--letra-sm); font-weight: 600; }
+.tablero-titulo > span:last-child { color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+.tablero-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--esp-2); }
+/* Scroll propio, título fijo. padding: el anillo de foco no se corta */
+.tablero-lista { max-height: 70dvh; overflow-y: auto; overscroll-behavior: contain; padding: 2px; margin: -2px; }
+@media print { .tablero-lista { max-height: none; overflow: visible; } }
+.tablero-vacio { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.tarjeta-caso { display: flex; flex-direction: column; gap: var(--esp-2); padding: var(--esp-3); color: inherit; text-decoration: none; font-size: var(--letra-sm); }
+@media (hover: hover) {
+  .tarjeta-caso:hover { border-color: var(--anillo); box-shadow: var(--sombra-sm); }
+}
+.tarjeta-caso-cabeza { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-2); }
+.tarjeta-caso-texto { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tarjeta-caso-pie { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-1) var(--esp-2); font-size: var(--letra-xs); color: var(--tenue-texto); }
+.atrasado { color: var(--error); font-weight: 500; }
+
+/* Tablero de incidentes */
+.tablero-columna.soltar { outline: 2px dashed var(--anillo); outline-offset: -2px; }
+[data-arrastrable] { cursor: grab; }
+.tarjeta-caso .codigo { text-decoration: none; color: inherit; }
+.mover { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin-top: var(--esp-1); }
+.filtros-casillas { align-self: end; padding-bottom: var(--esp-2); }
+}

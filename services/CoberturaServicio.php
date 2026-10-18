@@ -12,19 +12,19 @@ use App\Core\Validador;
 use App\Models\CoberturaModelo;
 use App\Models\FilasModelo;
 
-// RF-12, formulario 5. Una fila por métrica de caja blanca, por requerimiento.
+// RF-12, formulario 5. Una fila por métrica de caja blanca
 final class CoberturaServicio
 {
-    // Lo que resume la huella (#100).
+    // Lo que resume la huella, #100
     public const TABLAS = ['cobertura_blanca'];
 
     private const TABLA = 'cobertura_blanca';
 
-    // Sub-técnicas del catálogo que se miden.
+    // Sub-técnicas medidas
     public const METRICAS = [11, 12, 13, 16, 18];
 
     /**
-     * Mismo redondeo que app.js. Enteros: sin floats.
+     * Mismo redondeo que app.js. Enteros, sin floats
      */
     public static function porcentaje(int $total, int $cubiertos): int
     {
@@ -54,7 +54,7 @@ final class CoberturaServicio
     }
 
     /**
-     * Requerimientos del usuario, paginados, con cuántas métricas tiene su cobertura (RNF-09).
+     * Requerimientos del usuario paginados, con métricas de su cobertura, RNF-09
      *
      * @param array{id: int, rol: int} $usuario
      * @return array{0: list<array<string, mixed>>, 1: Paginacion}
@@ -72,8 +72,8 @@ final class CoberturaServicio
     }
 
     /**
-     * Métrica vacía no se mide. Todas o ninguna: valida y reemplaza en una transacción.
-     * Keys de error: "metrica.columna". El porcentaje se calcula aquí, no se recibe.
+     * Métrica vacía no se mide. Todo o nada en una transacción
+     * Keys de error: "metrica.columna". El porcentaje se calcula aquí
      *
      * @param array<int, array{total: string, cubiertos: string, herramienta: string}> $filas  metrica => fila
      * @param array{id: int, rol: int} $usuario

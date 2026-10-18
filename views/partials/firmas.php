@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Solo al imprimir: tres líneas de firma al final del documento.
+ * Solo al imprimir: tres firmas al final
  */
 ?>
 <section class="solo-impresion firmas" aria-label="Firmas">

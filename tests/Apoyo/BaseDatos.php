@@ -12,7 +12,7 @@ use App\Models\IncidenteModelo;
 use App\Models\UsuarioModelo;
 use PHPUnit\Framework\TestCase;
 
-// Pruebas medianas. Base del .env, cada prueba en una transacción que se deshace.
+// Pruebas medianas. Base del .env, cada prueba en una transacción deshecha
 abstract class BaseDatos extends TestCase
 {
     private static ?PdoPruebas $pdo = null;
@@ -23,7 +23,7 @@ abstract class BaseDatos extends TestCase
     {
         if (self::$pdo === null) {
             Env::cargar(RAIZ . '/.env');
-            // Misma zona que la app en PHP y en la base, como core/bootstrap.php y Conexion.
+            // Misma zona en PHP y en la base, como bootstrap.php y Conexion
             date_default_timezone_set(Env::get('APP_ZONA', 'America/Panama'));
             $dsn = sprintf(
                 'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
@@ -46,7 +46,7 @@ abstract class BaseDatos extends TestCase
         self::$pdo?->rollBack();
     }
 
-    // Fábrica: valores válidos, nombres únicos.
+    // Fábrica: valores válidos, nombres únicos
 
     protected function usuario(int $rol = 0, string $nombre = 'Usuario'): int
     {
@@ -94,7 +94,7 @@ abstract class BaseDatos extends TestCase
     }
 
     /**
-     * Como en la sesión, con proyectos.
+     * Como en la sesión, con proyectos
      *
      * @return array{id: int, rol: int, proyectos: list<int>}
      */
@@ -114,7 +114,7 @@ abstract class BaseDatos extends TestCase
     }
 
     /**
-     * Errores de validación. [] si pasa.
+     * Errores de validación. [] si pasa
      *
      * @return array<string, string>
      */

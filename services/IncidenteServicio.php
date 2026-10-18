@@ -18,7 +18,7 @@ use App\Models\UsuarioModelo;
 final class IncidenteServicio
 {
     /**
-     * Formulario 10. Proyecto del caso. Código: BUG + consecutivo del proyecto.
+     * Formulario 10. Proyecto del caso. Código: BUG + consecutivo del proyecto
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -48,7 +48,7 @@ final class IncidenteServicio
         self::validarSeguimiento($v, $d, $asignables);
         $v->comprobar();
 
-        // Lock: sin códigos duplicados. Respaldo: UNIQUE proyecto_id + codigo.
+        // Lock contra códigos duplicados. Respaldo: UNIQUE proyecto_id + codigo
         return Conexion::transaccion(function () use ($caso, $casoId, $d, $usuario): array {
             self::exigirPlanAbierto($caso['proyecto_id'], $d);
             $codigo = sprintf('BUG-%03d', IncidenteModelo::siguienteNumero($caso['proyecto_id']));
@@ -77,7 +77,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Estado, asignado, stopper y commit corregido. Cualquiera del proyecto.
+     * Estado, asignado, stopper y commit corregido. Cualquiera del proyecto
      *
      * @param array<string, string> $datos
      * @param array{id: int, rol: int} $usuario
@@ -106,7 +106,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Tablero: cambia solo el estado.
+     * Tablero: solo el estado
      *
      * @param array{id: int, rol: int} $usuario
      */
@@ -123,7 +123,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Null si no existe.
+     * Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -155,7 +155,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Tablero: los filtros de la lista, sin paginar.
+     * Tablero: filtros de la lista sin paginar
      *
      * @param array{id: int, rol: int} $usuario
      * @param array<string, string> $filtros
@@ -167,7 +167,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Valores de la URL a filtros del modelo. Lo que no es válido no filtra.
+     * URL a filtros del modelo. Lo inválido no filtra
      *
      * @param array<string, string> $filtros estado, severidad, stopper ('1'), mios ('1')
      * @param array{id: int} $usuario
@@ -186,7 +186,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Miembros del proyecto del caso o del incidente.
+     * Miembros del proyecto del caso o del incidente
      *
      * @param array<string, mixed> $registro
      * @return list<array<string, mixed>>
@@ -197,7 +197,7 @@ final class IncidenteServicio
     }
 
     /**
-     * Un stopper abierto no entra en un plan cerrado (BUG-035).
+     * Stopper abierto no entra en plan cerrado, BUG-035
      *
      * @param array<string, string> $d
      */

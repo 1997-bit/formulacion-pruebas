@@ -10,13 +10,13 @@ use App\Core\Log;
 use App\Core\Validador;
 use App\Models\UsuarioModelo;
 
-// RF-02, RF-03. Solo aquí se crea un admin.
+// RF-02, RF-03. Único lugar que crea un admin
 final class UsuarioServicio
 {
-    // Mínimo OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo.
+    // Mínimo OWASP para Argon2id: 19 MiB, 2 pasadas, 1 hilo
     public const ARGON = ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1];
 
-    // Sin SELECT previo: decide el UNIQUE, también en race condition. #101.
+    // Sin SELECT previo: decide el UNIQUE, también en race condition, #101
     public const USUARIO_REPETIDO = ['usuario' => 'Ese usuario ya existe.'];
 
     /**
@@ -60,7 +60,7 @@ final class UsuarioServicio
     }
 
     /**
-     * Clave vacía: no cambia. Aquí cambia el rol.
+     * Clave vacía: no cambia. Cambia el rol
      *
      * @param array<string, string> $datos nombre, usuario, clave, rol
      * @param array{id: int, rol: int} $actor
@@ -110,7 +110,7 @@ final class UsuarioServicio
         Log::evento('warning', 'user_deleted:{id},{otro}', ['otro' => $id]);
     }
 
-    // Siempre queda un admin, #116. Cuenta con lock: 2 admins que se quitan el rol a la vez no pasan los 2.
+    // Siempre un admin, #116. Lock: 2 admins que se quitan el rol a la vez no pasan
     private static function exigirOtroAdmin(int $id): void
     {
         if (UsuarioModelo::contarAdmins() < 2 && (UsuarioModelo::porId($id)['rol'] ?? null) === 1) {
@@ -119,7 +119,7 @@ final class UsuarioServicio
     }
 
     /**
-     * Reglas comunes con el registro público. $id: usuario editado.
+     * Reglas comunes con el registro. $id: usuario editado
      *
      * @param array<string, string> $datos
      * @return array{nombre: string, usuario: string, rol: int}

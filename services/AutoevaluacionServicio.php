@@ -12,11 +12,11 @@ use App\Models\AutoevaluacionModelo;
 use App\Models\ProyectoModelo;
 use App\Models\RequerimientoModelo;
 
-// RF-15, formulario 8. Cada miembro se evalúa y evalúa a un compañero, 1 a 5 por aspecto.
+// RF-15, formulario 8. Auto y coevaluación, 1 a 5 por aspecto
 final class AutoevaluacionServicio
 {
     /**
-     * Proyectos del usuario con cuántas personas ya guardaron.
+     * Proyectos del usuario con cuántos ya guardaron
      *
      * @param array{id: int, rol: int} $usuario
      * @return list<array<string, mixed>>
@@ -34,7 +34,7 @@ final class AutoevaluacionServicio
     }
 
     /**
-     * Null si no existe.
+     * Null si no existe
      *
      * @param array{id: int, rol: int} $usuario
      * @return array<string, mixed>|null
@@ -49,14 +49,14 @@ final class AutoevaluacionServicio
         return $proyecto;
     }
 
-    // El admin ve promedios pero no llena: no es miembro.
+    // El admin ve promedios pero no llena: no es miembro
     public static function puedeLlenar(int $proyectoId, int $usuarioId): bool
     {
         return ProyectoModelo::esMiembro($proyectoId, $usuarioId);
     }
 
     /**
-     * Lo que guardó el usuario, por aspecto, con sus promedios. Null si no ha guardado.
+     * Lo del usuario por aspecto, con promedios. Null si no guardó
      *
      * @param array{id: int, rol: int} $usuario
      * @return array{evaluado_id: int, evaluado: string, auto: array<int, int>, co: array<int, int>, comentario: array<int, string>, promedio_auto: float, promedio_co: float}|null
@@ -85,7 +85,7 @@ final class AutoevaluacionServicio
     }
 
     /**
-     * Cada miembro con su autoevaluación y la coevaluación que recibió, promediadas.
+     * Promedio de auto y coevaluación de cada miembro
      *
      * @param array{id: int, rol: int} $usuario
      * @return list<array{id: int, nombre: string, auto: ?float, co: ?float}>
@@ -98,7 +98,7 @@ final class AutoevaluacionServicio
     }
 
     /**
-     * Todos los aspectos, auto y co, o nada. Keys de error: "auto.aspecto", "co.aspecto", "comentario.aspecto".
+     * Todo o nada. Keys de error: "auto.aspecto", "co.aspecto", "comentario.aspecto"
      *
      * @param array{evaluado_id: string, auto: array<int|string, string>, co: array<int|string, string>, comentario: array<int|string, string>} $datos
      * @param array{id: int, rol: int} $usuario

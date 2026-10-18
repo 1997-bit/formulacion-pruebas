@@ -1,0 +1,41 @@
+@layer componentes {
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-top: var(--esp-4);
+  font-size: var(--letra-sm);
+  color: var(--tenue-texto);
+}
+.paginacion ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--esp-1);
+}
+.paginacion a,
+.paginacion span[aria-disabled],
+.paginacion .salto {
+  display: grid;
+  place-items: center;
+  min-width: var(--alto-sm);
+  height: var(--alto-sm);
+  padding: 0 var(--esp-2);
+  color: var(--texto);
+  text-decoration: none;
+  border-radius: var(--radio-md);
+}
+@media (hover: hover) {
+  .paginacion a:hover { background: var(--acento); }
+}
+.paginacion a[aria-current="page"] { border: 1px solid var(--entrada); font-weight: 600; box-shadow: var(--sombra-xs); }
+.paginacion span[aria-disabled] { opacity: 0.4; }
+
+@media (pointer: coarse) {
+  .paginacion a,
+  .paginacion span[aria-disabled] { min-width: var(--alto-tactil); height: var(--alto-tactil); }
+}
+}

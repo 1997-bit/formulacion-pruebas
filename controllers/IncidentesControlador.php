@@ -28,7 +28,7 @@ final class IncidentesControlador
         foreach (['estado', 'severidad', 'stopper', 'mios'] as $filtro) {
             $filtros[$filtro] = is_string($_GET[$filtro] ?? null) ? $_GET[$filtro] : '';
         }
-        // Lista por defecto: g i y el menú llevan a la lista.
+        // Lista por defecto, g i y el menú
         $vista = ($_GET['vista'] ?? '') === 'tablero' ? 'tablero' : 'lista';
         [$incidentes, $paginacion] = $vista === 'lista'
             ? IncidenteServicio::pagina(Sesion::usuario(), (int) ($_GET['pagina'] ?? 1), $filtros)
@@ -44,7 +44,7 @@ final class IncidentesControlador
         ]);
     }
 
-    // Sin caso: busca por código, BUG-050. Con caso: formulario 10 con los datos del caso.
+    // Sin caso: busca por código, BUG-050. Con caso: formulario 10
     public function registrar(): void
     {
         $usuario = Sesion::usuario();
@@ -133,7 +133,7 @@ final class IncidentesControlador
         Respuesta::exito("Incidente {$codigo} guardado.", '/formularios/incidentes/ver?id=' . $id);
     }
 
-    // Tablero: destino = "id-estado". Solo cambia el estado.
+    // Tablero: destino = "id-estado". Solo cambia el estado
     public function mover(): void
     {
         [$id, $estado] = array_map('intval', explode('-', (string) ($_POST['destino'] ?? '0-0'), 2) + [1 => 0]);

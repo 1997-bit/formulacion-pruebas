@@ -6,7 +6,7 @@ use App\Helpers\Html;
 use App\Helpers\Icono;
 
 /**
- * Formulario 6, RF-13. Un plan por proyecto.
+ * Formulario 6, RF-13. Un plan por proyecto
  *
  * @var list<array<string, mixed>> $proyectos  con estado, null sin plan
  */

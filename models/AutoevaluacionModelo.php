@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Config\Conexion;
 
-// F8. Una fila por proyecto, evaluador, evaluado y aspecto. Auto si evaluador = evaluado.
+// F8. Una fila por proyecto, evaluador, evaluado y aspecto
 final class AutoevaluacionModelo
 {
     /** @return list<array<string, mixed>> */
@@ -23,7 +23,7 @@ final class AutoevaluacionModelo
     }
 
     /**
-     * Cada miembro con el promedio de su autoevaluación y de la coevaluación que recibió. Null si no hay.
+     * Promedio de auto y coevaluación de cada miembro. Null si no hay
      *
      * @return list<array{id: int, nombre: string, auto: ?float, co: ?float}>
      */
@@ -57,7 +57,7 @@ final class AutoevaluacionModelo
     }
 
     /**
-     * Lo del evaluador en el proyecto, por diferencia. En transacción.
+     * Lo del evaluador, por diferencia. En transacción
      *
      * @param list<array{evaluado_id: int, aspecto: int, puntos: int, comentario: ?string}> $filas
      */

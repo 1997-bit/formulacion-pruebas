@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Campos de $_POST. Lo que no es texto queda vacío.
+// Campos de $_POST. No texto: vacío
 final class Entrada
 {
     /**
@@ -22,7 +22,7 @@ final class Entrada
     }
 
     /**
-     * name="columna[]" → filas, en el orden de la pantalla.
+     * name="columna[]" → filas en orden
      *
      * @param list<string> $columnas
      * @return list<array<string, string>>

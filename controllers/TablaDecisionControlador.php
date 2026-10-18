@@ -16,7 +16,7 @@ use App\Services\TablaDecisionServicio;
 // RF-11
 final class TablaDecisionControlador
 {
-    // Sin requerimiento: lista de tablas. Con requerimiento: tabla de solo lectura.
+    // Sin requerimiento: lista. Con requerimiento: solo lectura
     public function ver(): void
     {
         $usuario = Sesion::usuario();
@@ -60,7 +60,7 @@ final class TablaDecisionControlador
         ]);
     }
 
-    // Con "cambio" agrega o quita una fila y vuelve a la pantalla sin guardar.
+    // "cambio": agrega o quita una fila sin guardar
     public function guardar(): void
     {
         $id = (int) ($_POST['requerimiento_id'] ?? 0);
@@ -78,8 +78,8 @@ final class TablaDecisionControlador
     }
 
     /**
-     * condicion[i], condicion_regla[i][r], accion[i] y accion_regla[i][r] → tabla del servicio.
-     * Casilla sin marcar no llega: vale "-".
+     * condicion[i], condicion_regla[i][r], accion[i] y accion_regla[i][r] → tabla del servicio
+     * Casilla sin marcar no llega: "-"
      *
      * @return array{condiciones: list<array{texto: string, reglas: list<string>}>, acciones: list<array{texto: string, reglas: list<string>}>}
      */

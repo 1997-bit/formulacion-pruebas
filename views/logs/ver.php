@@ -8,7 +8,7 @@ use App\Helpers\Icono;
 use App\Services\LogServicio;
 
 /**
- * RNF-11. Lista, Seguridad y Rendimiento del día. Con uid: la petición entera, lista para captura.
+ * RNF-11. Lista, Seguridad y Rendimiento del día. Con uid: la petición entera
  *
  * @var string $vista  lista, seguridad o rendimiento
  * @var array{dia: string, canal: string, nivel: int, evento: string, uid: string} $filtros

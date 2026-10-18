@@ -1,0 +1,44 @@
+@layer componentes {
+.cifras {
+  display: grid;
+  gap: var(--esp-4);
+  /* 5 cifras, la principal ocupa 2: 6 columnas, una fila. auto-fill dejaba filas cojas con zoom */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.cifra { display: flex; flex-direction: column; gap: var(--esp-1); }
+.cifra-etiqueta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  margin: 0;
+  font-size: var(--letra-sm);
+  font-weight: 500;
+  color: var(--tenue-texto);
+}
+.cifra-valor {
+  margin: 0;
+  font-size: var(--letra-2xl);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* Cifra principal: más grande y en dos columnas si cabe */
+.cifra-principal .cifra-valor { font-size: var(--letra-3xl); }
+/* Container queries: ancho del contenido, no de la ventana. Sin filas de 3 + 1 ni 3 + 2
+   Ancho: una fila. Medio: la principal sola y el resto de 2 en 2. Angosto: una por fila */
+.cifra-principal { grid-column: span 2; }
+@container principal (width < 60rem) {
+  .cifras { grid-template-columns: repeat(2, 1fr); }
+  .cifra-principal { grid-column: 1 / -1; }
+}
+@container principal (width < 28rem) { .cifras { grid-template-columns: 1fr; } }
+.cifra-hoy { color: var(--texto); font-weight: 500; }
+/* Ícono con el color del estado */
+.cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
+.cifra-peligro .cifra-etiqueta svg { color: var(--peligro-fuerte); }
+.cifra-aviso .cifra-etiqueta svg { color: var(--aviso-fuerte); }
+
+}

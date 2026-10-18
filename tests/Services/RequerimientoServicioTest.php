@@ -150,7 +150,7 @@ final class RequerimientoServicioTest extends BaseDatos
         RequerimientoServicio::ver($requerimiento, $this->sesion($this->usuario()));
     }
 
-    // RF-01 con 2 casos tipo 1, uno FAULT. RF-02 sin casos: 1 de 2 celdas.
+    // RF-01 con 2 casos tipo 1, uno FAULT. RF-02 sin casos: 1 de 2 celdas
     public function testMatrizCuentaCasosPorTipoYHuecos(): void
     {
         $tester = $this->usuario();

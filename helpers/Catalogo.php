@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-// Lee y pinta config/catalogos.php. Key int de PDO o string de $_POST.
+// Lee y pinta config/catalogos.php. Key int de PDO o string de $_POST
 final class Catalogo
 {
     /** @var array<string, array{nombre: string, valores: array<int, array{texto: string, variante: string, sigla?: string, niveles?: list<string>}>}>|null */
@@ -23,13 +23,13 @@ final class Catalogo
             ?? throw new \InvalidArgumentException("Catálogo no encontrado: {$catalogo}");
     }
 
-    // '2' y 2 existen; '', '2.0' y ' 2' no.
+    // '2' y 2 existen; '', '2.0' y ' 2' no
     public static function existe(string $catalogo, int|string|null $clave): bool
     {
         return $clave !== null && isset(self::valores($catalogo)[$clave]);
     }
 
-    // Key desconocida: se muestra tal cual.
+    // Key desconocida: tal cual
     public static function texto(string $catalogo, int|string|null $clave): string
     {
         return self::valores($catalogo)[$clave ?? '']['texto'] ?? (string) $clave;
@@ -43,7 +43,7 @@ final class Catalogo
             . Html::e(self::texto($catalogo, $clave)) . '</span>';
     }
 
-    // Sin "Elegir…": va en la vista.
+    // "Elegir…" va en la vista
     public static function opciones(string $catalogo, int|string|null $elegida = null): string
     {
         $html = '';

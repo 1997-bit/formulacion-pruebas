@@ -1,0 +1,99 @@
+@layer app {
+.app {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.saltar {
+  position: absolute;
+  left: var(--esp-2);
+  top: -100px;
+  z-index: 100;
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--primario);
+  color: var(--primario-texto);
+  border-radius: var(--radio-md);
+}
+.saltar:focus {
+  top: var(--esp-2);
+}
+
+.app-cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-principal {
+  --margen: var(--esp-4);
+  position: relative;
+  flex: 1;
+  padding: var(--margen);
+  padding-bottom: calc(var(--margen) + env(safe-area-inset-bottom, 0px));
+}
+@media (width >= 37.5rem) {
+  .app-principal { --margen: var(--esp-6); }
+}
+.app-principal:focus {
+  outline: none;
+}
+.app-principal { container: principal / inline-size; }
+
+/* Panel con curvas sobre el fondo del sidebar */
+@media (width >= 37.5rem) {
+  .app { background: var(--lateral); }
+  .app-cuerpo {
+    margin: var(--esp-2) var(--esp-2) var(--esp-2) 0;
+    height: calc(100dvh - 2 * var(--esp-2));
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-xl);
+    /* Scroll del panel, no de la página: curvas fijas */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Esqueleto: aria-busy de app.js tras 150 ms */
+.app-principal[aria-busy="true"] > * { visibility: hidden; }
+.app-principal[aria-busy="true"]::before {
+  content: "";
+  position: absolute;
+  inset: var(--margen);
+  background:
+    linear-gradient(var(--tenue) 0 0) 0 0 / 30% 2.25rem,
+    linear-gradient(var(--tenue) 0 0) 0 3rem / 45% 1rem,
+    linear-gradient(var(--tenue) 0 0) 0 5.5rem / 100% 6.5rem,
+    linear-gradient(var(--tenue) 0 0) 0 13.5rem / 100% 18rem;
+  background-repeat: no-repeat;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app-principal[aria-busy="true"]::before { animation: pulso 1.2s ease-in-out infinite; }
+}
+@keyframes pulso { 50% { opacity: 0.5; } }
+
+/* Fundido del contenido. Sidebar y barra con nombre propio: sin parpadeo */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .sidebar { view-transition-name: sidebar; }
+  .app-barra { view-transition-name: barra; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: var(--dur-minima); }
+}
+:root[data-movimiento="si"]::view-transition-group(*),
+:root[data-movimiento="si"]::view-transition-old(*),
+:root[data-movimiento="si"]::view-transition-new(*) { animation: none; }
+
+/* Subrayado tenue, no solo color. WCAG 1.4.1 */
+.app-principal :is(p, dd) a:not(.btn) { text-decoration: underline; text-decoration-color: color-mix(in oklch, currentColor, transparent 60%); text-underline-offset: 3px; }
+
+@media print {
+  .sidebar,
+  .sidebar-fondo,
+  .app-barra,
+  .saltar { display: none !important; }
+  .app { display: block; min-height: 0; }
+  .app-principal { padding: 0; }
+  .app-cuerpo { margin: 0; height: auto; border: 0; border-radius: 0; overflow: visible; }
+}
+}

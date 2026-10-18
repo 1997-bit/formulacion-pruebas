@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-// Un token por sesión.
+// Un token por sesión
 final class Csrf
 {
     public static function token(): string
@@ -12,7 +12,7 @@ final class Csrf
         return $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
     }
 
-    // Uno por formulario mostrado. Ver Respuesta::exito().
+    // Uno por formulario. Ver Respuesta::exito()
     public static function envio(): string
     {
         return bin2hex(random_bytes(16));

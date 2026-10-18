@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Large;
 use Tests\Apoyo\PruebaHttp;
 
-// RNF-03, #121. Descarga de evidencias.
+// RNF-03, #121. Descarga de evidencias
 #[CoversNothing]
 #[Large]
 final class EvidenciasTest extends PruebaHttp
@@ -26,7 +26,7 @@ final class EvidenciasTest extends PruebaHttp
         );
     }
 
-    // BUG-026. Ajeno: 404, no 403.
+    // BUG-026. Ajeno: 404, no 403
     public function testAjenoRecibe404(): void
     {
         $autor = $this->usuario();

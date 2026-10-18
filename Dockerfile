@@ -1,13 +1,13 @@
-# Dependencias sin dev.
+# Dependencias sin dev
 FROM docker.io/library/composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=ext-*
 
 FROM docker.io/library/php:8.2-apache
-LABEL org.opencontainers.image.title="casos-prueba" \
+LABEL org.opencontainers.image.title="safeguard" \
       org.opencontainers.image.description="Casos de prueba, seguimiento y formularios de testing" \
-      org.opencontainers.image.source="https://github.com/1997-bit/formulacion-pruebas"
+      org.opencontainers.image.source="https://github.com/1997-bit/safeguard"
 RUN docker-php-ext-install pdo_mysql opcache \
     && a2enmod rewrite headers \
     && echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf \

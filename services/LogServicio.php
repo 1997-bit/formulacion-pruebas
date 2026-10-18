@@ -7,17 +7,17 @@ namespace App\Services;
 use App\Core\Log;
 use App\Core\Paginacion;
 
-// RNF-11. El admin lee storage/logs. Solo lectura: sin descargar ni borrar, ASVS 16.4.2.
+// RNF-11. Solo lectura de storage/logs: sin descargar ni borrar, ASVS 16.4.2
 final class LogServicio
 {
-    // Nivel mínimo => texto. Números de Monolog, RFC 5424.
+    // Nivel mínimo => texto. Monolog, RFC 5424
     public const NIVELES = [100 => 'Debug', 200 => 'Info', 250 => 'Notice', 300 => 'Warning', 400 => 'Error', 500 => 'Critical'];
 
     public const CANALES = ['http', 'seguridad', 'app'];
 
     /**
-     * Líneas del día, la más nueva primero. Con uid: todos los días, sin otro filtro.
-     * Así el código de la página 500 lleva a su petición.
+     * Líneas del día, la más nueva primero. Con uid: todos los días, sin otro filtro
+     * El código de la página 500 lleva a su petición
      *
      * @param array{id: int, rol: int} $actor
      * @param array<string, string> $filtros dia, canal, nivel, evento, uid
@@ -39,7 +39,7 @@ final class LogServicio
     }
 
     /**
-     * Conteo por evento y login fallido por IP, top 10.
+     * Conteo por evento y login fallido por IP, top 10
      *
      * @param array{id: int, rol: int} $actor
      * @return array{eventos: array<string, int>, ips: array<string, int>}
@@ -66,7 +66,7 @@ final class LogServicio
     }
 
     /**
-     * Golden signals por ruta: tráfico, p50, p95 y tasa 5xx. Desde las líneas http.
+     * Golden signals por ruta: tráfico, p50, p95 y tasa 5xx
      *
      * @param array{id: int, rol: int} $actor
      * @return list<array{ruta: string, peticiones: int, p50: float, p95: float, errores: float}>
@@ -99,7 +99,7 @@ final class LogServicio
     }
 
     /**
-     * Días con log, el más nuevo primero.
+     * Días con log, el más nuevo primero
      *
      * @return list<string>
      */
@@ -112,7 +112,7 @@ final class LogServicio
     }
 
     /**
-     * Día inválido: hoy. Así un ../ no sale de storage/logs.
+     * Día inválido: hoy. Un ../ no sale de storage/logs
      *
      * @param array<string, string> $filtros
      * @return array{dia: string, canal: string, nivel: int, evento: string, uid: string}
@@ -133,7 +133,7 @@ final class LogServicio
         ];
     }
 
-    // Cada lectura queda en el log. OWASP Logging Cheat Sheet: todo acceso a logs se registra.
+    // Toda lectura de logs se registra, OWASP Logging Cheat Sheet
     /** @param array{id: int, rol: int} $actor */
     private static function abrir(array $actor): void
     {
@@ -142,7 +142,7 @@ final class LogServicio
     }
 
     /**
-     * Null: todos los días.
+     * Null: todos los días
      *
      * @return list<array<string, mixed>>
      */

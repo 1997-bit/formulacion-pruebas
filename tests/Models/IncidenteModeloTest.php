@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Medium;
 use Tests\Apoyo\BaseDatos;
 
-// Estado 2 es Cerrado.
+// Estado 2 es Cerrado
 #[CoversClass(IncidenteModelo::class)]
 #[Medium]
 final class IncidenteModeloTest extends BaseDatos

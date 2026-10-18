@@ -1,0 +1,8 @@
+@layer objetos {
+/* Íconos, helpers/Icono.php */
+.icono {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+}

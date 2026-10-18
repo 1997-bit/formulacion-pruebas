@@ -1,0 +1,33 @@
+@layer componentes {
+.tarjeta {
+  background: var(--tarjeta);
+  color: var(--tarjeta-texto);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-xl);
+  padding: var(--esp-5);
+  box-shadow: var(--sombra-xs);
+}
+
+.tarjeta-encabezado {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--esp-1) var(--esp-4);
+  margin-bottom: var(--esp-4);
+}
+.tarjeta-encabezado:last-child { margin-bottom: 0; }
+.tarjeta-encabezado > :not(.acciones) { grid-column: 1; }
+.tarjeta-encabezado > .acciones { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+.tarjeta-titulo { margin: 0; font-size: var(--letra-lg); font-weight: 600; line-height: 1.3; letter-spacing: 0; }
+.tarjeta-descripcion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.tarjeta-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--esp-2);
+  margin-top: var(--esp-4);
+  padding-top: var(--esp-4);
+  border-top: 1px solid var(--borde);
+}
+
+}

@@ -57,7 +57,7 @@ final class AccesoTest extends PruebaHttp
         $this->assertSame([302, '/'], [$respuesta['codigo'], $respuesta['cabeceras']['location'] ?? null]);
     }
 
-    // RNF-11. POST sin token: 403 y malicious_csrf con el mismo X-Request-Id.
+    // RNF-11. POST sin token: 403 y malicious_csrf con el mismo X-Request-Id
     public function testPostSinTokenDejaMaliciousCsrf(): void
     {
         $respuesta = $this->cliente()->post('/', ['usuario' => 'a', 'clave' => 'b']);
@@ -66,7 +66,7 @@ final class AccesoTest extends PruebaHttp
         $this->assertContains('malicious_csrf:', $this->eventos($respuesta));
     }
 
-    // RNF-11. Tester en ruta de admin: authz_fail.
+    // RNF-11. Tester en ruta de admin: authz_fail
     public function testTesterEnRutaAdminDejaAuthzFail(): void
     {
         $id = $this->usuario();
