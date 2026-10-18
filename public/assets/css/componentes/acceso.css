@@ -12,5 +12,4 @@
 /* Logo negro: invertido en oscuro */
 :root[data-tema="dark"] .acceso-logo { filter: invert(1); }
 .acceso > .tarjeta { width: min(100%, 24rem); padding: var(--esp-6); box-shadow: var(--sombra-sm); }
-.acceso-pie { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); text-align: center; }
 }

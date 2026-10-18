@@ -159,7 +159,7 @@ CREATE TABLE logs_cambios (
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- RNF-02. Key 'u:<usuario>' en login, 'ip:<ip>' en registro
+-- RNF-02. Key 'u:<usuario>' en login
 CREATE TABLE intentos_acceso (
     clave VARCHAR(64) PRIMARY KEY,
     fallos INT UNSIGNED NOT NULL DEFAULT 0,
