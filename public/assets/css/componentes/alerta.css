@@ -49,6 +49,16 @@
   color: var(--peligro-fuerte);
 }
 .alerta-error .alerta-descripcion { color: var(--texto); }
+/* Botón de acción en el tono de la alerta */
+.alerta-error .btn.alerta-accion {
+  background: color-mix(in oklch, var(--peligro-fuerte), transparent 88%);
+  border-color: color-mix(in oklch, var(--peligro-fuerte), transparent 60%);
+  color: var(--peligro-fuerte);
+  box-shadow: none;
+}
+@media (hover: hover) {
+  .alerta-error .btn.alerta-accion:hover { background: color-mix(in oklch, var(--peligro-fuerte), transparent 78%); }
+}
 
 /* Éxito: lo confirma el texto, no el color */
 .alerta-exito {

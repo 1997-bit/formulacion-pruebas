@@ -30,16 +30,17 @@ $campo = fn (string $nombre, string $etiqueta, array $extra = []): string => Vis
     'error' => $errores[$nombre] ?? '',
     'requerido' => true,
 ]);
-// Radios de catálogo. Error en el fieldset, RNF-07
+// Radios de catálogo en segmentado con el color de la variante. Error en el fieldset, RNF-07
 $radios = function (string $nombre, string $legenda) use ($datos, $errores): string {
     $error = $errores[$nombre] ?? '';
     $html = '<fieldset class="grupo"' . ($error !== '' ? ' aria-describedby="f-' . $nombre . '-error"' : '') . '>'
-        . '<legend>' . $legenda . ' <span class="requerido" aria-hidden="true">*</span></legend><div class="grupo grupo-fila">';
+        . '<legend>' . $legenda . ' <span class="requerido" aria-hidden="true">*</span></legend><div class="segmentado">';
     foreach (Catalogo::valores($nombre) as $clave => $valor) {
-        $html .= '<label class="opcion"><input type="radio" name="' . $nombre . '" value="' . $clave . '"'
+        $html .= '<label><input type="radio" name="' . $nombre . '" value="' . $clave . '"'
             . ($clave === array_key_first(Catalogo::valores($nombre)) ? ' required' : '')
             . ($error !== '' ? ' aria-invalid="true"' : '')
-            . ((string) $clave === ($datos[$nombre] ?? '') ? ' checked' : '') . '> ' . Html::e($valor['texto']) . '</label>';
+            . ((string) $clave === ($datos[$nombre] ?? '') ? ' checked' : '') . '>'
+            . '<span class="punto insignia-' . Html::e($valor['variante']) . '" aria-hidden="true"></span>' . Html::e($valor['texto']) . '</label>';
     }
     $html .= '</div>';
     if ($error !== '') {
@@ -66,8 +67,8 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
       <form class="filtros" method="get" action="/formularios/incidentes/registrar">
         <div class="campo">
           <label for="f-codigo">Buscar caso</label>
-          <input class="control" type="search" id="f-codigo" name="codigo" value="<?= Html::e($codigo) ?>" maxlength="100" placeholder="SIS-001 o parte del objetivo"
-                 aria-describedby="f-codigo-ayuda<?= $sinCoincidencia ? ' f-codigo-error' : '' ?>"<?= $sinCoincidencia ? ' aria-invalid="true"' : '' ?>>
+          <div class="control-con-icono"><?= Icono::svg('search') ?><input class="control" type="search" id="f-codigo" name="codigo" value="<?= Html::e($codigo) ?>" maxlength="100" placeholder="SIS-001 o parte del objetivo"
+                 aria-describedby="f-codigo-ayuda<?= $sinCoincidencia ? ' f-codigo-error' : '' ?>"<?= $sinCoincidencia ? ' aria-invalid="true"' : '' ?>></div>
           <p class="campo-ayuda" id="f-codigo-ayuda">Un código exacto abre el formulario. El incidente queda en el proyecto del caso.</p>
           <?php if ($sinCoincidencia): ?>
             <p class="campo-error" id="f-codigo-error"><?= Icono::svg('circle-x') ?>Ningún caso FAULT coincide en sus proyectos.</p>

@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logs: niveles en español, el nombre del usuario en lugar del id y Rendimiento sin `/assets`.
 - Incidentes: la lista muestra solo los abiertos por defecto. Ordena por stopper, severidad y fecha, sin agrupar por proyecto. El título abre el incidente, la prioridad va sin color y los select filtran al cambiar.
 - Registrar incidente: el formulario va en secciones Qué pasó, Clasificación, Dónde se encontró y Seguimiento.
+- Radios: marcado con anillo grueso del color primario.
+- Plan de pruebas: Estrategia en tarjetas con una línea de ayuda y el radio a la derecha.
+- Ajustes y Registrar incidente: Tema, Severidad y Prioridad en control segmentado. Severidad y Prioridad llevan un punto con su color.
+- Alertas: el botón de la alerta de error va en rojo. El siguiente paso del aviso flotante es un botón junto a la ✕.
+- Campos: foco con borde y halo del color del anillo. Los buscadores de incidentes llevan una lupa.
 - HTML nativo en lugar de ARIA y JS: `<search>` en los filtros, `<output>` en los avisos de estado, `<button>` y `<a>` en los botones deshabilitados. El aviso flotante cierra con ✕ sin JS. Al imprimir, los `<details>` cerrados salen abiertos solo con CSS. La app se ve igual.
 
 ### Fixed

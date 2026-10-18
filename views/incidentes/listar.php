@@ -67,7 +67,7 @@ $chips = array_filter([
         <?php endforeach; ?>
         <div class="campo">
           <label for="fl-q">Buscar</label>
-          <input class="control" type="search" id="fl-q" name="q" value="<?= Html::e($filtros['q']) ?>" placeholder="Código o título" maxlength="150">
+          <div class="control-con-icono"><?= Icono::svg('search') ?><input class="control" type="search" id="fl-q" name="q" value="<?= Html::e($filtros['q']) ?>" placeholder="Código o título" maxlength="150"></div>
         </div>
         <?php if ($vista === 'lista'): ?>
           <div class="campo">

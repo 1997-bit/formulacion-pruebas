@@ -14,7 +14,8 @@
 /* .alerta es grid: sin esto el dialog cerrado se ve */
 .aviso-flotante:not([open]) { display: none; }
 .aviso-flotante > .icono { margin-top: 0; }
-.aviso-flotante .alerta-accion { grid-row: 1; }
+/* Siempre a la derecha del título, también en celular */
+.aviso-flotante .alerta-accion { grid-column: accion; grid-row: 1; display: flex; align-items: center; gap: var(--esp-1); margin: 0 0 0 var(--esp-3); }
 @keyframes subir { from { opacity: 0; translate: 0 8px; } }
 @media (prefers-reduced-motion: reduce) {
   .aviso-flotante { animation: none; }
