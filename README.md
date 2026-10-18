@@ -6,10 +6,10 @@ App web para registrar casos de prueba, darles seguimiento y generar los 10 form
 
 ```sh
 cp .env.example .env   # poner DB_USER y DB_PASS
-docker compose up -d --build
+docker compose up -d --build --wait
 ```
 
-Abrir http://localhost:8080. La primera vez, MySQL carga `schema.sql`, `seed.sql` y `permisos.sh`. El usuario de la app queda solo con SELECT, INSERT, UPDATE y DELETE. Base, evidencias y logs quedan en volúmenes.
+`--wait` termina cuando la app responde. Abrir http://localhost:8080. La primera vez, MySQL carga `schema.sql`, `seed.sql` y `permisos.sh`. El usuario de la app queda solo con SELECT, INSERT, UPDATE y DELETE. Base, evidencias y logs quedan en volúmenes.
 
 Volver a crear la base: `docker compose down -v`.
 
