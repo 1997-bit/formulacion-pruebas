@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-10-17
+
 ### Changed
 
+- Nombre oficial: Safeguard. Lo muestran el título de las páginas, el logo, el manifest y la imagen Docker.
+- Repo `1997-bit/safeguard`, proyecto de compose `safeguard` y BD `safeguard` en `.env.example`. GitHub redirige las URLs viejas. Con el nombre nuevo, compose crea volúmenes nuevos.
 - Comentarios del código al mínimo, sin punto final.
 - CSS con ITCSS: un archivo por componente en `objetos/`, `componentes/` y `app/`, con capas de lo general a lo específico. El orden de carga está en `config/estilos.php`. La pantalla y la impresión se ven igual.
 
@@ -264,7 +268,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Estructura del proyecto.
 - Tablas base.
 
-[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/1997-bit/safeguard/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/1997-bit/safeguard/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/1997-bit/safeguard/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/1997-bit/safeguard/compare/v1.5.0...v1.6.0
