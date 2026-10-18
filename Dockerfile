@@ -5,8 +5,13 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=ext-*
 
 FROM docker.io/library/php:8.2-apache
+LABEL org.opencontainers.image.title="casos-prueba" \
+      org.opencontainers.image.description="Casos de prueba, seguimiento y formularios de testing" \
+      org.opencontainers.image.source="https://github.com/1997-bit/formulacion-pruebas"
 RUN docker-php-ext-install pdo_mysql opcache \
     && a2enmod rewrite headers \
+    && echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf \
+    && a2enconf servername \
     && sed -i 's#/var/www/html#/var/www/html/public#' /etc/apache2/sites-available/000-default.conf \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && printf '%s\n' \
