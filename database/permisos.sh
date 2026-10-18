@@ -2,7 +2,7 @@
 # Docker lo carga después de schema.sql y seed.sql. Docker da ALL: aquí queda solo DML
 # logs_cambios sin UPDATE ni DELETE, ASVS 16.4.2
 # Tabla nueva en schema.sql: agregarla en tablas
-# Sin Docker: MYSQL_DATABASE=casos_prueba MYSQL_USER=app bash database/permisos.sh | mysql
+# Sin Docker: MYSQL_DATABASE=safeguard MYSQL_USER=app bash database/permisos.sh | mysql
 
 tablas='usuarios intentos_acceso proyectos proyecto_miembros requerimientos casos_prueba evidencias incidentes
 clases_equivalencia valor_limite decision_filas decision_celdas cobertura_blanca plan_pruebas rubrica_evaluaciones autoevaluaciones'

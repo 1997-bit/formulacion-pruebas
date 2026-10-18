@@ -3,9 +3,9 @@
 Rendimiento con 20 000 casos (#90).
 
 ```sh
-mysql casos_prueba < database/schema.sql
-mysql casos_prueba < database/seed.sql
-mysql casos_prueba < database/carga.sql   # proyecto "Carga", siempre las mismas filas
+mysql safeguard < database/schema.sql
+mysql safeguard < database/seed.sql
+mysql safeguard < database/carga.sql   # proyecto "Carga", siempre las mismas filas
 PHP_INI_SCAN_DIR= PHP_CLI_SERVER_WORKERS=8 php -S 127.0.0.1:8000 -t public   # sin Xdebug
 ```
 
