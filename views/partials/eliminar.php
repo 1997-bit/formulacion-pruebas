@@ -32,7 +32,7 @@ $patron = preg_replace('/[\\\\^$.*+?()[\]{}|\/]/', '\\\\$0', $confirmar);
   <dialog closedby="any" class="dialogo" id="<?= Html::e($dialogo) ?>" aria-labelledby="<?= Html::e($dialogo) ?>-titulo">
     <h2 id="<?= Html::e($dialogo) ?>-titulo"><?= Html::e($titulo) ?></h2>
     <p><?= Html::e($texto) ?></p>
-    <form method="post" action="<?= Html::e($accion) ?>">
+    <form class="pila" method="post" action="<?= Html::e($accion) ?>">
       <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
       <input type="hidden" name="id" value="<?= $id ?>">
       <div class="campo">
