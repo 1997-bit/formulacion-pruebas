@@ -1,4 +1,6 @@
 # Toma DB_NAME, DB_USER y DB_PASS de .env.
+name: formulacion-pruebas
+
 services:
   app:
     build: .
@@ -31,6 +33,7 @@ services:
       # Solo la primera vez, con el volumen vacío.
       - ./database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql:ro
       - ./database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql:ro
+      - ./database/permisos.sh:/docker-entrypoint-initdb.d/3-permisos.sh:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s

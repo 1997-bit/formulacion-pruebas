@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use App\Core\Csrf;
 use App\Core\Vista;
 use App\Helpers\Catalogo;
 use App\Helpers\Fecha;
@@ -49,17 +48,11 @@ use App\Helpers\Icono;
               <div class="acciones">
                 <a class="btn btn-fantasma btn-icono" href="/admin/usuarios/editar?id=<?= (int) $u['id'] ?>" aria-label="Editar <?= Html::e($u['usuario']) ?>" data-tooltip="Editar"><?= Icono::svg('pencil') ?></a>
                 <?php if ($u['id'] !== $usuario['id']): ?>
-                  <button class="btn btn-fantasma btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar-<?= (int) $u['id'] ?>" aria-label="Eliminar <?= Html::e($u['usuario']) ?>" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-                  <dialog closedby="any" class="dialogo" id="dlg-eliminar-<?= (int) $u['id'] ?>" aria-labelledby="dlg-eliminar-<?= (int) $u['id'] ?>-titulo">
-                    <h2 id="dlg-eliminar-<?= (int) $u['id'] ?>-titulo">¿Eliminar a <?= Html::e($u['nombre']) ?>?</h2>
-                    <p>Si tiene casos, evidencias o formularios a su nombre no se elimina. Esta acción no se puede deshacer.</p>
-                    <form method="post" action="/admin/usuarios/eliminar" class="acciones">
-                      <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-                      <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
-                      <button class="btn btn-secundario" type="submit" formmethod="dialog" autofocus>Cancelar</button>
-                      <button class="btn btn-peligro" type="submit">Eliminar</button>
-                    </form>
-                  </dialog>
+                  <?= Vista::capturar('partials/eliminar', [
+                      'dialogo' => 'dlg-eliminar-' . (int) $u['id'], 'etiqueta' => 'Eliminar ' . $u['usuario'], 'accion' => '/admin/usuarios/eliminar', 'id' => (int) $u['id'],
+                      'titulo' => '¿Eliminar a ' . $u['nombre'] . '?', 'confirmar' => (string) $u['usuario'], 'clase' => 'btn-fantasma',
+                      'texto' => 'Si tiene casos, evidencias o formularios a su nombre no se elimina. Esta acción no se puede deshacer.',
+                  ]) ?>
                 <?php endif; ?>
               </div>
             </td>

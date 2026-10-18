@@ -64,17 +64,11 @@ $abierto = array_values(array_filter($caso['incidentes'], fn (array $i): bool =>
     <?php endif; ?>
     <?= Vista::capturar('partials/imprimir') ?>
     <?php if ($usuario['rol'] === 1): ?>
-      <button class="btn btn-secundario btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar" aria-label="Eliminar caso" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-      <dialog closedby="any" class="dialogo" id="dlg-eliminar" aria-labelledby="dlg-eliminar-titulo">
-        <h2 id="dlg-eliminar-titulo">¿Eliminar el caso <?= Html::e($caso['codigo']) ?>?</h2>
-        <p>Si tiene evidencias o incidentes no se elimina. Esta acción no se puede deshacer.</p>
-        <form method="post" action="/casos/eliminar" class="acciones">
-          <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-          <input type="hidden" name="id" value="<?= (int) $caso['id'] ?>">
-          <button class="btn btn-secundario" type="submit" formmethod="dialog" autofocus>Cancelar</button>
-          <button class="btn btn-peligro" type="submit">Eliminar</button>
-        </form>
-      </dialog>
+      <?= Vista::capturar('partials/eliminar', [
+          'dialogo' => 'dlg-eliminar', 'etiqueta' => 'Eliminar caso', 'accion' => '/casos/eliminar', 'id' => (int) $caso['id'],
+          'titulo' => '¿Eliminar el caso ' . $caso['codigo'] . '?', 'texto' => 'Esta acción no se puede deshacer.', 'confirmar' => (string) $caso['codigo'],
+          'bloqueo' => $caso['evidencias'] !== [] || $conIncidente ? 'Tiene evidencias o incidentes. No se puede eliminar.' : '',
+      ]) ?>
     <?php endif; ?>
   </div>
 </header>

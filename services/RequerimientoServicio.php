@@ -99,11 +99,12 @@ final class RequerimientoServicio
     {
         Permisos::exigirAdmin($usuario);
         $requerimiento = RequerimientoModelo::porId($id) ?? throw new ErrorNoEncontrado();
-        Conexion::transaccion(function () use ($id): void {
+        Conexion::transaccion(function () use ($id, $requerimiento, $usuario): void {
             if (RequerimientoModelo::enUso($id)) {
                 throw new ErrorValidacion(['general' => 'Tiene casos o formularios de técnicas: no se puede eliminar.']);
             }
             RequerimientoModelo::eliminar($id);
+            Historial::eliminado('requerimientos', $id, $requerimiento['codigo'], $usuario['id']);
         });
 
         return $requerimiento['codigo'];

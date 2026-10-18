@@ -250,17 +250,20 @@ final class RequerimientoServicioTest extends BaseDatos
         RequerimientoServicio::editar($id, self::cambio(), self::huella($id), $this->sesion($this->usuario()));
     }
 
-    public function testEliminarBorraRequerimientoEHistorial(): void
+    // ASVS 16.4.2
+    public function testEliminarDejaElHistorialYSuBorrado(): void
     {
         $admin = $this->usuario(1);
         $id = $this->requerimiento($this->proyecto());
         RequerimientoServicio::editar($id, self::cambio(), self::huella($id), $this->sesion($admin));
+        $antes = $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ?", $id);
 
         RequerimientoServicio::eliminar($id, $this->sesion($admin));
 
-        $this->assertSame([0, 0], [
+        $this->assertSame([0, $antes + 1, 1], [
             $this->contar('SELECT COUNT(*) FROM requerimientos WHERE id = ?', $id),
             $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ?", $id),
+            $this->contar("SELECT COUNT(*) FROM logs_cambios WHERE tabla = 'requerimientos' AND registro_id = ? AND campo = 'eliminado'", $id),
         ]);
     }
 

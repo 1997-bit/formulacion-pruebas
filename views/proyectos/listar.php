@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use App\Core\Csrf;
 use App\Core\Vista;
 use App\Helpers\Fecha;
 use App\Helpers\Html;
@@ -52,17 +51,11 @@ use App\Helpers\Icono;
             <td class="celda-acciones">
               <div class="acciones">
                 <a class="btn btn-fantasma btn-icono" href="/admin/proyectos/editar?id=<?= (int) $p['id'] ?>" aria-label="Editar <?= Html::e($p['nombre']) ?>" data-tooltip="Editar"><?= Icono::svg('pencil') ?></a>
-                <button class="btn btn-fantasma btn-icono" type="button" command="show-modal" commandfor="dlg-eliminar-<?= (int) $p['id'] ?>" aria-label="Eliminar <?= Html::e($p['nombre']) ?>" data-tooltip="Eliminar" data-tooltip-alinear="fin"><?= Icono::svg('trash-2') ?></button>
-                <dialog closedby="any" class="dialogo" id="dlg-eliminar-<?= (int) $p['id'] ?>" aria-labelledby="dlg-eliminar-<?= (int) $p['id'] ?>-titulo">
-                  <h2 id="dlg-eliminar-<?= (int) $p['id'] ?>-titulo">¿Eliminar <?= Html::e($p['nombre']) ?>?</h2>
-                  <p>Si tiene requerimientos o casos no se elimina. Esta acción no se puede deshacer.</p>
-                  <form method="post" action="/admin/proyectos/eliminar" class="acciones">
-                    <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-                    <input type="hidden" name="id" value="<?= (int) $p['id'] ?>">
-                    <button class="btn btn-secundario" type="submit" formmethod="dialog" autofocus>Cancelar</button>
-                    <button class="btn btn-peligro" type="submit">Eliminar</button>
-                  </form>
-                </dialog>
+                <?= Vista::capturar('partials/eliminar', [
+                    'dialogo' => 'dlg-eliminar-' . (int) $p['id'], 'etiqueta' => 'Eliminar ' . $p['nombre'], 'accion' => '/admin/proyectos/eliminar', 'id' => (int) $p['id'],
+                    'titulo' => '¿Eliminar ' . $p['nombre'] . '?', 'confirmar' => (string) $p['nombre'], 'clase' => 'btn-fantasma',
+                    'texto' => 'Si tiene requerimientos o casos no se elimina. Esta acción no se puede deshacer.',
+                ]) ?>
               </div>
             </td>
           </tr>

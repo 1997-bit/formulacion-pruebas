@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.8.0] - 2026-10-17
+
+### Added
+
+- Eliminar caso, requerimiento, proyecto o usuario: un diálogo pide escribir el código o el nombre para confirmar. Pegar está permitido.
+- Caso con evidencias o incidentes: el botón Eliminar queda deshabilitado y el tooltip dice por qué.
+- Imagen Docker con etiquetas OCI: título, descripción y repo.
+
+### Changed
+
+- Oscuro zinc: gris con un tinte frío leve.
+- Desde tablet: contenido en un panel con curvas sobre el fondo del menú lateral. Móvil: el menú lateral flota con curvas.
+- Radios propios. Ajustes con opciones en fila e íconos en Tema.
+- Curvas iguales en tarjetas, alertas y menús flotantes. Insignias en píldora.
+- Docker: nombre de proyecto fijo en compose y `up --wait` en el README, que termina cuando la app responde.
+
+### Fixed
+
+- Apache en Docker ya no muestra el aviso AH00558 al arrancar.
+
+### Security
+
+- Docker deja al usuario de la app solo con SELECT, INSERT, UPDATE y DELETE. ASVS 13.2.2.
+- La sesión vence tras 30 min sin uso o 8 h en total. ASVS 7.3.1 y 7.3.2.
+- El historial no se puede cambiar ni borrar: el usuario de la app solo hace SELECT e INSERT en `logs_cambios`. Al eliminar un caso o requerimiento, su historial queda con una fila `eliminado`. ASVS 16.4.2.
+
 ## [1.7.0] - 2026-10-17
 
 ### Added
@@ -231,6 +259,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Estructura del proyecto.
 - Tablas base.
 
+[Unreleased]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/1997-bit/formulacion-pruebas/compare/v1.4.0...v1.5.0

@@ -64,6 +64,12 @@ Log::$rf = $ruta['rf'];
 $usuario = Sesion::usuario();
 // RNF-02. Clave o rol cambiado, o usuario borrado: cierra la sesión.
 if ($usuario !== null) {
+    $motivo = Sesion::vencida();
+    if ($motivo !== null) {
+        Log::evento('info', 'session_expired:{id},{motivo}', ['motivo' => $motivo]);
+        Sesion::vencer('La sesión venció. Inicie sesión de nuevo.');
+        Respuesta::redirigir('/');
+    }
     $usuario = AccesoServicio::vigente($usuario);
     if ($usuario === null) {
         Log::evento('info', 'session_expired:{id},{motivo}', ['motivo' => 'revocada']);

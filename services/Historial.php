@@ -38,7 +38,7 @@ final class Historial
     ];
 
     // Etiquetas de requerimientos. motivo: por qué cambió, el change request.
-    private const ETIQUETAS = ['codigo' => 'Código', 'descripcion' => 'Descripción', 'motivo' => 'Motivo'];
+    private const ETIQUETAS = ['codigo' => 'Código', 'descripcion' => 'Descripción', 'motivo' => 'Motivo', 'eliminado' => 'Eliminado'];
 
     /**
      * Una fila por campo cambiado, un INSERT. En la transacción del UPDATE: si falla, nada cambia.
@@ -58,6 +58,12 @@ final class Historial
             }
         }
         FilasModelo::insertar('logs_cambios', ['tabla', 'registro_id', 'usuario_id', 'campo', 'antes', 'despues'], $filas);
+    }
+
+    // Registro borrado: su historial no se borra, ASVS 16.4.2. antes guarda el código.
+    public static function eliminado(string $tabla, int $id, string $codigo, int $usuarioId): void
+    {
+        FilasModelo::insertar('logs_cambios', ['tabla', 'registro_id', 'usuario_id', 'campo', 'antes', 'despues'], [[$tabla, $id, $usuarioId, 'eliminado', $codigo, null]]);
     }
 
     /**
