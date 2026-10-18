@@ -7,6 +7,9 @@
   border: 1px solid var(--borde);
   border-radius: var(--radio-xl);
   box-shadow: var(--sombra-xl);
+  /* Dialog dentro de una celda: sin heredar alineación ni nowrap de la tabla */
+  text-align: start;
+  white-space: normal;
 }
 .dialogo::backdrop {
   background: var(--velo);
@@ -36,6 +39,8 @@
 .dialogo h2 { font-size: var(--letra-lg); font-weight: 600; letter-spacing: 0; margin: 0 0 var(--esp-2); }
 .dialogo p { margin: 0 0 var(--esp-5); font-size: var(--letra-sm); color: var(--tenue-texto); }
 .dialogo form { margin: 0; }
+/* Texto a confirmar largo, como un usuario: parte la línea */
+.dialogo .codigo { overflow-wrap: anywhere; }
 
 @media (prefers-reduced-motion: reduce) {
   .dialogo:not(.paleta)[open] { animation: none; }
