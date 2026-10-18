@@ -67,8 +67,8 @@ $radios = function (string $nombre, string $legenda) use ($datos, $errores): str
       <form class="filtros" method="get" action="/formularios/incidentes/registrar">
         <div class="campo">
           <label for="f-codigo">Buscar caso</label>
-          <input class="control" type="search" id="f-codigo" name="codigo" value="<?= Html::e($codigo) ?>" maxlength="100" placeholder="SIS-001 o parte del objetivo"
-                 aria-describedby="f-codigo-ayuda<?= $sinCoincidencia ? ' f-codigo-error' : '' ?>"<?= $sinCoincidencia ? ' aria-invalid="true"' : '' ?>>
+          <div class="control-con-icono"><?= Icono::svg('search') ?><input class="control" type="search" id="f-codigo" name="codigo" value="<?= Html::e($codigo) ?>" maxlength="100" placeholder="SIS-001 o parte del objetivo"
+                 aria-describedby="f-codigo-ayuda<?= $sinCoincidencia ? ' f-codigo-error' : '' ?>"<?= $sinCoincidencia ? ' aria-invalid="true"' : '' ?>></div>
           <p class="campo-ayuda" id="f-codigo-ayuda">Un código exacto abre el formulario. El incidente queda en el proyecto del caso.</p>
           <?php if ($sinCoincidencia): ?>
             <p class="campo-error" id="f-codigo-error"><?= Icono::svg('circle-x') ?>Ningún caso FAULT coincide en sus proyectos.</p>
