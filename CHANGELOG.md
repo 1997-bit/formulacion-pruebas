@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-10-18
+
 ### Added
 
 - Ayuda: 10 artículos en `/ayuda` con tareas, referencia y glosario. Ayuda en el menú abre el artículo de la pantalla actual. Atajo `g a` y entrada en Ctrl+K. Capturas WebP con la parte importante en rojo y diagrama de estados. Reglas de escritura en `docs/ayuda.md`.
@@ -397,7 +399,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Composer con PHPUnit, PHPStan y php-cs-fixer.
 - Tablas base.
 
-[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/1997-bit/safeguard/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/1997-bit/safeguard/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/1997-bit/safeguard/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/1997-bit/safeguard/compare/v1.6.0...v1.7.0
