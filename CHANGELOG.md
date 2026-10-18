@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Diálogo de eliminar dentro de una tabla, como en Usuarios: el texto ya no sale alineado a la derecha. Un usuario largo parte la línea.
+- Diálogo de eliminar dentro de una tabla, como en Usuarios: el texto ya no sale alineado a la derecha ni se sale del diálogo con barra de desplazamiento. Un usuario largo parte la línea.
 - Logs: la búsqueda por código de error ya no pasa el límite de memoria con logs grandes. Se leen línea por línea.
 - `carga.sql` corre de nuevo: llena `commit_afectado`, obligatorio desde 1.7.0.
 
