@@ -15,8 +15,9 @@ use App\Services\LogServicio;
  * @var list<string> $dias
  * @var list<array<string, mixed>> $lineas  solo en lista
  * @var Paginacion $paginacion  solo en lista
+ * @var list<array{error: int, aviso: int, info: int}> $horas  solo en lista
  * @var array{eventos: array<string, int>, ips: array<string, int>} $seguridad  solo en seguridad
- * @var list<array{ruta: string, peticiones: int, p50: float, p95: float, errores: float}> $rendimiento  solo en rendimiento
+ * @var array<string, mixed> $rendimiento  solo en rendimiento, LogServicio::rendimiento()
  */
 
 $vistas = ['lista' => ['Lista', 'list-checks'], 'seguridad' => ['Seguridad', 'lock'], 'rendimiento' => ['Rendimiento', 'chart-column']];
@@ -28,11 +29,15 @@ $insignia = fn (int $nivel): string => match (true) {
     default => 'secundaria',
 };
 $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$dias];
+$fecha = $filtros['dia'] === date('Y-m-d') ? 'hoy' : 'el ' . (new DateTime($filtros['dia']))->format('d/m/Y');
+$coma = fn (float|int $x): string => str_replace('.', ',', (string) $x);
+// Bajo 1 s en ms: 0,00 s parecía cero
+$seg = fn (float $ms): string => $ms < 1000 ? round($ms) . ' ms' : number_format($ms / 1000, 1, ',', '.') . ' s';
 ?>
 <header class="encabezado">
   <div>
     <h1>Logs</h1>
-    <p>Solo lectura. Cada visita queda registrada como <span class="codigo">sensitive_read</span>.</p>
+    <p>Qué pasó en la app <?= $fecha ?>. Solo lectura. Cada visita a esta página queda registrada.</p>
   </div>
 </header>
 <nav class="pestanas" aria-label="Vistas de logs">
@@ -48,7 +53,7 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
         <label for="fl-dia">Día</label>
         <div class="select"><select class="control" id="fl-dia" name="dia">
           <?php foreach ($dias as $d): ?>
-            <option<?= $d === $filtros['dia'] ? ' selected' : '' ?>><?= Html::e($d) ?></option>
+            <option value="<?= Html::e($d) ?>"<?= $d === $filtros['dia'] ? ' selected' : '' ?>><?= Html::e($d === date('Y-m-d') ? "Hoy, {$d}" : $d) ?></option>
           <?php endforeach; ?>
         </select></div>
       </div>
@@ -89,6 +94,14 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
     <?php if ($filtros['uid'] !== ''): ?>
       <p>Petición <span class="codigo"><?= Html::e($filtros['uid']) ?></span>, de todos los días. Cada línea, abierta.</p>
     <?php endif; ?>
+    <?php if ($filtros['uid'] === '' && $lineas): ?>
+      <?= Vista::capturar('logs/horas', [
+          'titulo' => 'Líneas por hora',
+          'horas' => $horas,
+          'series' => ['error' => ['Error o crítico', 'barra-peligro'], 'aviso' => ['Aviso', 'barra-aviso'], 'info' => ['Info', 'barra-secundaria']],
+          'unidad' => ['línea', 'líneas'],
+      ]) ?>
+    <?php endif; ?>
     <?php if (!$lineas): ?>
       <div class="vacio">
         <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
@@ -106,11 +119,11 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
             <?php foreach ($lineas as $l): ?>
               <tr>
                 <td><span class="codigo"><?= Html::e(substr((string) $l['datetime'], 11, 8)) ?></span></td>
-                <td><span class="insignia insignia-<?= $insignia((int) $l['level']) ?>"><?= Html::e((string) $l['level_name']) ?></span></td>
+                <td><span class="insignia insignia-<?= $insignia((int) $l['level']) ?>"><?= Html::e(LogServicio::NIVELES[$l['level']] ?? (string) $l['level_name']) ?></span></td>
                 <td><?= Html::e((string) $l['channel']) ?></td>
                 <td>
                   <details class="plegable"<?= $filtros['uid'] !== '' ? ' open' : '' ?>>
-                    <summary><span class="codigo"><?= Html::e((string) $l['message']) ?></span></summary>
+                    <summary><span class="codigo"><?= Html::e((string) $l['message']) ?></span><?php $texto = LogServicio::EVENTOS[strtok((string) $l['message'], ':')] ?? null; ?><?php if ($l['channel'] === 'seguridad' && $texto !== null): ?> <span class="log-texto"><?= Html::e($texto) ?></span><?php endif; ?></summary>
                     <pre class="log-detalle"><?= Html::e((string) json_encode(['context' => $l['context'], 'extra' => $l['extra']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?></pre>
                   </details>
                 </td>
@@ -126,22 +139,45 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
     <?php endif; ?>
 
   <?php elseif ($vista === 'seguridad'): ?>
+    <?php
+    $e = $seguridad['eventos'];
+    $veces = fn (string $evento): int => $e[$evento] ?? 0;
+    $maxEvento = max([1, ...array_values($e)]);
+    ?>
+    <div class="cifras log-cifras">
+      <?php foreach ([
+          ['Logins', 'authn_login_success'],
+          ['Contraseña incorrecta', 'authn_login_fail'],
+          ['Sin permiso', 'authz_fail'],
+          ['Formulario falso', 'malicious_csrf'],
+          ['Logins frenados', 'authn_login_lock'],
+      ] as [$etiqueta, $evento]): ?>
+        <div class="tarjeta cifra">
+          <p class="cifra-etiqueta"><?= $etiqueta ?></p>
+          <p class="cifra-valor"><?= $veces($evento) ?></p>
+        </div>
+      <?php endforeach; ?>
+    </div>
     <div class="tabla-contenedor">
       <table class="tabla">
-        <caption>Eventos de seguridad del día</caption>
-        <thead><tr><th scope="col">Evento</th><th scope="col" class="num">Veces</th></tr></thead>
+        <caption>Todo lo que pasó <?= $fecha ?>, de más a menos</caption>
+        <thead><tr><th scope="col">Qué pasó</th><th scope="col">Código</th><th scope="col" class="num">Veces</th></tr></thead>
         <tbody>
-          <?php foreach ($seguridad['eventos'] as $evento => $n): ?>
-            <tr><td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'seguridad', 'evento' => $evento])) ?>"><?= Html::e($evento) ?></a></td><td class="num"><?= $n ?></td></tr>
+          <?php foreach ($e as $evento => $n): ?>
+            <tr>
+              <td><?= Html::e(LogServicio::EVENTOS[$evento] ?? $evento) ?></td>
+              <td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'seguridad', 'evento' => $evento])) ?>"><?= Html::e($evento) ?></a></td>
+              <td class="num"><span class="log-barra"><span class="barra-apilada"><span class="barra-secundaria" style="width:<?= round($n / $maxEvento * 100, 1) ?>%"></span></span><?= $n ?></span></td>
+            </tr>
           <?php endforeach; ?>
-          <?php if (!$seguridad['eventos']): ?><tr><td colspan="2">Sin eventos.</td></tr><?php endif; ?>
+          <?php if (!$e): ?><tr><td colspan="3">Sin eventos.</td></tr><?php endif; ?>
         </tbody>
       </table>
     </div>
     <div class="tabla-contenedor">
       <table class="tabla">
-        <caption>Login fallido por IP, top 10</caption>
-        <thead><tr><th scope="col">IP</th><th scope="col" class="num">Fallos</th></tr></thead>
+        <caption>Equipos con más contraseñas incorrectas, top 10. IP: dirección del equipo en la red.</caption>
+        <thead><tr><th scope="col">Equipo, IP</th><th scope="col" class="num">Intentos fallidos</th></tr></thead>
         <tbody>
           <?php foreach ($seguridad['ips'] as $ip => $n): ?>
             <tr><td><span class="codigo"><?= Html::e((string) $ip) ?></span></td><td class="num"><?= $n ?></td></tr>
@@ -152,23 +188,57 @@ $dias = in_array($filtros['dia'], $dias, true) ? $dias : [$filtros['dia'], ...$d
     </div>
 
   <?php else: ?>
-    <div class="tabla-contenedor">
-      <table class="tabla">
-        <caption>Golden signals por ruta. Tiempos en ms.</caption>
-        <thead><tr><th scope="col">Ruta</th><th scope="col" class="num">Peticiones</th><th scope="col" class="num">p50</th><th scope="col" class="num">p95</th><th scope="col" class="num">5xx %</th></tr></thead>
-        <tbody>
-          <?php foreach ($rendimiento as $r): ?>
-            <tr>
-              <td><span class="codigo"><?= Html::e($r['ruta']) ?></span></td>
-              <td class="num"><?= $r['peticiones'] ?></td>
-              <td class="num"><?= $r['p50'] ?></td>
-              <td class="num"><?= $r['p95'] ?></td>
-              <td class="num"><?= $r['errores'] > 0 ? '<span class="insignia insignia-peligro">' . $r['errores'] . '</span>' : '0' ?></td>
-            </tr>
-          <?php endforeach; ?>
-          <?php if (!$rendimiento): ?><tr><td colspan="5">Sin peticiones.</td></tr><?php endif; ?>
-        </tbody>
-      </table>
-    </div>
+    <?php
+    $r = $rendimiento;
+    $maxP95 = max(1.0, $r['rutas'][0]['p95'] ?? 0.0);
+    ?>
+    <?php if ($r['peticiones'] === 0): ?>
+      <div class="vacio">
+        <span class="vacio-icono"><?= Icono::svg('inbox') ?></span>
+        <h2>Nadie usó la app este día</h2>
+        <p>Elija otro día.</p>
+      </div>
+    <?php else: ?>
+      <div class="cifras log-cifras">
+        <?php foreach ([
+            ['Visitas', (string) $r['peticiones']],
+            ['Tiempo normal', $seg($r['p50'])],
+            ['1 de cada 20 tarda', $seg($r['p95'])],
+            ['Fallas de la app', $coma($r['errores']) . ' %'],
+            ['Rechazadas', $coma($r['rechazos']) . ' %'],
+        ] as [$etiqueta, $valor]): ?>
+          <div class="tarjeta cifra">
+            <p class="cifra-etiqueta"><?= $etiqueta ?></p>
+            <p class="cifra-valor"><?= $valor ?></p>
+          </div>
+        <?php endforeach; ?>
+      </div>
+
+      <?= Vista::capturar('logs/horas', [
+          'titulo' => 'Visitas por hora',
+          'horas' => $r['horas'],
+          'series' => ['errores' => ['Falla de la app', 'barra-peligro'], 'rechazos' => ['Rechazada', 'barra-aviso'], 'ok' => ['Bien', 'barra-secundaria']],
+          'unidad' => ['visita', 'visitas'],
+      ]) ?>
+
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <caption>Páginas, de la más lenta a la más rápida</caption>
+          <thead><tr><th scope="col">Página</th><th scope="col" class="num">Visitas</th><th scope="col" class="num">Tiempo normal</th><th scope="col" class="num">1 de cada 20 tarda</th><th scope="col" class="num">Fallas</th></tr></thead>
+          <tbody>
+            <?php foreach ($r['rutas'] as $ruta): ?>
+              <?php $t = LogServicio::tono($ruta['p95'], LogServicio::LENTO); ?>
+              <tr>
+                <td><a class="codigo" href="/admin/logs?<?= Html::e(http_build_query(['dia' => $filtros['dia'], 'canal' => 'http', 'evento' => $ruta['ruta']])) ?>"><?= Html::e($ruta['ruta']) ?></a></td>
+                <td class="num"><?= $ruta['peticiones'] ?></td>
+                <td class="num"><?= $seg($ruta['p50']) ?></td>
+                <td class="num"><span class="log-barra"><span class="barra-apilada"><span class="barra-<?= $t ?>" style="width:<?= round($ruta['p95'] / $maxP95 * 100, 1) ?>%"></span></span><span class="insignia insignia-<?= $t ?>"><?= $seg($ruta['p95']) ?></span></span></td>
+                <td class="num"><?= $ruta['errores'] > 0 ? '<span class="insignia insignia-peligro">' . $coma($ruta['errores']) . ' %</span>' : '0 %' ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    <?php endif; ?>
   <?php endif; ?>
 </div>

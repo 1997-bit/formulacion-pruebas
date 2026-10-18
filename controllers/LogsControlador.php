@@ -22,7 +22,7 @@ final class LogsControlador
         $datos = match ($vista) {
             'seguridad' => ['seguridad' => LogServicio::seguridad(Sesion::usuario(), $f['dia'])],
             'rendimiento' => ['rendimiento' => LogServicio::rendimiento(Sesion::usuario(), $f['dia'])],
-            default => array_combine(['lineas', 'paginacion'], LogServicio::listar(Sesion::usuario(), $filtros, (int) ($_GET['pagina'] ?? 1))),
+            default => array_combine(['lineas', 'paginacion', 'horas'], LogServicio::listar(Sesion::usuario(), $filtros, (int) ($_GET['pagina'] ?? 1))),
         };
         Vista::pagina('logs/ver', $datos + [
             'titulo' => 'Logs',

@@ -93,13 +93,28 @@ final class LogServicioTest extends TestCase
         $this->assertSame(['eventos' => ['authn_login_fail' => 2], 'ips' => ['10.0.0.9' => 2]], $seguridad);
     }
 
+    // La ruta más lenta primero. Total del día y por hora
     public function testRendimientoDaP50P95YTasa5xx(): void
     {
-        $filas = LogServicio::rendimiento(self::ADMIN, self::DIA);
+        $r = LogServicio::rendimiento(self::ADMIN, self::DIA);
 
         $this->assertSame([
             ['ruta' => '/a', 'peticiones' => 4, 'p50' => 30.0, 'p95' => 40.0, 'errores' => 0.0],
             ['ruta' => '/b', 'peticiones' => 1, 'p50' => 5.0, 'p95' => 5.0, 'errores' => 100.0],
-        ], $filas);
+        ], $r['rutas']);
+        $this->assertSame([5, 20.0, 40.0, 20.0, 0.0], [$r['peticiones'], $r['p50'], $r['p95'], $r['errores'], $r['rechazos']]);
+        $this->assertSame(['ok' => 4, 'rechazos' => 0, 'errores' => 1], $r['horas'][10]);
+    }
+
+    public function testListarCuentaLineasPorHoraYNivel(): void
+    {
+        [, , $horas] = LogServicio::listar(self::ADMIN, ['dia' => self::DIA], 1);
+
+        $this->assertSame(['error' => 1, 'aviso' => 2, 'info' => 5], $horas[10]);
+    }
+
+    public function testTonoSegunUmbral(): void
+    {
+        $this->assertSame(['exito', 'aviso', 'peligro'], array_map(fn (float $ms): string => LogServicio::tono($ms, LogServicio::LENTO), [100, 500, 2000]));
     }
 }
