@@ -40,9 +40,13 @@ final class IncidenteServicio
             ->requerido('prioridad', $d['prioridad'])
             ->catalogo('prioridad', 'prioridad', $d['prioridad'])
             ->requerido('descripcion', $d['descripcion'])
+            ->texto('descripcion', $d['descripcion'])
             ->requerido('pasos', $d['pasos'])
+            ->texto('pasos', $d['pasos'])
             ->requerido('resultado_esperado', $d['resultado_esperado'])
+            ->texto('resultado_esperado', $d['resultado_esperado'])
             ->requerido('resultado_obtenido', $d['resultado_obtenido'])
+            ->texto('resultado_obtenido', $d['resultado_obtenido'])
             ->requerido('commit_afectado', $d['commit_afectado'] ?? '')
             ->commit('commit_afectado', $d['commit_afectado'] ?? '');
         self::validarSeguimiento($v, $d, $asignables);

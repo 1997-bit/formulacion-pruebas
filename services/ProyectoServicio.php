@@ -87,6 +87,7 @@ final class ProyectoServicio
         (new Validador())
             ->requerido('nombre', $nombre)
             ->regla('nombre', mb_strlen($nombre) <= 100, 'Máximo 100 caracteres.')
+            ->texto('descripcion', $descripcion)
             ->regla('miembros', array_diff($miembros, $testers) === [], 'Valor no válido.')
             ->comprobar();
 

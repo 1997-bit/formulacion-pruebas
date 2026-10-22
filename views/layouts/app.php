@@ -48,8 +48,6 @@ $hoja = Impresion::variables($documento ?? ['titulo' => $titulo, 'proyecto' => $
 <script type="speculationrules">{"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/evidencias/*"}}, {"not": {"selector_matches": "[target], [download]"}}]}, "eagerness": "moderate"}]}</script>
 </head>
 <body class="app">
-<a class="saltar" href="#principal">Saltar al contenido</a>
-
 <?= Vista::capturar('partials/sidebar', ['usuario' => $usuario, 'rutaActual' => $rutaActual, 'proyectos' => $proyectos, 'activo' => $activo]) ?>
 <div class="sidebar-fondo velo" id="sidebar-fondo" hidden></div>
 
