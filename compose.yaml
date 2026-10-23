@@ -1,15 +1,20 @@
-# DB_NAME, DB_USER y DB_PASS de .env
+# Sin .env usa los valores por defecto. .env los cambia
 name: safeguard
 
 services:
   app:
     build: .
     ports:
-      - "8080:80"
-    env_file: .env
+      - "${APP_PUERTO:-8080}:80"
+    env_file:
+      - path: .env
+        required: false
     environment:
       DB_HOST: db
       DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-safeguard}
+      DB_USER: ${DB_USER:-app}
+      DB_PASS: ${DB_PASS:-safeguard}
     volumes:
       - evidencias:/var/www/html/storage/evidencias
       - logs:/var/www/html/storage/logs
@@ -24,9 +29,9 @@ services:
   db:
     image: docker.io/library/mysql:8.4
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME:-safeguard}
+      MYSQL_USER: ${DB_USER:-app}
+      MYSQL_PASSWORD: ${DB_PASS:-safeguard}
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     volumes:
       - db:/var/lib/mysql
@@ -35,7 +40,8 @@ services:
       - ./database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql:ro
       - ./database/permisos.sh:/docker-entrypoint-initdb.d/3-permisos.sh:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      # TCP: mientras carga el seed MySQL solo escucha el socket
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
       interval: 5s
       retries: 20
     restart: unless-stopped

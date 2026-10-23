@@ -4,26 +4,27 @@ App web para registrar casos de prueba, darles seguimiento y generar los 10 form
 
 ## Instalación con Docker
 
+Docker Compose 2.24+ o podman-compose.
+
 ```sh
-cp .env.example .env   # poner DB_USER y DB_PASS
 docker compose up -d --build --wait
 ```
 
-`--wait` termina cuando la app responde. Abrir http://localhost:8080. La primera vez, MySQL carga `schema.sql`, `seed.sql` y `permisos.sh`. El usuario de la app queda solo con SELECT, INSERT, UPDATE y DELETE. Base, evidencias y logs quedan en volúmenes.
+`--wait` termina cuando la app responde. Abrir http://localhost:8080 y entrar con `admin` / `admin1234`. Sin `.env` usa valores por defecto. Para cambiarlos: `cp .env.example .env`. Otro puerto: `APP_PUERTO=8081` en `.env`. La primera vez, MySQL carga `schema.sql`, `seed.sql` y `permisos.sh`. El usuario de la app queda solo con SELECT, INSERT, UPDATE y DELETE. Base, evidencias y logs quedan en volúmenes.
 
 Volver a crear la base: `docker compose down -v`.
 
 ## Instalación sin Docker
 
-PHP 8.2+ con `pdo_mysql` y `mbstring`, MySQL 8 o MariaDB 10.6+, Composer.
+PHP con el parche de PHP2Shell: 8.2.35, 8.3.36, 8.4.27, 8.5.12 o más nuevo. Con `pdo_mysql` y `mbstring`, MySQL 8 o MariaDB 10.6+, Composer.
 
 ```sh
 composer install
-cp .env.example .env   # poner DB_USER y DB_PASS
-mysql -e "CREATE DATABASE safeguard CHARACTER SET utf8mb4"
+cp .env.example .env
+mysql -e "CREATE DATABASE safeguard CHARACTER SET utf8mb4; CREATE USER 'app'@'%' IDENTIFIED BY 'safeguard'"
 mysql safeguard < database/schema.sql
 mysql safeguard < database/seed.sql
-MYSQL_DATABASE=safeguard MYSQL_USER=app bash database/permisos.sh | mysql   # usuario 'app'@'%'
+MYSQL_DATABASE=safeguard MYSQL_USER=app bash database/permisos.sh | mysql
 php -S 127.0.0.1:8000 -t public
 ```
 
