@@ -2431,7 +2431,8 @@ INSERT INTO corregidos (bug, pr, hash, fecha, obtenido, usuario) VALUES
     ('BUG-055', 164, '59afde1', '2026-10-15 14:23:22', 'J y K mueven el foco. Enter abre el caso marcado.', 3),
     ('BUG-056', 166, 'cca6883', '2026-10-15 14:54:10', 'P abre el selector también en el detalle. Imprimir queda en Ctrl+P.', 2),
     ('BUG-021', 189, '9581e88', '2026-10-15 16:35:26', 'Los bordes de campo miden 3,4:1 en claro y 3,1:1 en oscuro.', 2),
-    ('BUG-057', 196, '1e2c7ad', '2026-10-15 18:45:34', 'SEG-002 sale solo en Casos atrasados, con "Tuyo".', 2);
+    ('BUG-057', 196, '1e2c7ad', '2026-10-15 18:45:34', 'SEG-002 sale solo en Casos atrasados, con "Tuyo".', 2),
+    ('BUG-008', 233, '582dc86', '2026-10-22 18:19:18', 'Guarda el de 65 535. El de 70 000 vuelve al formulario con "Máximo 65 535 bytes." junto a Objetivo y conserva lo escrito.', 3);
 
 -- Paso 1: incidente Cerrado con su commit. Paso 5: historial
 INSERT INTO logs_cambios (tabla, registro_id, usuario_id, campo, antes, despues, fecha)
