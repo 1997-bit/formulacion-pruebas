@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Quitado el enlace "Saltar al contenido" que salía arriba al pulsar Tab.
 - Textos largos, BUG-008: un campo de texto largo con más de 65 535 bytes ya no responde 500. Vuelve al formulario con "Máximo 65 535 bytes." junto al campo y conserva lo escrito. Aplica a casos, incidentes, requerimientos, proyectos y los formularios 2 y 3.
 
+### Security
+
+- Imagen Docker con PHP 8.2.35 fijo en lugar de `8.2`. Corrige PHP2Shell, CVE-2026-109618 y CVE-2026-109619: ejecución remota de código sin login con Apache mod_php.
+
 ## [1.10.0] - 2026-10-18
 
 ### Added
