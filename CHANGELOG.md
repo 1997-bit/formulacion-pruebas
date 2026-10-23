@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.2] - 2026-10-22
+
+### Fixed
+
+- Docker arranca sin `.env`: `docker compose up -d --build --wait` basta. Sin `.env` usa la base `safeguard` y el usuario `app` con clave `safeguard`. `.env` cambia esos valores y el puerto con `APP_PUERTO`.
+- Docker: `--wait` ya no termina antes de que MySQL cargue el seed.
+- Sin Docker: `cp .env.example .env` basta. El README crea el usuario `app` en MySQL antes de dar los permisos.
+
 ## [1.10.1] - 2026-10-22
 
 ### Fixed
@@ -411,7 +419,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Composer con PHPUnit, PHPStan y php-cs-fixer.
 - Tablas base.
 
-[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.10.1...HEAD
+[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.10.2...HEAD
+[1.10.2]: https://github.com/1997-bit/safeguard/compare/v1.10.1...v1.10.2
 [1.10.1]: https://github.com/1997-bit/safeguard/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/1997-bit/safeguard/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/1997-bit/safeguard/compare/v1.8.0...v1.9.0
