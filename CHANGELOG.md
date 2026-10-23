@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.3] - 2026-10-22
+
 ### Fixed
 
 - Docker: las tildes del seed ya no salen rotas, por ejemplo "FormulaciÃ³n". `schema.sql`, `seed.sql` y `carga.sql` empiezan con `SET NAMES utf8mb4`. Base ya creada: `docker compose down -v` y volver a levantar.
@@ -423,7 +425,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Composer con PHPUnit, PHPStan y php-cs-fixer.
 - Tablas base.
 
-[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.10.2...HEAD
+[Unreleased]: https://github.com/1997-bit/safeguard/compare/v1.10.3...HEAD
+[1.10.3]: https://github.com/1997-bit/safeguard/compare/v1.10.2...v1.10.3
 [1.10.2]: https://github.com/1997-bit/safeguard/compare/v1.10.1...v1.10.2
 [1.10.1]: https://github.com/1997-bit/safeguard/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/1997-bit/safeguard/compare/v1.9.0...v1.10.0
