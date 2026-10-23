@@ -37,6 +37,7 @@ final class RequerimientoServicio
             ->requerido('codigo', $codigo)
             ->regla('codigo', $codigo === '' || $formato, 'Use RF-01 o RNF-01.')
             ->requerido('descripcion', $descripcion)
+            ->texto('descripcion', $descripcion)
             ->comprobar();
 
         try {
@@ -66,6 +67,7 @@ final class RequerimientoServicio
             ->requerido('codigo', $codigo)
             ->regla('codigo', $codigo === '' || preg_match(self::FORMATO, $codigo) === 1, 'Use RF-01 o RNF-01.')
             ->requerido('descripcion', $descripcion)
+            ->texto('descripcion', $descripcion)
             ->requerido('motivo', $motivo)
             ->comprobar();
 

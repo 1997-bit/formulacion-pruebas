@@ -112,7 +112,7 @@ if (aviso) {
 }
 
 // Resumen de errores, GOV.UK: un enlace por campo, foco al resumen. Sin JS: título y error por campo
-const resumen = document.querySelector('.alerta-error');
+const resumen = document.querySelector('.alerta-error[role="alert"]');
 if (resumen) {
   const lista = document.createElement('ul');
   for (const error of document.querySelectorAll('.campo-error[id$="-error"]')) {

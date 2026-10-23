@@ -4,20 +4,6 @@
   min-height: 100dvh;
 }
 
-.saltar {
-  position: absolute;
-  left: var(--esp-2);
-  top: -100px;
-  z-index: 100;
-  padding: var(--esp-2) var(--esp-3);
-  background: var(--primario);
-  color: var(--primario-texto);
-  border-radius: var(--radio-md);
-}
-.saltar:focus {
-  top: var(--esp-2);
-}
-
 .app-cuerpo {
   flex: 1;
   min-width: 0;
@@ -90,8 +76,7 @@
 @media print {
   .sidebar,
   .sidebar-fondo,
-  .app-barra,
-  .saltar { display: none !important; }
+  .app-barra { display: none !important; }
   .app { display: block; min-height: 0; }
   .app-principal { padding: 0; }
   .app-cuerpo { margin: 0; height: auto; border: 0; border-radius: 0; overflow: visible; }

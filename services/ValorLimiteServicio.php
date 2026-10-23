@@ -87,7 +87,8 @@ final class ValorLimiteServicio
         foreach ($filas as $i => $fila) {
             foreach (self::COLUMNAS as $columna => [, $maximo]) {
                 $v->requerido("{$i}.{$columna}", $fila[$columna])
-                    ->regla("{$i}.{$columna}", $maximo === null || mb_strlen($fila[$columna]) <= $maximo, "Máximo {$maximo} caracteres.");
+                    ->regla("{$i}.{$columna}", $maximo === null || mb_strlen($fila[$columna]) <= $maximo, "Máximo {$maximo} caracteres.")
+                    ->texto("{$i}.{$columna}", $fila[$columna]);
             }
         }
         $v->comprobar();

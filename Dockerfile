@@ -4,7 +4,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=ext-*
 
-FROM docker.io/library/php:8.2-apache
+FROM docker.io/library/php:8.2.35-apache
 LABEL org.opencontainers.image.title="safeguard" \
       org.opencontainers.image.description="Casos de prueba, seguimiento y formularios de testing" \
       org.opencontainers.image.source="https://github.com/1997-bit/safeguard"

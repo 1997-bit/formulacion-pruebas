@@ -17,6 +17,12 @@ final class Validador
         return $this->regla($campo, trim((string) $valor) !== '', 'Es obligatorio.');
     }
 
+    // TEXT de MariaDB: 65 535 bytes. Más da 500, BUG-008
+    public function texto(string $campo, ?string $valor): self
+    {
+        return $this->regla($campo, strlen((string) $valor) <= 65535, 'Máximo 65 535 bytes.');
+    }
+
     // AAAA-MM-DD. Vacío pasa
     public function fecha(string $campo, ?string $valor): self
     {

@@ -101,6 +101,15 @@ final class ValidadorTest extends TestCase
         $this->assertSame(['campo' => 'Mal.'], $errores);
     }
 
+    public function testTextoHasta65535Bytes(): void
+    {
+        $errores = $this->errores((new Validador())
+            ->texto('justo', str_repeat('a', 65535))
+            ->texto('largo', str_repeat('a', 70000)));
+
+        $this->assertSame(['largo' => 'Máximo 65 535 bytes.'], $errores);
+    }
+
     public function testPrimerErrorDelCampoGana(): void
     {
         $validador = (new Validador())
