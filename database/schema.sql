@@ -2,6 +2,9 @@
 -- TINYINT de catálogo, key en config/catalogos.php. Collation explícita para los 2 motores
 -- Formularios. Key: dueño + orden. Guardan por diferencia en una transacción
 
+-- El cliente mysql sin locale usa latin1 y rompe las tildes
+SET NAMES utf8mb4;
+
 SET FOREIGN_KEY_CHECKS = 0;
 DROP VIEW IF EXISTS v_trazabilidad;
 DROP TABLE IF EXISTS autoevaluaciones, rubrica_evaluaciones, plan_pruebas,

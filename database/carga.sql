@@ -3,6 +3,9 @@
 -- Proyecto "Carga": 2 000 requerimientos, 20 000 casos, 20 000 incidentes y 12 000 evidencias
 -- Sin azar. MySQL 8 y MariaDB 10.6. Sin tablas seq_ ni CTE recursivas
 
+-- El cliente mysql sin locale usa latin1 y rompe las tildes
+SET NAMES utf8mb4;
+
 INSERT INTO proyectos (nombre, descripcion) VALUES ('Carga', 'Datos generados para medir el rendimiento.');
 SET @p = LAST_INSERT_ID();
 INSERT INTO proyecto_miembros (proyecto_id, usuario_id) VALUES (@p, 2);

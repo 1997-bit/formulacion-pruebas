@@ -1,5 +1,8 @@
 -- Después de schema.sql. Usuarios y claves en el README
 
+-- El cliente mysql sin locale usa latin1 y rompe las tildes
+SET NAMES utf8mb4;
+
 INSERT INTO usuarios (id, nombre, usuario, clave, rol, creado_en) VALUES
     (1, 'Administrador', 'admin', '$argon2id$v=19$m=19456,t=2,p=1$d09NYS5LaURCNlk5Lm9Zdg$jkID5L8R9fqmximrtTmhsOawXNyqoEEWQyawMkYGyBw', 1, '2026-09-30 17:42:10'),
     (2, 'Gloria', 'gloria', '$argon2id$v=19$m=19456,t=2,p=1$bmY4WlFmZW8yNGpOVUdpTw$OpU3uuLI/Q/+0mjEPOX+wI98Rp+hlHt4jTap2qdL2D8', 0, '2026-10-01 08:31:44'),

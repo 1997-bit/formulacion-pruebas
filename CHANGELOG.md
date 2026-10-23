@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Docker: las tildes del seed ya no salen rotas, por ejemplo "FormulaciÃ³n". `schema.sql`, `seed.sql` y `carga.sql` empiezan con `SET NAMES utf8mb4`. Base ya creada: `docker compose down -v` y volver a levantar.
+
 ## [1.10.2] - 2026-10-22
 
 ### Fixed
